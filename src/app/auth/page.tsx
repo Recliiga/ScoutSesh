@@ -7,15 +7,22 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-export default function Component() {
+export default function HomePage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [authError, setAuthError] = useState("");
+  const [authError, setAuthError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  function clearInput(...names: string[]) {
+    names.forEach((id) => {
+      const element = document.getElementById(id) as HTMLInputElement;
+      element.value = "";
+    });
+  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -24,9 +31,13 @@ export default function Component() {
     const eventTarget = e.target as HTMLFormElement;
     const formData = new FormData(eventTarget);
     const { error } = await login(formData);
+    if (!error) {
+      router.replace("/");
+    } else {
+      clearInput("password");
+      setLoading(false);
+    }
     setAuthError(error);
-    eventTarget.reset();
-    setLoading(false);
   }
 
   async function handleSignup(e: React.FormEvent) {
@@ -36,9 +47,14 @@ export default function Component() {
     const eventTarget = e.target as HTMLFormElement;
     const formData = new FormData(eventTarget);
     const { error } = await signup(formData);
+    if (!error) {
+      router.replace("/");
+    } else {
+      setPassword("");
+      setConfirmPassword("");
+      setLoading(false);
+    }
     setAuthError(error);
-    eventTarget.reset();
-    setLoading(false);
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,8 +1,12 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { getSession } from "@/services/authServices";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { user } = await getSession();
+  console.log(user);
+
   return (
     <div className="flex flex-col min-h-">
       <header className="flex justify-between items-center px-4 border-b h-16">
