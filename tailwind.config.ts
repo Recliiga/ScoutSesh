@@ -10,7 +10,9 @@ const config: Config = {
     extend: {
       colors: {
         "accent-black": "#18181b",
-        "accent-gray": "#f4f4f5",
+        "accent-gray-100": "#f4f4f5",
+        "accent-gray-200": "#e4e4e7",
+        "accent-gray-300": "#71717a",
       },
     },
   },

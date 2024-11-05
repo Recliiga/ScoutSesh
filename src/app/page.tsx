@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen text-accent-black">
+    <div className="flex flex-col min-h-">
       <header className="flex justify-between items-center px-4 border-b h-16">
         <Link href="/" className="font-bold text-2xl text-green-600">
           ScoutSesh.
@@ -49,13 +49,13 @@ export default function HomePage() {
         </nav>
         <div className="flex items-center space-x-4">
           <Link
-            href={"/login"}
-            className="bg-white hover:bg-accent-gray mx-auto px-4 p-2 border rounded-md w-fit font-medium text-accent-black text-sm transition-colors duration-200 cursor-pointer"
+            href={"/auth?page=login"}
+            className="bg-white hover:bg-accent-gray-100 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-accent-black text-sm transition-colors duration-200 cursor-pointer"
           >
             Login
           </Link>
           <Link
-            href={"/sign-up"}
+            href={"/auth?page=sign-up"}
             className="bg-accent-black hover:bg-accent-black/90 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-sm text-white transition-colors duration-200 cursor-pointer"
           >
             Sign Up
@@ -103,7 +103,7 @@ export default function HomePage() {
               athlete in your sport.
             </p>
             <Link
-              href={"/sign-up"}
+              href={"/auth?page=sign-up"}
               className="bg-accent-black hover:bg-accent-black/90 mx-auto px-8 py-3 p-2 border rounded-md w-fit font-medium text-sm text-white transition-colors duration-200 cursor-pointer"
             >
               Sign Up Now
