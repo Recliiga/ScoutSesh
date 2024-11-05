@@ -1,28 +1,45 @@
 "use client";
 
+import { login, signup } from "@/actions/authActions";
+import AuthError from "@/components/AuthError";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export default function Component() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [passwordError, setPasswordError] = useState<string>("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match");
-      return;
-    }
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => setIsLoading(false), 2000);
-  };
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setAuthError("");
+    setLoading(true);
+    const eventTarget = e.target as HTMLFormElement;
+    const formData = new FormData(eventTarget);
+    const { error } = await login(formData);
+    setAuthError(error);
+    eventTarget.reset();
+    setLoading(false);
+  }
+
+  async function handleSignup(e: React.FormEvent) {
+    e.preventDefault();
+    setAuthError("");
+    setLoading(true);
+    const eventTarget = e.target as HTMLFormElement;
+    const formData = new FormData(eventTarget);
+    const { error } = await signup(formData);
+    setAuthError(error);
+    eventTarget.reset();
+    setLoading(false);
+  }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
@@ -45,6 +62,9 @@ export default function Component() {
   };
 
   function handleChangeTab(page: string) {
+    setPassword("");
+    setConfirmPassword("");
+    setAuthError("");
     router.push(`/auth?page=${page}`);
   }
 
@@ -85,7 +105,7 @@ export default function Component() {
             </div>
             {searchParams.get("page") === "login" ? (
               <div>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleLogin}>
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-col gap-2">
                       <label className="font-medium text-sm" htmlFor="email">
@@ -94,6 +114,7 @@ export default function Component() {
                       <input
                         className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
                         id="email"
+                        name="email"
                         placeholder="name@example.com"
                         required
                         type="email"
@@ -106,25 +127,26 @@ export default function Component() {
                       <input
                         className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
                         id="password"
+                        name="password"
                         required
                         type="password"
                         placeholder="******"
                       />
                     </div>
+                    {authError && <AuthError error={authError} />}
                     <button
-                      className="bg-[#14a800] hover:bg-[#14a800]/90 px-4 py-2 rounded-md w-full font-medium text-sm text-white"
+                      className="flex justify-center items-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"
                       type="submit"
-                      disabled={isLoading}
+                      disabled={loading}
                     >
-                      {isLoading && <p>Loading...</p>}
-                      Log In
+                      {loading ? <LoadingIndicator /> : "Log In"}
                     </button>
                   </div>
                 </form>
               </div>
             ) : (
               <div>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSignup}>
                   <div className="flex flex-col gap-4">
                     <div className="gap-4 grid grid-cols-2">
                       <div className="flex flex-col gap-2">
@@ -137,6 +159,7 @@ export default function Component() {
                         <input
                           className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
                           id="firstName"
+                          name="firstName"
                           required
                         />
                       </div>
@@ -150,6 +173,7 @@ export default function Component() {
                         <input
                           className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
                           id="lastName"
+                          name="lastName"
                           required
                         />
                       </div>
@@ -161,6 +185,7 @@ export default function Component() {
                       <input
                         className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
                         id="email"
+                        name="email"
                         placeholder="name@example.com"
                         required
                         type="email"
@@ -173,6 +198,7 @@ export default function Component() {
                       <input
                         className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
                         id="password"
+                        name="password"
                         required
                         type="password"
                         minLength={8}
@@ -196,9 +222,7 @@ export default function Component() {
                         value={confirmPassword}
                         onChange={handleConfirmPasswordChange}
                       />
-                      {passwordError && (
-                        <p className="text-red-500 text-sm">{passwordError}</p>
-                      )}
+                      {passwordError && <AuthError error={passwordError} />}
                     </div>
                     <div className="flex flex-col gap-2">
                       <label className="font-medium text-sm" htmlFor="role">
@@ -207,6 +231,7 @@ export default function Component() {
                       <div className="relative">
                         <select
                           id="role"
+                          name="role"
                           className="border-gray-300 bg-white py-2 pr-10 pl-3 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full text-sm leading-5 appearance-none focus:outline-none"
                           required
                         >
@@ -243,13 +268,13 @@ export default function Component() {
                         </div>
                       </div>
                     </div>
+                    {authError && <AuthError error={authError} />}
                     <button
-                      className="bg-[#14a800] hover:bg-[#14a800]/90 px-4 py-2 rounded-md w-full font-medium text-sm text-white"
+                      className="flex justify-center items-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"
                       type="submit"
-                      disabled={isLoading || !!passwordError}
+                      disabled={loading || !!passwordError}
                     >
-                      {isLoading && <p>Loading...</p>}
-                      Create My Account
+                      {loading ? <LoadingIndicator /> : "Create My Account"}
                     </button>
                   </div>
                 </form>

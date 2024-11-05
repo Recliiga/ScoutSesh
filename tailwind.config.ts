@@ -13,6 +13,7 @@ const config: Config = {
         "accent-gray-100": "#f4f4f5",
         "accent-gray-200": "#e4e4e7",
         "accent-gray-300": "#71717a",
+        "accent-green-100": "#14a800",
       },
     },
   },
