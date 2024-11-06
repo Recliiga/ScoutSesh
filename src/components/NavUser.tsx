@@ -29,7 +29,7 @@ export default function NavUser({ user }: { user: UserType }) {
         className="flex items-center gap-1 cursor-pointer group"
         onClick={() => setdropdown((curr) => !curr)}
       >
-        <div className="relative bg-zinc-100 sm:mr-1 rounded-full w-10 h-10 overflow-hidden">
+        <div className="relative bg-zinc-100 sm:mr-1 rounded-full w-9 h-9 overflow-hidden">
           <Image
             src={user.profilePicture}
             alt={user.firstName + " " + user.lastName}

@@ -1,15 +1,10 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { getSession } from "@/services/authServices";
-import Header from "@/components/Header";
 
 export default async function HomePage() {
-  const { user } = await getSession();
-
   return (
-    <div className="flex flex-col min-h-">
-      <Header user={user} />
+    <div className="flex flex-col flex-1">
       <main className="flex-grow">
         <div className="mx-auto px-4 py-8 w-[95%] sm:w-[90%] max-w-6xl">
           <h1 className="mb-6 font-bold text-4xl">Welcome to ScoutSesh</h1>

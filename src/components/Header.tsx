@@ -1,7 +1,10 @@
+"use client";
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import NavUser from "./NavUser";
+import ModalContainer from "./ModalContainer";
+import MobileNav from "./MobileNav";
 
 const navLinks = [
   { title: "Features", href: "/features" },
@@ -13,40 +16,142 @@ const navLinks = [
 ];
 
 export default function Header({ user }: { user: UserType | null }) {
+  const [mobileNav, setMobileNav] = useState(false);
+
+  function toggleMobileNav() {
+    setMobileNav((curr) => !curr);
+  }
+
   return (
-    <header className="flex justify-between items-center px-4 py-3 sm:py-4 border-b">
-      <Link href="/" className="font-bold text-2xl text-green-600">
-        ScoutSesh.
-      </Link>
-      <nav className="md:flex gap-4 hidden">
-        {navLinks.map((navLink) => (
-          <Link
-            key={navLink.title}
-            href={navLink.href}
-            className="font-medium text-sm hover:text-green-600 whitespace-nowrap transition-colors"
+    <>
+      <header className="flex justify-between items-center px-4 py-3 sm:py-4 border-b">
+        <button
+          onClick={toggleMobileNav}
+          className="min-[870px]:hidden hover:bg-accent-gray-100 p-1 border rounded-md duration-200"
+        >
+          <svg
+            height={24}
+            width={24}
+            viewBox="0 0 24 24"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#000000"
           >
-            {navLink.title}
-          </Link>
-        ))}
-      </nav>
-      {user ? (
-        <NavUser user={user} />
-      ) : (
-        <div className="flex items-center space-x-4">
-          <Link
-            href={"/auth?page=login"}
-            className="bg-white hover:bg-accent-gray-100 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-accent-black text-sm transition-colors duration-200 cursor-pointer"
-          >
-            Login
-          </Link>
-          <Link
-            href={"/auth?page=sign-up"}
-            className="bg-accent-black hover:bg-accent-black/90 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-sm text-white transition-colors duration-200 cursor-pointer"
-          >
-            Sign Up
-          </Link>
-        </div>
-      )}
-    </header>
+            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <g
+                id="Page-1"
+                stroke="none"
+                strokeWidth="1"
+                fill="none"
+                fillRule="evenodd"
+              >
+                {" "}
+                <g id="Menu">
+                  {" "}
+                  <rect
+                    id="Rectangle"
+                    fillRule="nonzero"
+                    x="0"
+                    y="0"
+                    width="24"
+                    height="24"
+                  >
+                    {" "}
+                  </rect>{" "}
+                  <line
+                    x1="5"
+                    y1="7"
+                    x2="19"
+                    y2="7"
+                    id="Path"
+                    stroke="#0C0310"
+                    className="stroke-accent-black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  >
+                    {" "}
+                  </line>{" "}
+                  <line
+                    x1="5"
+                    y1="17"
+                    x2="19"
+                    y2="17"
+                    id="Path"
+                    stroke="#0C0310"
+                    className="stroke-accent-black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  >
+                    {" "}
+                  </line>{" "}
+                  <line
+                    x1="5"
+                    y1="12"
+                    x2="19"
+                    y2="12"
+                    id="Path"
+                    stroke="#0C0310"
+                    className="stroke-accent-black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  >
+                    {" "}
+                  </line>{" "}
+                </g>{" "}
+              </g>{" "}
+            </g>
+          </svg>
+        </button>
+        <Link href="/" className="font-bold text-green-600 text-xl sm:text-2xl">
+          ScoutSesh.
+        </Link>
+        <nav className="min-[870px]:flex gap-6 hidden">
+          {navLinks.map((navLink) => (
+            <Link
+              key={navLink.title}
+              href={navLink.href}
+              className="font-medium text-sm hover:text-green-600 whitespace-nowrap transition-colors"
+            >
+              {navLink.title}
+            </Link>
+          ))}
+        </nav>
+        {user ? (
+          <NavUser user={user} />
+        ) : (
+          <div className="flex items-center space-x-4">
+            <Link
+              href={"/auth?page=login"}
+              className="bg-white hover:bg-accent-gray-100 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-accent-black text-sm transition-colors duration-200 cursor-pointer"
+            >
+              Login
+            </Link>
+            <Link
+              href={"/auth?page=sign-up"}
+              className="min-[400px]:block hidden bg-accent-black hover:bg-accent-black/90 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-sm text-white whitespace-nowrap transition-colors duration-200 cursor-pointer"
+            >
+              Sign Up
+            </Link>
+          </div>
+        )}
+      </header>
+      <ModalContainer
+        open={mobileNav}
+        closeModal={() => setMobileNav(false)}
+        className="min-[870px]:hidden"
+      >
+        <MobileNav
+          user={user}
+          open={mobileNav}
+          closeModal={() => setMobileNav(false)}
+        />
+      </ModalContainer>
+    </>
   );
 }
