@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function LoadingIndicator({ color = "white", size = 24 }) {
+export default function LoadingIndicator({ color = "white", size = 20 }) {
   return (
     <div className="w-fit animate-spin">
       <svg

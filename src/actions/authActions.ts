@@ -6,6 +6,14 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
+const errorMessages = {
+  firstName: "Please enter your First name",
+  lastName: "Please enter your Last name",
+  email: "Please enter a valid Email",
+  password: "Please enter a Password",
+  role: "Please select a Role",
+};
+
 export async function login(formData: FormData) {
   const cookieStore = await cookies();
 
@@ -14,12 +22,20 @@ export async function login(formData: FormData) {
 
   try {
     await connectDB();
+
+    if (!email) throw new Error("Please enter a valid Email");
+    if (!password) throw new Error("Please enter your Password");
+
+    // Get user object from the database
     const user = await User.findOne({ email });
     if (!user) throw new Error("Invalid email and password combination");
+
+    // Compare raw password and hashed password
     const passwordIsCorrect = await bcrypt.compare(password, user.password);
     if (!passwordIsCorrect)
       throw new Error("Invalid email and password combination");
 
+    // Create access token and store in cookie
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!);
     cookieStore.set("token", token, {
       httpOnly: true,
@@ -44,13 +60,26 @@ export async function signup(formData: FormData) {
   };
 
   try {
+    // Run validation
+    Object.keys(userData).forEach((key) => {
+      if (!userData[key as keyof typeof userData])
+        throw new Error(errorMessages[key as keyof typeof errorMessages]);
+    });
+
+    if (userData.password.length < 8)
+      throw new Error("Password must be at least 8 characters");
+
+    // Encrypt password
     const encryptedPassword = await bcrypt.hash(userData.password, 10);
+
+    // Create new user
     await connectDB();
     const newUser = await User.create({
       ...userData,
       password: encryptedPassword,
     });
 
+    // Create access token and store in cookie
     const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET!);
     cookieStore.set("token", token, {
       httpOnly: true,
@@ -58,7 +87,13 @@ export async function signup(formData: FormData) {
     });
 
     return { error: null };
-  } catch (error) {
-    return { error: (error as Error).message };
+  } catch (err) {
+    const error = err as Error;
+
+    // Handle Error for duplicate Email
+    if (error.name === "MongoServerError" && error.message.includes("E11000")) {
+      return { error: "User with email already exists" };
+    }
+    return { error: error.message };
   }
 }

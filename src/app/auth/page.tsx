@@ -17,6 +17,8 @@ export default function HomePage() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const page = searchParams.get("page") || "login";
+
   function clearInput(...names: string[]) {
     names.forEach((id) => {
       const element = document.getElementById(id) as HTMLInputElement;
@@ -81,6 +83,8 @@ export default function HomePage() {
     setPassword("");
     setConfirmPassword("");
     setAuthError("");
+    clearInput("email");
+    clearInput("password");
     router.push(`/auth?page=${page}`);
   }
 
@@ -101,9 +105,7 @@ export default function HomePage() {
               <button
                 onClick={() => handleChangeTab("login")}
                 className={`flex-1 px-3 py-1.5 rounded-sm ${
-                  searchParams.get("page") === "login"
-                    ? "bg-white"
-                    : "text-accent-gray-300"
+                  page === "login" ? "bg-white" : "text-accent-gray-300"
                 }`}
               >
                 Log In
@@ -111,15 +113,13 @@ export default function HomePage() {
               <button
                 onClick={() => handleChangeTab("sign-up")}
                 className={`flex-1 px-3 py-1.5 rounded-sm ${
-                  searchParams.get("page") === "sign-up"
-                    ? "bg-white"
-                    : "text-accent-gray-300"
+                  page === "sign-up" ? "bg-white" : "text-accent-gray-300"
                 }`}
               >
                 Sign Up
               </button>
             </div>
-            {searchParams.get("page") === "login" ? (
+            {page === "login" ? (
               <div>
                 <form onSubmit={handleLogin}>
                   <div className="flex flex-col gap-4">
