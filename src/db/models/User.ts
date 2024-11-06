@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
 
 export interface UserType extends mongoose.Document {
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
+  profilePicture: string;
+  role: string;
 }
 
 const UserSchema: mongoose.Schema = new mongoose.Schema({
@@ -16,6 +18,7 @@ const UserSchema: mongoose.Schema = new mongoose.Schema({
     unique: [true, "User with email already exists"],
   },
   password: { type: String, required: [true, "Please enter a password"] },
+  profilePicture: { type: String, default: "/placeholder-profile-picture.png" },
   role: { type: String, required: [true, "Please select a valid role"] },
 });
 

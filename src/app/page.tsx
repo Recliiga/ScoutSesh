@@ -2,72 +2,16 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getSession } from "@/services/authServices";
+import Header from "@/components/Header";
 
 export default async function HomePage() {
   const { user } = await getSession();
-  console.log(user);
 
   return (
     <div className="flex flex-col min-h-">
-      <header className="flex justify-between items-center px-4 border-b h-16">
-        <Link href="/" className="font-bold text-2xl text-green-600">
-          ScoutSesh.
-        </Link>
-        <nav className="flex gap-4">
-          <Link
-            href="/features"
-            className="font-medium text-sm hover:text-green-600 whitespace-nowrap transition-colors"
-          >
-            Features
-          </Link>
-          <Link
-            href="/for-coaches"
-            className="font-medium text-sm hover:text-green-600 whitespace-nowrap transition-colors"
-          >
-            For Coaches
-          </Link>
-          <Link
-            href="/for-athletes"
-            className="font-medium text-sm hover:text-green-600 whitespace-nowrap transition-colors"
-          >
-            For Athletes
-          </Link>
-          <Link
-            href="/about"
-            className="font-medium text-sm hover:text-green-600 whitespace-nowrap transition-colors"
-          >
-            About Us
-          </Link>
-          <Link
-            href="/faq"
-            className="font-medium text-sm hover:text-green-600 whitespace-nowrap transition-colors"
-          >
-            FAQ
-          </Link>
-          <Link
-            href="/contact"
-            className="font-medium text-sm hover:text-green-600 whitespace-nowrap transition-colors"
-          >
-            Contact
-          </Link>
-        </nav>
-        <div className="flex items-center space-x-4">
-          <Link
-            href={"/auth?page=login"}
-            className="bg-white hover:bg-accent-gray-100 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-accent-black text-sm transition-colors duration-200 cursor-pointer"
-          >
-            Login
-          </Link>
-          <Link
-            href={"/auth?page=sign-up"}
-            className="bg-accent-black hover:bg-accent-black/90 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-sm text-white transition-colors duration-200 cursor-pointer"
-          >
-            Sign Up
-          </Link>
-        </div>
-      </header>
+      <Header user={user} />
       <main className="flex-grow">
-        <div className="mx-auto px-4 py-8 container">
+        <div className="mx-auto px-4 py-8 w-[95%] sm:w-[90%] max-w-6xl">
           <h1 className="mb-6 font-bold text-4xl">Welcome to ScoutSesh</h1>
           <p className="mb-8 text-xl">
             ScoutSesh is a comprehensive athlete development platform designed

@@ -16,7 +16,7 @@ export async function getSession() {
     const user = await User.findById(userId);
     if (!user) throw new Error("User dosen't exists");
 
-    return { user, error: null };
+    return { user: JSON.parse(JSON.stringify(user)), error: null };
   } catch (error) {
     return { user: null, error: (error as Error).message };
   }
