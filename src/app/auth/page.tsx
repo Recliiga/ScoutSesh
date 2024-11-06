@@ -151,7 +151,7 @@ export default function HomePage() {
                     </div>
                     {authError && <AuthError error={authError} />}
                     <button
-                      className="flex justify-center items-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"
+                      className="flex-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"
                       type="submit"
                       disabled={loading}
                     >
@@ -286,7 +286,7 @@ export default function HomePage() {
                     </div>
                     {authError && <AuthError error={authError} />}
                     <button
-                      className="flex justify-center items-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"
+                      className="flex-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"
                       type="submit"
                       disabled={loading || !!passwordError}
                     >

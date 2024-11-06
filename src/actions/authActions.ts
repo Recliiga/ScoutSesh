@@ -97,3 +97,8 @@ export async function signup(formData: FormData) {
     return { error: error.message };
   }
 }
+
+export async function logout() {
+  const cookieStore = await cookies();
+  cookieStore.delete("token");
+}
