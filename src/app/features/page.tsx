@@ -51,7 +51,7 @@ export default function FeaturesPage() {
         </div>
       </div>
       <footer className="bg-gray-100 py-6">
-        <div className="mx-auto px-4 text-center text-gray-600 container">
+        <div className="mx-auto px-4 w-[90%] max-w-6xl text-center text-gray-600">
           © 2024 ScoutSesh. All rights reserved.
         </div>
       </footer>

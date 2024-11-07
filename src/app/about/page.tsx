@@ -5,7 +5,7 @@ import ExpertiseCard from "@/components/ExpertiseCard";
 
 export default function AboutUs() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col flex-1">
       <main className="flex-grow">
         <div className="mx-auto py-8 w-[90%] max-w-6xl">
           <h1 className="mb-6 font-bold text-4xl text-accent-black">
@@ -80,7 +80,7 @@ export default function AboutUs() {
         </div>
       </main>
       <footer className="bg-gray-100 py-6">
-        <div className="mx-auto px-4 text-center text-gray-600 container">
+        <div className="mx-auto px-4 w-[90%] max-w-6xl text-center text-gray-600">
           © 2024 ScoutSesh. All rights reserved.
         </div>
       </footer>

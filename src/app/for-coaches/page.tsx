@@ -63,10 +63,10 @@ const cards2 = [
 
 export default function ForCoachesPage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col flex-1">
       <main className="flex-grow">
         <section className="bg-green-50 py-10 md:py-16">
-          <div className="mx-auto px-4 container">
+          <div className="mx-auto px-4 w-[90%] max-w-6xl">
             <div className="mx-auto max-w-3xl text-center">
               <h1 className="mb-6 font-bold text-3xl text-green-800 sm:text-4xl md:text-5xl">
                 Elevate Your Coaching with ScoutSesh
@@ -83,7 +83,7 @@ export default function ForCoachesPage() {
         </section>
 
         <section className="py-8 md:py-16">
-          <div className="mx-auto px-4 container">
+          <div className="mx-auto px-4 w-[90%] max-w-6xl">
             <h2 className="mb-8 font-bold text-[1.75rem] text-center sm:text-3xl">
               Key Features for Coaches
             </h2>
@@ -181,7 +181,7 @@ export default function ForCoachesPage() {
         </section>
       </main>
       <footer className="bg-gray-100 py-6">
-        <div className="mx-auto text-center text-gray-600 container">
+        <div className="mx-auto w-[90%] max-w-6xl text-center text-gray-600">
           © 2024 ScoutSesh. All rights reserved.
         </div>
       </footer>
