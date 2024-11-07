@@ -1,28 +1,29 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import FeatureCard from "@/components/FeatureCard";
 
 export default async function HomePage() {
   return (
-    <div className="flex flex-col flex-1">
-      <main className="flex-grow">
-        <div className="mx-auto px-4 py-8 w-[95%] sm:w-[90%] max-w-6xl">
+    <main className="flex flex-col flex-1">
+      <div className="flex-grow">
+        <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
           <h1 className="mb-4 sm:mb-6 font-bold text-3xl sm:text-4xl">
             Welcome to ScoutSesh
           </h1>
-          <p className="mb-8 text-base sm:text-lg">
+          <p className="mb-4 sm:mb-8 text-base sm:text-lg">
             ScoutSesh is a comprehensive athlete development platform designed
             to elevate your game to the next level. Whether you&apos;re an
             aspiring youth athlete or a seasoned pro in any sport, our tools and
             resources are tailored to help you reach your full potential.
           </p>
-          <div className="mb-12">
+          <div className="mb-6 sm:mb-12">
             <Image
               src="/placeholder.svg"
               alt="Athlete in action"
               width={800}
               height={400}
-              className="shadow-lg rounded-lg w-full aspect-[2] object-cover"
+              className="shadow-lg rounded-lg w-full min-h-60 aspect-[2] object-cover"
             />
           </div>
           <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
@@ -55,22 +56,7 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
-      </main>
-    </div>
-  );
-}
-
-function FeatureCard({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="bg-white shadow-md p-6 rounded-lg">
-      <h2 className="mb-2 font-semibold text-green-600 text-xl">{title}</h2>
-      <p className="text-gray-600">{description}</p>
-    </div>
+      </div>
+    </main>
   );
 }

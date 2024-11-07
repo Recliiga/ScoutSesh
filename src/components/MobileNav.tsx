@@ -26,7 +26,11 @@ export default function MobileNav({
         open ? "translate-x-0" : "-translate-x-[100%]"
       }`}
     >
-      <Link href="/" className="font-bold text-green-600 text-xl sm:text-2xl">
+      <Link
+        href="/"
+        onClick={closeModal}
+        className="font-bold text-green-600 text-xl sm:text-2xl"
+      >
         ScoutSesh.
       </Link>
       <ul className="flex flex-col gap-4">
