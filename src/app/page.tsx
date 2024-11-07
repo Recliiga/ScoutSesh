@@ -48,7 +48,7 @@ export default async function HomePage() {
               Join ScoutSesh today and start your journey to becoming a better
               athlete in your sport.
             </p>
-            <Button href={"/signup"} size="lg">
+            <Button href={"/signup"} size="lg" className="mx-auto">
               Sign Up Now
             </Button>
           </div>
