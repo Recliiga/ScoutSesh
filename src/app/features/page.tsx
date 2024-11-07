@@ -1,6 +1,6 @@
 import React from "react";
-import Link from "next/link";
 import FeatureSection from "@/components/FeatureSection";
+import Button from "@/components/Button";
 
 export default function FeaturesPage() {
   return (
@@ -44,12 +44,9 @@ export default function FeaturesPage() {
               Join ScoutSesh today and start your journey to becoming an elite
               player in your sport.
             </p>
-            <Link
-              href={"/signup"}
-              className="bg-accent-black hover:bg-accent-black/90 mx-auto px-8 py-3 p-2 border rounded-md w-fit font-medium text-sm text-white transition-colors duration-200 cursor-pointer"
-            >
+            <Button href="/signup" size="lg">
               Sign Up Now
-            </Link>
+            </Button>
           </div>
         </div>
       </div>

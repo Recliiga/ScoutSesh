@@ -1,5 +1,7 @@
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
+import Button from "./Button";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
   { title: "Features", href: "/features" },
@@ -19,6 +21,7 @@ export default function MobileNav({
   closeModal: () => void;
   user: UserType | null;
 }) {
+  const pathname = usePathname();
   return (
     <div
       onClick={(e) => e.stopPropagation()}
@@ -38,7 +41,9 @@ export default function MobileNav({
           <li key={navLink.title} onClick={closeModal}>
             <Link
               href={navLink.href}
-              className="block p-2 w-fit hover:text-green-600 duration-300"
+              className={`block p-2 w-fit hover:text-green-600 duration-300 ${
+                pathname === navLink.href ? "text-green-600" : ""
+              }`}
             >
               {navLink.title}
             </Link>
@@ -46,12 +51,7 @@ export default function MobileNav({
         ))}
         {!Boolean(user) && (
           <li onClick={closeModal}>
-            <Link
-              href={"/signup"}
-              className="block min-[400px]:hidden bg-accent-black hover:bg-accent-black/90 px-4 p-2 border rounded-md w-fit font-medium text-sm text-white whitespace-nowrap transition-colors duration-200 cursor-pointer"
-            >
-              Sign Up
-            </Link>
+            <Button href={"/signup"}>Sign Up</Button>
           </li>
         )}
       </ul>

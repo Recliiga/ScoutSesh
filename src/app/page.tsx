@@ -1,7 +1,7 @@
 import React from "react";
-import Link from "next/link";
 import Image from "next/image";
 import FeatureCard from "@/components/FeatureCard";
+import Button from "@/components/Button";
 
 export default async function HomePage() {
   return (
@@ -48,12 +48,9 @@ export default async function HomePage() {
               Join ScoutSesh today and start your journey to becoming a better
               athlete in your sport.
             </p>
-            <Link
-              href={"/signup"}
-              className="bg-accent-black hover:bg-accent-black/90 mx-auto px-8 py-3 p-2 border rounded-md w-fit font-medium text-sm text-white transition-colors duration-200 cursor-pointer"
-            >
+            <Button href={"/signup"} size="lg">
               Sign Up Now
-            </Link>
+            </Button>
           </div>
         </div>
       </div>
