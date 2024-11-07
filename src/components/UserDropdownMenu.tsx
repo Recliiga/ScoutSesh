@@ -1,6 +1,5 @@
 import { UserType } from "@/db/models/User";
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 
 export default function UserDropdownMenu({
@@ -37,7 +36,7 @@ export default function UserDropdownMenu({
           <p className="font-normal text-xs text-zinc-400">{user.email}</p>
         </div>
       </li>
-      <li onClick={closeDropdown}>
+      {/* <li onClick={closeDropdown}>
         <Link
           href={`/profile/${user._id}`}
           className="flex items-center gap-2 border-zinc-100 hover:bg-green-100/30 px-4 p-2.5 border-b text-sm hover:text-green-600 duration-300 group"
@@ -131,7 +130,7 @@ export default function UserDropdownMenu({
           </svg>
           Settings
         </Link>
-      </li>
+      </li> */}
       <button
         onClick={() => {
           openLogoutModal();

@@ -7,8 +7,10 @@ export default async function HomePage() {
     <div className="flex flex-col flex-1">
       <main className="flex-grow">
         <div className="mx-auto px-4 py-8 w-[95%] sm:w-[90%] max-w-6xl">
-          <h1 className="mb-6 font-bold text-4xl">Welcome to ScoutSesh</h1>
-          <p className="mb-8 text-xl">
+          <h1 className="mb-4 sm:mb-6 font-bold text-3xl sm:text-4xl">
+            Welcome to ScoutSesh
+          </h1>
+          <p className="mb-8 text-base sm:text-xl">
             ScoutSesh is a comprehensive athlete development platform designed
             to elevate your game to the next level. Whether you&apos;re an
             aspiring youth athlete or a seasoned pro in any sport, our tools and
@@ -38,10 +40,10 @@ export default async function HomePage() {
             />
           </div>
           <div className="mt-12 text-center">
-            <h2 className="mb-4 font-bold text-3xl">
+            <h2 className="mb-4 font-bold text-2xl sm:text-3xl">
               Ready to Take Your Athletic Performance to the Next Level?
             </h2>
-            <p className="mb-6 text-xl">
+            <p className="mb-6 text-base sm:text-xl">
               Join ScoutSesh today and start your journey to becoming a better
               athlete in your sport.
             </p>

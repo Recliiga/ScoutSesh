@@ -50,24 +50,24 @@ export default function LogoutModal({
             </g>
           </svg>
         </div>
-        <h4 className="sm:text-lg">Logout?</h4>
+        <h4 className="sm:text-lg">Sign out</h4>
         <p className="font-normal text-sm sm:text-base">
-          Are you sure you want to logout?
+          Are you sure you want to Sign out?
         </p>
       </div>
       <div className="flex justify-end gap-2 p-2 border-t">
         <button
           onClick={closeModal}
-          className="bg-zinc-100 hover:bg-zinc-200 p-2 rounded-md w-20 duration-300 active:scale-90"
+          className="bg-zinc-100 hover:bg-zinc-200 p-2 rounded-md w-[5.5rem] duration-300 active:scale-90"
         >
           Cancel
         </button>
         <button
           disabled={loading}
           onClick={handleLogout}
-          className="flex-center bg-red-500 hover:bg-red-600 disabled:bg-red-500/50 p-2 rounded-md w-20 text-white duration-300 active:scale-90"
+          className="flex-center bg-red-500 hover:bg-red-600 disabled:bg-red-500/50 p-2 rounded-md w-[5.5rem] text-white duration-300 active:scale-90"
         >
-          {loading ? <LoadingIndicator /> : "Logout"}
+          {loading ? <LoadingIndicator /> : "Confirm"}
         </button>
       </div>
     </div>
