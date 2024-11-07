@@ -8,6 +8,7 @@ export async function getSession() {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
+    console.log(data);
     if (data.error) {
       return { user: null, error: data.error };
     } else {
