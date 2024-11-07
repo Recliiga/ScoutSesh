@@ -3,8 +3,6 @@ import { getSession } from "./services/authServices";
 
 export async function middleware(request: NextRequest) {
   const { user } = await getSession();
-  console.log("User from Middleware", user);
-
   if (user) return NextResponse.redirect(new URL("/", request.url));
   return NextResponse.next();
 }

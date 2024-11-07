@@ -17,7 +17,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { user } = await getSession();
-  console.log("User from Homepage", user);
 
   return (
     <html lang="en">

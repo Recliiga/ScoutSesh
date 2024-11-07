@@ -4,12 +4,12 @@ export async function getSession() {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
-    console.log("Token:", token);
-    const res = await fetch("http://localhost:3000/api/auth/session", {
+
+    const BASE_URL = process.env.BASE_URL;
+    const res = await fetch(`${BASE_URL}/api/auth/session`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
-    console.log("Data from get Session function", data);
 
     if (data.error) {
       return { user: null, error: data.error };
