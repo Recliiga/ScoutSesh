@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 export default function ModalContainer({
   children,
   open,
@@ -9,6 +11,13 @@ export default function ModalContainer({
   closeModal: () => void;
   className?: string;
 }) {
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [open]);
   return (
     <div
       onClick={closeModal}
