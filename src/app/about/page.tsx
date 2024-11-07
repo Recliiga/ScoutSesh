@@ -3,34 +3,34 @@ import Image from "next/image";
 import Button from "@/components/Button";
 import ExpertiseCard from "@/components/ExpertiseCard";
 
-export default function AboutUs() {
+export default function AboutUsPage() {
   return (
     <main className="flex flex-col flex-1">
       <div className="mx-auto py-8 w-[90%] max-w-6xl">
         <h1 className="mb-6 font-bold text-4xl text-accent-black">
           About ScoutSesh
         </h1>
-        <div className="gap-8 grid grid-cols-1 md:grid-cols-2 mb-12">
+        <div className="gap-8 grid grid-cols-1 lg:grid-cols-2 mb-12 text-base sm:text-lg">
           <div>
-            <p className="mb-4 text-lg">
+            <p className="mb-4">
               At ScoutSesh, we&apos;re more than just a company - we&apos;re a
               team of passionate athletes and coaches dedicated to helping
               fellow athletes reach their highest potential. ScoutSesh, our
               innovative solution, is designed to revolutionize athlete
               development across all sports.
             </p>
-            <p className="mb-4 text-lg">
+            <p className="mb-4">
               Founded by a group of sports enthusiasts who have walked in the
               shoes of both players and mentors, we understand the challenges
               and aspirations of athletes at every level.
             </p>
-            <p className="mb-4 text-lg">
+            <p className="mb-4">
               Our mission is simple: to provide innovative tools and resources
               through ScoutSesh that empower athletes to become the best
               versions of themselves, both on and off the field, court, or ice.
             </p>
           </div>
-          <div className="relative w-full h-full aspect-[1.5]">
+          <div className="relative w-full h-full max-h-[26rem] aspect-[1.5]">
             <Image
               src="/placeholder.svg"
               alt="ScoutSesh Team"
@@ -60,18 +60,22 @@ export default function AboutUs() {
           <h2 className="mb-4 font-bold text-[1.75rem] text-green-600 sm:text-3xl">
             Our Commitment
           </h2>
-          <p className="mb-4 text-lg">
+          <p className="mb-4 text-base sm:text-lg">
             At ScoutSesh, we&apos;re committed to fostering a community where
             athletes from all sports can thrive. Through ScoutSesh, we provide
             the guidance, tools, and support every athlete needs to achieve
             greatness, regardless of their chosen sport.
           </p>
-          <p className="mb-6 text-lg">
+          <p className="mb-6 text-base sm:text-lg">
             Join us on this exciting journey as we revolutionize athlete
             development with ScoutSesh and help you become better than ever
             before.
           </p>
-          <Button href="/signup" size="lg" className="px-[1rem] sm:px-8">
+          <Button
+            href="/signup"
+            size="lg"
+            className="px-[1.25rem] sm:px-6 text-[1rem] text-center text-wrap sm:text-lg"
+          >
             Start Your ScoutSesh Journey
           </Button>
         </div>
