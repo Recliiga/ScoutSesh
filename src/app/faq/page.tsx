@@ -47,20 +47,18 @@ const questions = [
 export default function FAQPage() {
   return (
     <main className="flex flex-col flex-1">
-      <div className="flex-grow">
-        <div className="mx-auto px-4 py-16 w-[90%] max-w-6xl">
-          <h1 className="mb-8 font-bold text-3xl text-center sm:text-4xl">
-            Frequently Asked Questions
-          </h1>
-          <div className="space-y-6 mx-auto max-w-3xl">
-            {questions.map((question) => (
-              <FAQItem
-                key={question.question}
-                question={question.question}
-                answer={question.answer}
-              />
-            ))}
-          </div>
+      <div className="mx-auto py-16 w-[90%] max-w-6xl">
+        <h1 className="mb-8 font-bold text-3xl text-center sm:text-4xl">
+          Frequently Asked Questions
+        </h1>
+        <div className="space-y-6 mx-auto max-w-3xl">
+          {questions.map((question) => (
+            <FAQItem
+              key={question.question}
+              question={question.question}
+              answer={question.answer}
+            />
+          ))}
         </div>
       </div>
       <footer className="bg-gray-100 py-6">

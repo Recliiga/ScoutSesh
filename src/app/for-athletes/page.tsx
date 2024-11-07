@@ -63,128 +63,126 @@ const cards2 = [
 
 export default function ForAthletesPage() {
   return (
-    <div className="flex flex-col flex-1">
-      <main className="flex-grow">
-        <section className="bg-green-50 py-10 md:py-16">
-          <div className="mx-auto px-4 w-[90%] max-w-6xl">
-            <div className="mx-auto max-w-3xl text-center">
-              <h1 className="mb-6 font-bold text-3xl text-green-800 sm:text-4xl md:text-5xl">
-                Athletes, Unlock Your Full Potential with ScoutSesh
-              </h1>
-              <p className="mb-8 text-gray-700 text-lg sm:text-xl">
-                Take control of your athletic journey, track your progress, and
-                connect with top coaches to elevate your game to new heights.
-              </p>
-              <Button size="lg" href="/signup">
-                Join ScoutSesh Today
-              </Button>
-            </div>
+    <main className="flex flex-col flex-1">
+      <section className="bg-green-50 py-10 md:py-16">
+        <div className="mx-auto px-4 w-[90%] max-w-6xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <h1 className="mb-6 font-bold text-3xl text-green-800 sm:text-4xl md:text-5xl">
+              Athletes, Unlock Your Full Potential with ScoutSesh
+            </h1>
+            <p className="mb-8 text-gray-700 text-lg sm:text-xl">
+              Take control of your athletic journey, track your progress, and
+              connect with top coaches to elevate your game to new heights.
+            </p>
+            <Button size="lg" href="/signup">
+              Join ScoutSesh Today
+            </Button>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="py-8 md:py-16">
-          <div className="mx-auto px-4 w-[90%] max-w-6xl">
-            <h2 className="mb-8 font-bold text-[1.75rem] text-center sm:text-3xl">
-              Key Features for Athletes
+      <section className="py-8 md:py-16">
+        <div className="mx-auto px-4 w-[90%] max-w-6xl">
+          <h2 className="mb-8 font-bold text-[1.75rem] text-center sm:text-3xl">
+            Key Features for Athletes
+          </h2>
+          <div className="gap-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+            {cards.map((feature, index) => (
+              <Card
+                key={index}
+                className="flex flex-col items-center p-6 text-center"
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-gray-50 py-8 md:py-16">
+        <div className="mx-auto w-[90%] max-w-6xl">
+          <div className="mx-auto mb-8 max-w-3xl text-center">
+            <h2 className="mb-4 font-bold text-[1.75rem] sm:text-3xl">
+              Comprehensive Athlete Development Tools
             </h2>
-            <div className="gap-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-              {cards.map((feature, index) => (
-                <Card
-                  key={index}
-                  className="flex flex-col items-center p-6 text-center"
-                  icon={feature.icon}
-                  title={feature.title}
-                  description={feature.description}
-                />
-              ))}
+            <p className="text-base text-gray-600 sm:text-lg">
+              ScoutSesh equips you with everything you need to take your game to
+              the next level.
+            </p>
+          </div>
+          <div className="items-center gap-12 grid grid-cols-1 lg:grid-cols-2">
+            <div className="relative w-full h-full min-h-40 aspect-video">
+              <Image
+                src="/placeholder.svg"
+                alt="Coach using ScoutSesh platform"
+                fill
+                className="shadow-lg rounded-lg w-full h-full object-cover"
+              />
+            </div>
+            <div className="gap-6 grid sm:grid-cols-2 lg:grid-cols-1">
+              <FeatureItem
+                title="Personalized Dashboard"
+                description="Access your performance metrics, goals, and upcoming sessions all in one place."
+              />
+              <FeatureItem
+                title="Skill Assessment"
+                description="Receive detailed evaluations from top coaches to identify areas for improvement."
+              />
+              <FeatureItem
+                title="Training Programs"
+                description="Follow customized training plans designed to enhance your specific skills and attributes."
+              />
+              <FeatureItem
+                title="Coach Connectivity"
+                description="Easily communicate with coaches and receive timely feedback on your progress."
+              />
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="bg-gray-50 py-8 md:py-16">
-          <div className="mx-auto w-[90%] max-w-6xl">
-            <div className="mx-auto mb-8 max-w-3xl text-center">
-              <h2 className="mb-4 font-bold text-[1.75rem] sm:text-3xl">
-                Comprehensive Athlete Development Tools
-              </h2>
-              <p className="text-base text-gray-600 sm:text-lg">
-                ScoutSesh equips you with everything you need to take your game
-                to the next level.
-              </p>
-            </div>
-            <div className="items-center gap-12 grid grid-cols-1 lg:grid-cols-2">
-              <div className="relative w-full h-full min-h-40 aspect-video">
-                <Image
-                  src="/placeholder.svg"
-                  alt="Coach using ScoutSesh platform"
-                  fill
-                  className="shadow-lg rounded-lg w-full h-full object-cover"
-                />
-              </div>
-              <div className="gap-6 grid sm:grid-cols-2 lg:grid-cols-1">
-                <FeatureItem
-                  title="Personalized Dashboard"
-                  description="Access your performance metrics, goals, and upcoming sessions all in one place."
-                />
-                <FeatureItem
-                  title="Skill Assessment"
-                  description="Receive detailed evaluations from top coaches to identify areas for improvement."
-                />
-                <FeatureItem
-                  title="Training Programs"
-                  description="Follow customized training plans designed to enhance your specific skills and attributes."
-                />
-                <FeatureItem
-                  title="Coach Connectivity"
-                  description="Easily communicate with coaches and receive timely feedback on your progress."
-                />
-              </div>
-            </div>
+      <section className="py-8 md:py-16">
+        <div className="mx-auto w-[90%] max-w-6xl">
+          <h2 className="mb-8 font-bold text-[1.75rem] text-center sm:text-3xl">
+            How ScoutSesh Empowers Athletes
+          </h2>
+          <div className="gap-8 grid grid-cols-1 md:grid-cols-3">
+            {cards2.map((feature, index) => (
+              <Card
+                key={index}
+                className="flex flex-col items-center p-6 text-center"
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+              />
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="py-8 md:py-16">
-          <div className="mx-auto w-[90%] max-w-6xl">
-            <h2 className="mb-8 font-bold text-[1.75rem] text-center sm:text-3xl">
-              How ScoutSesh Empowers Athletes
+      <section className="bg-green-50 py-8 md:py-16">
+        <div className="mx-auto w-[90%] max-w-6xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="mb-6 font-bold text-[1.75rem] sm:text-3xl">
+              Start Your Journey to Excellence
             </h2>
-            <div className="gap-8 grid grid-cols-1 md:grid-cols-3">
-              {cards2.map((feature, index) => (
-                <Card
-                  key={index}
-                  className="flex flex-col items-center p-6 text-center"
-                  icon={feature.icon}
-                  title={feature.title}
-                  description={feature.description}
-                />
-              ))}
-            </div>
+            <p className="mb-8 text-gray-600 text-xl">
+              Join ScoutSesh today and take the first step towards becoming the
+              athlete you&apos;ve always dreamed of being. Our platform is
+              designed to support your growth every step of the way.
+            </p>
+            <Button href="/signup" size="lg" className="px-8 py-3 text-lg">
+              Join ScoutSesh Now
+            </Button>
           </div>
-        </section>
-
-        <section className="bg-green-50 py-8 md:py-16">
-          <div className="mx-auto w-[90%] max-w-6xl">
-            <div className="mx-auto max-w-3xl text-center">
-              <h2 className="mb-6 font-bold text-[1.75rem] sm:text-3xl">
-                Start Your Journey to Excellence
-              </h2>
-              <p className="mb-8 text-gray-600 text-xl">
-                Join ScoutSesh today and take the first step towards becoming
-                the athlete you&apos;ve always dreamed of being. Our platform is
-                designed to support your growth every step of the way.
-              </p>
-              <Button href="/signup" size="lg" className="px-8 py-3 text-lg">
-                Join ScoutSesh Now
-              </Button>
-            </div>
-          </div>
-        </section>
-      </main>
+        </div>
+      </section>
       <footer className="bg-gray-100 py-6">
         <div className="mx-auto w-[90%] max-w-6xl text-center text-gray-600">
           © 2024 ScoutSesh. All rights reserved.
         </div>
       </footer>
-    </div>
+    </main>
   );
 }
