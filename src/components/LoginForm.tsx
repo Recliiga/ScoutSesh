@@ -26,7 +26,7 @@ export default function LoginForm() {
     const formData = new FormData(eventTarget);
     const { error } = await login(formData);
     if (!error) {
-      router.replace("/");
+      router.replace("/dashboard");
     } else {
       clearInput("password");
       setLoading(false);

@@ -43,7 +43,7 @@ export default function SignupForm() {
     const formData = new FormData(eventTarget);
     const { error } = await signup(formData);
     if (!error) {
-      router.replace("/");
+      router.replace("/dashboard");
     } else {
       setPassword("");
       setConfirmPassword("");

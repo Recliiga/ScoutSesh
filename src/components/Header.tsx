@@ -2,9 +2,10 @@
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
 import React, { useState } from "react";
-import NavUser from "./NavUser";
+// import NavUser from "./NavUser";
 import ModalContainer from "./ModalContainer";
 import MobileNav from "./MobileNav";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
   { title: "Features", href: "/features" },
@@ -18,13 +19,15 @@ const navLinks = [
 export default function Header({ user }: { user: UserType | null }) {
   const [mobileNav, setMobileNav] = useState(false);
 
+  const pathname = usePathname();
+
   function toggleMobileNav() {
     setMobileNav((curr) => !curr);
   }
 
   return (
     <>
-      <header className="flex justify-between items-center px-4 py-3 sm:py-4 border-b">
+      <header className="flex items-center gap-4 sm:gap-6 px-4 py-3 sm:py-4 border-b">
         <button
           onClick={toggleMobileNav}
           className="min-[870px]:hidden hover:bg-accent-gray-100 p-1 border rounded-md duration-200"
@@ -116,16 +119,24 @@ export default function Header({ user }: { user: UserType | null }) {
             <Link
               key={navLink.title}
               href={navLink.href}
-              className="font-medium text-sm hover:text-green-600 whitespace-nowrap transition-colors"
+              className={`font-medium text-sm hover:text-green-600 whitespace-nowrap transition-colors ${
+                pathname === navLink.href ? "text-green-600" : ""
+              }`}
             >
               {navLink.title}
             </Link>
           ))}
         </nav>
         {user ? (
-          <NavUser user={user} />
+          // <NavUser user={user} />
+          <Link
+            href={"/dashboard"}
+            className="block bg-accent-black hover:bg-accent-black/90 ml-auto px-4 p-2 border rounded-md w-fit font-medium text-sm text-white whitespace-nowrap transition-colors duration-200 cursor-pointer"
+          >
+            Dashboard
+          </Link>
         ) : (
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 ml-auto">
             <Link
               href={"/login"}
               className="bg-white hover:bg-accent-gray-100 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-accent-black text-sm transition-colors duration-200 cursor-pointer"
