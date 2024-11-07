@@ -140,7 +140,7 @@ export default function Header({ user }: { user: UserType | null }) {
           <div className="flex items-center space-x-4">
             <Button
               href={"/login"}
-              type="border"
+              variant="outline"
               className="bg-white hover:bg-accent-gray-100 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-accent-black text-sm transition-colors duration-200 cursor-pointer"
             >
               Login
