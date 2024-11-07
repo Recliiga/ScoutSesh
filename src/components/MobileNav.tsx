@@ -41,7 +41,7 @@ export default function MobileNav({
           <li key={navLink.title} onClick={closeModal}>
             <Link
               href={navLink.href}
-              className={`block p-2 w-fit hover:text-green-600 duration-300 ${
+              className={`block p-2 w-fit hover:text-green-600 font-medium duration-300 ${
                 pathname === navLink.href ? "text-green-600" : ""
               }`}
             >
