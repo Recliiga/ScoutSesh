@@ -43,7 +43,7 @@ export default function FeaturesPage() {
             Join ScoutSesh today and start your journey to becoming an elite
             player in your sport.
           </p>
-          <Button href="/signup" size="lg">
+          <Button href="/signup" size="lg" className="mx-auto">
             Sign Up Now
           </Button>
         </div>
