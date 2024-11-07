@@ -15,13 +15,13 @@ export default function UserDropdownMenu({
 }) {
   return (
     <ul
-      className={`top-[100%] right-0 z-20 absolute flex flex-col duration-200 bg-white border rounded-lg w-60 ${
+      className={`top-[100%] right-0 z-20 absolute flex flex-col duration-200 bg-white border rounded-lg w-48 sm:w-60 ${
         dropdown
           ? "visible opacity-100 scale-100"
           : "invisible opacity-0 scale-90"
       }`}
     >
-      <li className="flex items-center gap-2 border-zinc-100 px-4 py-3 border-b group">
+      <li className="flex items-center gap-2 border-zinc-100 px-2.5 sm:px-4 py-3 border-b group">
         <Image
           src={user.profilePicture}
           width={40}
@@ -29,11 +29,13 @@ export default function UserDropdownMenu({
           alt={user.firstName}
           className="bg-zinc-100 rounded-full w-10 h-10 object-cover"
         />
-        <div className="flex flex-col w-fit">
+        <div className="flex flex-col w-[calc(100%_-_56px)]">
           <h5 className="text-sm text-zinc-700">
             {user.firstName + " " + user.lastName}
           </h5>
-          <p className="font-normal text-xs text-zinc-400">{user.email}</p>
+          <p className="font-normal text-xs text-zinc-400 truncate">
+            {user.email}
+          </p>
         </div>
       </li>
       {/* <li onClick={closeDropdown}>
@@ -136,7 +138,7 @@ export default function UserDropdownMenu({
           openLogoutModal();
           closeDropdown();
         }}
-        className="flex items-center gap-2 hover:bg-red-100/30 px-4 p-2.5 text-left text-red-500 text-sm duration-300 group"
+        className="flex items-center gap-2 hover:bg-red-100/30 px-2.5 sm:px-4 p-2.5 text-left text-red-500 text-sm duration-300 group"
       >
         <svg
           height={18}
