@@ -7,4 +7,4 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-export const config: MiddlewareConfig = { matcher: ["/auth"] };
+export const config: MiddlewareConfig = { matcher: ["/login", "/signup"] };

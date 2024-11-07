@@ -4,6 +4,7 @@ import connectDB from "@/db/connectDB";
 import User from "@/db/models/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 const errorMessages = {
@@ -101,4 +102,5 @@ export async function signup(formData: FormData) {
 export async function logout() {
   const cookieStore = await cookies();
   cookieStore.delete("token");
+  revalidatePath("/", "layout");
 }

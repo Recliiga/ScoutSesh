@@ -10,7 +10,7 @@ export default async function HomePage() {
           <h1 className="mb-4 sm:mb-6 font-bold text-3xl sm:text-4xl">
             Welcome to ScoutSesh
           </h1>
-          <p className="mb-8 text-base sm:text-xl">
+          <p className="mb-8 text-base sm:text-lg">
             ScoutSesh is a comprehensive athlete development platform designed
             to elevate your game to the next level. Whether you&apos;re an
             aspiring youth athlete or a seasoned pro in any sport, our tools and
@@ -43,12 +43,12 @@ export default async function HomePage() {
             <h2 className="mb-4 font-bold text-2xl sm:text-3xl">
               Ready to Take Your Athletic Performance to the Next Level?
             </h2>
-            <p className="mb-6 text-base sm:text-xl">
+            <p className="mb-6 text-base sm:text-lg">
               Join ScoutSesh today and start your journey to becoming a better
               athlete in your sport.
             </p>
             <Link
-              href={"/auth?page=sign-up"}
+              href={"/signup"}
               className="bg-accent-black hover:bg-accent-black/90 mx-auto px-8 py-3 p-2 border rounded-md w-fit font-medium text-sm text-white transition-colors duration-200 cursor-pointer"
             >
               Sign Up Now

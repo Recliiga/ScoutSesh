@@ -127,13 +127,13 @@ export default function Header({ user }: { user: UserType | null }) {
         ) : (
           <div className="flex items-center space-x-4">
             <Link
-              href={"/auth?page=login"}
+              href={"/login"}
               className="bg-white hover:bg-accent-gray-100 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-accent-black text-sm transition-colors duration-200 cursor-pointer"
             >
               Login
             </Link>
             <Link
-              href={"/auth?page=sign-up"}
+              href={"/signup"}
               className="min-[400px]:block hidden bg-accent-black hover:bg-accent-black/90 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-sm text-white whitespace-nowrap transition-colors duration-200 cursor-pointer"
             >
               Sign Up

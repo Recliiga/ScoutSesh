@@ -43,7 +43,7 @@ export default function MobileNav({
         {!Boolean(user) && (
           <li onClick={closeModal}>
             <Link
-              href={"/auth?page=sign-up"}
+              href={"/signup"}
               className="block min-[400px]:hidden bg-accent-black hover:bg-accent-black/90 px-4 p-2 border rounded-md w-fit font-medium text-sm text-white whitespace-nowrap transition-colors duration-200 cursor-pointer"
             >
               Sign Up

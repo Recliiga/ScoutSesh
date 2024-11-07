@@ -136,11 +136,11 @@ export default function UserDropdownMenu({
           openLogoutModal();
           closeDropdown();
         }}
-        className="flex items-center gap-2 hover:bg-red-100/30 px-4 p-2.5 text-left text-red-500 duration-300 group"
+        className="flex items-center gap-2 hover:bg-red-100/30 px-4 p-2.5 text-left text-red-500 text-sm duration-300 group"
       >
         <svg
-          height={20}
-          width={20}
+          height={18}
+          width={18}
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
