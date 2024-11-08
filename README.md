@@ -4,7 +4,7 @@ ScoutSesh is a comprehensive athlete development platform designed to elevate yo
 
 ## Features
 
-- Built with [Next.js](https://nextjs.org/) using the app router
+- Built with [Next.js](https://nextjs.org/) using the app router.
 - Responsive and optimized for performance
 - User authentication with JSON Web Tokens (JWT)
 - MongoDB Atlas as the primary database
