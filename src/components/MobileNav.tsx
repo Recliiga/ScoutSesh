@@ -51,7 +51,7 @@ export default function MobileNav({
         ))}
         {!Boolean(user) && (
           <li onClick={closeModal}>
-            <Button href={"/signup"} className="mx-[0]">
+            <Button href={"/signup"} margin="none">
               Sign Up
             </Button>
           </li>

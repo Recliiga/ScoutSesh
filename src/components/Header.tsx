@@ -2,7 +2,6 @@
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
 import React, { useState } from "react";
-// import NavUser from "./NavUser";
 import ModalContainer from "./ModalContainer";
 import MobileNav from "./MobileNav";
 import { usePathname } from "next/navigation";
@@ -134,18 +133,18 @@ export default function Header({ user }: { user: UserType | null }) {
           </nav>
         </div>
         {user ? (
-          // <NavUser user={user} />
-          <Button href={"/dashboard"} className="mx-[0]">
+          <Button href={"/dashboard"} margin="none">
             Dashboard
           </Button>
         ) : (
           <div className="flex items-center gap-4">
-            <Button href={"/login"} variant="outline" className="mx-[0]">
+            <Button href={"/login"} variant="outline" margin="none">
               Login
             </Button>
             <Button
               href={"/signup"}
-              className="min-[400px]:block hidden mx-[0]"
+              className="min-[400px]:block hidden"
+              margin="none"
             >
               Sign Up
             </Button>
