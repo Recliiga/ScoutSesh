@@ -172,21 +172,12 @@ export default function ForCoachesPage() {
               designed to help you unlock your athletes&apos; full potential and
               take your coaching to the next level.
             </p>
-            <Button
-              href="/signup"
-              size="lg"
-              className="mx-auto px-8 py-3 text-lg"
-            >
+            <Button href="/signup" size="lg" className="px-8 py-3 text-lg">
               Join ScoutSesh Now
             </Button>
           </div>
         </div>
       </section>
-      <footer className="bg-gray-100 py-6">
-        <div className="mx-auto w-[90%] max-w-6xl text-center text-gray-600">
-          © 2024 ScoutSesh. All rights reserved.
-        </div>
-      </footer>
     </main>
   );
 }

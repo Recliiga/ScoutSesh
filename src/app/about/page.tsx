@@ -74,17 +74,12 @@ export default function AboutUsPage() {
           <Button
             href="/signup"
             size="lg"
-            className="px-[1.25rem] sm:px-6 text-[1rem] text-center text-wrap sm:text-lg"
+            className="mx-0 px-[1.25rem] sm:px-6 text-[1rem] text-center text-wrap sm:text-lg"
           >
             Start Your ScoutSesh Journey
           </Button>
         </div>
       </div>
-      <footer className="bg-gray-100 py-6">
-        <div className="mx-auto px-4 w-[90%] max-w-6xl text-center text-gray-600">
-          © 2024 ScoutSesh. All rights reserved.
-        </div>
-      </footer>
     </main>
   );
 }

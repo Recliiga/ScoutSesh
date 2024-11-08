@@ -172,21 +172,12 @@ export default function ForAthletesPage() {
               athlete you&apos;ve always dreamed of being. Our platform is
               designed to support your growth every step of the way.
             </p>
-            <Button
-              href="/signup"
-              size="lg"
-              className="mx-auto px-8 py-3 text-lg"
-            >
+            <Button href="/signup" size="lg" className="px-8 py-3 text-lg">
               Join ScoutSesh Now
             </Button>
           </div>
         </div>
       </section>
-      <footer className="bg-gray-100 py-6">
-        <div className="mx-auto w-[90%] max-w-6xl text-center text-gray-600">
-          © 2024 ScoutSesh. All rights reserved.
-        </div>
-      </footer>
     </main>
   );
 }

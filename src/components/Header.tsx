@@ -135,20 +135,15 @@ export default function Header({ user }: { user: UserType | null }) {
         </div>
         {user ? (
           // <NavUser user={user} />
-          <Button href={"/dashboard"}>Dashboard</Button>
+          <Button href={"/dashboard"} className="mx-0">
+            Dashboard
+          </Button>
         ) : (
-          <div className="flex items-center space-x-4">
-            <Button
-              href={"/login"}
-              variant="outline"
-              className="bg-white hover:bg-accent-gray-100 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-accent-black text-sm transition-colors duration-200 cursor-pointer"
-            >
+          <div className="flex items-center gap-4">
+            <Button href={"/login"} variant="outline" className="mx-0">
               Login
             </Button>
-            <Button
-              href={"/signup"}
-              className="min-[400px]:block hidden bg-accent-black hover:bg-accent-black/90 mx-auto px-4 p-2 border rounded-md w-fit font-medium text-sm text-white whitespace-nowrap transition-colors duration-200 cursor-pointer"
-            >
+            <Button href={"/signup"} className="min-[400px]:block hidden mx-0">
               Sign Up
             </Button>
           </div>

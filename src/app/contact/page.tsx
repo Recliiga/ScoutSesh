@@ -9,7 +9,7 @@ export default function ContactPage() {
         <h1 className="mb-6 font-bold text-3xl text-black sm:text-4xl">
           Contact Us
         </h1>
-        <p className="mb-6 text-gray-600 text-lg">
+        <p className="mb-6 text-base text-gray-600 sm:text-lg">
           Have questions about ScoutSesh or need assistance? We&apos;re here to
           help! Fill out the form below, and our team will get back to you as
           soon as possible.
@@ -25,11 +25,6 @@ export default function ContactPage() {
           <ContactForm />
         </div>
       </div>
-      <footer className="bg-gray-100 py-6">
-        <div className="mx-auto px-4 text-center text-gray-600 container">
-          © 2024 ScoutSesh. All rights reserved.
-        </div>
-      </footer>
     </main>
   );
 }
