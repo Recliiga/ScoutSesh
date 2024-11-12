@@ -133,9 +133,9 @@ export default function SignupForm() {
               required
             >
               <option disabled>Select a role</option>
-              <option>Athlete</option>
-              <option>Head Coach</option>
-              <option>Assistant Coach</option>
+              <option value={"athlete"}>Athlete</option>
+              <option value={"head-coach"}>Head Coach</option>
+              <option value={"assistant-coach"}>Assistant Coach</option>
             </select>
             <div className="right-0 absolute inset-y-0 flex items-center px-2 text-gray-700 pointer-events-none">
               <svg
