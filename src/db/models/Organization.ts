@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-interface OrganizationType extends mongoose.Document {
+export interface OrganizationType extends mongoose.Document {
   name: string;
   type: string;
-  numberOfMembers: string;
+  memberCount: string;
   location: string;
   primarySport: string;
   yearFounded: number;
@@ -20,7 +20,7 @@ const OrganizationSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter the organization type"],
     },
-    numberOfMembers: {
+    memberCount: {
       type: String,
       required: [
         true,

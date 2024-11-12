@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
   const { user } = await getSession();
   if (pathname === "/app") {
     if (user) {
-      if (!user.DOB) {
+      if (!user.DOB && !user.organization) {
         return NextResponse.redirect(new URL("/complete-profile", request.url));
       }
     } else {
@@ -16,7 +16,8 @@ export async function middleware(request: NextRequest) {
     if (user) return NextResponse.redirect(new URL("/app", request.url));
   } else if (pathname === "/complete-profile") {
     if (user) {
-      if (user?.DOB) return NextResponse.redirect(new URL("/app", request.url));
+      if (user?.DOB || user.organization)
+        return NextResponse.redirect(new URL("/app", request.url));
     } else {
       return NextResponse.redirect(new URL("/login", request.url));
     }

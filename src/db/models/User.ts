@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { OrganizationType } from "./Organization";
 
 export interface UserType extends mongoose.Document {
   firstName: string;
@@ -6,12 +7,13 @@ export interface UserType extends mongoose.Document {
   email: string;
   password: string;
   profilePicture: string;
-  role: "athlete" | "assistant-coach" | "head-coach";
+  role: "athlete" | "Assistant Coach" | "Head Coach";
   DOB: Date;
   location: string;
   primarySport: string;
   experience: number;
   bio: string;
+  organization: OrganizationType;
 }
 
 const UserSchema: mongoose.Schema = new mongoose.Schema(
@@ -41,6 +43,7 @@ const UserSchema: mongoose.Schema = new mongoose.Schema(
     primarySport: { type: String },
     experience: { type: Number },
     bio: { type: String },
+    organization: { type: mongoose.SchemaTypes.ObjectId, ref: "Organization" },
   },
   { timestamps: true }
 );

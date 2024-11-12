@@ -12,7 +12,7 @@ export default async function CompleteYourProfilePage() {
       <div className="flex flex-col gap-6 border-accent-gray-200 bg-white shadow-sm p-6 border rounded-lg w-full max-w-md">
         <div className="flex flex-col gap-1">
           <h3 className="font-bold text-2xl text-center tracking-tight">
-            {user.role === "head-coach"
+            {user.role === "Head Coach"
               ? "Complete Your Organization Profile"
               : "Complete Your Profile"}
           </h3>
@@ -21,7 +21,7 @@ export default async function CompleteYourProfilePage() {
           </p>
         </div>
         <div className="flex flex-col gap-2 w-full text-sm">
-          {user.role === "head-coach" ? (
+          {user.role === "Head Coach" ? (
             <OrganizationRegistrationForm
               firstName={user.firstName}
               lastName={user.lastName}

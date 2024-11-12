@@ -1,6 +1,7 @@
 "use server";
 
 import connectDB from "@/db/connectDB";
+import Organization from "@/db/models/Organization";
 import User from "@/db/models/User";
 import { uploadImage } from "@/utils/uploadImage";
 import bcrypt from "bcrypt";
@@ -100,6 +101,48 @@ export async function signup(formData: FormData) {
   }
 }
 
+export async function createOrganization(formData: FormData) {
+  const email = formData.get("email");
+
+  const userData = {
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
+  };
+
+  const organizationData = {
+    name: formData.get("organizationName"),
+    profilePicture: formData.get("profilePicture"),
+    type: formData.get("organizationType"),
+    memberCount: formData.get("memberCount"),
+    location: formData.get("location"),
+    primarySport: formData.get("primarySport"),
+    yearFounded: formData.get("yearFounded"),
+    bio: formData.get("bio"),
+  };
+
+  try {
+    // Upload organization profile picture
+    const { url, error } = await uploadImage(
+      organizationData.profilePicture as string
+    );
+    if (error) throw new Error("An error occured uploading profile picture");
+    organizationData.profilePicture = url;
+
+    // Create new organization and bind to user's profile
+    await connectDB();
+    const newOrganization = await Organization.create(organizationData);
+    const data = await User.findOneAndUpdate(
+      { email },
+      { ...userData, organization: newOrganization._id }
+    );
+    if (!data) throw new Error("An error occured");
+
+    return { error: null };
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
+}
+
 export async function completeProfile(formData: FormData) {
   const email = formData.get("email");
   const userData = {
@@ -115,9 +158,11 @@ export async function completeProfile(formData: FormData) {
   };
 
   try {
+    // Upload organization profile picture
     const { url, error } = await uploadImage(userData.profilePicture as string);
     if (error) throw new Error("An error occured uploading profile picture");
     userData.profilePicture = url;
+
     await connectDB();
     const data = await User.findOneAndUpdate({ email }, userData);
     if (!data) throw new Error("An error occured");
