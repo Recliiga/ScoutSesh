@@ -1,6 +1,10 @@
+import { UserType } from "@/db/models/User";
 import { cookies } from "next/headers";
 
-export async function getSession() {
+export async function getSession(): Promise<{
+  user: UserType | null;
+  error: string | null;
+}> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;

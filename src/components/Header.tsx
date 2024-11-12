@@ -133,7 +133,7 @@ export default function Header({ user }: { user: UserType | null }) {
           </nav>
         </div>
         {user ? (
-          <Button href={"/dashboard"} margin="none">
+          <Button href={"/app"} margin="none">
             Dashboard
           </Button>
         ) : (

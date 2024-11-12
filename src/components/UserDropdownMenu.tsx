@@ -74,7 +74,7 @@ export default function UserDropdownMenu({
       </li>
       <li onClick={closeDropdown}>
         <Link
-          href={"/dashboard"}
+          href={"/app"}
           className="flex items-center gap-2 border-zinc-100 hover:bg-green-100/30 px-4 p-2.5 border-b text-sm hover:text-green-600 duration-300 group"
         >
           <svg

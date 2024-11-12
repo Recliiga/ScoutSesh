@@ -2,6 +2,7 @@
 
 import connectDB from "@/db/connectDB";
 import User from "@/db/models/User";
+import { uploadImage } from "@/utils/uploadImage";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { revalidatePath } from "next/cache";
@@ -96,6 +97,33 @@ export async function signup(formData: FormData) {
       return { error: "User with email already exists" };
     }
     return { error: error.message };
+  }
+}
+
+export async function completeProfile(formData: FormData) {
+  const email = formData.get("email");
+  const userData = {
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
+    role: formData.get("role"),
+    DOB: formData.get("DOB"),
+    profilePicture: formData.get("profilePicture"),
+    location: formData.get("location"),
+    primarySport: formData.get("primarySport"),
+    experience: formData.get("experience"),
+    bio: formData.get("bio"),
+  };
+
+  try {
+    const { url, error } = await uploadImage(userData.profilePicture as string);
+    if (error) throw new Error("An error occured uploading profile picture");
+    userData.profilePicture = url;
+    await connectDB();
+    const data = await User.findOneAndUpdate({ email }, userData);
+    if (!data) throw new Error("An error occured");
+    return { error: null };
+  } catch (error) {
+    return { error: (error as Error).message };
   }
 }
 

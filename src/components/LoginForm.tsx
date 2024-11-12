@@ -18,15 +18,14 @@ export default function LoginForm() {
     });
   }
 
-  async function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const eventTarget = e.target as HTMLFormElement;
-    const formData = new FormData(eventTarget);
+    const formData = new FormData(e.currentTarget);
     const { error } = await login(formData);
     if (!error) {
-      router.replace("/dashboard");
+      router.replace("/app");
     } else {
       clearInput("password");
       setLoading(false);
