@@ -35,15 +35,14 @@ export default function SignupForm() {
     }
   };
 
-  async function handleSignup(e: React.FormEvent) {
+  async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const eventTarget = e.target as HTMLFormElement;
-    const formData = new FormData(eventTarget);
+    const formData = new FormData(e.currentTarget);
     const { error } = await signup(formData);
     if (!error) {
-      router.replace("/dashboard");
+      router.replace("/app");
     } else {
       setPassword("");
       setConfirmPassword("");
