@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import ModalContainer from "./ModalContainer";
 import MobileNav from "./MobileNav";
 import { usePathname } from "next/navigation";
-import Button from "./Button";
+import Button from "./LinkButton";
 
 const navLinks = [
   { title: "Features", href: "/features" },

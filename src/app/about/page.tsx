@@ -1,9 +1,9 @@
 import React from "react";
 import Image from "next/image";
-import Button from "@/components/Button";
 import ExpertiseCard from "@/components/ExpertiseCard";
+import LinkButton from "@/components/LinkButton";
 
-export default function AboutUsPage() {
+export default function AboutUs() {
   return (
     <main className="flex flex-col flex-1">
       <div className="mx-auto py-8 w-[90%] max-w-6xl">
@@ -71,14 +71,14 @@ export default function AboutUsPage() {
             development with ScoutSesh and help you become better than ever
             before.
           </p>
-          <Button
+          <LinkButton
             href="/signup"
             size="lg"
             className="px-[1.25rem] sm:px-6 text-[1rem] text-center text-wrap sm:text-lg"
             margin="none"
           >
             Start Your ScoutSesh Journey
-          </Button>
+          </LinkButton>
         </div>
       </div>
     </main>

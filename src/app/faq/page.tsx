@@ -52,9 +52,9 @@ export default function FAQPage() {
           Frequently Asked Questions
         </h1>
         <div className="space-y-6 mx-auto max-w-3xl">
-          {questions.map((question) => (
+          {questions.map((question, index) => (
             <FAQItem
-              key={question.question}
+              key={index}
               question={question.question}
               answer={question.answer}
             />

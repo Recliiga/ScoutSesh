@@ -11,7 +11,7 @@ export default function FeatureSection({
 }) {
   return (
     <div className="flex xl:flex-row flex-col items-center gap-6 bg-white shadow-md p-3 sm:p-6 rounded-lg">
-      <div className="relative flex-1 w-full aspect-video xl:aspect-auto h-full">
+      <div className="relative flex-1 w-full aspect-video xl:aspect-auto h-full min-h-40">
         <Image
           src={imageSrc}
           alt={title}
