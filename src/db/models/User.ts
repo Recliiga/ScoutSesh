@@ -7,6 +7,11 @@ export interface UserType extends mongoose.Document {
   password: string;
   profilePicture: string;
   role: string;
+  DOB: Date;
+  location: string;
+  primarySport: string;
+  experience: number;
+  bio: string;
 }
 
 const UserSchema: mongoose.Schema = new mongoose.Schema(
@@ -31,6 +36,11 @@ const UserSchema: mongoose.Schema = new mongoose.Schema(
       default: "/placeholder-profile-picture.png",
     },
     role: { type: String, required: [true, "Please select a valid role"] },
+    DOB: { type: String },
+    location: { type: String },
+    primarySport: { type: String },
+    experience: { type: Number },
+    bio: { type: String },
   },
   { timestamps: true }
 );

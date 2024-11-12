@@ -15,6 +15,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { completeProfile } from "@/actions/authActions";
+import { useRouter } from "next/navigation";
+import AuthError from "./AuthError";
 
 interface ProfileProps {
   firstName: string;
@@ -23,15 +26,18 @@ interface ProfileProps {
   role: string;
 }
 
-export default function Component({
+export default function CompleteAthleteProfileForm({
   firstName,
   lastName,
   email,
   role,
 }: ProfileProps) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>();
   const [dob, setDob] = useState<Date>();
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<number>(
     new Date().getFullYear()
   );
@@ -40,35 +46,43 @@ export default function Component({
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfileImage(reader.result as string);
+        setProfilePicture(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
-  };
+  }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
     const formData = new FormData(event.currentTarget);
-    console.log(formData.entries().toArray());
-    setIsLoading(false);
-  };
+    if (!profilePicture || !dob) return;
+    formData.set("profilePicture", profilePicture);
+    formData.set("DOB", dob.toString());
+    formData.set("email", email);
+    const { error } = await completeProfile(formData);
+    if (!error) {
+      router.replace("/app");
+    }
+    setError(error);
+    setLoading(false);
+  }
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex flex-col items-center space-y-4 mb-6">
-        <Label htmlFor="profilePhoto" className="text-center">
+      <div className="flex flex-col items-center gap-4 mb-6">
+        <Label htmlFor="profilePicture" className="text-center">
           Profile Photo
         </Label>
         <div className="relative bg-gray-100 rounded-full w-32 h-32 overflow-hidden">
-          {profileImage ? (
+          {profilePicture ? (
             <Image
-              src={profileImage}
+              src={profilePicture}
               alt="Profile"
               layout="fill"
               objectFit="cover"
@@ -106,11 +120,12 @@ export default function Component({
           accept="image/*"
           className="hidden"
           name="profilePicture"
+          id="profilePicture"
         />
       </div>
       <div className="space-y-4">
         <div className="gap-4 grid grid-cols-2">
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="firstName">First name</Label>
             <Input
               id="firstName"
@@ -119,7 +134,7 @@ export default function Component({
               required
             />
           </div>
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="lastName">Last name</Label>
             <Input
               id="lastName"
@@ -129,17 +144,18 @@ export default function Component({
             />
           </div>
         </div>
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             name="email"
+            disabled
             defaultValue={email}
             type="email"
             required
           />
         </div>
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="role">Role</Label>
           <div className="relative">
             <select
@@ -153,7 +169,6 @@ export default function Component({
                 Select a role
               </option>
               <option value={"athlete"}>Athlete</option>
-              {/* <option>Head Coach</option> */}
               <option value={"assistant-coach"}>Assistant Coach</option>
             </select>
             <div className="right-0 absolute inset-y-0 flex items-center px-2 text-gray-700 pointer-events-none">
@@ -161,8 +176,8 @@ export default function Component({
             </div>
           </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="dob">Date of Birth</Label>
+        <div className="flex flex-col gap-2">
+          <Label>Date of Birth</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -218,7 +233,7 @@ export default function Component({
             </PopoverContent>
           </Popover>
         </div>
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="location">Location</Label>
           <div className="relative">
             <MapPinIcon className="top-1/2 left-3 absolute w-5 h-5 text-gray-400 transform -translate-y-1/2" />
@@ -231,7 +246,7 @@ export default function Component({
             />
           </div>
         </div>
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="primarySport">Primary Sport</Label>
           <Input
             id="primarySport"
@@ -240,7 +255,7 @@ export default function Component({
             required
           />
         </div>
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="experience">Years of Experience</Label>
           <Input
             id="experience"
@@ -251,7 +266,7 @@ export default function Component({
             required
           />
         </div>
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="bio">Short Bio</Label>
           <textarea
             id="bio"
@@ -259,14 +274,15 @@ export default function Component({
             className="border-gray-300 bg-white px-3 py-2 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full min-h-[100px] text-sm leading-5 appearance-none focus:outline-none"
             placeholder="Tell us a bit about yourself..."
           />
+          {error && <AuthError error={error} />}
         </div>
         <Button
           className="bg-[#14a800] hover:bg-[#14a800]/90 w-full text-white"
           type="submit"
-          disabled={isLoading}
+          disabled={loading || !profilePicture || !dob}
         >
-          {isLoading && <Loader2 className="mr-2 w-4 h-4 animate-spin" />}
-          {isLoading ? "Saving..." : "Complete Profile"}
+          {loading && <Loader2 className="mr-2 w-4 h-4 animate-spin" />}
+          {loading ? "Saving..." : "Complete Profile"}
         </Button>
       </div>
     </form>
