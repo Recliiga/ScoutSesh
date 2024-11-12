@@ -1,6 +1,12 @@
-"use client";
-import ContactForm from "@/components/ContactForm";
 import React from "react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import ContactForm from "@/components/ContactForm";
 
 export default function ContactPage() {
   return (
@@ -14,15 +20,19 @@ export default function ContactPage() {
           help! Fill out the form below, and our team will get back to you as
           soon as possible.
         </p>
-        <div className="flex flex-col gap-6 mx-auto p-4 sm:p-6 border rounded-lg max-w-md">
-          <div>
-            <h2 className="font-semibold text-2xl">Get in Touch</h2>
-            <p className="text-accent-gray-300 text-sm">
-              Fill out the form below and we&apos;ll get back to you as soon as
-              possible.
-            </p>
-          </div>
-          <ContactForm />
+        <div className="mx-auto max-w-md">
+          <Card>
+            <CardHeader>
+              <CardTitle>Get in Touch</CardTitle>
+              <CardDescription>
+                Fill out the form below and we&apos;ll get back to you as soon
+                as possible.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ContactForm />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </main>

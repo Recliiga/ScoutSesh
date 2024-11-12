@@ -1,10 +1,10 @@
 import React from "react";
 import FeatureSection from "@/components/FeatureSection";
-import Button from "@/components/Button";
+import LinkButton from "@/components/LinkButton";
 
 export default function FeaturesPage() {
   return (
-    <main className="flex flex-col flex-1">
+    <main className="flex-1">
       <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
         <h1 className="mb-4 sm:mb-6 font-bold text-3xl sm:text-4xl">
           ScoutSesh Features
@@ -43,9 +43,9 @@ export default function FeaturesPage() {
             Join ScoutSesh today and start your journey to becoming an elite
             player in your sport.
           </p>
-          <Button href="/signup" size="lg">
+          <LinkButton href="/signup" size="lg">
             Sign Up Now
-          </Button>
+          </LinkButton>
         </div>
       </div>
     </main>

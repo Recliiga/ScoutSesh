@@ -1,17 +1,17 @@
 import React from "react";
 import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   TrendingUp,
-  Calendar,
   Target,
-  BookOpen,
+  Calendar,
   Video,
   BarChart,
+  BookOpen,
   Award,
 } from "lucide-react";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
 import { FeatureItem } from "@/components/FeatureItem";
+import LinkButton from "@/components/LinkButton";
 
 const cards = [
   {
@@ -63,7 +63,7 @@ const cards2 = [
 
 export default function ForAthletesPage() {
   return (
-    <main className="flex flex-col flex-1">
+    <main className="flex-1">
       <section className="bg-green-50 py-10 md:py-16">
         <div className="mx-auto px-4 w-[90%] max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
@@ -74,9 +74,9 @@ export default function ForAthletesPage() {
               Take control of your athletic journey, track your progress, and
               connect with top coaches to elevate your game to new heights.
             </p>
-            <Button size="lg" href="/signup">
+            <LinkButton size="lg" href="/signup">
               Join ScoutSesh Today
-            </Button>
+            </LinkButton>
           </div>
         </div>
       </section>
@@ -86,15 +86,24 @@ export default function ForAthletesPage() {
           <h2 className="mb-8 font-bold text-[1.75rem] text-center sm:text-3xl">
             Key Features for Athletes
           </h2>
-          <div className="gap-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          <div className="gap-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
             {cards.map((feature, index) => (
               <Card
                 key={index}
                 className="flex flex-col items-center p-6 text-center"
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-              />
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex justify-center items-center mb-4">
+                    {feature.icon}
+                  </div>
+                  <CardTitle className="font-semibold text-xl">
+                    {feature.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600">{feature.description}</p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -152,10 +161,19 @@ export default function ForAthletesPage() {
               <Card
                 key={index}
                 className="flex flex-col items-center p-6 text-center"
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-              />
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex justify-center items-center mb-4">
+                    {feature.icon}
+                  </div>
+                  <CardTitle className="font-semibold text-xl">
+                    {feature.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600">{feature.description}</p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -172,9 +190,9 @@ export default function ForAthletesPage() {
               athlete you&apos;ve always dreamed of being. Our platform is
               designed to support your growth every step of the way.
             </p>
-            <Button href="/signup" size="lg" className="px-8 py-3 text-lg">
+            <LinkButton href="/signup" size="lg" className="px-8 py-3 text-lg">
               Join ScoutSesh Now
-            </Button>
+            </LinkButton>
           </div>
         </div>
       </section>

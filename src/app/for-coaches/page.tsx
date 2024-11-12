@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Users,
   TrendingUp,
@@ -9,9 +10,8 @@ import {
   Video,
   BarChart,
 } from "lucide-react";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
 import { FeatureItem } from "@/components/FeatureItem";
+import LinkButton from "@/components/LinkButton";
 
 const cards = [
   {
@@ -44,7 +44,7 @@ const cards2 = [
   {
     title: "Enhanced Athlete Development",
     description:
-      "Leverage our comprehensive evaluation tools and goal-setting features to accelerate your athletes&apos; growth and performance.",
+      "Leverage our comprehensive evaluation tools and goal-setting features to accelerate your athletes' growth and performance.",
     icon: <Users className="w-10 h-10 text-green-600" />,
   },
   {
@@ -63,9 +63,9 @@ const cards2 = [
 
 export default function ForCoachesPage() {
   return (
-    <main className="flex flex-col flex-1">
+    <main className="flex-1">
       <section className="bg-green-50 py-10 md:py-16">
-        <div className="mx-auto px-4 w-[90%] max-w-6xl">
+        <div className="mx-auto w-[90%] max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="mb-6 font-bold text-3xl text-green-800 sm:text-4xl md:text-5xl">
               Elevate Your Coaching with ScoutSesh
@@ -74,9 +74,9 @@ export default function ForCoachesPage() {
               Empower your athletes, streamline your workflow, and achieve
               unprecedented success with our comprehensive coaching platform.
             </p>
-            <Button size="lg" href="/signup">
+            <LinkButton href="/signup" size="lg">
               Join ScoutSesh Today
-            </Button>
+            </LinkButton>
           </div>
         </div>
       </section>
@@ -86,15 +86,24 @@ export default function ForCoachesPage() {
           <h2 className="mb-8 font-bold text-[1.75rem] text-center sm:text-3xl">
             Key Features for Coaches
           </h2>
-          <div className="gap-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          <div className="gap-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
             {cards.map((feature, index) => (
               <Card
                 key={index}
                 className="flex flex-col items-center p-6 text-center"
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-              />
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex justify-center items-center mb-4">
+                    {feature.icon}
+                  </div>
+                  <CardTitle className="font-semibold text-xl">
+                    {feature.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <p className="text-gray-600">{feature.description}</p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -152,10 +161,19 @@ export default function ForCoachesPage() {
               <Card
                 key={index}
                 className="flex flex-col items-center p-6 text-center"
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-              />
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex justify-center items-center mb-4">
+                    {feature.icon}
+                  </div>
+                  <CardTitle className="font-semibold text-xl">
+                    {feature.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <p className="text-gray-600">{feature.description}</p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -167,14 +185,14 @@ export default function ForCoachesPage() {
             <h2 className="mb-6 font-bold text-[1.75rem] sm:text-3xl">
               Join the ScoutSesh Coaching Community
             </h2>
-            <p className="mb-8 text-gray-600 text-xl">
+            <p className="mb-8 text-gray-600 text-lg sm:text-xl">
               Experience the future of coaching with ScoutSesh. Our platform is
               designed to help you unlock your athletes&apos; full potential and
               take your coaching to the next level.
             </p>
-            <Button href="/signup" size="lg" className="px-8 py-3 text-lg">
+            <LinkButton size="lg" href="/signup" className="px-8 py-3 text-lg">
               Join ScoutSesh Now
-            </Button>
+            </LinkButton>
           </div>
         </div>
       </section>

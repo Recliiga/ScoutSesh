@@ -18,6 +18,7 @@ export default function ModalContainer({
       document.body.style.overflow = "auto";
     }
   }, [open]);
+
   return (
     <div
       onClick={closeModal}
