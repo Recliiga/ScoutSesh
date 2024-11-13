@@ -83,7 +83,7 @@ export default function ChatPage() {
   };
 
   return (
-    <main className="flex-1">
+    <main className="flex-1 mx-auto w-[90%] max-w-6xl">
       <TooltipProvider>
         <div className="flex space-x-4 p-4">
           <aside className="space-y-4 w-1/4">
