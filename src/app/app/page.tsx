@@ -1,7 +1,6 @@
-import React from 'react'
+import React from "react";
+import CoachDashboard from "@/components/CoachDashboard";
 
-export default function Dashboard() {
-  return (
-    <div className='flex-1 flex-center'>Dashboard</div>
-  )
+export default function DashboardPage() {
+  return <CoachDashboard />;
 }
