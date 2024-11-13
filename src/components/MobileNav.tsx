@@ -2,6 +2,7 @@ import { UserType } from "@/db/models/User";
 import Link from "next/link";
 import Button from "./LinkButton";
 import { usePathname } from "next/navigation";
+import { XIcon } from "lucide-react";
 
 const navLinks = [
   { title: "Features", href: "/features" },
@@ -25,7 +26,7 @@ export default function MobileNav({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className={`bg-white w-[50%] min-w-[16rem] h-full flex flex-col gap-8 p-4 duration-300 text-sm ${
+      className={`bg-white w-[50%] relative min-w-[16rem] h-full flex flex-col gap-8 p-4 duration-300 text-sm ${
         open ? "translate-x-0" : "-translate-x-[100%]"
       }`}
     >
@@ -57,6 +58,12 @@ export default function MobileNav({
           </li>
         )}
       </ul>
+      <button
+        className="top-4 right-4 absolute text-accent-gray-300 hover:text-accent-black duration-200"
+        onClick={closeModal}
+      >
+        <XIcon />
+      </button>
     </div>
   );
 }

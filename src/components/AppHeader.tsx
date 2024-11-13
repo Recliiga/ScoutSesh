@@ -8,12 +8,12 @@ import { usePathname } from "next/navigation";
 import { BellIcon, UserIcon } from "lucide-react";
 
 const navLinks = [
-  { title: "Athlete Evaluation", href: "/athlete-evaluation" },
-  { title: "Goal Setting", href: "/goal-setting" },
-  { title: "Daily Journal", href: "/daily-journal" },
-  { title: "Group Classes", href: "/group-classes" },
-  { title: "Messages", href: "/messages" },
-  { title: "My Team Members", href: "/team-members" },
+  { title: "Athlete Evaluation", href: "/app/athlete-evaluation" },
+  { title: "Goal Setting", href: "/app/goal-setting" },
+  { title: "Daily Journal", href: "/app/daily-journal" },
+  { title: "Group Classes", href: "/app/group-classes" },
+  { title: "Messages", href: "/app/messages" },
+  { title: "My Team Members", href: "/app/team-members" },
 ];
 
 export default function AppHeader({ user }: { user: UserType | null }) {
