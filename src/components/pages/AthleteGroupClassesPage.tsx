@@ -138,7 +138,7 @@ const handleJoin = (e: React.MouseEvent, courseId: number) => {
   console.log(`Joining session for course ${courseId}`);
 };
 
-export default function CoachGroupClassesPage() {
+export default function AthleteGroupClassesPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date(2024, 9, 1));
   const today = startOfDay(new Date());
 
@@ -174,37 +174,17 @@ export default function CoachGroupClassesPage() {
       return dateA.getTime() - dateB.getTime();
     });
 
-  const handleCreateNewClass = () => {
-    // Add logic for creating a new class
-    console.log("Creating a new class");
-  };
-
-  const handleViewClassLibrary = () => {
-    // Add logic for viewing class library
-    console.log("Viewing class library");
-  };
-
   return (
     <main className="flex-1">
       <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
         <div className="flex sm:flex-row flex-col justify-between items-center gap-4 mb-6">
           <h1 className="font-bold text-3xl">My Class Sessions</h1>
-          <div className="flex gap-2 sm:gap-4">
-            <Button
-              variant="outline"
-              className="border-green-600 hover:bg-green-600 text-green-600 hover:text-white transition-colors"
-              onClick={handleViewClassLibrary}
-            >
-              View Class Library
-            </Button>
-            <Button
-              variant="outline"
-              className="border-green-600 hover:bg-green-600 text-green-600 hover:text-white transition-colors"
-              onClick={handleCreateNewClass}
-            >
-              Create New Class
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            className="border-green-600 hover:bg-green-600 text-green-600 hover:text-white transition-colors"
+          >
+            See More Group Classes
+          </Button>
         </div>
 
         <div className="flex lg:flex-row flex-col items-start gap-8">
@@ -274,7 +254,6 @@ export default function CoachGroupClassesPage() {
                                 src="/placeholder.svg?height=40&width=40"
                                 alt={course.instructors}
                               />
-
                               <AvatarFallback>
                                 {course.instructors
                                   .split(",")[0]
