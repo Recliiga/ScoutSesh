@@ -5,8 +5,6 @@ import CoachGoalSettingPage from "@/components/pages/CoachGoalSettingPage";
 import AthleteGoalSettingPage from "@/components/pages/AthleteGoalSettingPage";
 
 export default async function GoalSettingPage() {
-  // Sort all athletes by completion date
-
   const { user } = await getSession();
 
   if (!user) return;

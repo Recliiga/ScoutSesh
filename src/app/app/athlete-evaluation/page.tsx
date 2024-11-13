@@ -5,8 +5,6 @@ import CoachAthleteEvaluationPage from "@/components/pages/CoachAthleteEvaluatio
 import UserAthleteEvaluationPage from "@/components/pages/UserAthleteEvaluationPage";
 
 export default async function AthleteEvaluationPage() {
-  // Sort all athletes by completion date
-
   const { user } = await getSession();
 
   if (!user) return;
