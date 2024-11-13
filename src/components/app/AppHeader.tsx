@@ -2,7 +2,7 @@
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
 import React, { useState } from "react";
-import ModalContainer from "./ModalContainer";
+import ModalContainer from "../ModalContainer";
 import AppMobileNav from "./AppMobileNav";
 import { usePathname } from "next/navigation";
 import { BellIcon, UserIcon } from "lucide-react";

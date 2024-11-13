@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { Target, ClipboardCheck, FileText } from "lucide-react";
-import NotificationSign from "./NotificationSign";
-import GoalCard from "./GoalCard";
+import NotificationSign from "../app/NotificationSign";
+import GoalCard from "../app/GoalCard";
 
 export default function AthleteGoalSettingPage() {
   const currentStatus = "needs_reflection";

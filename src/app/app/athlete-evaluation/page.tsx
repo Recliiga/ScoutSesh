@@ -1,8 +1,8 @@
 import React from "react";
 
 import { getSession } from "@/services/authServices";
-import CoachAthleteEvaluationPage from "@/components/CoachAthleteEvaluationPage";
-import UserAthleteEvaluationPage from "@/components/UserAthleteEvaluationPage";
+import CoachAthleteEvaluationPage from "@/components/pages/CoachAthleteEvaluationPage";
+import UserAthleteEvaluationPage from "@/components/pages/UserAthleteEvaluationPage";
 
 export default async function AthleteEvaluationPage() {
   // Sort all athletes by completion date

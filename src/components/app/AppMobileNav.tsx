@@ -1,6 +1,6 @@
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
-import Button from "./LinkButton";
+import Button from "../LinkButton";
 import { usePathname } from "next/navigation";
 import { XIcon } from "lucide-react";
 

@@ -1,8 +1,8 @@
 import React from "react";
 
 import { getSession } from "@/services/authServices";
-import CoachGoalSettingPage from "@/components/CoachGoalSettingPage";
-import AthleteGoalSettingPage from "@/components/AthleteGoalSettingPage";
+import CoachGoalSettingPage from "@/components/pages/CoachGoalSettingPage";
+import AthleteGoalSettingPage from "@/components/pages/AthleteGoalSettingPage";
 
 export default async function GoalSettingPage() {
   // Sort all athletes by completion date

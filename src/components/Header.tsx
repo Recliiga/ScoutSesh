@@ -6,7 +6,7 @@ import ModalContainer from "./ModalContainer";
 import MobileNav from "./MobileNav";
 import { usePathname } from "next/navigation";
 import Button from "./LinkButton";
-import AppHeader from "./AppHeader";
+import AppHeader from "./app/AppHeader";
 
 const navLinks = [
   { title: "Features", href: "/features" },

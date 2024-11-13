@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
 // import ScoutSeshStreak from "./scout-sesh-streak";
-import DashboardCard from "./DashboardCard";
+import DashboardCard from "../app/DashboardCard";
 import { UserType } from "@/db/models/User";
 
 export default function AthleteDashboard({ user }: { user: UserType }) {

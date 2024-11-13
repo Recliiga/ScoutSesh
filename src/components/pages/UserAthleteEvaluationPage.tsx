@@ -1,6 +1,6 @@
 import React from "react";
-import NotificationSign from "./NotificationSign";
-import EvaluationCard from "./EvaluationCard";
+import NotificationSign from "../app/NotificationSign";
+import EvaluationCard from "../app/EvaluationCard";
 import { ClipboardList, FileText } from "lucide-react";
 
 export default function UserAthleteEvaluationPage() {
