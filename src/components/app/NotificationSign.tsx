@@ -41,7 +41,7 @@ export default function NotificationSign({
           Goal Setting Update
         </h2>
       </div>
-      <div className="flex justify-between items-center">
+      <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center">
         <p className="text-gray-800 text-lg">{message}</p>
         <Button
           onClick={action}

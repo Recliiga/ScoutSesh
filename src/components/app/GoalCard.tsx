@@ -30,9 +30,7 @@ export default function GoalCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-grow">
-        <CardDescription className="h-32 overflow-y-auto">
-          {description}
-        </CardDescription>
+        <CardDescription>{description}</CardDescription>
       </CardContent>
       <CardFooter className="mt-auto">
         <Button className="w-full" onClick={onClick}>

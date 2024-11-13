@@ -41,15 +41,15 @@ export default function CoachDashboard({ user }: { user: UserType }) {
   return (
     <main className="flex-grow">
       <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="font-bold text-4xl text-black">
+        <div className="flex sm:flex-row flex-col justify-between items-center gap-2 mb-6">
+          <h1 className="font-bold text-3xl text-black sm:text-4xl">
             Welcome, {user.firstName}!
           </h1>
           <div className="bg-green-100 px-4 py-2 rounded-full font-semibold text-green-800 text-lg">
             {coach.teamMembers} Team Members 🏅
           </div>
         </div>
-        <div className="bg-white shadow-lg mb-12 p-6 rounded-lg">
+        <div className="bg-white shadow-lg mb-12 p-4 sm:p-6 rounded-lg">
           <div className="flex md:flex-row flex-col items-start gap-y-6 md:gap-x-4 md:gap-y-0">
             <div className="w-full md:w-1/2">
               <h2 className="mb-4 font-semibold text-xl">
@@ -81,7 +81,7 @@ export default function CoachDashboard({ user }: { user: UserType }) {
               <UpcomingEvaluations />
             </div>
           </div>
-          <div className="flex justify-between mt-4">
+          <div className="flex sm:flex-row flex-col justify-between gap-4 mt-4">
             <Button variant="outline">All Group Classes</Button>
             <Button variant="outline">See All Evaluations</Button>
           </div>

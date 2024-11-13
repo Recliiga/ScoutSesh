@@ -2,9 +2,9 @@ import React from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
-// import ScoutSeshStreak from "./scout-sesh-streak";
 import DashboardCard from "../app/DashboardCard";
 import { UserType } from "@/db/models/User";
+import ScoutSeshStreak from "../app/ScoutSeshStreak";
 
 export default function AthleteDashboard({ user }: { user: UserType }) {
   // Simulating a signed-in athlete who has not completed the journal
@@ -50,16 +50,11 @@ export default function AthleteDashboard({ user }: { user: UserType }) {
   return (
     <main className="flex-grow">
       <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="font-bold text-4xl text-black">
+        <div className="flex sm:flex-row flex-col justify-between items-center gap-2 mb-6">
+          <h1 className="font-bold text-3xl text-black sm:text-4xl">
             Welcome back, {user.firstName}!
           </h1>
-          <div
-            className="bg-green-100 px-4 py-2 rounded-full font-semibold text-green-800 text-lg"
-            data-id="1"
-          >
-            7 Day ScoutSesh Streak 🔥
-          </div>
+          <ScoutSeshStreak streakCount={7} />
         </div>
         <div className="bg-white shadow-lg mb-12 p-6 rounded-lg">
           <div className="flex md:flex-row flex-col items-start">
@@ -100,7 +95,7 @@ export default function AthleteDashboard({ user }: { user: UserType }) {
               </p>
             </div>
           </div>
-          <div className="flex justify-between mt-6 pt-6 border-t">
+          <div className="flex sm:flex-row flex-col justify-between gap-4 mt-6 pt-6 border-t">
             <Button
               disabled={!isSessionStarted()}
               //   onClick={() => console.log("Joining session...")}

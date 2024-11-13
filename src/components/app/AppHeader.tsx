@@ -113,7 +113,7 @@ export default function AppHeader({ user }: { user: UserType | null }) {
             </svg>
           </button>
           <Link
-            href="/"
+            href="/app"
             className="font-bold text-green-600 text-xl sm:text-2xl"
           >
             ScoutSesh.
