@@ -168,7 +168,7 @@ export default function CompleteAthleteProfileForm({
               <option value="" disabled>
                 Select a role
               </option>
-              <option value={"athlete"}>Athlete</option>
+              <option value={"Athlete"}>Athlete</option>
               <option value={"Assistant Coach"}>Assistant Coach</option>
             </select>
             <div className="right-0 absolute inset-y-0 flex items-center px-2 text-gray-700 pointer-events-none">

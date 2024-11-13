@@ -2,22 +2,21 @@
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
 import React, { useState } from "react";
-import ModalContainer from "./ModalContainer";
-import MobileNav from "./MobileNav";
+import ModalContainer from "../ModalContainer";
+import AppMobileNav from "./AppMobileNav";
 import { usePathname } from "next/navigation";
-import Button from "./LinkButton";
-import AppHeader from "./app/AppHeader";
+import { BellIcon, UserIcon } from "lucide-react";
 
 const navLinks = [
-  { title: "Features", href: "/features" },
-  { title: "For Coaches", href: "/for-coaches" },
-  { title: "For Athletes", href: "/for-athletes" },
-  { title: "About", href: "/about" },
-  { title: "FAQ", href: "/faq" },
-  { title: "Contact", href: "/contact" },
+  { title: "Athlete Evaluation", href: "/app/athlete-evaluation" },
+  { title: "Goal Setting", href: "/app/goal-setting" },
+  { title: "Daily Journal", href: "/app/daily-journal" },
+  { title: "Group Classes", href: "/app/group-classes" },
+  { title: "Messages", href: "/app/messages" },
+  { title: "My Team Members", href: "/app/team-members" },
 ];
 
-export default function Header({ user }: { user: UserType | null }) {
+export default function AppHeader({ user }: { user: UserType | null }) {
   const [mobileNav, setMobileNav] = useState(false);
 
   const pathname = usePathname();
@@ -26,15 +25,13 @@ export default function Header({ user }: { user: UserType | null }) {
     setMobileNav((curr) => !curr);
   }
 
-  if (pathname.includes("/app")) return <AppHeader user={user} />;
-
   return (
     <>
       <header className="flex items-center gap-4 sm:gap-6 px-4 py-3 sm:py-4 border-b">
         <div className="flex items-center gap-4 sm:gap-6 mr-auto">
           <button
             onClick={toggleMobileNav}
-            className="min-[870px]:hidden hover:bg-accent-gray-100 p-1 border rounded-md duration-200"
+            className="lg:hidden hover:bg-accent-gray-100 p-1 border rounded-md duration-200"
           >
             <svg
               height={24}
@@ -116,12 +113,12 @@ export default function Header({ user }: { user: UserType | null }) {
             </svg>
           </button>
           <Link
-            href="/"
+            href="/app"
             className="font-bold text-green-600 text-xl sm:text-2xl"
           >
             ScoutSesh.
           </Link>
-          <nav className="min-[870px]:flex gap-6 hidden">
+          <nav className="lg:flex gap-6 hidden">
             {navLinks.map((navLink) => (
               <Link
                 key={navLink.title}
@@ -135,31 +132,17 @@ export default function Header({ user }: { user: UserType | null }) {
             ))}
           </nav>
         </div>
-        {user ? (
-          <Button href={"/app"} margin="none">
-            Dashboard
-          </Button>
-        ) : (
-          <div className="flex items-center gap-4">
-            <Button href={"/login"} variant="outline" margin="none">
-              Login
-            </Button>
-            <Button
-              href={"/signup"}
-              className="min-[400px]:block hidden"
-              margin="none"
-            >
-              Sign Up
-            </Button>
-          </div>
-        )}
+        <div className="flex items-center space-x-4">
+          <BellIcon className="w-6 h-6 text-muted-foreground hover:text-green-600 cursor-pointer" />
+          <UserIcon className="w-6 h-6 text-muted-foreground hover:text-green-600 cursor-pointer" />
+        </div>
       </header>
       <ModalContainer
         open={mobileNav}
         closeModal={() => setMobileNav(false)}
-        className="min-[870px]:hidden"
+        className="lg:hidden"
       >
-        <MobileNav
+        <AppMobileNav
           user={user}
           open={mobileNav}
           closeModal={() => setMobileNav(false)}

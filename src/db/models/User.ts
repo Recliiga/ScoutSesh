@@ -7,7 +7,7 @@ export interface UserType extends mongoose.Document {
   email: string;
   password: string;
   profilePicture: string;
-  role: "athlete" | "Assistant Coach" | "Head Coach";
+  role: "Athlete" | "Assistant Coach" | "Head Coach";
   DOB: Date;
   location: string;
   primarySport: string;

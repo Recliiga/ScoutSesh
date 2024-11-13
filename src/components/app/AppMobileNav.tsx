@@ -1,19 +1,19 @@
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
-import Button from "./LinkButton";
+import Button from "../LinkButton";
 import { usePathname } from "next/navigation";
 import { XIcon } from "lucide-react";
 
 const navLinks = [
-  { title: "Features", href: "/features" },
-  { title: "For Coaches", href: "/for-coaches" },
-  { title: "For Athletes", href: "/for-athletes" },
-  { title: "About", href: "/about" },
-  { title: "FAQ", href: "/faq" },
-  { title: "Contact", href: "/contact" },
+  { title: "Athlete Evaluation", href: "/app/athlete-evaluation" },
+  { title: "Goal Setting", href: "/app/goal-setting" },
+  { title: "Daily Journal", href: "/app/daily-journal" },
+  { title: "Group Classes", href: "/app/group-classes" },
+  { title: "Messages", href: "/app/messages" },
+  { title: "My Team Members", href: "/app/team-members" },
 ];
 
-export default function MobileNav({
+export default function AppMobileNav({
   open,
   closeModal,
   user,
@@ -26,14 +26,14 @@ export default function MobileNav({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className={`bg-white w-[50%] relative min-w-[16rem] h-full flex flex-col gap-8 p-4 duration-300 text-sm ${
+      className={`bg-white w-[50%] min-w-[16rem] relative max-w-[24rem] h-full flex flex-col gap-8 p-4 duration-300 text-sm ${
         open ? "translate-x-0" : "-translate-x-[100%]"
       }`}
     >
       <Link
-        href="/"
+        href="/app"
         onClick={closeModal}
-        className="font-bold text-green-600 text-xl sm:text-2xl"
+        className="w-fit font-bold text-green-600 text-xl sm:text-2xl"
       >
         ScoutSesh.
       </Link>
