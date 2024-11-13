@@ -3,6 +3,7 @@ import DashboardCard from "@/components/DashboardCard";
 import UpcomingEvaluations from "@/components/UpcomingEvaluations";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { UserType } from "@/db/models/User";
 
 const attendingPlayers = [
   { name: "Alex", photo: "/placeholder-profile-picture.png" },
@@ -36,20 +37,20 @@ const coach = {
   nextSessionEndTime: "3:30 PM",
 };
 
-export default function CoachDashboard() {
+export default function CoachDashboard({ user }: { user: UserType }) {
   return (
     <main className="flex-grow">
       <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
         <div className="flex justify-between items-center mb-6">
           <h1 className="font-bold text-4xl text-black">
-            Welcome, {coach.name}!
+            Welcome, {user.firstName}!
           </h1>
           <div className="bg-green-100 px-4 py-2 rounded-full font-semibold text-green-800 text-lg">
             {coach.teamMembers} Team Members 🏅
           </div>
         </div>
         <div className="bg-white shadow-lg mb-12 p-6 rounded-lg">
-          <div className="flex md:flex-row flex-col items-start md:space-x-4 space-y-6 md:space-y-0">
+          <div className="flex md:flex-row flex-col items-start gap-y-6 md:gap-x-4 md:gap-y-0">
             <div className="w-full md:w-1/2">
               <h2 className="mb-4 font-semibold text-xl">
                 Your Next Coaching Session

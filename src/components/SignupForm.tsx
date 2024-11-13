@@ -133,7 +133,7 @@ export default function SignupForm() {
               required
             >
               <option disabled>Select a role</option>
-              <option value={"athlete"}>Athlete</option>
+              <option value={"Athlete"}>Athlete</option>
               <option value={"Head Coach"}>Head Coach</option>
               <option value={"Assistant Coach"}>Assistant Coach</option>
             </select>
