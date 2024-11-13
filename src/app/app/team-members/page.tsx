@@ -2,6 +2,7 @@ import React from "react";
 
 import { getSession } from "@/services/authServices";
 import CoachTeamMembersPage from "@/components/pages/CoachTeamMembersPage";
+import AthleteTeamMembersPage from "@/components/pages/AthleteTeamMembersPage copy";
 
 export default async function TeamMembersPage() {
   const { user } = await getSession();
@@ -9,7 +10,7 @@ export default async function TeamMembersPage() {
   if (!user) return;
 
   if (user.role === "Athlete") {
-    return null;
+    return <AthleteTeamMembersPage />;
   }
 
   return <CoachTeamMembersPage />;
