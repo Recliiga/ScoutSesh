@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "../ui/button";
 import {
   Card,
@@ -13,13 +14,13 @@ export default function GoalCard({
   description,
   icon,
   actionText,
-  onClick,
+  href,
 }: {
   title: string;
   description: string;
   icon: React.ReactElement;
   actionText: string;
-  onClick: () => void;
+  href: string;
 }) {
   return (
     <Card className="flex flex-col w-full h-full">
@@ -33,8 +34,8 @@ export default function GoalCard({
         <CardDescription>{description}</CardDescription>
       </CardContent>
       <CardFooter className="mt-auto">
-        <Button className="w-full" onClick={onClick}>
-          {actionText}
+        <Button className="w-full">
+          <Link href={href}>{actionText}</Link>
         </Button>
       </CardFooter>
     </Card>

@@ -1,12 +1,15 @@
+import Link from "next/link";
 import { Button } from "../ui/button";
 
 export default function DashboardCard({
   title,
   description,
+  href,
   action = "View Details",
 }: {
   title: string;
   description: string;
+  href: string;
   action?: string;
 }) {
   return (
@@ -14,7 +17,7 @@ export default function DashboardCard({
       <h3 className="mb-2 font-semibold text-green-600 text-xl">{title}</h3>
       <p className="mb-4 text-gray-600">{description}</p>
       <Button variant="outline" className="mt-auto">
-        {action}
+        <Link href={href}>{action}</Link>
       </Button>
     </div>
   );
