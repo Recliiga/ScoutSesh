@@ -4,7 +4,8 @@ import { getSession } from "./services/authServices";
 export async function middleware(request: NextRequest) {
   const { pathname } = new URL(request.url);
   const { user } = await getSession();
-  if (pathname === "/app") {
+  console.log(pathname);
+  if (pathname.startsWith("/app")) {
     if (user) {
       if (!user.DOB && !user.organization) {
         return NextResponse.redirect(new URL("/complete-profile", request.url));
@@ -27,5 +28,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config: MiddlewareConfig = {
-  matcher: ["/login", "/signup", "/app", "/complete-profile"],
+  matcher: ["/login", "/signup", "/app/:path*", "/complete-profile"],
 };
