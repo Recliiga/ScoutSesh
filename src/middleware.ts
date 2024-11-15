@@ -10,7 +10,9 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/complete-profile", request.url));
       }
     } else {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(
+        new URL(`/login?redirect=${pathname}`, request.url)
+      );
     }
   } else if (pathname === "/login" || pathname === "/signup") {
     if (user) return NextResponse.redirect(new URL("/app", request.url));
@@ -19,7 +21,9 @@ export async function middleware(request: NextRequest) {
       if (user?.DOB || user.organization)
         return NextResponse.redirect(new URL("/app", request.url));
     } else {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(
+        new URL(`/login?redirect=${pathname}`, request.url)
+      );
     }
   }
 
