@@ -91,14 +91,17 @@ export default function CoachDashboard({ user }: { user: UserType }) {
           <DashboardCard
             title="Athlete Evaluation"
             description="Review and update your latest athlete performance assessments. Track progress and identify areas for improvement."
+            href="/app/athlete-evaluation"
           />
           <DashboardCard
             title="Goal Setting"
             description="Set and manage individual and team goals. Monitor progress and adjust strategies for optimal performance."
+            href="#"
           />
           <DashboardCard
             title="Team Members"
             description="View and manage your team roster. Access detailed profiles and performance metrics for each player."
+            href="#"
           />
         </div>
       </div>
