@@ -151,7 +151,10 @@ export default function GoalDetailsScreen({
                     max={10}
                     placeholder="Rate your confidence from 0 to 10"
                     value={goal.confidence}
-                    onChange={(e) => handleChange(e, index, "confidence")}
+                    onChange={(e) => {
+                      if (Number(e.target.value) > 10) return;
+                      handleChange(e, index, "confidence");
+                    }}
                   />
                 </div>
               </CardContent>

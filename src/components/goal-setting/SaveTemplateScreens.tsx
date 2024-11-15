@@ -3,6 +3,10 @@ import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { GoalDataType } from "@/app/app/goal-setting/new/page";
+import { useState } from "react";
+import LoadingIndicator from "../LoadingIndicator";
+import { createGoal } from "@/actions/goalActions";
+import AuthError from "../AuthError";
 
 export default function SaveTemplateScreen({
   goalData,
@@ -15,16 +19,22 @@ export default function SaveTemplateScreen({
   goalName: string;
   setGoalName: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const currentDate = new Date().toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
   });
 
-  const handleSaveGoal = () => {
-    console.log({ newGoal: goalData });
-    setCurrentScreen("congratulations");
-  };
+  async function handleSaveGoal() {
+    setLoading(true);
+
+    const { error: saveError } = await createGoal(goalData);
+    if (!saveError) setCurrentScreen("congratulations");
+    setError(saveError);
+    setLoading(false);
+  }
 
   return (
     <div className="flex flex-col mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
@@ -53,6 +63,7 @@ export default function SaveTemplateScreen({
                   maxLength={50}
                 />
               </div>
+              {error && <AuthError error={error} />}
               <div className="space-y-2 mt-4">
                 <Label htmlFor="template-date" className="font-semibold">
                   Date
@@ -75,9 +86,16 @@ export default function SaveTemplateScreen({
         <Button
           className="bg-green-600 text-white"
           onClick={handleSaveGoal}
-          disabled={!goalName.trim()}
+          disabled={!goalName.trim() || loading}
         >
-          Save Submission
+          {loading ? (
+            <>
+              <LoadingIndicator />
+              Saving...
+            </>
+          ) : (
+            "Save Submission"
+          )}
         </Button>
       </div>
     </div>
