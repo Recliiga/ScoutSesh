@@ -2,37 +2,19 @@ import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 
-type GoalDetailsType = {
+export type GoalDetailsType = {
   aspiration: string;
   strengths: string;
   weaknesses: string;
 };
 
-type GoalType = {
-  goal: string;
-  actions: string;
-  location: string;
-  frequency: string;
-  confidence: string;
-};
-
-export type GoalDataType = {
-  goalDetails: GoalDetailsType;
-  goals: GoalType[];
-};
-
 export default function GoalOverviewScreen({
-  updateGoalData,
-  goalData,
+  setGoalDetails,
+  goalDetails,
   setCurrentScreen,
 }: {
-  updateGoalData: (
-    section: "goalDetails" | "goals",
-    field: string,
-    value: string,
-    index?: number | null
-  ) => void;
-  goalData: GoalDataType;
+  setGoalDetails: React.Dispatch<React.SetStateAction<GoalDetailsType>>;
+  goalDetails: GoalDetailsType;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
 }) {
   return (
@@ -59,9 +41,12 @@ export default function GoalOverviewScreen({
             <Textarea
               className="w-full"
               placeholder="Reflect on your long-term vision. Where do you see yourself in the future?"
-              value={goalData.goalDetails.aspiration}
+              value={goalDetails.aspiration}
               onChange={(e) =>
-                updateGoalData("goalDetails", "aspiration", e.target.value)
+                setGoalDetails((curr) => ({
+                  ...curr,
+                  aspiration: e.target.value,
+                }))
               }
             />
           </div>
@@ -72,9 +57,12 @@ export default function GoalOverviewScreen({
             <Textarea
               className="w-full"
               placeholder="Identify the skills, qualities, and experiences that set you apart."
-              value={goalData.goalDetails.strengths}
+              value={goalDetails.strengths}
               onChange={(e) =>
-                updateGoalData("goalDetails", "strengths", e.target.value)
+                setGoalDetails((curr) => ({
+                  ...curr,
+                  strengths: e.target.value,
+                }))
               }
             />
           </div>
@@ -85,9 +73,12 @@ export default function GoalOverviewScreen({
             <Textarea
               className="w-full"
               placeholder="Recognize areas where you can improve to reach your full potential."
-              value={goalData.goalDetails.weaknesses}
+              value={goalDetails.weaknesses}
               onChange={(e) =>
-                updateGoalData("goalDetails", "weaknesses", e.target.value)
+                setGoalDetails((curr) => ({
+                  ...curr,
+                  weaknesses: e.target.value,
+                }))
               }
             />
           </div>
@@ -97,6 +88,11 @@ export default function GoalOverviewScreen({
         <Button
           className="bg-green-500 ml-auto text-white"
           onClick={() => setCurrentScreen("goal-details")}
+          disabled={
+            !goalDetails.aspiration ||
+            !goalDetails.strengths ||
+            !goalDetails.weaknesses
+          }
         >
           Next: Set Your Goals
         </Button>

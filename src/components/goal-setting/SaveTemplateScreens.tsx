@@ -1,31 +1,28 @@
-import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { GoalDataType } from "./GoalOverviewScreen";
+import { GoalDataType } from "@/app/app/goal-setting/new/page";
 
 export default function SaveTemplateScreen({
   goalData,
   setCurrentScreen,
+  goalName,
+  setGoalName,
 }: {
   goalData: GoalDataType;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
+  goalName: string;
+  setGoalName: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const [templateName, setTemplateName] = useState("");
-
   const currentDate = new Date().toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
   });
 
-  const handleSaveTemplate = () => {
-    console.log("Saving template:", {
-      name: templateName,
-      date: new Date().toLocaleDateString(),
-      goals: goalData,
-    });
+  const handleSaveGoal = () => {
+    console.log({ newGoal: goalData });
     setCurrentScreen("congratulations");
   };
 
@@ -50,8 +47,8 @@ export default function SaveTemplateScreen({
                 <Label htmlFor="submission-name">Submission Name</Label>
                 <Input
                   id="submission-name"
-                  value={templateName}
-                  onChange={(e) => setTemplateName(e.target.value)}
+                  value={goalName}
+                  onChange={(e) => setGoalName(e.target.value)}
                   placeholder="Enter a name for your submission"
                   maxLength={50}
                 />
@@ -77,8 +74,8 @@ export default function SaveTemplateScreen({
         </Button>
         <Button
           className="bg-green-600 text-white"
-          onClick={handleSaveTemplate}
-          disabled={!templateName.trim()}
+          onClick={handleSaveGoal}
+          disabled={!goalName.trim()}
         >
           Save Submission
         </Button>

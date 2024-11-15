@@ -1,29 +1,56 @@
+import React from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
-import { GoalDataType } from "./GoalOverviewScreen";
+import { XCircle } from "lucide-react";
+
+export type GoalType = {
+  goal: string;
+  actions: string;
+  location: string;
+  frequency: string;
+  confidence: string;
+};
 
 export default function GoalDetailsScreen({
-  updateGoalData,
-  goalData,
+  setGoals,
+  goals,
   setCurrentScreen,
-  addGoal,
 }: {
-  updateGoalData: (
-    section: "goalDetails" | "goals",
-    field: string,
-    value: string,
-    index?: number | null
-  ) => void;
-  goalData: GoalDataType;
+  setGoals: React.Dispatch<React.SetStateAction<GoalType[]>>;
+  goals: GoalType[];
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
-  addGoal: () => void;
 }) {
   const handleSubmitGoals = () => {
     setCurrentScreen("save-template");
   };
+
+  function addGoal() {
+    setGoals((prevGoals) => [
+      ...prevGoals,
+      { actions: "", confidence: "", frequency: "", goal: "", location: "" },
+    ]);
+  }
+
+  function removeGoal(index: number) {
+    setGoals((prevGoals) => prevGoals.filter((_, i) => i !== index));
+  }
+
+  function handleChange(
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+    index: number,
+    fieldName: keyof GoalType
+  ) {
+    setGoals((prevGoals) => {
+      const updatedGoal = [...prevGoals];
+      updatedGoal[index][fieldName] = e.target.value;
+      return updatedGoal;
+    });
+  }
+
+  const lastGoal = goals.at(-1);
 
   return (
     <div className="flex flex-col mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
@@ -43,10 +70,15 @@ export default function GoalDetailsScreen({
           </ul>
         </div>
         <div className="flex flex-col flex-1 gap-4 sm:gap-6">
-          {goalData.goals.map((goal, index) => (
+          {goals.map((goal, index) => (
             <Card key={index}>
-              <CardHeader>
+              <CardHeader className="flex flex-row justify-between items-center">
                 <CardTitle>Goal #{index + 1}</CardTitle>
+                {index > 0 && (
+                  <button className="p-1" onClick={() => removeGoal(index)}>
+                    <XCircle />
+                  </button>
+                )}
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -60,9 +92,7 @@ export default function GoalDetailsScreen({
                     id={`goal-${index}`}
                     placeholder="Define your goal in clear, specific terms. Make sure it's measurable and has a deadline."
                     value={goal.goal}
-                    onChange={(e) =>
-                      updateGoalData("goals", "goal", e.target.value, index)
-                    }
+                    onChange={(e) => handleChange(e, index, "goal")}
                   />
                 </div>
                 <div>
@@ -76,9 +106,7 @@ export default function GoalDetailsScreen({
                     id={`actions-${index}`}
                     placeholder="List the specific actions or steps you'll take to achieve your goal."
                     value={goal.actions}
-                    onChange={(e) =>
-                      updateGoalData("goals", "actions", e.target.value, index)
-                    }
+                    onChange={(e) => handleChange(e, index, "actions")}
                   />
                 </div>
                 <div>
@@ -92,9 +120,7 @@ export default function GoalDetailsScreen({
                     id={`location-${index}`}
                     placeholder="Identify specific locations where you'll work towards your goal."
                     value={goal.location}
-                    onChange={(e) =>
-                      updateGoalData("goals", "location", e.target.value, index)
-                    }
+                    onChange={(e) => handleChange(e, index, "location")}
                   />
                 </div>
                 <div>
@@ -108,14 +134,7 @@ export default function GoalDetailsScreen({
                     id={`frequency-${index}`}
                     placeholder="Specify the frequency of your efforts towards this goal."
                     value={goal.frequency}
-                    onChange={(e) =>
-                      updateGoalData(
-                        "goals",
-                        "frequency",
-                        e.target.value,
-                        index
-                      )
-                    }
+                    onChange={(e) => handleChange(e, index, "frequency")}
                   />
                 </div>
                 <div>
@@ -132,21 +151,25 @@ export default function GoalDetailsScreen({
                     max={10}
                     placeholder="Rate your confidence from 0 to 10"
                     value={goal.confidence}
-                    onChange={(e) =>
-                      updateGoalData(
-                        "goals",
-                        "confidence",
-                        e.target.value,
-                        index
-                      )
-                    }
+                    onChange={(e) => handleChange(e, index, "confidence")}
                   />
                 </div>
               </CardContent>
             </Card>
           ))}
-          {goalData.goals.length < 3 && (
-            <Button onClick={addGoal}>Add another Goal</Button>
+          {goals.length < 3 && (
+            <Button
+              onClick={addGoal}
+              disabled={
+                !lastGoal?.actions ||
+                !lastGoal.confidence ||
+                !lastGoal.frequency ||
+                !lastGoal.goal ||
+                !lastGoal.location
+              }
+            >
+              Add another Goal
+            </Button>
           )}
         </div>
       </div>
@@ -157,7 +180,17 @@ export default function GoalDetailsScreen({
         >
           Back
         </Button>
-        <Button className="bg-green-500 text-white" onClick={handleSubmitGoals}>
+        <Button
+          className="bg-green-500 text-white"
+          onClick={handleSubmitGoals}
+          disabled={
+            !lastGoal?.actions ||
+            !lastGoal.confidence ||
+            !lastGoal.frequency ||
+            !lastGoal.goal ||
+            !lastGoal.location
+          }
+        >
           Submit Your Goals
         </Button>
       </div>

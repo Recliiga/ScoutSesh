@@ -1,87 +1,65 @@
 "use client";
-import React, { useState, useCallback } from "react";
-import GoalOverviewScreen from "@/components/goal-setting/GoalOverviewScreen";
-import GoalDetailsScreen from "@/components/goal-setting/GoalDetailsScreen";
+import React, { useState } from "react";
+import GoalOverviewScreen, {
+  GoalDetailsType,
+} from "@/components/goal-setting/GoalOverviewScreen";
+import GoalDetailsScreen, {
+  GoalType,
+} from "@/components/goal-setting/GoalDetailsScreen";
 import SaveTemplateScreen from "@/components/goal-setting/SaveTemplateScreens";
 import CongratulationsScreen from "@/components/goal-setting/CongratulationsScreen";
 
+export type GoalDataType = {
+  name: string;
+  details: GoalDetailsType;
+  goals: GoalType[];
+};
+
 export default function PlayerGoalSetting() {
   const [currentScreen, setCurrentScreen] = useState("goal-overview");
-  const [goalData, setGoalData] = useState({
-    goalDetails: {
-      aspiration: "",
-      strengths: "",
-      weaknesses: "",
-    },
-    goals: [
-      {
-        goal: "",
-        actions: "",
-        location: "",
-        frequency: "",
-        confidence: "",
-      },
-    ],
+  const [goalName, setGoalName] = useState("");
+  const [goalDetails, setGoalDetails] = useState<GoalDetailsType>({
+    aspiration: "",
+    strengths: "",
+    weaknesses: "",
   });
-
-  const updateGoalData = useCallback(
-    (
-      section: keyof typeof goalData,
-      field: string,
-      value: string,
-      index: number | null = null
-    ) => {
-      setGoalData((prevData) => {
-        if (index !== null) {
-          const newGoals = [...prevData.goals];
-          newGoals[index] = { ...newGoals[index], [field]: value };
-          return { ...prevData, goals: newGoals };
-        }
-        return {
-          ...prevData,
-          [section]: { ...prevData[section], [field]: value },
-        };
-      });
+  const [goals, setGoals] = useState<GoalType[]>([
+    {
+      goal: "",
+      actions: "",
+      location: "",
+      frequency: "",
+      confidence: "",
     },
-    []
-  );
+  ]);
 
-  const addGoal = useCallback(() => {
-    setGoalData((prevData) => ({
-      ...prevData,
-      goals: [
-        ...prevData.goals,
-        {
-          goal: "",
-          actions: "",
-          location: "",
-          frequency: "",
-          confidence: "",
-        },
-      ],
-    }));
-  }, []);
+  const goalData: GoalDataType = {
+    name: goalName,
+    details: goalDetails,
+    goals,
+  };
 
   return (
     <main className="flex flex-1">
       {currentScreen === "goal-overview" && (
         <GoalOverviewScreen
-          updateGoalData={updateGoalData}
-          goalData={goalData}
+          setGoalDetails={setGoalDetails}
+          goalDetails={goalDetails}
           setCurrentScreen={setCurrentScreen}
         />
       )}
       {currentScreen === "goal-details" && (
         <GoalDetailsScreen
-          updateGoalData={updateGoalData}
-          goalData={goalData}
+          setGoals={setGoals}
+          goals={goals}
           setCurrentScreen={setCurrentScreen}
-          addGoal={addGoal}
         />
       )}
       {currentScreen === "save-template" && (
         <SaveTemplateScreen
           goalData={goalData}
+          goalName={goalName}
+          setGoalName={setGoalName}
           setCurrentScreen={setCurrentScreen}
         />
       )}
