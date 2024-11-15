@@ -35,7 +35,7 @@ export default function AthleteGoalSettingPage() {
             description="Review your past goal setting submissions and track your progress over time. Analyze your growth and celebrate your achievements."
             icon={<FileText className="w-6 h-6 text-green-600" />}
             actionText="View Submissions"
-            href={"/app/goal-setting#"}
+            href={"/app/goal-setting/submissions"}
           />
         </div>
       </div>

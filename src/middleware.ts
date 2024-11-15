@@ -4,7 +4,6 @@ import { getSession } from "./services/authServices";
 export async function middleware(request: NextRequest) {
   const { pathname } = new URL(request.url);
   const { user } = await getSession();
-  console.log(pathname);
   if (pathname.startsWith("/app")) {
     if (user) {
       if (!user.DOB && !user.organization) {

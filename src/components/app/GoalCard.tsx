@@ -34,8 +34,10 @@ export default function GoalCard({
         <CardDescription>{description}</CardDescription>
       </CardContent>
       <CardFooter className="mt-auto">
-        <Button className="w-full">
-          <Link href={href}>{actionText}</Link>
+        <Button className="px-0 py-0 w-full">
+          <Link href={href} className="flex-center w-full h-full">
+            {actionText}
+          </Link>
         </Button>
       </CardFooter>
     </Card>
