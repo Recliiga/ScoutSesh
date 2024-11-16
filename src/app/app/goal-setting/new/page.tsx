@@ -9,7 +9,7 @@ import GoalDetailsScreen, {
 import SaveTemplateScreen from "@/components/goal-setting/SaveTemplateScreens";
 import CongratulationsScreen from "@/components/goal-setting/CongratulationsScreen";
 
-export type GoalDataType = {
+export type GoalSubmissionType = {
   name: string;
   details: GoalDetailsType;
   goals: GoalType[];
@@ -34,7 +34,7 @@ export default function PlayerGoalSetting() {
     },
   ]);
 
-  const goalData: GoalDataType = {
+  const goalData: GoalSubmissionType = {
     name: goalName,
     details: goalDetails,
     goals,

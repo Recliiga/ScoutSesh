@@ -1,21 +1,21 @@
-import { GoalDataType } from "@/app/app/goal-setting/new/page";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import { GoalType } from "../goal-setting/GoalDetailsScreen";
 
 export default function ReflectionOverviewScreen({
   setCurrentScreen,
-  goalData,
+  goals,
 }: {
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
-  goalData: GoalDataType;
+  goals: GoalType[];
 }) {
   return (
     <div className="flex flex-col mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
       <div className="flex gap-8 w-full">
         <div className="flex-1">
           <div className="mb-4 text-muted-foreground text-sm">
-            1/{goalData.goals.length + 2} Weekly Reflection
+            1/{goals.length + 2} Weekly Reflection
           </div>
           <h1 className="mb-4 font-bold text-3xl">
             Let&apos;s reflect on your progress
@@ -32,8 +32,8 @@ export default function ReflectionOverviewScreen({
               <CardTitle>Your Goals</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-4">
-                {goalData.goals.map((goal, index) => (
+              <ul className="flex flex-col gap-4">
+                {goals.map((goal, index) => (
                   <li key={index} className="flex justify-between items-center">
                     <span>
                       Goal #{index + 1}: {goal.goal}

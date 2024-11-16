@@ -12,11 +12,12 @@ import {
   Zap,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { ReflectionType } from "@/app/app/goal-setting/weekly-reflection/page";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import ConfidenceMeter from "./ConfidenceMeter";
 import { Button } from "../ui/button";
-import { GoalDataType } from "@/app/app/goal-setting/new/page";
+import { GoalType } from "../goal-setting/GoalDetailsScreen";
+import { ReflectionDataType } from "./WeeklyReflectionForm";
+import LoadingIndicator from "../LoadingIndicator";
 
 export default function ReflectionGoalScreen({
   goalIndex,
@@ -28,10 +29,11 @@ export default function ReflectionGoalScreen({
   setCurrentScreen,
   isFormValid,
   setShowError,
-  goalData,
+  goals,
+  loading,
 }: {
   goalIndex: number;
-  reflectionData: ReflectionType[];
+  reflectionData: ReflectionDataType[];
   updateReflectionData: (
     goalIndex: number,
     field: string,
@@ -43,17 +45,17 @@ export default function ReflectionGoalScreen({
   isFormValid(goalIndex: number): boolean;
   setShowError: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
-  goalData: GoalDataType;
+  goals: GoalType[];
+  loading: boolean;
 }) {
-  const goal = goalData.goals[goalIndex];
-  const isCompleted =
-    reflectionData[goalIndex].isCompleted || goal.dateCompleted !== null;
+  const goal = goals[goalIndex];
+  const isCompleted = reflectionData[goalIndex].reflection.isCompleted;
 
   return (
     <div className="flex flex-col flex-1 mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
       <div className="mb-8">
         <div className="mb-2 text-muted-foreground text-sm">
-          {goalIndex + 2}/{goalData.goals.length + 2} Weekly Reflection
+          {goalIndex + 2}/{goals.length + 2} Weekly Reflection
         </div>
         <h1 className="mb-4 font-bold text-4xl">
           Reflect on Goal #{goalIndex + 1}
@@ -119,7 +121,7 @@ export default function ReflectionGoalScreen({
                 <Textarea
                   id={`improvement-${goalIndex}`}
                   placeholder="Evaluate the effectiveness of your current approach. Consider what adjustments might help you achieve your goal more efficiently, or if your current strategy is working well."
-                  value={reflectionData[goalIndex].improvement}
+                  value={reflectionData[goalIndex].reflection.improvement}
                   onChange={(e) =>
                     updateReflectionData(
                       goalIndex,
@@ -141,7 +143,7 @@ export default function ReflectionGoalScreen({
                 <Textarea
                   id={`completion-${goalIndex}`}
                   placeholder="Assess your progress honestly. If you didn't fully meet your goal, explain your current status and any partial achievements."
-                  value={reflectionData[goalIndex].completion}
+                  value={reflectionData[goalIndex].reflection.completion}
                   onChange={(e) =>
                     updateReflectionData(
                       goalIndex,
@@ -212,7 +214,7 @@ export default function ReflectionGoalScreen({
           className="bg-primary text-primary-foreground"
           onClick={() => {
             if (isFormValid(goalIndex)) {
-              if (goalIndex < goalData.goals.length - 1) {
+              if (goalIndex < goals.length - 1) {
                 setCurrentScreen(`reflection-goal-${goalIndex + 2}`);
               } else {
                 handleSubmitReflection();
@@ -221,12 +223,17 @@ export default function ReflectionGoalScreen({
               setShowError(true);
             }
           }}
-          disabled={!isFormValid(goalIndex)}
+          disabled={loading || !isFormValid(goalIndex)}
         >
-          {goalIndex < goalData.goals.length - 1 ? (
+          {goalIndex < goals.length - 1 ? (
             <>
               Next Goal
               <ChevronRightIcon className="ml-2 w-4 h-4" />
+            </>
+          ) : loading ? (
+            <>
+              <LoadingIndicator />
+              Submitting...
             </>
           ) : (
             "Submit Reflection"

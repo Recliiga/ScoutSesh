@@ -7,7 +7,6 @@ export async function middleware(request: NextRequest) {
   const { user } = await getSession();
 
   if (pathname === "/app/goal-setting/new") {
-    console.log(pathname);
     if (!user) {
       return NextResponse.redirect(
         new URL(`/login?redirect=${pathname}`, request.url)

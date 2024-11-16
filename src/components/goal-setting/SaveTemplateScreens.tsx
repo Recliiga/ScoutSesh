@@ -2,7 +2,7 @@ import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { GoalDataType } from "@/app/app/goal-setting/new/page";
+import { GoalSubmissionType } from "@/app/app/goal-setting/new/page";
 import { useState } from "react";
 import LoadingIndicator from "../LoadingIndicator";
 import { createGoal } from "@/actions/goalActions";
@@ -14,7 +14,7 @@ export default function SaveTemplateScreen({
   goalName,
   setGoalName,
 }: {
-  goalData: GoalDataType;
+  goalData: GoalSubmissionType;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
   goalName: string;
   setGoalName: React.Dispatch<React.SetStateAction<string>>;
