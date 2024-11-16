@@ -50,6 +50,10 @@ const GoalSchema: mongoose.Schema = new mongoose.Schema(
           type: String,
           required: [true, "Please enter your confidence level"],
         },
+        dateCompleted: {
+          type: String,
+          default: null,
+        },
       },
     ],
     user: { type: mongoose.SchemaTypes.ObjectId, ref: "User" },

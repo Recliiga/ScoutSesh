@@ -30,6 +30,7 @@ export default function PlayerGoalSetting() {
       location: "",
       frequency: "",
       confidence: "",
+      dateCompleted: null,
     },
   ]);
 

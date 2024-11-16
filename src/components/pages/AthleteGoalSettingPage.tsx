@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Target, ClipboardCheck, FileText } from "lucide-react";
 import NotificationSign from "../app/NotificationSign";
@@ -28,7 +29,7 @@ export default function AthleteGoalSettingPage() {
             description="Reflect on your progress, identify challenges, and adjust your goals as needed. Regular reflection helps you stay on track and make necessary improvements."
             icon={<ClipboardCheck className="w-6 h-6 text-green-600" />}
             actionText="Start Reflection"
-            href={"/app/goal-setting#"}
+            href={"/app/goal-setting/weekly-reflection"}
           />
           <GoalCard
             title="View Goal Setting Submissions"

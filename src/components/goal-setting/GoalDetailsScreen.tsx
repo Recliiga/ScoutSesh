@@ -12,6 +12,7 @@ export type GoalType = {
   location: string;
   frequency: string;
   confidence: string;
+  dateCompleted: string | null;
 };
 
 export default function GoalDetailsScreen({
@@ -30,7 +31,14 @@ export default function GoalDetailsScreen({
   function addGoal() {
     setGoals((prevGoals) => [
       ...prevGoals,
-      { actions: "", confidence: "", frequency: "", goal: "", location: "" },
+      {
+        actions: "",
+        confidence: "",
+        frequency: "",
+        goal: "",
+        location: "",
+        dateCompleted: null,
+      },
     ]);
   }
 
