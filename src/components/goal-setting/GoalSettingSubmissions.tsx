@@ -16,6 +16,8 @@ import {
 import { Button } from "../ui/button";
 import { CalendarIcon, ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
+import { GoalSchemaType } from "@/db/models/Goal";
+import { UserType } from "@/db/models/User";
 
 export type GoalSettingSubmissionType = {
   id: number;
@@ -33,25 +35,31 @@ export type GoalSettingSubmissionType = {
 
 export default function GoalSettingSubmissions({
   goalSettingSubmissions,
+  user,
 }: {
-  goalSettingSubmissions: GoalSettingSubmissionType[];
+  goalSettingSubmissions: GoalSchemaType[];
+  user: UserType;
 }) {
   const mostRecentSubmission = goalSettingSubmissions.reduce((prev, current) =>
-    new Date(current.date) > new Date(prev.date) ? current : prev
+    new Date(current.createdAt) > new Date(prev.createdAt) ? current : prev
   );
-  const [openSubmission, setOpenSubmission] = useState<number | null>(
-    mostRecentSubmission.id
+  const [openSubmission, setOpenSubmission] = useState<string | null>(
+    mostRecentSubmission._id as string
   );
+
+  const athleteName = user.firstName + " " + user.lastName;
 
   return (
     <div className="space-y-4">
       {goalSettingSubmissions.map((submission) => (
         <Collapsible
-          key={submission.id}
-          open={openSubmission === submission.id}
+          key={submission._id as string}
+          open={openSubmission === submission._id}
           onOpenChange={() =>
             setOpenSubmission(
-              openSubmission === submission.id ? null : submission.id
+              openSubmission === (submission._id as string)
+                ? null
+                : (submission._id as string)
             )
           }
         >
@@ -60,12 +68,9 @@ export default function GoalSettingSubmissions({
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-3">
                   <Avatar className="w-10 h-10">
-                    <AvatarImage
-                      src={submission.coachAvatar}
-                      alt={submission.coachName}
-                    />
+                    <AvatarImage src={user.profilePicture} alt={athleteName} />
                     <AvatarFallback>
-                      {submission.coachName
+                      {athleteName
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
@@ -74,15 +79,21 @@ export default function GoalSettingSubmissions({
                   <div className="flex items-center space-x-2 text-gray-500 text-sm">
                     <CalendarIcon className="w-4 h-4" />
                     <span>
-                      {new Date(submission.date).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                      {new Date(submission.createdAt).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div
+                  className="flex items-center space-x-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm">
@@ -95,7 +106,7 @@ export default function GoalSettingSubmissions({
                       </DialogHeader>
                       <div className="mt-2">
                         <p className="mb-2 text-gray-500 text-sm">
-                          {new Date(submission.date).toLocaleDateString(
+                          {new Date(submission.createdAt).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -105,12 +116,12 @@ export default function GoalSettingSubmissions({
                           )}
                         </p>
                         <p className="text-gray-700 text-sm">
-                          {submission.content}
+                          {submission.goal}
                         </p>
                       </div>
                     </DialogContent>
                   </Dialog>
-                  {openSubmission === submission.id ? (
+                  {openSubmission === submission._id ? (
                     <ChevronDownIcon className="w-5 h-5 text-gray-400" />
                   ) : (
                     <ChevronRightIcon className="w-5 h-5 text-gray-400" />
@@ -126,17 +137,17 @@ export default function GoalSettingSubmissions({
                   Weekly Reflections
                 </h3>
                 <ul className="space-y-3">
-                  {submission.weeklyReflections.map((reflection) => (
+                  {submission.weeklyReflections.map((reflection, index) => (
                     <li
-                      key={reflection.id}
+                      key={reflection._id as string}
                       className="flex justify-between items-center bg-white shadow-sm p-3 rounded-md"
                     >
                       <span className="font-medium text-gray-900 text-sm">
-                        {reflection.title}
+                        {`Week${index + 1} Reflection`}
                       </span>
                       <div className="flex items-center space-x-4">
                         <span className="text-gray-500 text-sm">
-                          {new Date(reflection.date).toLocaleDateString(
+                          {new Date(reflection.createdAt).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -153,21 +164,22 @@ export default function GoalSettingSubmissions({
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>
-                              <DialogTitle>{reflection.title}</DialogTitle>
+                              <DialogTitle>{`Week${
+                                index + 1
+                              } Reflection`}</DialogTitle>
                             </DialogHeader>
                             <div className="mt-2">
                               <p className="mb-2 text-gray-500 text-sm">
-                                {new Date(reflection.date).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                  }
-                                )}
+                                {new Date(
+                                  reflection.createdAt
+                                ).toLocaleDateString("en-US", {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                })}
                               </p>
                               <p className="text-gray-700 text-sm">
-                                {reflection.content}
+                                {reflection.improvement}
                               </p>
                             </div>
                           </DialogContent>
