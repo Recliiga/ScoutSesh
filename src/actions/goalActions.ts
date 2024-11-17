@@ -60,7 +60,7 @@ export async function performWeeklyReflection(
         reflectionData[index].reflection as WeeklyReflectionSchemaType
       );
       if (reflectionData[index].reflection.isCompleted) {
-        goal.dateCompleted = new Date(Date.now());
+        goal.dateCompleted = new Date();
       }
     });
 

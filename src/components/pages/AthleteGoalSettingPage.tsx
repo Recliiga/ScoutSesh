@@ -1,11 +1,13 @@
-"use client";
 import React from "react";
 import { Target, ClipboardCheck, FileText } from "lucide-react";
 import NotificationSign from "../app/NotificationSign";
 import GoalCard from "../app/GoalCard";
+import { getLatestGoalData } from "@/services/goalServices";
+import { getWeeklyReflectionStatus } from "@/lib/utils";
 
-export default function AthleteGoalSettingPage() {
-  const currentStatus = "needs_reflection";
+export default async function AthleteGoalSettingPage() {
+  const { goalData } = await getLatestGoalData();
+  const status = await getWeeklyReflectionStatus(goalData);
 
   return (
     <main className="flex-1">
@@ -15,7 +17,7 @@ export default function AthleteGoalSettingPage() {
           Set meaningful goals, track your progress, and reflect on your
           achievements to continuously improve your performance.
         </p>
-        <NotificationSign status={currentStatus} />
+        <NotificationSign status={status} />
         <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
           <GoalCard
             title="Set New Goals"
