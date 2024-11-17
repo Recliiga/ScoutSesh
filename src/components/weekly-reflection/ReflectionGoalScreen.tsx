@@ -102,7 +102,7 @@ export default function ReflectionGoalScreen({
                     {goal.confidence}/10
                   </Badge>
                 </div>
-                <ConfidenceMeter score={parseInt(goal.confidence)} />
+                <ConfidenceMeter score={goal.confidence} />
               </div>
             </CardContent>
           </Card>

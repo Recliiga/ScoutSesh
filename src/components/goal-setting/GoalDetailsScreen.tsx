@@ -11,8 +11,8 @@ export type GoalType = {
   actions: string;
   location: string;
   frequency: string;
-  confidence: string;
-  dateCompleted: string | null;
+  confidence: number;
+  dateCompleted: Date | null;
 };
 
 export default function GoalDetailsScreen({
@@ -33,7 +33,7 @@ export default function GoalDetailsScreen({
       ...prevGoals,
       {
         actions: "",
-        confidence: "",
+        confidence: 0,
         frequency: "",
         goal: "",
         location: "",
@@ -53,7 +53,13 @@ export default function GoalDetailsScreen({
   ) {
     setGoals((prevGoals) => {
       const updatedGoal = [...prevGoals];
-      updatedGoal[index][fieldName] = e.target.value;
+      if (fieldName === "dateCompleted") {
+        updatedGoal[index][fieldName] = new Date(e.target.value);
+      } else if (fieldName === "confidence") {
+        updatedGoal[index][fieldName] = Number(e.target.value);
+      } else {
+        updatedGoal[index][fieldName] = e.target.value;
+      }
       return updatedGoal;
     });
   }

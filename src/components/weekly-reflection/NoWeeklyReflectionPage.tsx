@@ -3,20 +3,23 @@ import React from "react";
 
 export default function NoWeeklyReflectionPage({
   type,
+  dueDate = "friday",
 }: {
   type: "pending" | "unavailable";
+  dueDate?: string;
 }) {
   if (type === "pending")
     return (
       <main className="flex-1 flex-center text-accent-black">
-        <div className="flex-col flex-center gap-2 sm:gap-3 mx-auto w-[90%] max-w-md text-center">
+        <div className="flex-col flex-center gap-2 sm:gap-3 mx-auto w-[90%] max-w-lg text-center">
           <h1 className="font-bold text-green-600 text-xl sm:text-2xl">
             Weekly Assessment Pending
           </h1>
-          <p className="text-accent-gray-300 text-sm">
+          <p className="text-accent-gray-300 text-sm sm:text-base">
             It looks like your weekly assessment is not quite due yet. Please
-            check back on friday. In the meantime, feel free to review your
-            progress. We&apos;ll notify you when it&apos;s time to begin!
+            check back on <strong>{dueDate}</strong>. In the meantime, feel free
+            to review your progress. We&apos;ll notify you when it&apos;s time
+            to begin!
           </p>
           <Link
             href={"/app/goal-setting"}
@@ -31,11 +34,11 @@ export default function NoWeeklyReflectionPage({
   if (type === "unavailable")
     return (
       <main className="flex-1 flex-center text-accent-black">
-        <div className="flex-col flex-center gap-2 sm:gap-3 mx-auto w-[90%] max-w-md text-center">
+        <div className="flex-col flex-center gap-2 sm:gap-3 mx-auto w-[90%] max-w-lg text-center">
           <h1 className="font-bold text-green-600 text-xl sm:text-2xl">
             No Goals Requiring Assessment
           </h1>
-          <p className="text-accent-gray-300 text-sm">
+          <p className="text-accent-gray-300 text-sm sm:text-base">
             At this time, you do not have any active goals that require an
             assessment. If you have recently completed a goal or if you would
             like to set new objectives, you can update your progress or create

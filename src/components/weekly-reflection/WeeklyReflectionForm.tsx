@@ -118,7 +118,9 @@ export default function WeeklyReflectionForm({
             (goal, index) =>
               currentScreen === `reflection-goal-${index + 1}` && (
                 <ReflectionGoalScreen
-                  goals={goalData.goals}
+                  goals={goalData.goals.filter(
+                    (goal) => goal.dateCompleted === null
+                  )}
                   key={index}
                   goalIndex={index}
                   handleGoalCompletion={handleGoalCompletion}

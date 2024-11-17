@@ -5,6 +5,8 @@ export interface WeeklyReflectionSchemaType extends mongoose.Document {
   completion: string;
   improvement: string;
   isCompleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface GoalSchemaType extends mongoose.Document {
@@ -12,9 +14,11 @@ export interface GoalSchemaType extends mongoose.Document {
   actions: string;
   location: string;
   frequency: string;
-  confidence: string;
-  dateCompleted: string | null;
+  confidence: number;
+  dateCompleted: Date | null;
   weeklyReflections: WeeklyReflectionSchemaType[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface GoalDataSchemaType extends mongoose.Document {
@@ -22,6 +26,8 @@ export interface GoalDataSchemaType extends mongoose.Document {
   details: GoalDetailsType;
   goals: GoalSchemaType[];
   user: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const WeeklyReflectionSchema: mongoose.Schema = new mongoose.Schema(

@@ -55,11 +55,14 @@ export async function performWeeklyReflection(
     if (updatedGoal.user.toString() !== userId)
       throw new Error(`User is unauthorized`);
 
-    updatedGoal.goals.map((goal, index) =>
+    updatedGoal.goals.forEach((goal, index) => {
       goal.weeklyReflections.push(
         reflectionData[index].reflection as WeeklyReflectionSchemaType
-      )
-    );
+      );
+      if (reflectionData[index].reflection.isCompleted) {
+        goal.dateCompleted = new Date(Date.now());
+      }
+    });
 
     await updatedGoal.save();
     return { error: null };

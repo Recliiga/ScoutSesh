@@ -15,7 +15,8 @@ export default function ReflectionOverviewScreen({
       <div className="flex gap-8 w-full">
         <div className="flex-1">
           <div className="mb-4 text-muted-foreground text-sm">
-            1/{goals.length + 2} Weekly Reflection
+            1/{goals.filter((goal) => goal.dateCompleted === null).length + 2}{" "}
+            Weekly Reflection
           </div>
           <h1 className="mb-4 font-bold text-3xl">
             Let&apos;s reflect on your progress
