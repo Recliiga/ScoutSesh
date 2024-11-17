@@ -3,11 +3,13 @@ import React, { useState } from "react";
 import AuthError from "./AuthError";
 import LoadingIndicator from "./LoadingIndicator";
 import { login } from "@/actions/authActions";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || "/";
 
   const router = useRouter();
 
@@ -25,7 +27,7 @@ export default function LoginForm() {
     const formData = new FormData(e.currentTarget);
     const { error } = await login(formData);
     if (!error) {
-      router.replace("/app");
+      router.replace(redirectUrl);
     } else {
       clearInput("password");
       setLoading(false);

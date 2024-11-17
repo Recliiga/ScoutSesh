@@ -66,7 +66,7 @@ export default function OrganizationRegistrationForm({
     const { error } = await createOrganization(formData);
     setError(error);
     if (!error) {
-      router.replace("/app");
+      router.replace("/dashboard");
     }
     setLoading(false);
   }
