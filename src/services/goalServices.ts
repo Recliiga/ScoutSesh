@@ -30,7 +30,7 @@ export async function getLatestGoalData(): Promise<{
 }
 
 export async function getAthleteGoals(): Promise<{
-  userGoals: GoalSchemaType[] | null;
+  athleteGoals: GoalSchemaType[] | null;
   error: string | null;
 }> {
   const cookieStore = await cookies();
@@ -52,8 +52,8 @@ export async function getAthleteGoals(): Promise<{
 
     const userGoals: GoalSchemaType[] = [];
     userGoalData.forEach((goalData) => userGoals.push(...goalData.goals));
-    return { userGoals, error: null };
+    return { athleteGoals: userGoals, error: null };
   } catch (error) {
-    return { userGoals: null, error: (error as Error).message };
+    return { athleteGoals: null, error: (error as Error).message };
   }
 }

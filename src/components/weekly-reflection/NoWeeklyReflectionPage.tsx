@@ -24,7 +24,7 @@ export default function NoWeeklyReflectionPage({
           </p>
           <Link
             href={"/dashboard/goal-setting"}
-            className="bg-green-600 hover:bg-green-700 mt-2 px-4 py-2 rounded-full font-bold text-sm text-white sm:text-base duration-300"
+            className="bg-green-600 hover:bg-green-700 mt-2 px-4 py-2 rounded-full font-bold text-sm text-white duration-300"
           >
             GO BACK
           </Link>
@@ -46,7 +46,7 @@ export default function NoWeeklyReflectionPage({
           </p>
           <Link
             href={"/dashboard/goal-setting"}
-            className="bg-green-600 hover:bg-green-700 mt-2 px-4 py-2 rounded-full font-bold text-sm text-white sm:text-base duration-300"
+            className="bg-green-600 hover:bg-green-700 mt-2 px-4 py-2 rounded-full font-bold text-sm text-white duration-300"
           >
             GO BACK
           </Link>
@@ -66,7 +66,7 @@ export default function NoWeeklyReflectionPage({
         </p>
         <Link
           href={"/dashboard/goal-setting"}
-          className="bg-green-600 hover:bg-green-700 mt-2 px-4 py-2 rounded-full font-bold text-sm text-white sm:text-base duration-300"
+          className="bg-green-600 hover:bg-green-700 mt-2 px-4 py-2 rounded-full font-bold text-sm text-white duration-300"
         >
           GO BACK
         </Link>

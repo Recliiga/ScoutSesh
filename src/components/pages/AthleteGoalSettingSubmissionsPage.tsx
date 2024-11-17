@@ -7,10 +7,10 @@ import { getSession } from "@/services/authServices";
 import { notFound } from "next/navigation";
 
 export default async function AthleteGoalSettingSubmissionsPage() {
-  const { userGoals } = await getAthleteGoals();
+  const { athleteGoals } = await getAthleteGoals();
   const { user } = await getSession();
 
-  if (!userGoals) notFound();
+  if (!athleteGoals) notFound();
   if (!user) return;
 
   return (
@@ -27,7 +27,7 @@ export default async function AthleteGoalSettingSubmissionsPage() {
           </div>
           <div className="px-4 py-5 sm:p-6">
             <GoalSettingSubmissions
-              goalSettingSubmissions={userGoals}
+              goalSettingSubmissions={athleteGoals}
               user={user}
             />
           </div>

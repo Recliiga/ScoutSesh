@@ -1,5 +1,6 @@
 import { StatusType } from "@/components/app/NotificationSign";
 import { GoalDataSchemaType } from "@/db/models/Goal";
+import { getAthleteGoals } from "@/services/goalServices";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -50,17 +51,23 @@ export function formatTime(timeString: string) {
     return `${formatPart(start)} - ${formatPart(end)}`;
   }
 }
-
 export async function getWeeklyReflectionStatus(
   goalData: GoalDataSchemaType | null
 ): Promise<StatusType> {
   let status: StatusType = "needs_reflection";
+
+  const { athleteGoals } = await getAthleteGoals();
+
+  // Check if all goals are completed
   const allGoalsCompleted = !goalData?.goals.some(
     (goal) => goal.dateCompleted === null
   );
+
+  // Get the creation date of the most recent goal
   const latestGoalCreationDate = new Date(
     goalData?.goals.at(-1)?.createdAt as Date
   );
+
   const today = new Date(Date.now());
 
   latestGoalCreationDate.setHours(0, 0, 0, 0);
@@ -72,9 +79,13 @@ export async function getWeeklyReflectionStatus(
 
   const differenceinDays = differenceinMs / (1000 * 60 * 60 * 24);
 
+  // Check if the difference in days is less than 7
   const notYetTimeForReflection = differenceinDays < 7;
+  const reflectionNotDue = notYetTimeForReflection;
 
-  if (notYetTimeForReflection) status = "not_due";
+  // Set the status based on the criterias below
+
+  if (reflectionNotDue) status = "not_due";
 
   if (allGoalsCompleted) status = "all_complete";
 

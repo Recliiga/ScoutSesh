@@ -56,7 +56,7 @@ export default function NotificationSign({
         </h2>
       </div>
       <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-4 sm:gap-6 md:gap-8">
-        <p className="text-gray-800 text-lg">{message}</p>
+        <p className="text-base text-gray-800 sm:text-lg">{message}</p>
         <Button className="border-green-600 bg-white hover:bg-green-600 px-0 py-0 border text-green-600 hover:text-white transition-colors">
           <Link href={href} className="flex-center px-4 py-2 w-full h-full">
             {actionText}
