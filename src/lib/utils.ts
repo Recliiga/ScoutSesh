@@ -56,8 +56,6 @@ export async function getWeeklyReflectionStatus(
 ): Promise<StatusType> {
   let status: StatusType = "needs_reflection";
 
-  const { athleteGoals } = await getAthleteGoals();
-
   // Check if all goals are completed
   const allGoalsCompleted = !goalData?.goals.some(
     (goal) => goal.dateCompleted === null
