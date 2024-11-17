@@ -6,38 +6,43 @@ export async function middleware(request: NextRequest) {
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
   const { user } = await getSession();
 
-  if (pathname === "/dashboard/goal-setting/new") {
-    if (!user) {
-      return NextResponse.redirect(
-        new URL(`/login?redirect=${pathname}`, request.url)
-      );
-    } else if (user.role !== "Athlete")
-      return NextResponse.redirect(
-        new URL("/dashboard/goal-setting", request.url)
-      );
-  } else if (pathname.startsWith("/dashboard")) {
-    if (user) {
-      if (!user.DOB && !user.organization) {
-        return NextResponse.redirect(
-          new URL(`/complete-profile?redirect=${pathname}`, request.url)
-        );
-      }
-    } else {
-      return NextResponse.redirect(
-        new URL(`/login?redirect=${pathname}`, request.url)
-      );
+  const isAuthRoute =
+    pathname.startsWith("/login") || pathname.startsWith("/signup");
+  const isProtectedRoute = pathname.startsWith("/dashboard");
+  const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
+  const isCreateGoalRoute = pathname === "/dashboard/goal-setting/new";
+
+  // Redirect authenticated user from auth routes
+  if (isAuthRoute && user) {
+    return NextResponse.redirect(new URL(redirectUrl, request.url));
+  }
+
+  // Redirect non-athletes from create new goal page
+  if (isCreateGoalRoute && user && user.role !== "Athlete") {
+    return NextResponse.redirect(
+      new URL("/dashboard/goal-setting", request.url)
+    );
+  }
+
+  // Redirect authenticated users who haven't completed their profile to complete-profile page
+  if (isProtectedRoute && user) {
+    if (!user.DOB && !user.organization) {
+      const url = new URL("/complete-profile", request.url);
+      url.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(url);
     }
-  } else if (pathname === "/login" || pathname === "/signup") {
-    if (user) return NextResponse.redirect(new URL(redirectUrl, request.url));
-  } else if (pathname === "/complete-profile") {
-    if (user) {
-      if (user?.DOB || user.organization)
-        return NextResponse.redirect(new URL(redirectUrl, request.url));
-    } else {
-      return NextResponse.redirect(
-        new URL(`/login?redirect=${pathname}`, request.url)
-      );
-    }
+  }
+
+  // Redirect authenticated users who have completed their profile to dashboard page
+  if (isCompleteProfileRoute && user && (user.DOB || user.organization)) {
+    return NextResponse.redirect(new URL(redirectUrl, request.url));
+  }
+
+  // Redirect un-authenticated users from protected routes
+  if (isProtectedRoute && !user) {
+    const url = new URL("/login", request.url);
+    url.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();

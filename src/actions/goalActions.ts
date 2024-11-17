@@ -6,8 +6,8 @@ import Goal, {
 } from "@/db/models/Goal";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
-import { GoalSubmissionType } from "@/app/dashboard/goal-setting/new/page";
 import { ReflectionDataType } from "@/components/weekly-reflection/WeeklyReflectionForm";
+import { GoalSubmissionType } from "@/components/goal-setting/CreateGoalForm";
 
 export async function createGoal(goalData: GoalSubmissionType) {
   const cookieStore = await cookies();

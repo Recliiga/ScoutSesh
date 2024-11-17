@@ -9,7 +9,7 @@ export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect") || "/";
+  const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
   const router = useRouter();
 
@@ -24,8 +24,10 @@ export default function LoginForm() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
     const formData = new FormData(e.currentTarget);
     const { error } = await login(formData);
+
     if (!error) {
       router.replace(redirectUrl);
     } else {

@@ -1,6 +1,5 @@
 import { StatusType } from "@/components/app/NotificationSign";
 import { GoalDataSchemaType } from "@/db/models/Goal";
-import { getAthleteGoals } from "@/services/goalServices";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 

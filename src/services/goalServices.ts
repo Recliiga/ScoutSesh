@@ -29,10 +29,10 @@ export async function getLatestGoalData(): Promise<{
   }
 }
 
-export async function getAthleteGoals(): Promise<{
-  athleteGoals: GoalSchemaType[] | null;
-  error: string | null;
-}> {
+export async function getAthleteGoals(): Promise<
+  | { athleteGoals: GoalSchemaType[]; error: null }
+  | { athleteGoals: null; error: string }
+> {
   const cookieStore = await cookies();
   try {
     // Get token from cookies

@@ -43,15 +43,20 @@ export default function GoalSettingSubmissions({
   const mostRecentSubmission = goalSettingSubmissions.reduce((prev, current) =>
     new Date(current.createdAt) > new Date(prev.createdAt) ? current : prev
   );
+
   const [openSubmission, setOpenSubmission] = useState<string | null>(
     mostRecentSubmission._id as string
+  );
+
+  const sortedSubmissions = [...goalSettingSubmissions].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
   const athleteName = user.firstName + " " + user.lastName;
 
   return (
     <div className="space-y-4">
-      {goalSettingSubmissions.map((submission) => (
+      {sortedSubmissions.map((submission) => (
         <Collapsible
           key={submission._id as string}
           open={openSubmission === submission._id}

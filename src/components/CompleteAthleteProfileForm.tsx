@@ -16,7 +16,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { completeProfile } from "@/actions/authActions";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthError from "./AuthError";
 
 interface ProfileProps {
@@ -46,6 +46,9 @@ export default function CompleteAthleteProfileForm({
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || "/dashboard";
+
   function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) {
@@ -67,7 +70,7 @@ export default function CompleteAthleteProfileForm({
     formData.set("email", email);
     const { error } = await completeProfile(formData);
     if (!error) {
-      router.replace("/dashboard");
+      router.replace(redirectUrl);
     }
     setError(error);
     setLoading(false);

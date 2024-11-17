@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 
 import { signup } from "@/actions/authActions";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthError from "./AuthError";
 import LoadingIndicator from "./LoadingIndicator";
 
@@ -12,6 +12,9 @@ export default function SignupForm() {
   const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+
+  const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
   const router = useRouter();
 
@@ -42,7 +45,7 @@ export default function SignupForm() {
     const formData = new FormData(e.currentTarget);
     const { error } = await signup(formData);
     if (!error) {
-      router.replace("/dashboard");
+      router.replace(redirectUrl);
     } else {
       setPassword("");
       setConfirmPassword("");
