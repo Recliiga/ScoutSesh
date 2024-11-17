@@ -4,14 +4,15 @@ import BackButton from "@/components/app/BackButton";
 import GoalSettingSubmissions from "@/components/goal-setting/GoalSettingSubmissions";
 import { getAthleteGoals } from "@/services/goalServices";
 import { getSession } from "@/services/authServices";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
 export default async function AthleteGoalSettingSubmissionsPage() {
-  const { athleteGoals } = await getAthleteGoals();
+  const { athleteGoals, error } = await getAthleteGoals();
   const { user } = await getSession();
 
-  if (!athleteGoals) notFound();
-  if (!user) return;
+  if (!athleteGoals) throw new Error(error);
+
+  if (!user) redirect("/login");
 
   return (
     <main className="flex-1 py-10">

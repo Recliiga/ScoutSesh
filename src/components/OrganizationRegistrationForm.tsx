@@ -15,7 +15,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { createOrganization } from "@/actions/authActions";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthError from "./AuthError";
 
 interface ProfileProps {
@@ -39,6 +39,9 @@ export default function OrganizationRegistrationForm({
   const [organizationType, setOrganizationType] = useState<string>("");
   const [customOrganizationType, setCustomOrganizationType] =
     useState<string>("");
+
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -66,7 +69,7 @@ export default function OrganizationRegistrationForm({
     const { error } = await createOrganization(formData);
     setError(error);
     if (!error) {
-      router.replace("/dashboard");
+      router.replace(redirectUrl);
     }
     setLoading(false);
   }

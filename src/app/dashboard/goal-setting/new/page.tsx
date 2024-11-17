@@ -5,13 +5,13 @@ import { getLatestGoalData } from "@/services/goalServices";
 import React from "react";
 
 export default async function CreateGoalPage() {
-  const { goalData } = await getLatestGoalData();
+  const { goalData, error } = await getLatestGoalData();
   const status = await getWeeklyReflectionStatus(goalData);
 
-  if (!goalData) return null;
+  if (error) throw new Error(error);
 
-  if (status !== "all_complete")
-    return <CannotCreateGoalPage/>;
+  if (!(status === "all_complete" || status === "no_goals"))
+    return <CannotCreateGoalPage />;
 
   return <CreateGoalForm />;
 }

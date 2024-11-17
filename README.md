@@ -40,12 +40,12 @@ ScoutSesh is a comprehensive athlete development platform designed to elevate yo
 
    ```env
    BASE_URL=http://localhost:3000
-   MONGODB_ATLAS_URI=your_mongodb_atlas_connection_string
+   MONGODB_URI=your_mongodb_atlas_connection_string
    JWT_SECRET=your_jwt_secret_key
    ```
 
    - `BASE_URL`: The base URL of the application. Set to `http://localhost:3000` for local development.
-   - `MONGODB_ATLAS_URI`: Your MongoDB Atlas connection string.
+   - `MONGODB_URI`: Your MongoDB Atlas connection string.
    - `JWT_SECRET`: Secret key for signing JWT tokens. Ensure this value is kept private.
 
 ### Running the Application
@@ -90,5 +90,5 @@ The app will be served in production mode.
 Ensure the following variables are set in your `.env.local` file:
 
 - `BASE_URL`
-- `MONGODB_ATLAS_URI`
+- `MONGODB_URI`
 - `JWT_SECRET`
