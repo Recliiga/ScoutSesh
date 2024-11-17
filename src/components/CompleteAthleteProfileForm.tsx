@@ -67,7 +67,7 @@ export default function CompleteAthleteProfileForm({
     formData.set("email", email);
     const { error } = await completeProfile(formData);
     if (!error) {
-      router.replace("/app");
+      router.replace("/dashboard");
     }
     setError(error);
     setLoading(false);

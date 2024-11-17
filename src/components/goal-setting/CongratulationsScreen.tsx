@@ -27,7 +27,9 @@ export default function CongratulationsScreen() {
           </p>
           <div className="flex justify-center">
             <Button className="bg-green-500 hover:bg-green-600 text-white">
-              <Link href={"/app/goal-setting"}>Go to Goal Setting Page</Link>
+              <Link href={"/dashboard/goal-setting"}>
+                Go to Goal Setting Page
+              </Link>
             </Button>
           </div>
         </CardContent>

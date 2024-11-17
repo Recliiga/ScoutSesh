@@ -2,7 +2,7 @@ import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { GoalSubmissionType } from "@/app/app/goal-setting/new/page";
+import { GoalSubmissionType } from "@/app/dashboard/goal-setting/new/page";
 import { useState } from "react";
 import LoadingIndicator from "../LoadingIndicator";
 import { createGoal } from "@/actions/goalActions";

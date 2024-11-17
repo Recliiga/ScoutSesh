@@ -3,20 +3,20 @@ import { UserType } from "@/db/models/User";
 import Link from "next/link";
 import React, { useState } from "react";
 import ModalContainer from "../ModalContainer";
-import AppMobileNav from "./AppMobileNav";
+import DashboardMobileNav from "./DashboardMobileNav";
 import { usePathname } from "next/navigation";
 import { BellIcon, UserIcon } from "lucide-react";
 
 const navLinks = [
-  { title: "Athlete Evaluation", href: "/app/athlete-evaluation" },
-  { title: "Goal Setting", href: "/app/goal-setting" },
-  { title: "Daily Journal", href: "/app/daily-journal" },
-  { title: "Group Classes", href: "/app/group-classes" },
-  { title: "Messages", href: "/app/messages" },
-  { title: "My Team Members", href: "/app/team-members" },
+  { title: "Athlete Evaluation", href: "/dashboard/athlete-evaluation" },
+  { title: "Goal Setting", href: "/dashboard/goal-setting" },
+  { title: "Daily Journal", href: "/dashboard/daily-journal" },
+  { title: "Group Classes", href: "/dashboard/group-classes" },
+  { title: "Messages", href: "/dashboard/messages" },
+  { title: "My Team Members", href: "/dashboard/team-members" },
 ];
 
-export default function AppHeader({ user }: { user: UserType | null }) {
+export default function DashboardHeader({ user }: { user: UserType | null }) {
   const [mobileNav, setMobileNav] = useState(false);
 
   const pathname = usePathname();
@@ -113,7 +113,7 @@ export default function AppHeader({ user }: { user: UserType | null }) {
             </svg>
           </button>
           <Link
-            href="/app"
+            href="/dashboard"
             className="font-bold text-green-600 text-xl sm:text-2xl"
           >
             ScoutSesh.
@@ -142,7 +142,7 @@ export default function AppHeader({ user }: { user: UserType | null }) {
         closeModal={() => setMobileNav(false)}
         className="lg:hidden"
       >
-        <AppMobileNav
+        <DashboardMobileNav
           user={user}
           open={mobileNav}
           closeModal={() => setMobileNav(false)}

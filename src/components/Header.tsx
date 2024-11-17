@@ -6,7 +6,7 @@ import ModalContainer from "./ModalContainer";
 import MobileNav from "./MobileNav";
 import { usePathname } from "next/navigation";
 import Button from "./LinkButton";
-import AppHeader from "./app/AppHeader";
+import DashboardHeader from "./app/DashboardHeader";
 
 const navLinks = [
   { title: "Features", href: "/features" },
@@ -26,7 +26,7 @@ export default function Header({ user }: { user: UserType | null }) {
     setMobileNav((curr) => !curr);
   }
 
-  if (pathname.includes("/app")) return <AppHeader user={user} />;
+  if (pathname.includes("/dashboard")) return <DashboardHeader user={user} />;
 
   return (
     <>
@@ -136,7 +136,7 @@ export default function Header({ user }: { user: UserType | null }) {
           </nav>
         </div>
         {user ? (
-          <Button href={"/app"} margin="none">
+          <Button href={"/dashboard"} margin="none">
             Dashboard
           </Button>
         ) : (

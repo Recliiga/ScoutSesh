@@ -3,7 +3,7 @@ import Goal, { GoalDataSchemaType } from "@/db/models/Goal";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
-export async function getGoalData(): Promise<{
+export async function getLatestGoalData(): Promise<{
   goalData: GoalDataSchemaType | null;
   error: string | null;
 }> {

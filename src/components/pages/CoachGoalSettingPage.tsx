@@ -296,7 +296,7 @@ export default function CoachGoalSettingPage() {
             description="Access a comprehensive overview of all goal setting submissions. Review, analyze, and track progress across all athletes."
             icon={<UsersIcon className="w-8 h-8 text-green-600" />}
             action="View Submissions"
-            href="/app/goal-setting/submissions"
+            href="/dashboard/goal-setting/submissions"
           />
         </div>
       </div>

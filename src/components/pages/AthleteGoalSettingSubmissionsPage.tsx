@@ -196,7 +196,7 @@ export default function AthleteGoalSettingSubmissionsPage() {
         <div className="flex justify-between mt-6">
           <BackButton />
           <Link
-            href={"/app/goal-setting/new"}
+            href={"/dashboard/goal-setting/new"}
             className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-sm text-white"
           >
             Create New Goal Setting

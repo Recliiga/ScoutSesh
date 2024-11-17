@@ -33,7 +33,7 @@ export default function GoalDetailsScreen({
       ...prevGoals,
       {
         actions: "",
-        confidence: 0,
+        confidence: -1,
         frequency: "",
         goal: "",
         location: "",
@@ -164,7 +164,7 @@ export default function GoalDetailsScreen({
                     min={0}
                     max={10}
                     placeholder="Rate your confidence from 0 to 10"
-                    value={goal.confidence}
+                    value={goal.confidence >= 0 ? goal.confidence : ""}
                     onChange={(e) => {
                       if (Number(e.target.value) > 10) return;
                       handleChange(e, index, "confidence");
@@ -179,7 +179,7 @@ export default function GoalDetailsScreen({
               onClick={addGoal}
               disabled={
                 !lastGoal?.actions ||
-                !lastGoal.confidence ||
+                lastGoal.confidence < 0 ||
                 !lastGoal.frequency ||
                 !lastGoal.goal ||
                 !lastGoal.location
@@ -202,7 +202,7 @@ export default function GoalDetailsScreen({
           onClick={handleSubmitGoals}
           disabled={
             !lastGoal?.actions ||
-            !lastGoal.confidence ||
+            lastGoal.confidence < 0 ||
             !lastGoal.frequency ||
             !lastGoal.goal ||
             !lastGoal.location

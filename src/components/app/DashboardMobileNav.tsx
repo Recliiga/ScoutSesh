@@ -5,15 +5,15 @@ import { usePathname } from "next/navigation";
 import { XIcon } from "lucide-react";
 
 const navLinks = [
-  { title: "Athlete Evaluation", href: "/app/athlete-evaluation" },
-  { title: "Goal Setting", href: "/app/goal-setting" },
-  { title: "Daily Journal", href: "/app/daily-journal" },
-  { title: "Group Classes", href: "/app/group-classes" },
-  { title: "Messages", href: "/app/messages" },
-  { title: "My Team Members", href: "/app/team-members" },
+  { title: "Athlete Evaluation", href: "/dashboard/athlete-evaluation" },
+  { title: "Goal Setting", href: "/dashboard/goal-setting" },
+  { title: "Daily Journal", href: "/dashboard/daily-journal" },
+  { title: "Group Classes", href: "/dashboard/group-classes" },
+  { title: "Messages", href: "/dashboard/messages" },
+  { title: "My Team Members", href: "/dashboard/team-members" },
 ];
 
-export default function AppMobileNav({
+export default function DashboardMobileNav({
   open,
   closeModal,
   user,
@@ -31,7 +31,7 @@ export default function AppMobileNav({
       }`}
     >
       <Link
-        href="/app"
+        href="/dashboard"
         onClick={closeModal}
         className="w-fit font-bold text-green-600 text-xl sm:text-2xl"
       >

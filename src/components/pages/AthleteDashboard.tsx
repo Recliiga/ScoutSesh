@@ -115,19 +115,19 @@ export default function AthleteDashboard({ user }: { user: UserType }) {
             title="Athlete Evaluation"
             description="Track your progress and receive feedback from coaches to improve your performance."
             action="View Evaluations"
-            href="/app/athlete-evaluation"
+            href="/dashboard/athlete-evaluation"
           />
           <DashboardCard
             title="Goal Setting"
             description="Set and monitor your athletic goals, breaking them down into achievable milestones."
             action="Manage Goals"
-            href="/app/goal-setting"
+            href="/dashboard/goal-setting"
           />
           <DashboardCard
             title="Group Classes"
             description="Join group training sessions and workshops to learn from peers and expert coaches."
             action="Browse Classes"
-            href="/app/group-classes"
+            href="/dashboard/group-classes"
           />
         </div>
       </div>

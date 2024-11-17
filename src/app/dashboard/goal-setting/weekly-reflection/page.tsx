@@ -1,6 +1,6 @@
 import React from "react";
 import WeeklyReflectionForm from "@/components/weekly-reflection/WeeklyReflectionForm";
-import { getGoalData } from "@/services/goalServices";
+import { getLatestGoalData } from "@/services/goalServices";
 import NoWeeklyReflectionPage from "@/components/weekly-reflection/NoWeeklyReflectionPage";
 import { notFound } from "next/navigation";
 
@@ -15,7 +15,7 @@ const daysOfTheWeek = [
 ];
 
 export default async function WeeklyReflectionPage() {
-  const { goalData, error } = await getGoalData();
+  const { goalData, error } = await getLatestGoalData();
 
   if (error) return notFound();
 

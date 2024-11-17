@@ -3,17 +3,19 @@ import { getSession } from "./services/authServices";
 
 export async function middleware(request: NextRequest) {
   const { pathname, searchParams } = new URL(request.url);
-  const redirectUrl = searchParams.get("redirect") || "/app";
+  const redirectUrl = searchParams.get("redirect") || "/dashboard";
   const { user } = await getSession();
 
-  if (pathname === "/app/goal-setting/new") {
+  if (pathname === "/dashboard/goal-setting/new") {
     if (!user) {
       return NextResponse.redirect(
         new URL(`/login?redirect=${pathname}`, request.url)
       );
     } else if (user.role !== "Athlete")
-      return NextResponse.redirect(new URL("/app/goal-setting", request.url));
-  } else if (pathname.startsWith("/app")) {
+      return NextResponse.redirect(
+        new URL("/dashboard/goal-setting", request.url)
+      );
+  } else if (pathname.startsWith("/dashboard")) {
     if (user) {
       if (!user.DOB && !user.organization) {
         return NextResponse.redirect(
@@ -42,5 +44,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config: MiddlewareConfig = {
-  matcher: ["/login", "/signup", "/app/:path*", "/complete-profile"],
+  matcher: ["/login", "/signup", "/dashboard/:path*", "/complete-profile"],
 };

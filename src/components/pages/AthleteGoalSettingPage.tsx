@@ -22,21 +22,21 @@ export default function AthleteGoalSettingPage() {
             description="Define new short-term and long-term goals to focus your training and development efforts. Set SMART (Specific, Measurable, Achievable, Relevant, Time-bound) goals to enhance your athletic performance and personal growth."
             icon={<Target className="w-6 h-6 text-green-600" />}
             actionText="Set Goals"
-            href={"/app/goal-setting/new"}
+            href={"/dashboard/goal-setting/new"}
           />
           <GoalCard
             title="Complete Weekly Reflection"
             description="Reflect on your progress, identify challenges, and adjust your goals as needed. Regular reflection helps you stay on track and make necessary improvements."
             icon={<ClipboardCheck className="w-6 h-6 text-green-600" />}
             actionText="Start Reflection"
-            href={"/app/goal-setting/weekly-reflection"}
+            href={"/dashboard/goal-setting/weekly-reflection"}
           />
           <GoalCard
             title="View Goal Setting Submissions"
             description="Review your past goal setting submissions and track your progress over time. Analyze your growth and celebrate your achievements."
             icon={<FileText className="w-6 h-6 text-green-600" />}
             actionText="View Submissions"
-            href={"/app/goal-setting/submissions"}
+            href={"/dashboard/goal-setting/submissions"}
           />
         </div>
       </div>
