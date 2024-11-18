@@ -39,7 +39,7 @@ ScoutSesh is a comprehensive athlete development platform designed to elevate yo
    Create a `.env.local` file in the root directory and add the following environment variables:
 
    ```env
-   BASE_URL=http://localhost:3000
+   BASE_URL=<your_production_url or http://localhost:3000>
    MONGODB_URI=your_mongodb_atlas_connection_string
    JWT_SECRET=your_jwt_secret_key
    ```
