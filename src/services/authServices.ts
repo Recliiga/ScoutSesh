@@ -1,5 +1,5 @@
 import { UserType } from "@/db/models/User";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 
 export async function getSession(): Promise<{
   user: UserType | null;
@@ -7,10 +7,9 @@ export async function getSession(): Promise<{
 }> {
   try {
     const cookieStore = await cookies();
-    const headerList = await headers();
-
     const token = cookieStore.get("token")?.value;
-    const BASE_URL = headerList.get("host");
+
+    const BASE_URL = process.env.BASE_URL;
 
     const res = await fetch(`${BASE_URL}/api/auth/session`, {
       headers: { Authorization: `Bearer ${token}` },
