@@ -22,6 +22,7 @@ export async function createGoal(goalData: GoalSubmissionType) {
     if (typeof payload === "string") throw new Error("Invalid token");
     const userId = payload.userId;
 
+
     // connect to MongoDB and create new Goal
     await connectDB();
     await Goal.create({ ...goalData, user: userId });

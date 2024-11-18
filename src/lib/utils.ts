@@ -50,6 +50,7 @@ export function formatTime(timeString: string) {
     return `${formatPart(start)} - ${formatPart(end)}`;
   }
 }
+
 export async function getWeeklyReflectionStatus(
   goalData: GoalDataSchemaType | null
 ): Promise<StatusType> {
@@ -65,7 +66,9 @@ export async function getWeeklyReflectionStatus(
     goalData?.goals.at(-1)?.createdAt as Date
   );
 
-  const today = new Date(Date.now());
+  const today = new Date("2024-11-14");
+
+  const todayIsFriday = today.getDay() === 5;
 
   latestGoalCreationDate.setHours(0, 0, 0, 0);
   today.setHours(0, 0, 0, 0);
@@ -82,11 +85,11 @@ export async function getWeeklyReflectionStatus(
 
   // Set the status based on the criterias below
 
-  if (reflectionNotDue) status = "not_due";
+  if (reflectionNotDue && !todayIsFriday) status = "not_due";
 
   if (allGoalsCompleted) status = "all_complete";
 
-  if (!goalData) status = "no_goals";
+  if (!goalData?.goals.length) status = "no_goals";
 
   return status;
 }
