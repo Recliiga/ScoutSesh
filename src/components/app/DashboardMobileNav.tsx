@@ -43,7 +43,7 @@ export default function DashboardMobileNav({
             <Link
               href={navLink.href}
               className={`block p-2 w-fit hover:text-green-600 font-medium duration-300 ${
-                pathname === navLink.href ? "text-green-600" : ""
+                pathname.startsWith(navLink.href) ? "text-green-600" : ""
               }`}
             >
               {navLink.title}

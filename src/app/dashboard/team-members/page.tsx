@@ -1,13 +1,11 @@
 import React from "react";
 
-import { getSession } from "@/services/authServices";
+import { getSessionFromHeaders } from "@/services/authServices";
 import CoachTeamMembersPage from "@/components/pages/CoachTeamMembersPage";
 import AthleteTeamMembersPage from "@/components/pages/AthleteTeamMembersPage";
 
 export default async function TeamMembersPage() {
-  const { user } = await getSession();
-
-  if (!user) return;
+  const user = await getSessionFromHeaders();
 
   if (user.role === "Athlete") {
     return <AthleteTeamMembersPage />;

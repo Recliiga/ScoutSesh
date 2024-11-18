@@ -81,7 +81,7 @@ export default function CongratulationsScreen({
             </Button>
             <Button className="bg-green-500 hover:bg-green-600 px-0 py-0 text-white">
               <Link href={"/dashboard/goal-setting"} className="px-4 py-2">
-                Go to Goal Setting Page
+                Go Home
               </Link>
             </Button>
           </div>

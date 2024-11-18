@@ -15,10 +15,10 @@ export async function GET(request: NextRequest) {
     const user = await User.findById(userId);
     if (!user) throw new Error("User dosen't exists");
 
-    return NextResponse.json(user);
+    return NextResponse.json({ user, error: null });
   } catch (error) {
     return NextResponse.json(
-      { error: (error as Error).message },
+      { user: null, error: (error as Error).message },
       { status: 401 }
     );
   }

@@ -1,11 +1,9 @@
 import CompleteAthleteProfileForm from "@/components/CompleteAthleteProfileForm";
 import OrganizationRegistrationForm from "@/components/OrganizationRegistrationForm";
-import { getSession } from "@/services/authServices";
-import { redirect } from "next/navigation";
+import { getSessionFromHeaders } from "@/services/authServices";
 
 export default async function CompleteYourProfilePage() {
-  const { user } = await getSession();
-  if (!user) redirect("/login");
+  const user = await getSessionFromHeaders();
 
   return (
     <div className="flex flex-1 justify-center items-center bg-gray-100 p-4">
