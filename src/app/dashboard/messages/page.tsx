@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -20,50 +20,156 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+const messages = [
+  {
+    message:
+      "I think it's time we conduct a comprehensive player evaluation for the team. We need to assess everyone's progress towards their individual goals.",
+    time: "8:55 PM",
+  },
+  {
+    name: "Karsen Jarryd",
+    message:
+      "That's a great idea, Coach. Should we focus on both performance metrics and personal development goals?",
+    time: "8:59 PM",
+    initials: "KJ",
+  },
+  {
+    message:
+      "Absolutely. We'll look at on-ice performance, fitness levels, and how well they're meeting their personal development objectives.",
+    time: "9:01 PM",
+  },
+  {
+    name: "Karsen Jarryd",
+    message:
+      "Sounds good. When do you want to start the evaluations? We should probably schedule them around our upcoming games and practices.",
+    time: "9:05 PM",
+    initials: "KJ",
+  },
+  {
+    message:
+      "Let's aim to start next week. We can use the data from recent games and combine it with individual sessions. I'll draft an evaluation form that covers all aspects we want to assess.",
+    time: "9:10 PM",
+  },
+];
+
 type ChatType = {
   name: string;
   message: string;
+  messages: {
+    name: string;
+    initials: string;
+    message: string;
+    time: string;
+  }[];
   time: string;
   initials: string;
 };
 
+const chats = [
+  {
+    name: "Brandon Peterson",
+    message: "Can we review my scoring goals for the season?",
+    messages: messages.map((m) =>
+      m.name
+        ? {
+            ...m,
+            initials: "BP",
+          }
+        : {
+            ...m,
+            name: "Brandon Peterson",
+            initials: "BP",
+          }
+    ),
+    time: "10:03 PM",
+    get initials() {
+      return this.name[0] + this.name.split(" ")[1][0];
+    },
+  },
+  {
+    name: "Leanne Melissa",
+    message: "I'd like to discuss improving my defensive skills.",
+    messages: messages.map((m) =>
+      m.name
+        ? {
+            ...m,
+            initials: "LM",
+          }
+        : {
+            ...m,
+            name: "Leanne Melissa",
+            initials: "LM",
+          }
+    ),
+    time: "10:01 PM",
+    get initials() {
+      return this.name[0] + this.name.split(" ")[1][0];
+    },
+  },
+  {
+    name: "Jordan Shayne",
+    message: "Let's set up a player evaluation session for the team.",
+    messages: messages.map((m) =>
+      m.name
+        ? {
+            ...m,
+            initials: "JS",
+          }
+        : {
+            ...m,
+            name: "Jordan Shayne",
+            initials: "JS",
+          }
+    ),
+    time: "9:01 PM",
+    get initials() {
+      return this.name[0] + this.name.split(" ")[1][0];
+    },
+  },
+  {
+    name: "Darlene Jayne",
+    message: "How can I work on my leadership goals?",
+    messages: messages.map((m) =>
+      m.name
+        ? {
+            ...m,
+            initials: "DJ",
+          }
+        : {
+            ...m,
+            name: "Darlene Jayne",
+            initials: "DJ",
+          }
+    ),
+    time: "Friday",
+    get initials() {
+      return this.name[0] + this.name.split(" ")[1][0];
+    },
+  },
+  {
+    name: "Randy Dennis",
+    message: "Need to discuss the rookies' performance evaluations.",
+    messages: messages.map((m) =>
+      m.name
+        ? {
+            ...m,
+            initials: "RD",
+          }
+        : {
+            ...m,
+            name: "Randy Dennis",
+            initials: "RD",
+          }
+    ),
+    time: "Thursday",
+    get initials() {
+      return this.name[0] + this.name.split(" ")[1][0];
+    },
+  },
+];
+
 export default function ChatPage() {
   const [isProfileVisible, setIsProfileVisible] = useState(true);
-
-  const chats = useMemo(() => {
-    return [
-      {
-        name: "Brandon Peterson",
-        message: "Can we review my scoring goals for the season?",
-        time: "10:03 PM",
-        initials: "BP",
-      },
-      {
-        name: "Leanne Melissa",
-        message: "I'd like to discuss improving my defensive skills.",
-        time: "10:01 PM",
-        initials: "LM",
-      },
-      {
-        name: "Jordan Shayne",
-        message: "Let's set up a player evaluation session for the team.",
-        time: "9:01 PM",
-        initials: "JS",
-      },
-      {
-        name: "Darlene Jayne",
-        message: "How can I work on my leadership goals?",
-        time: "Friday",
-        initials: "DJ",
-      },
-      {
-        name: "Randy Dennis",
-        message: "Need to discuss the rookies' performance evaluations.",
-        time: "Thursday",
-        initials: "RD",
-      },
-    ];
-  }, []);
 
   const [selectedChat, setSelectedChat] = useState(chats[0]);
 
@@ -71,7 +177,7 @@ export default function ChatPage() {
     if (chats.length > 0) {
       setSelectedChat(chats[0]);
     }
-  }, [chats]);
+  }, []);
 
   const handleChatSelect = (chat: ChatType) => {
     setSelectedChat((prevSelectedChat) => {
@@ -176,43 +282,7 @@ export default function ChatPage() {
                   </TooltipProvider>
                 </div>
                 <div className="space-y-4">
-                  {[
-                    {
-                      name: selectedChat.name,
-                      message:
-                        "I think it's time we conduct a comprehensive player evaluation for the team. We need to assess everyone's progress towards their individual goals.",
-                      time: "8:55 PM",
-                      initials: selectedChat.initials,
-                    },
-                    {
-                      name: "Karsen Jarryd",
-                      message:
-                        "That's a great idea, Coach. Should we focus on both performance metrics and personal development goals?",
-                      time: "8:59 PM",
-                      initials: "KJ",
-                    },
-                    {
-                      name: selectedChat.name,
-                      message:
-                        "Absolutely. We'll look at on-ice performance, fitness levels, and how well they're meeting their personal development objectives.",
-                      time: "9:01 PM",
-                      initials: selectedChat.initials,
-                    },
-                    {
-                      name: "Karsen Jarryd",
-                      message:
-                        "Sounds good. When do you want to start the evaluations? We should probably schedule them around our upcoming games and practices.",
-                      time: "9:05 PM",
-                      initials: "KJ",
-                    },
-                    {
-                      name: selectedChat.name,
-                      message:
-                        "Let's aim to start next week. We can use the data from recent games and combine it with individual sessions. I'll draft an evaluation form that covers all aspects we want to assess.",
-                      time: "9:10 PM",
-                      initials: selectedChat.initials,
-                    },
-                  ].map((message, index) => (
+                  {selectedChat.messages.map((message, index) => (
                     <div key={index} className="flex items-start space-x-2">
                       <Avatar>
                         <AvatarFallback>{message.initials}</AvatarFallback>
