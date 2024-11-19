@@ -2,15 +2,15 @@ import React from "react";
 import Link from "next/link";
 import BackButton from "@/components/app/BackButton";
 import GoalSettingSubmissions from "@/components/goal-setting/GoalSettingSubmissions";
-import { getAthleteGoals } from "@/services/goalServices";
+import { getAllAthleteGoalData } from "@/services/goalServices";
 import { getSessionFromHeaders } from "@/services/authServices";
 import { notFound } from "next/navigation";
 
 export default async function AthleteGoalSettingSubmissionsPage() {
-  const { athleteGoals, error } = await getAthleteGoals();
+  const { athleteGoals } = await getAllAthleteGoalData();
   const user = await getSessionFromHeaders();
 
-  if (error) return notFound();
+  if (!athleteGoals) return notFound();
 
   return (
     <main className="flex-1 py-10">
@@ -26,7 +26,7 @@ export default async function AthleteGoalSettingSubmissionsPage() {
           </div>
           <div className="px-4 py-5 sm:p-6">
             <GoalSettingSubmissions
-              goalSettingSubmissions={athleteGoals!}
+              goalSettingSubmissions={athleteGoals}
               user={user}
             />
           </div>

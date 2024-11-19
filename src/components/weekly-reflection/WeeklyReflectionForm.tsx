@@ -137,7 +137,6 @@ export default function WeeklyReflectionForm({
           )}
         {currentScreen === "congratulations" && (
           <CongratulationsScreen
-            setCurrentScreen={setCurrentScreen}
             reflectionData={reflectionData}
             goals={goals}
           />

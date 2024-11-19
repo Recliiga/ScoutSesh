@@ -18,12 +18,12 @@ export default function CongratulationsScreen() {
         </CardHeader>
         <CardContent>
           <p className="mb-4 text-gray-700 text-lg">
-            Your goals have been successfully submitted.
+            Your goals have been successfully updated.
           </p>
           <p className="mb-6 text-gray-600 text-md">
-            Keep working hard and stay focused on achieving your goals.
-            Don&apos;t forget to update your Weekly Reflections. You can go back
-            to review your goals or return to the main dashboard.
+            Stay committed to making progress on your goals. Reflect on what
+            you&apos;ve achieved so far and adjust your plans to keep moving
+            forward.
           </p>
           <div className="flex justify-center">
             <Button className="bg-green-500 hover:bg-green-600 text-white">

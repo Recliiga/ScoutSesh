@@ -5,16 +5,6 @@ import NoWeeklyReflectionPage from "@/components/weekly-reflection/NoWeeklyRefle
 import { notFound } from "next/navigation";
 import { getWeeklyReflectionStatus } from "@/lib/utils";
 
-const daysOfTheWeek = [
-  "sunday",
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-];
-
 export default async function WeeklyReflectionPage() {
   const { goalData, error } = await getLatestGoalData();
   const status = await getWeeklyReflectionStatus(goalData);

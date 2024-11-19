@@ -9,11 +9,9 @@ import { ReflectionDataType } from "./WeeklyReflectionForm";
 export default function CongratulationsScreen({
   reflectionData,
   goals,
-  setCurrentScreen,
 }: {
   reflectionData: ReflectionDataType[];
   goals: GoalType[];
-  setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
 }) {
   return (
     <div className="flex flex-col justify-center items-center bg-green-50 py-6 sm:py-8">
@@ -70,21 +68,11 @@ export default function CongratulationsScreen({
               </ul>
             </CardContent>
           </Card>
-          <div className="flex justify-center gap-4">
-            <Button
-              variant="outline"
-              onClick={() =>
-                setCurrentScreen(`reflection-goal-${goals.length}`)
-              }
-            >
-              Back
-            </Button>
-            <Button className="bg-green-500 hover:bg-green-600 px-0 py-0 text-white">
-              <Link href={"/dashboard/goal-setting"} className="px-4 py-2">
-                Go Home
-              </Link>
-            </Button>
-          </div>
+          <Button className="bg-green-500 hover:bg-green-600 px-0 py-0 text-white">
+            <Link href={"/dashboard/goal-setting"} className="px-4 py-2">
+              Go Home
+            </Link>
+          </Button>
         </CardContent>
       </Card>
     </div>
