@@ -82,7 +82,7 @@ export default function GoalSettingSubmissions({
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <h3>{submission.goal}</h3>
+                      <h3 className="sm:block hidden">{submission.goal}</h3>
                       <div className="flex items-center space-x-2 text-gray-500 text-sm">
                         <CalendarIcon className="w-4 h-4" />
                         <span>
@@ -147,7 +147,7 @@ export default function GoalSettingSubmissions({
                           </span>
                           <Button variant={"outline"} className="px-0 py-0">
                             <Link
-                              href={`/dashboard/goal-setting/submissions/${submission.goalDataId}/reflections/${submission._id}`}
+                              href={`/dashboard/goal-setting/weekly-reflection/${submission.goalDataId}`}
                               className="px-4 py-2 w-full h-full"
                             >
                               View

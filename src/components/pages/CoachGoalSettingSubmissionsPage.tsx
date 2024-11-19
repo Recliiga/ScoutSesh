@@ -121,7 +121,7 @@ export default function CoachGoalSubmissionsPage() {
 
   return (
     <main className="flex-grow">
-      <div className="mx-auto px-4 py-8 container">
+      <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
         <h1 className="mb-6 font-bold text-3xl">
           All Goal Setting Submissions
         </h1>

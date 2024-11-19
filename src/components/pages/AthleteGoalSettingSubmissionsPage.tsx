@@ -14,7 +14,7 @@ export default async function AthleteGoalSettingSubmissionsPage() {
 
   return (
     <main className="flex-1 py-10">
-      <div className="mx-auto sm:px-6 lg:px-8 max-w-3xl">
+      <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-3xl">
         <h1 className="mb-6 font-extrabold text-3xl text-gray-900">
           Goal Setting Submissions
         </h1>
