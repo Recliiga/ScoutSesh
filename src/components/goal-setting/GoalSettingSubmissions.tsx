@@ -69,7 +69,7 @@ export default function GoalSettingSubmissions({
               <div className="bg-gray-50 hover:bg-gray-100 p-4 rounded-md transition-colors cursor-pointer">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-3">
-                    <Avatar className="w-10 h-10">
+                    <Avatar className="w-12 h-12">
                       <AvatarImage
                         src={user.profilePicture}
                         alt={athleteName}
@@ -81,18 +81,21 @@ export default function GoalSettingSubmissions({
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex items-center space-x-2 text-gray-500 text-sm">
-                      <CalendarIcon className="w-4 h-4" />
-                      <span>
-                        {new Date(submission.createdAt).toLocaleDateString(
-                          "en-US",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          }
-                        )}
-                      </span>
+                    <div className="flex flex-col">
+                      <h3>{submission.goal}</h3>
+                      <div className="flex items-center space-x-2 text-gray-500 text-sm">
+                        <CalendarIcon className="w-4 h-4" />
+                        <span>
+                          {new Date(submission.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            }
+                          )}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div
