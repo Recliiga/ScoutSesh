@@ -14,13 +14,7 @@ import ConfidenceMeter from "@/components/weekly-reflection/ConfidenceMeter";
 import CommentableText from "@/components/weekly-reflection/CommentableText";
 import CommentDialog from "@/components/weekly-reflection/CommentDialog";
 import { GoalDataSchemaType } from "@/db/models/Goal";
-
-export type CommentType = {
-  id: string;
-  text: string;
-  author: string;
-  timestamp: string;
-};
+import { CommentSchemaType } from "@/db/models/Comment";
 
 export default function WeeklyReflectionResults({
   goalData,
@@ -28,21 +22,20 @@ export default function WeeklyReflectionResults({
   goalData: GoalDataSchemaType;
 }) {
   const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
-  const [activeComment, setActiveComment] = useState<CommentType | null>(null);
-  const [activeSection, setActiveSection] = useState("");
-  const [comments, setComments] = useState<{ [key: string]: CommentType[] }>(
-    {}
+  const [activeComment, setActiveComment] = useState<CommentSchemaType | null>(
+    null
   );
+  const [activeSection, setActiveSection] = useState("");
+  const [comments, setComments] = useState<{
+    [key: string]: CommentSchemaType[];
+  }>({});
 
   function addComment(sectionId: string) {
     setActiveSection(sectionId);
     setActiveComment({
-      id: "",
       text: "",
       author: "",
-      // selectedText: "",
-      timestamp: "",
-    });
+    } as CommentSchemaType);
     setIsCommentDialogOpen(true);
   }
 
@@ -52,20 +45,9 @@ export default function WeeklyReflectionResults({
     if (!activeComment || noText) return;
 
     const newComment = {
-      id: `comment-${Date.now()}`,
       text,
-      author: "John Doe", // Replace with actual user name when available
-      // selectedText: activeComment.selectedText,
-      timestamp: new Date().toLocaleString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      }),
-    };
-    console.log(newComment);
+      author: "John Doe",
+    } as CommentSchemaType;
     setComments((prevComments) => ({
       ...prevComments,
       [activeSection]: [...(prevComments[activeSection] || []), newComment],
@@ -75,56 +57,6 @@ export default function WeeklyReflectionResults({
     setActiveComment(null);
     setActiveSection("");
   }
-
-  // function editComment(comment: CommentType, sectionId: string) {
-  //   setActiveSection(sectionId);
-  //   setActiveComment(comment);
-  //   setActiveComment((prev) => {
-  //     console.log(prev);
-  //     return prev;
-  //   });
-  //   setIsCommentDialogOpen(true);
-  // }
-
-  function updateComment(text: string) {
-    console.log({ activeComment });
-    console.log("updating...");
-
-    const noText = text.trim() === "";
-
-    if (!activeComment || noText) return;
-
-    setComments((prevComments) => ({
-      ...prevComments,
-      [activeSection]: prevComments[activeSection].map((c) =>
-        c.id === activeComment.id
-          ? {
-              ...c,
-              text,
-              timestamp: new Date().toLocaleString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                hour12: true,
-              }),
-            }
-          : c
-      ),
-    }));
-
-    setActiveComment(null);
-    setIsCommentDialogOpen(false);
-    setActiveSection("");
-  }
-
-  // function deleteComment(commentId: string, sectionId: string) {
-  //   setComments((prevComments) => ({
-  //     ...prevComments,
-  //     [sectionId]: prevComments[sectionId].filter((c) => c.id !== commentId),
-  //   }));
-  // }
 
   const reflectionDataUserName =
     goalData.user.firstName + " " + goalData.user.lastName;
@@ -587,9 +519,7 @@ export default function WeeklyReflectionResults({
           setIsCommentDialogOpen(false);
           setActiveComment(null);
         }}
-        onSubmit={
-          activeComment && activeComment.id ? updateComment : submitComment
-        }
+        onSubmit={submitComment}
         initialText={activeComment ? activeComment.text : ""}
       />
     </>

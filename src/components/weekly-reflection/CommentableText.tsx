@@ -1,6 +1,6 @@
 import { MessageSquarePlusIcon } from "lucide-react";
 import { Button } from "../ui/button";
-import { CommentType } from "./WeeklyReflectionResults";
+import { CommentSchemaType } from "@/db/models/Comment";
 
 export default function CommentableText({
   text,
@@ -11,7 +11,7 @@ export default function CommentableText({
   text: string;
   sectionId: string;
   addComment(sectionId: string): void;
-  comments: { [key: string]: CommentType[] };
+  comments: { [key: string]: CommentSchemaType[] };
 }) {
   const sectionComments = comments[sectionId] || [];
 
@@ -37,7 +37,15 @@ export default function CommentableText({
             >
               <p className="text-sm">{comment.text}</p>
               <p className="text-gray-500 text-xs">
-                {comment.timestamp} - {comment.author || "Anonymous"}
+                {new Date(comment.updatedAt).toLocaleString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                  hour12: true,
+                })}{" "}
+                - {comment.author || "Anonymous"}
               </p>
             </div>
           ))}
