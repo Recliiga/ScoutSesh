@@ -11,9 +11,11 @@ export default function CommentableText({
   text: string;
   sectionId: string;
   addComment(sectionId: string): void;
-  comments: { [key: string]: CommentSchemaType[] };
+  comments: CommentSchemaType[];
 }) {
-  const sectionComments = comments[sectionId] || [];
+  const sectionComments = comments.filter(
+    (comment) => comment.sectionKey === sectionId
+  );
 
   return (
     <div className="relative group">
@@ -32,7 +34,7 @@ export default function CommentableText({
           {sectionComments.map((comment) => (
             <div
               key={comment._id as string}
-              className="flex flex-col gap-2"
+              className="flex flex-col gap-2 border-amber-200 pb-2 border-b last:border-none"
               onClick={(e) => e.stopPropagation}
             >
               <p className="text-sm">{comment.text}</p>

@@ -16,20 +16,26 @@ import CommentDialog from "@/components/weekly-reflection/CommentDialog";
 import { GoalDataSchemaType } from "@/db/models/Goal";
 import { CommentSchemaType } from "@/db/models/Comment";
 import { postComment } from "@/actions/commentActions";
+import Link from "next/link";
 
 export default function WeeklyReflectionResults({
   goalData,
+  comments: goalComments,
 }: {
   goalData: GoalDataSchemaType;
+  comments: CommentSchemaType[];
 }) {
   const [activeComment, setActiveComment] = useState<CommentSchemaType | null>(
     null
   );
   const [loading, setLoading] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const [comments, setComments] = useState<{
-    [key: string]: CommentSchemaType[];
-  }>({});
+  const [comments, setComments] = useState<CommentSchemaType[]>(goalComments);
+
+  function closePopover() {
+    setActiveComment(null);
+    setActiveSection("");
+  }
 
   const isCommentDialogOpen = !!activeComment;
 
@@ -46,15 +52,15 @@ export default function WeeklyReflectionResults({
 
     if (!activeComment || noText) return;
 
-    const { newComment, error } = await postComment(text);
+    const { newComment, error } = await postComment(
+      text,
+      goalData._id as string,
+      activeSection
+    );
 
     if (error === null) {
-      setComments((prevComments) => ({
-        ...prevComments,
-        [activeSection]: [...(prevComments[activeSection] || []), newComment],
-      }));
-      setActiveComment(null);
-      setActiveSection("");
+      setComments((prevComments) => [...prevComments, newComment]);
+      closePopover();
     }
 
     setLoading(false);
@@ -66,13 +72,13 @@ export default function WeeklyReflectionResults({
   return (
     <>
       <ScrollArea className="flex-1">
-        <div className="mx-auto p-4 w-[90%] max-w-6xl">
+        <div className="mx-auto py-4 w-[90%] max-w-6xl">
           <h2 className="mb-2 font-semibold text-2xl">
             Weekly Reflection Results
           </h2>
           <h1 className="mb-2 font-bold text-3xl">{goalData.name}</h1>
           <div className="mb-6 text-muted-foreground text-sm">
-            {goalData.name}
+            {new Date(goalData.createdAt).toDateString()}
           </div>
           <Card className="mb-8">
             <CardHeader>
@@ -102,10 +108,10 @@ export default function WeeklyReflectionResults({
             </CardContent>
           </Card>
           <Card className="mb-8">
-            <CardHeader>
+            <CardHeader className="p-4 sm:p-6 pb-0">
               <CardTitle>Goal Overview</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6 pt-0">
               <div className="space-y-4">
                 <div>
                   <h3 className="mb-2 font-semibold text-lg">
@@ -126,9 +132,7 @@ export default function WeeklyReflectionResults({
                       <div className="flex justify-between items-center mb-2">
                         <h4 className="font-semibold">Comments</h4>
                         <button
-                          onClick={() => {
-                            console.log(`Closing comment box for aspiration`);
-                          }}
+                          onClick={closePopover}
                           className="text-gray-500 hover:text-gray-700"
                           aria-label="Close comments"
                         >
@@ -163,9 +167,7 @@ export default function WeeklyReflectionResults({
                       <div className="flex justify-between items-center mb-2">
                         <h4 className="font-semibold">Comments</h4>
                         <button
-                          onClick={() => {
-                            console.log(`Closing comment box for strengths`);
-                          }}
+                          onClick={closePopover}
                           className="text-gray-500 hover:text-gray-700"
                           aria-label="Close comments"
                         >
@@ -200,9 +202,7 @@ export default function WeeklyReflectionResults({
                       <div className="flex justify-between items-center mb-2">
                         <h4 className="font-semibold">Comments</h4>
                         <button
-                          onClick={() => {
-                            console.log(`Closing comment box for weaknesses`);
-                          }}
+                          onClick={closePopover}
                           className="text-gray-500 hover:text-gray-700"
                           aria-label="Close comments"
                         >
@@ -243,7 +243,7 @@ export default function WeeklyReflectionResults({
                               <div>
                                 <CommentableText
                                   text={goal.goal}
-                                  sectionId={`goal-${index}`}
+                                  sectionId={`goal-${goal._id}`}
                                   addComment={addComment}
                                   comments={comments}
                                 />
@@ -253,11 +253,7 @@ export default function WeeklyReflectionResults({
                               <div className="flex justify-between items-center mb-2">
                                 <h4 className="font-semibold">Comments</h4>
                                 <button
-                                  onClick={() => {
-                                    console.log(
-                                      `Closing comment box for goal-${index}`
-                                    );
-                                  }}
+                                  onClick={closePopover}
                                   className="text-gray-500 hover:text-gray-700"
                                   aria-label="Close comments"
                                 >
@@ -266,7 +262,7 @@ export default function WeeklyReflectionResults({
                               </div>
                               <CommentableText
                                 text={goal.goal}
-                                sectionId={`goal-${index}`}
+                                sectionId={`goal-${goal._id}`}
                                 addComment={addComment}
                                 comments={comments}
                               />
@@ -283,7 +279,7 @@ export default function WeeklyReflectionResults({
                                 <div>
                                   <CommentableText
                                     text={goal.actions}
-                                    sectionId={`actions-${index}`}
+                                    sectionId={`actions-${goal._id}`}
                                     addComment={addComment}
                                     comments={comments}
                                   />
@@ -293,11 +289,7 @@ export default function WeeklyReflectionResults({
                                 <div className="flex justify-between items-center mb-2">
                                   <h4 className="font-semibold">Comments</h4>
                                   <button
-                                    onClick={() => {
-                                      console.log(
-                                        `Closing comment box for actions-${index}`
-                                      );
-                                    }}
+                                    onClick={closePopover}
                                     className="text-gray-500 hover:text-gray-700"
                                     aria-label="Close comments"
                                   >
@@ -306,7 +298,7 @@ export default function WeeklyReflectionResults({
                                 </div>
                                 <CommentableText
                                   text={goal.actions}
-                                  sectionId={`actions-${index}`}
+                                  sectionId={`actions-${goal._id}`}
                                   addComment={addComment}
                                   comments={comments}
                                 />
@@ -322,7 +314,7 @@ export default function WeeklyReflectionResults({
                                 <div>
                                   <CommentableText
                                     text={goal.location}
-                                    sectionId={`location-${index}`}
+                                    sectionId={`location-${goal._id}`}
                                     addComment={addComment}
                                     comments={comments}
                                   />
@@ -332,11 +324,7 @@ export default function WeeklyReflectionResults({
                                 <div className="flex justify-between items-center mb-2">
                                   <h4 className="font-semibold">Comments</h4>
                                   <button
-                                    onClick={() => {
-                                      console.log(
-                                        `Closing comment box for location-${index}`
-                                      );
-                                    }}
+                                    onClick={closePopover}
                                     className="text-gray-500 hover:text-gray-700"
                                     aria-label="Close comments"
                                   >
@@ -345,7 +333,7 @@ export default function WeeklyReflectionResults({
                                 </div>
                                 <CommentableText
                                   text={goal.location}
-                                  sectionId={`location-${index}`}
+                                  sectionId={`location-${goal._id}`}
                                   addComment={addComment}
                                   comments={comments}
                                 />
@@ -361,7 +349,7 @@ export default function WeeklyReflectionResults({
                                 <div>
                                   <CommentableText
                                     text={goal.frequency}
-                                    sectionId={`frequency-${index}`}
+                                    sectionId={`frequency-${goal._id}`}
                                     addComment={addComment}
                                     comments={comments}
                                   />
@@ -371,11 +359,7 @@ export default function WeeklyReflectionResults({
                                 <div className="flex justify-between items-center mb-2">
                                   <h4 className="font-semibold">Comments</h4>
                                   <button
-                                    onClick={() => {
-                                      console.log(
-                                        `Closing comment box for frequency-${index}`
-                                      );
-                                    }}
+                                    onClick={closePopover}
                                     className="text-gray-500 hover:text-gray-700"
                                     aria-label="Close comments"
                                   >
@@ -384,7 +368,7 @@ export default function WeeklyReflectionResults({
                                 </div>
                                 <CommentableText
                                   text={goal.frequency}
-                                  sectionId={`frequency-${index}`}
+                                  sectionId={`frequency-${goal._id}`}
                                   addComment={addComment}
                                   comments={comments}
                                 />
@@ -422,7 +406,7 @@ export default function WeeklyReflectionResults({
                                     <div>
                                       <CommentableText
                                         text={weeklyReflection.improvement}
-                                        sectionId={`strategy-${index}-${i}`}
+                                        sectionId={`strategy-${goal._id}-${weeklyReflection._id}`}
                                         addComment={addComment}
                                         comments={comments}
                                       />
@@ -434,11 +418,7 @@ export default function WeeklyReflectionResults({
                                         Comments
                                       </h4>
                                       <button
-                                        onClick={() => {
-                                          console.log(
-                                            `Closing comment box for strategy-${index}-${i}`
-                                          );
-                                        }}
+                                        onClick={closePopover}
                                         className="text-gray-500 hover:text-gray-700"
                                         aria-label="Close comments"
                                       >
@@ -447,7 +427,7 @@ export default function WeeklyReflectionResults({
                                     </div>
                                     <CommentableText
                                       text={weeklyReflection.improvement}
-                                      sectionId={`strategy-${index}-${i}`}
+                                      sectionId={`strategy-${goal._id}-${weeklyReflection._id}`}
                                       addComment={addComment}
                                       comments={comments}
                                     />
@@ -463,7 +443,7 @@ export default function WeeklyReflectionResults({
                                     <div>
                                       <CommentableText
                                         text={weeklyReflection.completion}
-                                        sectionId={`completion-${index}-${i}`}
+                                        sectionId={`completion-${goal._id}-${weeklyReflection._id}`}
                                         addComment={addComment}
                                         comments={comments}
                                       />
@@ -475,11 +455,7 @@ export default function WeeklyReflectionResults({
                                         Comments
                                       </h4>
                                       <button
-                                        onClick={() => {
-                                          console.log(
-                                            `Closing comment box for completion-${index}-${i}`
-                                          );
-                                        }}
+                                        onClick={closePopover}
                                         className="text-gray-500 hover:text-gray-700"
                                         aria-label="Close comments"
                                       >
@@ -488,7 +464,7 @@ export default function WeeklyReflectionResults({
                                     </div>
                                     <CommentableText
                                       text={weeklyReflection.completion}
-                                      sectionId={`completion-${index}-${i}`}
+                                      sectionId={`completion-${goal._id}-${weeklyReflection._id}`}
                                       addComment={addComment}
                                       comments={comments}
                                     />
@@ -505,12 +481,22 @@ export default function WeeklyReflectionResults({
               </div>
             </CardContent>
           </Card>
-          <div className="flex justify-end mt-8 mb-4 w-full">
-            <Button
-              className="bg-green-500 text-white"
-              onClick={() => console.log("Navigate to dashboard")}
-            >
-              Go to Home Page
+          <div className="flex justify-between mt-8 mb-4 w-full">
+            <Button variant={"outline"} className="px-0 py-0">
+              <Link
+                href={"/dashboard/goal-setting/submissions"}
+                className="px-2 sm:px-4 py-2 w-full h-full"
+              >
+                Back to Submissions
+              </Link>
+            </Button>
+            <Button className="bg-green-500 px-0 py-0 text-white">
+              <Link
+                href={"/dashboard/goal-setting"}
+                className="px-2 sm:px-4 py-2 w-full h-full"
+              >
+                Go to Home Page
+              </Link>
             </Button>
           </div>
         </div>
