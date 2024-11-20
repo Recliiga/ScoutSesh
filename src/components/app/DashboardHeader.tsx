@@ -149,7 +149,7 @@ export default function DashboardHeader({ user }: { user: UserType }) {
           setMobileNav(false);
           setLogoutModal(false);
         }}
-        className="lg:hidden"
+        className={mobileNav ? "lg:hidden" : ""}
       >
         <DashboardMobileNav
           open={mobileNav}
