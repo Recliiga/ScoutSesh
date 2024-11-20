@@ -1,6 +1,4 @@
-import { UserType } from "@/db/models/User";
 import Link from "next/link";
-import Button from "../LinkButton";
 import { usePathname } from "next/navigation";
 import { XIcon } from "lucide-react";
 
@@ -16,11 +14,9 @@ const navLinks = [
 export default function DashboardMobileNav({
   open,
   closeModal,
-  user,
 }: {
   open: boolean;
   closeModal: () => void;
-  user: UserType | null;
 }) {
   const pathname = usePathname();
   return (
@@ -50,13 +46,6 @@ export default function DashboardMobileNav({
             </Link>
           </li>
         ))}
-        {!Boolean(user) && (
-          <li onClick={closeModal}>
-            <Button href={"/signup"} margin="none">
-              Sign Up
-            </Button>
-          </li>
-        )}
       </ul>
       <button
         className="top-4 right-4 absolute text-accent-gray-300 hover:text-accent-black duration-200"
