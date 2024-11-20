@@ -15,47 +15,49 @@ import CommentableText from "@/components/weekly-reflection/CommentableText";
 import CommentDialog from "@/components/weekly-reflection/CommentDialog";
 import { GoalDataSchemaType } from "@/db/models/Goal";
 import { CommentSchemaType } from "@/db/models/Comment";
+import { postComment } from "@/actions/commentActions";
 
 export default function WeeklyReflectionResults({
   goalData,
 }: {
   goalData: GoalDataSchemaType;
 }) {
-  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const [activeComment, setActiveComment] = useState<CommentSchemaType | null>(
     null
   );
+  const [loading, setLoading] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [comments, setComments] = useState<{
     [key: string]: CommentSchemaType[];
   }>({});
 
+  const isCommentDialogOpen = !!activeComment;
+
   function addComment(sectionId: string) {
-    setActiveSection(sectionId);
     setActiveComment({
       text: "",
-      author: "",
     } as CommentSchemaType);
-    setIsCommentDialogOpen(true);
+    setActiveSection(sectionId);
   }
 
-  function submitComment(text: string) {
+  async function submitComment(text: string) {
+    setLoading(true);
     const noText = text.trim() === "";
 
     if (!activeComment || noText) return;
 
-    const newComment = {
-      text,
-      author: "John Doe",
-    } as CommentSchemaType;
-    setComments((prevComments) => ({
-      ...prevComments,
-      [activeSection]: [...(prevComments[activeSection] || []), newComment],
-    }));
+    const { newComment, error } = await postComment(text);
 
-    setIsCommentDialogOpen(false);
-    setActiveComment(null);
-    setActiveSection("");
+    if (error === null) {
+      setComments((prevComments) => ({
+        ...prevComments,
+        [activeSection]: [...(prevComments[activeSection] || []), newComment],
+      }));
+      setActiveComment(null);
+      setActiveSection("");
+    }
+
+    setLoading(false);
   }
 
   const reflectionDataUserName =
@@ -515,10 +517,8 @@ export default function WeeklyReflectionResults({
       </ScrollArea>
       <CommentDialog
         isOpen={isCommentDialogOpen}
-        onClose={() => {
-          setIsCommentDialogOpen(false);
-          setActiveComment(null);
-        }}
+        loading={loading}
+        onClose={() => setActiveComment(null)}
         onSubmit={submitComment}
         initialText={activeComment ? activeComment.text : ""}
       />

@@ -31,7 +31,7 @@ export default function CommentableText({
           <h5 className="font-semibold">Comments:</h5>
           {sectionComments.map((comment) => (
             <div
-              key={comment.id}
+              key={comment._id as string}
               className="flex flex-col gap-2"
               onClick={(e) => e.stopPropagation}
             >
@@ -45,7 +45,9 @@ export default function CommentableText({
                   minute: "numeric",
                   hour12: true,
                 })}{" "}
-                - {comment.author || "Anonymous"}
+                -{" "}
+                {comment.author.firstName + " " + comment.author.lastName ||
+                  "Anonymous"}
               </p>
             </div>
           ))}

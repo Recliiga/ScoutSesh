@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
+import { UserType } from "./User";
 
 export interface CommentSchemaType extends mongoose.Document {
   text: string;
-  author: string;
+  author: UserType;
   createdAt: Date;
   updatedAt: Date;
 }

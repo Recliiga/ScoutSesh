@@ -7,16 +7,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
+import LoadingIndicator from "../LoadingIndicator";
 
 export default function CommentDialog({
   isOpen,
   onClose,
   onSubmit,
+  loading,
   initialText = "",
 }: {
   isOpen: boolean;
   onClose(): void;
-  onSubmit(text: string): void;
+  onSubmit(text: string): Promise<void>;
+  loading: boolean;
   initialText: string;
 }) {
   const [text, setText] = useState(initialText);
@@ -46,7 +49,23 @@ export default function CommentDialog({
           className="min-h-[100px]"
         />
         <Button onClick={handleSubmit}>
-          {initialText ? "Update" : "Submit"}
+          {initialText ? (
+            loading ? (
+              <>
+                <LoadingIndicator />
+                Updating...
+              </>
+            ) : (
+              "Update"
+            )
+          ) : loading ? (
+            <>
+              <LoadingIndicator />
+              Submitting...
+            </>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </DialogContent>
     </Dialog>
