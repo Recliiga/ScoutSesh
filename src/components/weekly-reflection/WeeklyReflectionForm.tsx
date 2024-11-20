@@ -14,6 +14,7 @@ import ReflectionOverviewScreen from "@/components/weekly-reflection/ReflectionO
 import ReflectionGoalScreen from "@/components/weekly-reflection/ReflectionGoalScreen";
 import { GoalDataSchemaType } from "@/db/models/Goal";
 import { performWeeklyReflection } from "@/actions/goalActions";
+import { notFound } from "next/navigation";
 
 export type ReflectionType = {
   completion: "";
@@ -64,7 +65,7 @@ export default function WeeklyReflectionForm({
     setShowError(false);
   }
 
-  if (!goalData) return;
+  if (!goalData) notFound();
 
   const handleGoalCompletion = (goalIndex: number, isCompleted: boolean) => {
     if (isCompleted) {

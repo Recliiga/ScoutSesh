@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAthleteGoalData } from "@/services/goalServices";
 import ConfidenceMeter from "@/components/weekly-reflection/ConfidenceMeter";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 export default async function GoalSettingResults({
   params,
@@ -12,9 +13,9 @@ export default async function GoalSettingResults({
   params: Promise<{ goalSubmissionId: string }>;
 }) {
   const { goalSubmissionId } = await params;
-  const { goalData, error } = await getAthleteGoalData(goalSubmissionId);
+  const { goalData } = await getAthleteGoalData(goalSubmissionId);
 
-  if (!goalData) throw new Error(error);
+  if (!goalData) notFound();
 
   const goalDataUserName =
     goalData.user.firstName + " " + goalData.user.lastName;
