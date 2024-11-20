@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import { Button } from "../ui/button";
 
 export default function CannotCreateGoalPage() {
   return (
@@ -12,12 +13,14 @@ export default function CannotCreateGoalPage() {
           You currently have unfinished goals. Please complete your existing
           goals before creating new ones to ensure steady progress and focus.
         </p>
-        <Link
-          href={"/dashboard/goal-setting"}
-          className="bg-green-600 hover:bg-green-700 mt-2 px-4 py-2 rounded-full font-bold text-sm text-white duration-300"
-        >
-          GO BACK
-        </Link>
+        <Button variant={"outline"} className="px-0 py-0">
+          <Link
+            href={"/dashboard/goal-setting"}
+            className="px-4 py-2 w-full h-full"
+          >
+            Back
+          </Link>
+        </Button>
       </div>
     </main>
   );

@@ -96,12 +96,12 @@ export default function CoachDashboard({ user }: { user: UserType }) {
           <DashboardCard
             title="Goal Setting"
             description="Set and manage individual and team goals. Monitor progress and adjust strategies for optimal performance."
-            href="#"
+            href="/dashboard/goal-setting"
           />
           <DashboardCard
             title="Team Members"
             description="View and manage your team roster. Access detailed profiles and performance metrics for each player."
-            href="#"
+            href="/dashboard/team-members"
           />
         </div>
       </div>

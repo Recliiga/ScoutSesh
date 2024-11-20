@@ -4,16 +4,18 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useState } from "react";
 import LoadingIndicator from "../LoadingIndicator";
-import { createGoal } from "@/actions/goalActions";
 import AuthError from "../AuthError";
 import { GoalSubmissionType } from "./CreateGoalForm";
+import { createGoal, updateGoal } from "@/actions/goalActions";
 
 export default function SaveTemplateScreen({
+  goalId,
   goalData,
   setCurrentScreen,
   goalName,
   setGoalName,
 }: {
+  goalId?: string;
   goalData: GoalSubmissionType;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
   goalName: string;
@@ -29,8 +31,9 @@ export default function SaveTemplateScreen({
 
   async function handleSaveGoal() {
     setLoading(true);
-
-    const { error: saveError } = await createGoal(goalData);
+    const { error: saveError } = goalId
+      ? await updateGoal(goalId, goalData)
+      : await createGoal(goalData);
     if (!saveError) setCurrentScreen("congratulations");
     setError(saveError);
     setLoading(false);
@@ -91,10 +94,10 @@ export default function SaveTemplateScreen({
           {loading ? (
             <>
               <LoadingIndicator />
-              Saving...
+              Updating...
             </>
           ) : (
-            "Save Submission"
+            "Update Submission"
           )}
         </Button>
       </div>

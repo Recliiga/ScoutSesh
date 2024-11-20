@@ -1,5 +1,6 @@
 import { GoalDetailsType } from "@/components/goal-setting/GoalOverviewScreen";
 import mongoose from "mongoose";
+import { UserType } from "./User";
 
 export interface WeeklyReflectionSchemaType extends mongoose.Document {
   completion: string;
@@ -25,7 +26,7 @@ export interface GoalDataSchemaType extends mongoose.Document {
   name: string;
   details: GoalDetailsType;
   goals: GoalSchemaType[];
-  user: string;
+  user: UserType;
   createdAt: Date;
   updatedAt: Date;
 }

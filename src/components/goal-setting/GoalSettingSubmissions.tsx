@@ -6,18 +6,12 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
 import { Button } from "../ui/button";
 import { CalendarIcon, ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { GoalSchemaType } from "@/db/models/Goal";
 import { UserType } from "@/db/models/User";
+import Link from "next/link";
 
 export type GoalSettingSubmissionType = {
   id: number;
@@ -37,7 +31,7 @@ export default function GoalSettingSubmissions({
   goalSettingSubmissions,
   user,
 }: {
-  goalSettingSubmissions: GoalSchemaType[];
+  goalSettingSubmissions: (GoalSchemaType & { goalDataId: string })[];
   user: UserType;
 }) {
   const mostRecentSubmission = goalSettingSubmissions.reduce(
@@ -75,7 +69,7 @@ export default function GoalSettingSubmissions({
               <div className="bg-gray-50 hover:bg-gray-100 p-4 rounded-md transition-colors cursor-pointer">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-3">
-                    <Avatar className="w-10 h-10">
+                    <Avatar className="w-12 h-12">
                       <AvatarImage
                         src={user.profilePicture}
                         alt={athleteName}
@@ -87,51 +81,35 @@ export default function GoalSettingSubmissions({
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex items-center space-x-2 text-gray-500 text-sm">
-                      <CalendarIcon className="w-4 h-4" />
-                      <span>
-                        {new Date(submission.createdAt).toLocaleDateString(
-                          "en-US",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          }
-                        )}
-                      </span>
+                    <div className="flex flex-col">
+                      <h3 className="sm:block hidden">{submission.goal}</h3>
+                      <div className="flex items-center space-x-2 text-gray-500 text-sm">
+                        <CalendarIcon className="w-4 h-4" />
+                        <span>
+                          {new Date(submission.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            }
+                          )}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div
                     className="flex items-center space-x-2"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          View
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Goal Setting Session</DialogTitle>
-                        </DialogHeader>
-                        <div className="mt-2">
-                          <p className="mb-2 text-gray-500 text-sm">
-                            {new Date(submission.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              }
-                            )}
-                          </p>
-                          <p className="text-gray-700 text-sm">
-                            {submission.goal}
-                          </p>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                    <Button variant={"outline"} className="px-0 py-0">
+                      <Link
+                        href={`/dashboard/goal-setting/submissions/${submission.goalDataId}`}
+                        className="px-4 py-2 w-full h-full"
+                      >
+                        View
+                      </Link>
+                    </Button>
                     {openSubmission === submission._id ? (
                       <ChevronDownIcon className="w-5 h-5 text-gray-400" />
                     ) : (
@@ -167,34 +145,14 @@ export default function GoalSettingSubmissions({
                               }
                             )}
                           </span>
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="outline" size="sm">
-                                View
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>{`Week${
-                                  index + 1
-                                } Reflection`}</DialogTitle>
-                              </DialogHeader>
-                              <div className="mt-2">
-                                <p className="mb-2 text-gray-500 text-sm">
-                                  {new Date(
-                                    reflection.createdAt
-                                  ).toLocaleDateString("en-US", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                  })}
-                                </p>
-                                <p className="text-gray-700 text-sm">
-                                  {reflection.improvement}
-                                </p>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
+                          <Button variant={"outline"} className="px-0 py-0">
+                            <Link
+                              href={`/dashboard/goal-setting/weekly-reflection/${submission.goalDataId}`}
+                              className="px-4 py-2 w-full h-full"
+                            >
+                              View
+                            </Link>
+                          </Button>
                         </div>
                       </li>
                     ))}

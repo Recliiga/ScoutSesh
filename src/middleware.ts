@@ -20,6 +20,8 @@ export async function middleware(request: NextRequest) {
   // Add user session to headers if the user exists
   if (isAuthenticated) {
     response.headers.set("x-user-session", JSON.stringify(user));
+  } else {
+    response.headers.delete("x-user-session");
   }
 
   // Redirect authenticated user from auth routes

@@ -94,7 +94,7 @@ export default function GoalOverviewScreen({
             !goalDetails.weaknesses
           }
         >
-          Next: Set Your Goals
+          Next: Edit Your Goals
         </Button>
       </div>
     </div>

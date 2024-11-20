@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import { StatusType } from "../app/NotificationSign";
+import { Button } from "../ui/button";
 
 export default function NoWeeklyReflectionPage({
   status,
@@ -22,12 +23,14 @@ export default function NoWeeklyReflectionPage({
             to review your progress. We&apos;ll notify you when it&apos;s time
             to begin!
           </p>
-          <Link
-            href={"/dashboard/goal-setting"}
-            className="bg-green-600 hover:bg-green-700 mt-2 px-4 py-2 rounded-full font-bold text-sm text-white duration-300"
-          >
-            GO BACK
-          </Link>
+          <Button variant={"outline"} className="px-0 py-0">
+            <Link
+              href={"/dashboard/goal-setting"}
+              className="px-4 py-2 w-full h-full"
+            >
+              Back
+            </Link>
+          </Button>
         </div>
       </main>
     );
@@ -44,12 +47,14 @@ export default function NoWeeklyReflectionPage({
             to help you track and achieve your aspirations whenever you&apos;re
             ready!
           </p>
-          <Link
-            href={"/dashboard/goal-setting"}
-            className="bg-green-600 hover:bg-green-700 mt-2 px-4 py-2 rounded-full font-bold text-sm text-white duration-300"
-          >
-            GO BACK
-          </Link>
+          <Button variant={"outline"} className="px-0 py-0">
+            <Link
+              href={"/dashboard/goal-setting"}
+              className="px-4 py-2 w-full h-full"
+            >
+              Back
+            </Link>
+          </Button>
         </div>
       </main>
     );

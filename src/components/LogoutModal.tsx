@@ -13,7 +13,6 @@ export default function LogoutModal({
   async function handleLogout() {
     setLoading(true);
     await logout();
-    closeModal();
     setLoading(false);
   }
   return (

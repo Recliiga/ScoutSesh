@@ -8,6 +8,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const errorMessages = {
   firstName: "Please enter your First name",
@@ -176,4 +177,5 @@ export async function logout() {
   const cookieStore = await cookies();
   cookieStore.delete("token");
   revalidatePath("/", "layout");
+  redirect("/login");
 }

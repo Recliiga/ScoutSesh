@@ -22,10 +22,31 @@ export async function createGoal(goalData: GoalSubmissionType) {
     if (typeof payload === "string") throw new Error("Invalid token");
     const userId = payload.userId;
 
-
     // connect to MongoDB and create new Goal
     await connectDB();
     await Goal.create({ ...goalData, user: userId });
+    return { error: null };
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
+}
+
+export async function updateGoal(goalId: string, goalData: GoalSubmissionType) {
+  const cookieStore = await cookies();
+
+  try {
+    // Get token from cookie
+    const token = cookieStore.get("token")?.value;
+    if (!token) throw new Error("Invalid token");
+
+    // Verify token and get userId
+    const payload = jwt.verify(token, process.env.JWT_SECRET!);
+    if (typeof payload === "string") throw new Error("Invalid token");
+    const userId = payload.userId;
+
+    // connect to MongoDB and create new Goal
+    await connectDB();
+    await Goal.findOneAndUpdate({ _id: goalId, user: userId }, goalData);
     return { error: null };
   } catch (error) {
     return { error: (error as Error).message };

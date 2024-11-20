@@ -26,7 +26,8 @@ export default function Header({ user }: { user: UserType | null }) {
     setMobileNav((curr) => !curr);
   }
 
-  if (pathname.includes("/dashboard")) return <DashboardHeader user={user} />;
+  if (user && pathname.includes("/dashboard"))
+    return <DashboardHeader user={user} />;
 
   return (
     <>

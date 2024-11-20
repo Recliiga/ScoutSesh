@@ -5,7 +5,9 @@ import React, { useState } from "react";
 import ModalContainer from "../ModalContainer";
 import DashboardMobileNav from "./DashboardMobileNav";
 import { usePathname } from "next/navigation";
-import { BellIcon, UserIcon } from "lucide-react";
+import { BellIcon } from "lucide-react";
+import DashboardNavUser from "../DashboardNavUser";
+import LogoutModal from "../LogoutModal";
 
 const navLinks = [
   { title: "Athlete Evaluation", href: "/dashboard/athlete-evaluation" },
@@ -16,8 +18,9 @@ const navLinks = [
   { title: "My Team Members", href: "/dashboard/team-members" },
 ];
 
-export default function DashboardHeader({ user }: { user: UserType | null }) {
+export default function DashboardHeader({ user }: { user: UserType }) {
   const [mobileNav, setMobileNav] = useState(false);
+  const [logoutModal, setLogoutModal] = useState(false);
 
   const pathname = usePathname();
 
@@ -134,18 +137,27 @@ export default function DashboardHeader({ user }: { user: UserType | null }) {
         </div>
         <div className="flex items-center space-x-4">
           <BellIcon className="w-6 h-6 text-muted-foreground hover:text-green-600 cursor-pointer" />
-          <UserIcon className="w-6 h-6 text-muted-foreground hover:text-green-600 cursor-pointer" />
+          <DashboardNavUser
+            user={user}
+            openLogoutModal={() => setLogoutModal(true)}
+          />
         </div>
       </header>
       <ModalContainer
-        open={mobileNav}
-        closeModal={() => setMobileNav(false)}
-        className="lg:hidden"
+        open={mobileNav || logoutModal}
+        closeModal={() => {
+          setMobileNav(false);
+          setLogoutModal(false);
+        }}
+        className={mobileNav ? "lg:hidden" : ""}
       >
         <DashboardMobileNav
-          user={user}
           open={mobileNav}
           closeModal={() => setMobileNav(false)}
+        />
+        <LogoutModal
+          open={logoutModal}
+          closeModal={() => setLogoutModal(false)}
         />
       </ModalContainer>
     </>

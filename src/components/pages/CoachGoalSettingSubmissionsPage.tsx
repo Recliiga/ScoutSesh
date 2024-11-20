@@ -15,7 +15,7 @@ const allAthletesWithGoals = [
     lastGoalDate: "2024-10-15",
     totalGoals: 2,
     weeklyReflections: 3,
-    latestUpdate: "2024-10-22T14:30:00",
+    latestUpdate: "2024-11-22T14:30:00",
   },
   {
     id: 2,
@@ -24,7 +24,7 @@ const allAthletesWithGoals = [
     lastGoalDate: "2024-09-01",
     totalGoals: 1,
     weeklyReflections: 2,
-    latestUpdate: "2024-09-08T09:15:00",
+    latestUpdate: "2024-12-08T09:15:00",
   },
   {
     id: 3,
@@ -120,8 +120,8 @@ export default function CoachGoalSubmissionsPage() {
   }, [searchTerm]);
 
   return (
-    <main className="flex-grow">
-      <div className="mx-auto px-4 py-8 container">
+    <main className="flex-1">
+      <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
         <h1 className="mb-6 font-bold text-3xl">
           All Goal Setting Submissions
         </h1>
