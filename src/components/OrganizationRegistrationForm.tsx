@@ -17,6 +17,7 @@ import Image from "next/image";
 import { createOrganization } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
 import Error from "./AuthError";
+import useFormEntries from "@/hooks/useFormEntries";
 
 export default function OrganizationRegistrationForm({
   userId,
@@ -29,7 +30,7 @@ export default function OrganizationRegistrationForm({
   const [error, setError] = useState<string | null>();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [formEntries, setFormEntries] = useState({
+  const { formEntries, updateField } = useFormEntries({
     userId,
     profilePicture: "",
     organizationType: "",
@@ -40,12 +41,6 @@ export default function OrganizationRegistrationForm({
     yearFounded: "",
     bio: "",
   });
-
-  function updateField(fieldName: keyof typeof formEntries, value: string) {
-    setFormEntries((prev) => {
-      return { ...prev, [fieldName]: value };
-    });
-  }
 
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";

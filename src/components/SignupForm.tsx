@@ -7,6 +7,7 @@ import Error from "./AuthError";
 import LoadingIndicator from "./LoadingIndicator";
 import { fetchOrganization } from "@/actions/organizationActions";
 import { OrganizationType } from "@/db/models/Organization";
+import useFormEntries from "@/hooks/useFormEntries";
 
 export default function SignupForm({
   orgId,
@@ -31,7 +32,7 @@ export default function SignupForm({
   const [organization, setOrganization] = useState<OrganizationType | null>(
     defaultOrganization
   );
-  const [formEntries, setFormEntries] = useState({
+  const { formEntries, updateField } = useFormEntries({
     firstName: "",
     lastName: "",
     email: "",
@@ -80,12 +81,6 @@ export default function SignupForm({
   useEffect(() => {
     runValidationCheck();
   }, [runValidationCheck]);
-
-  function updateField(fieldName: keyof typeof formEntries, value: string) {
-    setFormEntries((prev) => {
-      return { ...prev, [fieldName]: value };
-    });
-  }
 
   async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

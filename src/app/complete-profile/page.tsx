@@ -20,6 +20,7 @@ export default async function CompleteYourProfilePage() {
             firstName={user.firstName}
             lastName={user.lastName}
             email={user.email}
+            userId={user._id as string}
             role={user.role}
           />
         </div>

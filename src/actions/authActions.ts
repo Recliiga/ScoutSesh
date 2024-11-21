@@ -142,7 +142,7 @@ export async function createOrganization(formData: FormData) {
 }
 
 export async function completeProfile(formData: FormData) {
-  const email = formData.get("email");
+  const userId = formData.get("userId");
   const userData = {
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
@@ -162,7 +162,7 @@ export async function completeProfile(formData: FormData) {
     userData.profilePicture = url;
 
     await connectDB();
-    const data = await User.findOneAndUpdate({ email }, userData);
+    const data = await User.findByIdAndUpdate(userId, userData);
     if (!data) throw new Error("An error occured");
     return { error: null };
   } catch (error) {
