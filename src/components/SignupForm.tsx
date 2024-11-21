@@ -9,6 +9,7 @@ import LoadingIndicator from "./LoadingIndicator";
 export default function SignupForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -20,10 +21,17 @@ export default function SignupForm() {
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    if (confirmPassword && e.target.value !== confirmPassword) {
-      setPasswordError("Passwords do not match");
+
+    if (e.target.value.length < 8) {
+      setPasswordError("Password must be at least 8 charcters");
     } else {
       setPasswordError("");
+    }
+
+    if (confirmPassword && e.target.value !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match");
+    } else {
+      setConfirmPasswordError("");
     }
   };
 
@@ -32,9 +40,9 @@ export default function SignupForm() {
   ) => {
     setConfirmPassword(e.target.value);
     if (password && e.target.value !== password) {
-      setPasswordError("Passwords do not match");
+      setConfirmPasswordError("Passwords do not match");
     } else {
-      setPasswordError("");
+      setConfirmPasswordError("");
     }
   };
 
@@ -108,6 +116,7 @@ export default function SignupForm() {
             value={password}
             onChange={handlePasswordChange}
           />
+          {passwordError && <AuthError error={passwordError} />}
         </div>
         <div className="flex flex-col gap-2">
           <label className="font-medium text-sm" htmlFor="confirmPassword">
@@ -122,7 +131,7 @@ export default function SignupForm() {
             value={confirmPassword}
             onChange={handleConfirmPasswordChange}
           />
-          {passwordError && <AuthError error={passwordError} />}
+          {confirmPasswordError && <AuthError error={confirmPasswordError} />}
         </div>
         <div className="flex flex-col gap-2">
           <label className="font-medium text-sm" htmlFor="role">
@@ -172,7 +181,7 @@ export default function SignupForm() {
         <button
           className="flex-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"
           type="submit"
-          disabled={loading || !!passwordError}
+          disabled={loading || !!confirmPasswordError || !!confirmPasswordError}
         >
           {loading ? <LoadingIndicator /> : "Create My Account"}
         </button>

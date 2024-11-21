@@ -93,3 +93,31 @@ export async function getWeeklyReflectionStatus(
 
   return status;
 }
+
+export function resizeImage(
+  imgFile: File,
+  width: number = 500
+): Promise<string | null> {
+  return new Promise((resolve) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(imgFile);
+    fileReader.onload = (e) => {
+      const dataUrl = e.target?.result;
+      if (!dataUrl) return;
+      const canvas = document.createElement("canvas");
+      const img = document.createElement("img");
+      img.src = dataUrl as string;
+
+      img.onload = (ev: Event) => {
+        const eventTarget = ev.target as HTMLImageElement;
+        const scaleSize = width / eventTarget.width;
+        canvas.width = width;
+        canvas.height = eventTarget.height * scaleSize;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(eventTarget, 0, 0, canvas.width, canvas.height);
+        const resizedImage = ctx?.canvas.toDataURL(undefined, 0.8) || null;
+        resolve(resizedImage);
+      };
+    };
+  });
+}

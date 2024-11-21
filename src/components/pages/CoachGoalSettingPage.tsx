@@ -12,8 +12,9 @@ import {
 } from "@/components/ui/dialog";
 import { UsersIcon, SearchIcon } from "lucide-react";
 import GoalSettingCard from "../app/GoalSettingCard";
+import { GoalDataSchemaType } from "@/db/models/Goal";
 
-const athletesWithGoals = [
+const athletesWithGoals2 = [
   {
     id: 1,
     name: "John Doe",
@@ -106,8 +107,48 @@ const athletesWithGoals = [
   },
 ];
 
-export default function CoachGoalSettingPage() {
+type AthleteWithGoals = {
+  _id: string;
+  name: string;
+  profilePicture: string;
+  lastGoalDate: string;
+  totalGoals: number;
+  weeklyReflections: number;
+  latestUpdate: string;
+};
+
+export default function CoachGoalSettingPage({
+  goalData = [],
+}: {
+  goalData: GoalDataSchemaType[];
+}) {
   const [searchTerm, setSearchTerm] = useState("");
+
+  const athletesWithGoals: AthleteWithGoals[] = useMemo(() => [], []);
+
+  goalData.forEach((gd) => {
+    const athleteWithGoals = {
+      _id: gd.user._id as string,
+      name: gd.user.firstName + " " + gd.user.lastName,
+      profilePicture: gd.user.profilePicture,
+      lastGoalDate: "",
+      totalGoals: goalData
+        .filter((g) => g.user._id === gd.user._id)
+        .reduce((prev, curr) => prev + curr.goals.length, 0),
+      weeklyReflections: 5,
+      latestUpdate: new Date(
+        goalData
+          .filter((g) => g.user._id === gd.user._id)
+          .sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          )[0].updatedAt
+      ).toDateString(),
+    };
+    if (!athletesWithGoals.find((awg) => awg._id === gd.user._id)) {
+      athletesWithGoals.push(athleteWithGoals);
+    }
+  });
 
   const sortedAndFilteredAthletes = useMemo(() => {
     return athletesWithGoals
@@ -119,7 +160,7 @@ export default function CoachGoalSettingPage() {
           new Date(b.latestUpdate).getTime() -
           new Date(a.latestUpdate).getTime()
       );
-  }, [searchTerm]);
+  }, [athletesWithGoals, searchTerm]);
 
   return (
     <main className="flex-grow">
@@ -169,13 +210,13 @@ export default function CoachGoalSettingPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {sortedAndFilteredAthletes.map((athlete) => (
-                    <tr key={athlete.id}>
+                    <tr key={athlete._id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 w-10 h-10">
                             <Image
                               className="rounded-full w-10 h-10"
-                              src={athlete.photo}
+                              src={athlete.profilePicture}
                               alt=""
                               width={40}
                               height={40}

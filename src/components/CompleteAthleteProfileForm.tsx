@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, resizeImage } from "@/lib/utils";
 import Image from "next/image";
 import { completeProfile } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -49,25 +49,26 @@ export default function CompleteAthleteProfileForm({
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
-  function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePicture(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    const resizedImageUrl = await resizeImage(file);
+    if (!resizedImageUrl) return;
+
+    setProfilePicture(resizedImageUrl);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
+
     const formData = new FormData(event.currentTarget);
     if (!profilePicture || !dob) return;
     formData.set("profilePicture", profilePicture);
     formData.set("DOB", dob.toString());
     formData.set("email", email);
+
     const { error } = await completeProfile(formData);
     if (!error) {
       router.replace(redirectUrl);

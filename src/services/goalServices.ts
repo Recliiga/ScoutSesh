@@ -59,6 +59,18 @@ export async function getAllAthleteGoalData(): Promise<
   }
 }
 
+export async function getAllGoalData() {
+  try {
+    await connectDB();
+    const goalData: GoalDataSchemaType[] = JSON.parse(
+      JSON.stringify(await Goal.find().populate("user"))
+    );
+    return { goalData, error: null };
+  } catch (error) {
+    return { goalData: null, error: (error as Error).message };
+  }
+}
+
 export async function getAthleteGoalData(
   goalSubmissionId: string
 ): Promise<

@@ -31,7 +31,6 @@ export default function DashboardNavUser({
       !userMenuRef.current.contains(e.target as Node) &&
       !userIconRef.current.contains(e.target as Node)
     ) {
-      console.log("Closing...");
       setUserMenu(false);
     }
   }
