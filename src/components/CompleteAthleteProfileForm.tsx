@@ -169,11 +169,14 @@ export default function CompleteAthleteProfileForm({
               defaultValue={role}
               required
             >
-              <option value="" disabled>
-                Select a role
-              </option>
-              <option value={"Athlete"}>Athlete</option>
-              <option value={"Assistant Coach"}>Assistant Coach</option>
+              {role === "Head Coach" ? (
+                <option value={"Head Coach"}>Head Coach</option>
+              ) : (
+                <>
+                  <option value={"Athlete"}>Athlete</option>
+                  <option value={"Assistant Coach"}>Assistant Coach</option>
+                </>
+              )}
             </select>
             <div className="right-0 absolute inset-y-0 flex items-center px-2 text-gray-700 pointer-events-none">
               <ArrowRight className="w-4 h-4" />

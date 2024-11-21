@@ -45,8 +45,9 @@ export default function SignupForm({
     key !== "organizationID" ? value.trim() === "" : false
   );
   const anyError = !!(emailError || passwordError || confirmPasswordError);
+  const hasOrganization = formEntries.role === "Head Coach" || organization;
 
-  const cannotSubmit = emptyField || anyError || !organization;
+  const cannotSubmit = emptyField || anyError || !hasOrganization;
 
   const runValidationCheck = useCallback(() => {
     if (formEntries.password && formEntries.password.length < 8) {
@@ -91,8 +92,10 @@ export default function SignupForm({
     setSignupError("");
     setLoading(true);
     const formData = new FormData(e.currentTarget);
+
     const { error } = await signup(formData);
-    if (!error) {
+
+    if (error === null) {
       router.replace(redirectUrl);
     } else {
       updateField("password", "");

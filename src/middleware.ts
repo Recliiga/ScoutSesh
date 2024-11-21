@@ -10,10 +10,13 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/login") || pathname.startsWith("/signup");
   const isProtectedRoute = pathname.startsWith("/dashboard");
   const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
+  const isCreateOrganizationRoute = pathname.startsWith("/create-organization");
   const isCreateGoalRoute = pathname === "/dashboard/goal-setting/new";
-  const isAuthenticated = !!user;
-  const userProfileCompleted = !!user?.DOB;
+  const isAuthenticated = Boolean(user);
   const userIsAthlete = user?.role === "Athlete";
+  const userIsHeadCoach = user?.role === "Head Coach";
+  const userProfileCompleted = Boolean(user?.DOB);
+  const coachProfileCompleted = userIsHeadCoach && Boolean(user?.organization);
 
   const response = NextResponse.next();
 
@@ -29,11 +32,17 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(redirectUrl, request.url));
   }
 
-  // Redirect authenticated users who haven't completed their profile to complete-profile page
-  if (isProtectedRoute && isAuthenticated && !userProfileCompleted) {
-    const url = new URL("/complete-profile", request.url);
-    if (pathname !== "/dashboard") url.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(url);
+  // Redirect authenticated users who haven't completed their profile or created their organization to complete-profile page or create-organiation page
+  if (isProtectedRoute && isAuthenticated) {
+    if (!userProfileCompleted) {
+      const url = new URL("/complete-profile", request.url);
+      if (pathname !== "/dashboard") url.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(url);
+    } else if (!userIsAthlete && !coachProfileCompleted) {
+      const url = new URL("/create-organization", request.url);
+      if (pathname !== "/dashboard") url.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(url);
+    }
   }
 
   // Redirect non-athletes from create new goal page
@@ -44,21 +53,51 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect un-authenticated users from protected routes
-  if ((isProtectedRoute || isCompleteProfileRoute) && !isAuthenticated) {
+  if (
+    (isProtectedRoute || isCompleteProfileRoute || isCreateOrganizationRoute) &&
+    !isAuthenticated
+  ) {
     const url = new URL("/login", request.url);
-    if (pathname !== "/complete-profile")
+    if (
+      !Boolean(pathname === "/dashboard") &&
+      !isCompleteProfileRoute &&
+      !isCreateOrganizationRoute
+    )
       url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
   }
 
-  // Redirect authenticated users who have completed their profile to dashboard page
+  // Redirect authenticated users who have not completed their profile to create organization page or dashboard page depending on user role
   if (isCompleteProfileRoute && isAuthenticated && userProfileCompleted) {
-    return NextResponse.redirect(new URL(redirectUrl, request.url));
+    if (userIsHeadCoach) {
+      return NextResponse.redirect(
+        new URL("/create-organization", request.url)
+      );
+    } else {
+      return NextResponse.redirect(new URL(redirectUrl, request.url));
+    }
+  }
+
+  // Redirect authenticated coaches who have not created their organization to create profile page or dashboard page depending on user role
+  if (isCreateOrganizationRoute && isAuthenticated) {
+    if (userProfileCompleted) {
+      if (userIsAthlete || coachProfileCompleted) {
+        return NextResponse.redirect(new URL(redirectUrl, request.url));
+      }
+    } else {
+      return NextResponse.redirect(new URL("/complete-profile", request.url));
+    }
   }
 
   return response;
 }
 
 export const config: MiddlewareConfig = {
-  matcher: ["/login", "/signup", "/dashboard/:path*", "/complete-profile"],
+  matcher: [
+    "/login",
+    "/signup",
+    "/dashboard/:path*",
+    "/complete-profile",
+    "/create-organization",
+  ],
 };
