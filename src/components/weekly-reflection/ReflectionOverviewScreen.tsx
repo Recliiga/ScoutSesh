@@ -12,7 +12,7 @@ export default function ReflectionOverviewScreen({
 }) {
   return (
     <div className="flex flex-col mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
-      <div className="flex gap-8 w-full">
+      <div className="flex sm:flex-row flex-col gap-8 w-full">
         <div className="flex-1">
           <div className="mb-4 text-muted-foreground text-sm">
             1/{goals.filter((goal) => goal.dateCompleted === null).length + 2}{" "}
