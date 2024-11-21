@@ -61,6 +61,7 @@ export async function signup(formData: FormData) {
     email: formData.get("email"),
     password: formData.get("password") as string,
     role: formData.get("role"),
+    organization: formData.get("organization"),
   };
 
   try {

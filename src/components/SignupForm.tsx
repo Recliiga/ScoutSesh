@@ -1,65 +1,119 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { signup } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
-import AuthError from "./AuthError";
+import Error from "./AuthError";
 import LoadingIndicator from "./LoadingIndicator";
+import { fetchOrganization } from "@/actions/organizationActions";
+import { OrganizationType } from "@/db/models/Organization";
 
-export default function SignupForm() {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+export default function SignupForm({
+  orgId,
+  defaultOrganization,
+}: {
+  orgId: string;
+  defaultOrganization: OrganizationType | null;
+}) {
+  const router = useRouter();
   const searchParams = useSearchParams();
-
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
-  const router = useRouter();
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [signupError, setSignupError] = useState<string | null>(null);
+  const [organizationError, setOrganizationError] = useState(
+    orgId && !defaultOrganization ? "Invalid Organization ID" : ""
+  );
+  const [orgDataLoading, setOrgDataLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [organization, setOrganization] = useState<OrganizationType | null>(
+    defaultOrganization
+  );
+  const [formEntries, setFormEntries] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: orgId ? "Athlete" : "",
+    organizationID: orgId,
+  });
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
+  const emptyField = Object.entries(formEntries).some(([key, value]) =>
+    key !== "organizationID" ? value.trim() === "" : false
+  );
+  const anyError = !!(emailError || passwordError || confirmPasswordError);
 
-    if (e.target.value.length < 8) {
+  const cannotSubmit = emptyField || anyError || !organization;
+
+  const runValidationCheck = useCallback(() => {
+    if (formEntries.password && formEntries.password.length < 8) {
       setPasswordError("Password must be at least 8 charcters");
     } else {
       setPasswordError("");
     }
 
-    if (confirmPassword && e.target.value !== confirmPassword) {
-      setConfirmPasswordError("Passwords do not match");
-    } else {
-      setConfirmPasswordError("");
-    }
-  };
+    const passwordsDoNotMatch =
+      formEntries.confirmPassword &&
+      formEntries.password !== formEntries.confirmPassword;
 
-  const handleConfirmPasswordChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setConfirmPassword(e.target.value);
-    if (password && e.target.value !== password) {
+    if (passwordsDoNotMatch) {
       setConfirmPasswordError("Passwords do not match");
     } else {
       setConfirmPasswordError("");
     }
-  };
+
+    const notAValidEmail =
+      formEntries.email &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEntries.email);
+
+    if (notAValidEmail) {
+      setEmailError("Please enter a valid email");
+    } else {
+      setEmailError("");
+    }
+  }, [formEntries.confirmPassword, formEntries.email, formEntries.password]);
+
+  useEffect(() => {
+    runValidationCheck();
+  }, [runValidationCheck]);
+
+  function updateField(fieldName: keyof typeof formEntries, value: string) {
+    setFormEntries((prev) => {
+      return { ...prev, [fieldName]: value };
+    });
+  }
 
   async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError("");
+    setSignupError("");
     setLoading(true);
     const formData = new FormData(e.currentTarget);
     const { error } = await signup(formData);
     if (!error) {
       router.replace(redirectUrl);
     } else {
-      setPassword("");
-      setConfirmPassword("");
+      updateField("password", "");
+      updateField("confirmPassword", "");
       setLoading(false);
     }
-    setError(error);
+    setSignupError(error);
+  }
+
+  async function verifyOrgId() {
+    setOrganization(null);
+    setOrgDataLoading(true);
+    setOrganizationError("");
+    if (!formEntries.organizationID) return;
+
+    const { organization } = await fetchOrganization(
+      formEntries.organizationID
+    );
+    if (!organization) setOrganizationError("Invalid Organization ID");
+    setOrganization(organization);
+    setOrgDataLoading(false);
   }
 
   return (
@@ -75,8 +129,11 @@ export default function SignupForm() {
               id="firstName"
               name="firstName"
               required
+              value={formEntries["firstName"]}
+              onChange={(e) => updateField("firstName", e.target.value)}
             />
           </div>
+
           <div className="flex flex-col gap-2">
             <label className="font-medium text-sm" htmlFor="lastName">
               Last name
@@ -86,9 +143,12 @@ export default function SignupForm() {
               id="lastName"
               name="lastName"
               required
+              value={formEntries["lastName"]}
+              onChange={(e) => updateField("lastName", e.target.value)}
             />
           </div>
         </div>
+
         <div className="flex flex-col gap-2">
           <label className="font-medium text-sm" htmlFor="email">
             Email
@@ -100,8 +160,12 @@ export default function SignupForm() {
             placeholder="name@example.com"
             required
             type="email"
+            value={formEntries["email"]}
+            onChange={(e) => updateField("email", e.target.value)}
           />
+          {emailError && <Error error={emailError} />}
         </div>
+
         <div className="flex flex-col gap-2">
           <label className="font-medium text-sm" htmlFor="password">
             Password (8+ characters)
@@ -113,11 +177,12 @@ export default function SignupForm() {
             required
             type="password"
             minLength={8}
-            value={password}
-            onChange={handlePasswordChange}
+            value={formEntries["password"]}
+            onChange={(e) => updateField("password", e.target.value)}
           />
-          {passwordError && <AuthError error={passwordError} />}
+          {passwordError && <Error error={passwordError} />}
         </div>
+
         <div className="flex flex-col gap-2">
           <label className="font-medium text-sm" htmlFor="confirmPassword">
             Confirm Password
@@ -128,11 +193,12 @@ export default function SignupForm() {
             required
             type="password"
             minLength={8}
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
+            value={formEntries["confirmPassword"]}
+            onChange={(e) => updateField("confirmPassword", e.target.value)}
           />
-          {confirmPasswordError && <AuthError error={confirmPasswordError} />}
+          {confirmPasswordError && <Error error={confirmPasswordError} />}
         </div>
+
         <div className="flex flex-col gap-2">
           <label className="font-medium text-sm" htmlFor="role">
             Role
@@ -143,8 +209,12 @@ export default function SignupForm() {
               name="role"
               className="border-gray-300 bg-white py-2 pr-10 pl-3 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full text-sm leading-5 appearance-none focus:outline-none"
               required
+              value={formEntries["role"]}
+              onChange={(e) => updateField("role", e.target.value)}
             >
-              <option disabled>Select a role</option>
+              <option value={""} hidden>
+                Select a Role
+              </option>
               <option value={"Athlete"}>Athlete</option>
               <option value={"Head Coach"}>Head Coach</option>
               <option value={"Assistant Coach"}>Assistant Coach</option>
@@ -177,11 +247,45 @@ export default function SignupForm() {
             </div>
           </div>
         </div>
-        {error && <AuthError error={error} />}
+
+        {(formEntries.role === "Athlete" ||
+          formEntries.role === "Assistant Coach") && (
+          <div className="flex flex-col gap-2">
+            <label className="font-medium text-sm" htmlFor="organization">
+              Organization ID
+            </label>
+            <div className="relative flex items-center gap-2">
+              <input
+                className="flex-1 px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 min-w-0 text-sm disabled:text-accent-gray-300"
+                id="organization"
+                name="organization"
+                placeholder="Enter Organization ID"
+                required
+                autoComplete="off"
+                disabled={orgDataLoading}
+                value={formEntries["organizationID"]}
+                onChange={(e) => updateField("organizationID", e.target.value)}
+              />
+              <button
+                className="flex-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md font-medium text-sm text-white disabled:cursor-not-allowed"
+                type="button"
+                disabled={orgDataLoading}
+                onClick={verifyOrgId}
+              >
+                {orgDataLoading ? "Verifying..." : "Verify"}
+              </button>
+            </div>
+            {organization && (
+              <p className="text-accent-green-100">{organization.name}</p>
+            )}
+            {organizationError && <Error error={organizationError} />}
+          </div>
+        )}
+        {signupError && <Error error={signupError} />}
         <button
           className="flex-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"
           type="submit"
-          disabled={loading || !!confirmPasswordError || !!confirmPasswordError}
+          disabled={loading || cannotSubmit}
         >
           {loading ? <LoadingIndicator /> : "Create My Account"}
         </button>

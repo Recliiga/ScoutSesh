@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { createOrganization } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
-import AuthError from "./AuthError";
+import Error from "./AuthError";
 
 interface ProfileProps {
   firstName: string;
@@ -286,7 +286,7 @@ export default function OrganizationRegistrationForm({
             className="border-gray-300 bg-white px-3 py-2 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full min-h-[100px] text-sm leading-5 appearance-none focus:outline-none"
             placeholder="Tell us a bit about your organization..."
           />
-          {error && <AuthError error={error} />}
+          {error && <Error error={error} />}
         </div>
         <Button
           className="bg-[#14a800] hover:bg-[#14a800]/90 w-full text-white"

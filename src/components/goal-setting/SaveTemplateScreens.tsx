@@ -4,7 +4,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useState } from "react";
 import LoadingIndicator from "../LoadingIndicator";
-import AuthError from "../AuthError";
+import Error from "../AuthError";
 import { GoalSubmissionType } from "./CreateGoalForm";
 import { createGoal, updateGoal } from "@/actions/goalActions";
 
@@ -66,7 +66,7 @@ export default function SaveTemplateScreen({
                   maxLength={50}
                 />
               </div>
-              {error && <AuthError error={error} />}
+              {error && <Error error={error} />}
               <div className="space-y-2 mt-4">
                 <Label htmlFor="template-date" className="font-semibold">
                   Date

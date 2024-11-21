@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
   const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
   const isCreateGoalRoute = pathname === "/dashboard/goal-setting/new";
   const isAuthenticated = !!user;
-  const userProfileCompleted = !!user?.DOB || !!user?.organization;
+  const userProfileCompleted = !!user?.DOB;
   const userIsAthlete = user?.role === "Athlete";
 
   const response = NextResponse.next();
@@ -32,7 +32,7 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users who haven't completed their profile to complete-profile page
   if (isProtectedRoute && isAuthenticated && !userProfileCompleted) {
     const url = new URL("/complete-profile", request.url);
-    url.searchParams.set("redirect", pathname);
+    if (pathname !== "/dashboard") url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
   }
 
@@ -43,16 +43,17 @@ export async function middleware(request: NextRequest) {
     );
   }
 
+  // Redirect un-authenticated users from protected routes
+  if ((isProtectedRoute || isCompleteProfileRoute) && !isAuthenticated) {
+    const url = new URL("/login", request.url);
+    if (pathname !== "/complete-profile")
+      url.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(url);
+  }
+
   // Redirect authenticated users who have completed their profile to dashboard page
   if (isCompleteProfileRoute && isAuthenticated && userProfileCompleted) {
     return NextResponse.redirect(new URL(redirectUrl, request.url));
-  }
-
-  // Redirect un-authenticated users from protected routes
-  if (isProtectedRoute && !isAuthenticated) {
-    const url = new URL("/login", request.url);
-    url.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(url);
   }
 
   return response;
