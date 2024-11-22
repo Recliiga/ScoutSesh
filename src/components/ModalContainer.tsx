@@ -22,7 +22,7 @@ export default function ModalContainer({
   return (
     <div
       onClick={closeModal}
-      className={`fixed top-0 left-0 z-30 w-full h-full flex duration-300 ${className} ${
+      className={`fixed top-0 right-0 z-30 w-full h-full flex duration-300 ${className} ${
         open
           ? "visible bg-black/60 backdrop-blur-sm"
           : "invisible bg-transparent backdrop-blur-none"

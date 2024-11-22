@@ -7,7 +7,6 @@ import DashboardMobileNav from "./DashboardMobileNav";
 import { usePathname } from "next/navigation";
 import { BellIcon } from "lucide-react";
 import DashboardNavUser from "../DashboardNavUser";
-import LogoutModal from "../LogoutModal";
 
 const navLinks = [
   { title: "Athlete Evaluation", href: "/dashboard/athlete-evaluation" },
@@ -20,7 +19,6 @@ const navLinks = [
 
 export default function DashboardHeader({ user }: { user: UserType }) {
   const [mobileNav, setMobileNav] = useState(false);
-  const [logoutModal, setLogoutModal] = useState(false);
 
   const pathname = usePathname();
 
@@ -137,27 +135,17 @@ export default function DashboardHeader({ user }: { user: UserType }) {
         </div>
         <div className="flex items-center space-x-4">
           <BellIcon className="w-6 h-6 text-muted-foreground hover:text-green-600 cursor-pointer" />
-          <DashboardNavUser
-            user={user}
-            openLogoutModal={() => setLogoutModal(true)}
-          />
+          <DashboardNavUser user={user} />
         </div>
       </header>
       <ModalContainer
-        open={mobileNav || logoutModal}
-        closeModal={() => {
-          setMobileNav(false);
-          setLogoutModal(false);
-        }}
+        open={mobileNav}
+        closeModal={() => setMobileNav(false)}
         className={mobileNav ? "lg:hidden" : ""}
       >
         <DashboardMobileNav
           open={mobileNav}
           closeModal={() => setMobileNav(false)}
-        />
-        <LogoutModal
-          open={logoutModal}
-          closeModal={() => setLogoutModal(false)}
         />
       </ModalContainer>
     </>
