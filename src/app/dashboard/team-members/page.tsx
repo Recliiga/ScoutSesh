@@ -3,11 +3,11 @@ import React from "react";
 import { getSessionFromHeaders } from "@/services/authServices";
 import CoachTeamMembersPage from "@/components/dashboard-pages/CoachTeamMembersPage";
 import AthleteTeamMembersPage from "@/components/dashboard-pages/AthleteTeamMembersPage";
-import { getTeamMembers } from "@/services/userServices";
+import { fetchTeamMembers } from "@/services/userServices";
 
 export default async function TeamMembersPage() {
   const user = await getSessionFromHeaders();
-  const { teamMembers, error } = await getTeamMembers(
+  const { teamMembers, error } = await fetchTeamMembers(
     user.organization._id as string
   );
 

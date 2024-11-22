@@ -103,7 +103,7 @@ export default function AthleteTable({
                       className="border-green-600 bg-white hover:bg-green-600 px-0 py-0 text-green-600 hover:text-white"
                     >
                       <Link
-                        href={`/dashboard/goal-setting/submissions/${athlete.goalId}`}
+                        href={`/dashboard/goal-setting/weekly-reflection/${athlete.goalId}`}
                         className="px-4 py-2"
                       >
                         View Goals

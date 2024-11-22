@@ -1,7 +1,7 @@
 import connectDB from "@/db/connectDB";
 import User, { UserType } from "@/db/models/User";
 
-export async function getTeamMembers(organizationId: string) {
+export async function fetchTeamMembers(organizationId: string) {
   try {
     await connectDB();
     const teamMembers: UserType[] = JSON.parse(

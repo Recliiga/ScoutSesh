@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getAthleteGoalData } from "@/services/goalServices";
+import { fetchAthleteGoalData } from "@/services/goalServices";
 import ConfidenceMeter from "@/components/weekly-reflection/ConfidenceMeter";
 import Link from "next/link";
 import { getSessionFromHeaders } from "@/services/authServices";
@@ -15,9 +15,9 @@ export default async function GoalSettingResults({
 }: {
   params: Promise<{ goalSubmissionId: string }>;
 }) {
-  const user = getSessionFromHeaders();
+  const user = await getSessionFromHeaders();
   const { goalSubmissionId } = await params;
-  const { goalData, error } = await getAthleteGoalData(goalSubmissionId);
+  const { goalData, error } = await fetchAthleteGoalData(goalSubmissionId);
 
   if (error !== null) throw new Error(error);
   if (!goalData) notFound();
@@ -171,7 +171,7 @@ export default async function GoalSettingResults({
             </CardContent>
           </Card>
           <div className="flex justify-between mt-8 w-full">
-            {user === goalData.user._id ? (
+            {user._id === goalData.user._id ? (
               <Button variant="outline" className="px-0 py-0">
                 <Link
                   className="px-4 py-2"

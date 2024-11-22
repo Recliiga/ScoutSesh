@@ -1,12 +1,12 @@
 import React from "react";
 import WeeklyReflectionForm from "@/components/weekly-reflection/WeeklyReflectionForm";
-import { getLatestGoalData } from "@/services/goalServices";
+import { fetchAthleteLatestGoalData } from "@/services/goalServices";
 import NoWeeklyReflectionPage from "@/components/weekly-reflection/NoWeeklyReflectionPage";
 import { notFound } from "next/navigation";
 import { getGoalDueDate, getWeeklyReflectionStatus } from "@/lib/utils";
 
 export default async function WeeklyReflectionPage() {
-  const { goalData, error } = await getLatestGoalData();
+  const { goalData, error } = await fetchAthleteLatestGoalData();
   if (error !== null) return notFound();
 
   const status = await getWeeklyReflectionStatus(goalData);

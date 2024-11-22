@@ -2,11 +2,11 @@ import React from "react";
 import { Target, ClipboardCheck, FileText } from "lucide-react";
 import GoalSettingNotificationSign from "../goal-setting/GoalSettingNotificationSign";
 import GoalCard from "../dashboard/GoalCard";
-import { getLatestGoalData } from "@/services/goalServices";
+import { fetchAthleteLatestGoalData } from "@/services/goalServices";
 import { getGoalDueDate, getWeeklyReflectionStatus } from "@/lib/utils";
 
 export default async function AthleteGoalSettingPage() {
-  const { goalData, error } = await getLatestGoalData();
+  const { goalData, error } = await fetchAthleteLatestGoalData();
 
   if (error !== null) throw new Error(error);
 
@@ -50,6 +50,7 @@ export default async function AthleteGoalSettingPage() {
             icon={<ClipboardCheck className="w-6 h-6 text-green-600" />}
             actionText="Start Reflection"
             href={"/dashboard/goal-setting/weekly-reflection"}
+            disabled={status !== "needs_reflection"}
           />
           <GoalCard
             title="View Goal Setting Submissions"

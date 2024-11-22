@@ -1,6 +1,6 @@
 import WeeklyReflectionResults from "@/components/weekly-reflection/WeeklyReflectionResults";
-import { getGoalComments } from "@/services/commentServices";
-import { getAthleteGoalData } from "@/services/goalServices";
+import { fetchGoalComments } from "@/services/commentServices";
+import { fetchAthleteGoalData } from "@/services/goalServices";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -10,14 +10,14 @@ export default async function WeeklyReflectionResultsPage({
   params: Promise<{ goalSubmissionId: string }>;
 }) {
   const { goalSubmissionId } = await params;
-  const { goalData, error: goalError } = await getAthleteGoalData(
+  const { goalData, error: goalError } = await fetchAthleteGoalData(
     goalSubmissionId
   );
   if (goalError !== null) throw new Error(goalError);
 
   if (!goalData) notFound();
 
-  const { comments, error: commentError } = await getGoalComments(
+  const { comments, error: commentError } = await fetchGoalComments(
     goalData._id as string
   );
   if (commentError !== null) throw new Error(commentError);

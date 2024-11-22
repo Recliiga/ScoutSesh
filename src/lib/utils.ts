@@ -108,7 +108,7 @@ export async function getWeeklyReflectionStatus(
 
   const latestGoalCreationDate = new Date(latestGoal.updatedAt);
 
-  const today = new Date("2024-11-23");
+  const today = new Date();
 
   const todayIsFriday = today.getDay() === 5;
 
@@ -129,7 +129,6 @@ export async function getWeeklyReflectionStatus(
     : false;
 
   // Set the status based on the criterias below
-
   if (!weeklyReflectionDoneToday && (reflectionDue || todayIsFriday))
     status = "needs_reflection";
 

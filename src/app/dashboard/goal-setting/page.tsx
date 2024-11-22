@@ -3,7 +3,7 @@ import React from "react";
 import { getSessionFromHeaders } from "@/services/authServices";
 import CoachGoalSettingPage from "@/components/dashboard-pages/CoachGoalSettingPage";
 import AthleteGoalSettingPage from "@/components/dashboard-pages/AthleteGoalSettingPage";
-import { getTeamGoalData } from "@/services/goalServices";
+import { fetchTeamGoalData } from "@/services/goalServices";
 import { notFound } from "next/navigation";
 
 export default async function GoalSettingPage() {
@@ -13,7 +13,7 @@ export default async function GoalSettingPage() {
     return <AthleteGoalSettingPage />;
   }
 
-  const { teamGoalData, error } = await getTeamGoalData(
+  const { teamGoalData, error } = await fetchTeamGoalData(
     user.organization._id as string
   );
   if (error !== null) notFound();

@@ -1,7 +1,7 @@
 import connectDB from "@/db/connectDB";
 import Comment, { CommentSchemaType } from "@/db/models/Comment";
 
-export async function getGoalComments(goalId: string) {
+export async function fetchGoalComments(goalId: string) {
   try {
     await connectDB();
     const comments: CommentSchemaType[] = JSON.parse(

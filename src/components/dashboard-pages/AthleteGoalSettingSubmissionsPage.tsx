@@ -2,14 +2,14 @@ import React from "react";
 import Link from "next/link";
 import BackButton from "@/components/dashboard/BackButton";
 import GoalSettingSubmissions from "@/components/goal-setting/GoalSettingSubmissions";
-import { getAllAthleteGoalData } from "@/services/goalServices";
+import { fetchAllAthleteGoalData } from "@/services/goalServices";
 import { getSessionFromHeaders } from "@/services/authServices";
 import { GoalSchemaType } from "@/db/models/Goal";
 
 type AthleteGoalType = GoalSchemaType & { goalDataId: string };
 
 export default async function AthleteGoalSettingSubmissionsPage() {
-  const { athleteGoalData, error } = await getAllAthleteGoalData();
+  const { athleteGoalData, error } = await fetchAllAthleteGoalData();
   const user = await getSessionFromHeaders();
 
   if (error !== null) throw new Error(error);

@@ -3,7 +3,7 @@ import { getSessionFromHeaders } from "@/services/authServices";
 import AthleteGoalSettingSubmissionsPage from "@/components/dashboard-pages/AthleteGoalSettingSubmissionsPage";
 import CoachGoalSettingSubmissionsPage from "@/components/dashboard-pages/CoachGoalSettingSubmissionsPage";
 import { notFound } from "next/navigation";
-import { getTeamGoalData } from "@/services/goalServices";
+import { fetchTeamGoalData } from "@/services/goalServices";
 
 export default async function GoalSettingSubmissionsPage() {
   const user = await getSessionFromHeaders();
@@ -12,7 +12,7 @@ export default async function GoalSettingSubmissionsPage() {
     return <AthleteGoalSettingSubmissionsPage />;
   }
 
-  const { teamGoalData, error } = await getTeamGoalData(
+  const { teamGoalData, error } = await fetchTeamGoalData(
     user.organization._id as string
   );
   if (error !== null) notFound();
