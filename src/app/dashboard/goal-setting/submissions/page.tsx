@@ -2,6 +2,8 @@ import React from "react";
 import { getSessionFromHeaders } from "@/services/authServices";
 import AthleteGoalSettingSubmissionsPage from "@/components/dashboard-pages/AthleteGoalSettingSubmissionsPage";
 import CoachGoalSettingSubmissionsPage from "@/components/dashboard-pages/CoachGoalSettingSubmissionsPage";
+import { notFound } from "next/navigation";
+import { getTeamGoalData } from "@/services/goalServices";
 
 export default async function GoalSettingSubmissionsPage() {
   const user = await getSessionFromHeaders();
@@ -9,5 +11,11 @@ export default async function GoalSettingSubmissionsPage() {
   if (user.role === "Athlete") {
     return <AthleteGoalSettingSubmissionsPage />;
   }
-  return <CoachGoalSettingSubmissionsPage />;
+
+  const { teamGoalData, error } = await getTeamGoalData(
+    JSON.stringify(user.organization)
+  );
+  if (error !== null) notFound();
+
+  return <CoachGoalSettingSubmissionsPage teamGoalData={teamGoalData} />;
 }

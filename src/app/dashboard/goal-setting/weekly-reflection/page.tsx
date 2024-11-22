@@ -11,7 +11,7 @@ export default async function WeeklyReflectionPage() {
 
   const status = await getWeeklyReflectionStatus(goalData);
 
-  const dueDate = getGoalDueDate(goalData);
+  const dueDate = goalData && getGoalDueDate(goalData);
 
   if (!goalData || status !== "needs_reflection")
     return <NoWeeklyReflectionPage status={status} dueDate={dueDate} />;

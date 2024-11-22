@@ -1,123 +1,50 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { SearchIcon } from "lucide-react";
 import AthleteTable from "../dashboard/AthleteTable";
+import { GoalDataSchemaType } from "@/db/models/Goal";
 
-const allAthletesWithGoals = [
-  {
-    id: 1,
-    name: "John Doe",
-    photo: "/placeholder-profile-picture.png",
-    lastGoalDate: "2024-10-15",
-    totalGoals: 2,
-    weeklyReflections: 3,
-    latestUpdate: "2024-11-22T14:30:00",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    photo: "/placeholder-profile-picture.png",
-    lastGoalDate: "2024-09-01",
-    totalGoals: 1,
-    weeklyReflections: 2,
-    latestUpdate: "2024-12-08T09:15:00",
-  },
-  {
-    id: 3,
-    name: "Mike Johnson",
-    photo: "/placeholder-profile-picture.png",
-    lastGoalDate: "2024-08-15",
-    totalGoals: 3,
-    weeklyReflections: 3,
-    latestUpdate: "2024-08-29T11:45:00",
-  },
-  {
-    id: 4,
-    name: "Emily Brown",
-    photo: "/placeholder-profile-picture.png",
-    lastGoalDate: "2024-07-22",
-    totalGoals: 3,
-    weeklyReflections: 5,
-    latestUpdate: "2024-08-26T16:20:00",
-  },
-  {
-    id: 5,
-    name: "Alex Lee",
-    photo: "/placeholder-profile-picture.png",
-    lastGoalDate: "2024-06-30",
-    totalGoals: 2,
-    weeklyReflections: 4,
-    latestUpdate: "2024-07-28T10:00:00",
-  },
-  {
-    id: 6,
-    name: "Sarah Wilson",
-    photo: "/placeholder-profile-picture.png",
-    lastGoalDate: "2024-05-18",
-    totalGoals: 3,
-    weeklyReflections: 6,
-    latestUpdate: "2024-06-29T13:50:00",
-  },
-  {
-    id: 7,
-    name: "Tom Davis",
-    photo: "/placeholder-profile-picture.png",
-    lastGoalDate: "2024-04-05",
-    totalGoals: 1,
-    weeklyReflections: 2,
-    latestUpdate: "2024-04-19T08:30:00",
-  },
-  {
-    id: 8,
-    name: "Lisa Chen",
-    photo: "/placeholder-profile-picture.png",
-    lastGoalDate: "2024-03-12",
-    totalGoals: 3,
-    weeklyReflections: 4,
-    latestUpdate: "2024-04-09T15:10:00",
-  },
-  {
-    id: 9,
-    name: "Ryan Taylor",
-    photo: "/placeholder-profile-picture.png",
-    lastGoalDate: "2024-02-28",
-    totalGoals: 2,
-    weeklyReflections: 3,
-    latestUpdate: "2024-03-21T12:00:00",
-  },
-  {
-    id: 10,
-    name: "Emma White",
-    photo: "/placeholder-profile-picture.png",
-    lastGoalDate: "2024-01-15",
-    totalGoals: 3,
-    weeklyReflections: 7,
-    latestUpdate: "2024-03-04T17:45:00",
-  },
-];
-
-export default function CoachGoalSubmissionsPage() {
+export default function CoachGoalSubmissionsPage({
+  teamGoalData,
+}: {
+  teamGoalData: GoalDataSchemaType[];
+}) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { activeAthletes, inactiveAthletes } = useMemo(() => {
-    const fourWeeksAgo = new Date();
-    fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
-    const filtered = allAthletesWithGoals.filter((athlete) =>
-      athlete.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    return {
-      activeAthletes: filtered.filter(
-        (athlete) => new Date(athlete.latestUpdate) > fourWeeksAgo
-      ),
-      inactiveAthletes: filtered.filter(
-        (athlete) => new Date(athlete.latestUpdate) <= fourWeeksAgo
-      ),
-    };
-  }, [searchTerm]);
+  const allAthletesWithGoals = teamGoalData.map((gd, index) => ({
+    _id: `${gd.user._id}-${index}`,
+    goalId: gd._id as string,
+    name: gd.user.firstName + " " + gd.user.lastName,
+    profilePicture: gd.user.profilePicture,
+    lastGoalDate: new Date(),
+    totalGoals: gd.goals.length,
+    weeklyReflections: gd.goals.reduce(
+      (prev, curr) => prev + curr.weeklyReflections.length,
+      0
+    ),
+    latestUpdate: new Date(
+      [...gd.goals].sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      )[0].updatedAt
+    ),
+  }));
+
+  const fourWeeksAgo = new Date();
+  fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
+  const filtered = allAthletesWithGoals.filter((athlete) =>
+    athlete.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const activeAthletes = filtered.filter(
+    (athlete) => new Date(athlete.latestUpdate) > fourWeeksAgo
+  );
+  const inactiveAthletes = filtered.filter(
+    (athlete) => new Date(athlete.latestUpdate) <= fourWeeksAgo
+  );
 
   return (
     <main className="flex-1">

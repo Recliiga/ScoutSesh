@@ -1,5 +1,5 @@
 import connectDB from "@/db/connectDB";
-import Goal, { GoalDataSchemaType, GoalSchemaType } from "@/db/models/Goal";
+import Goal, { GoalDataSchemaType } from "@/db/models/Goal";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -27,8 +27,11 @@ export async function getLatestGoalData() {
 }
 
 export async function getAllAthleteGoalData(): Promise<
-  | { athleteGoals: (GoalSchemaType & { goalDataId: string })[]; error: null }
-  | { athleteGoals: null; error: string }
+  | {
+      athleteGoalData: GoalDataSchemaType[];
+      error: null;
+    }
+  | { athleteGoalData: null; error: string }
 > {
   const cookieStore = await cookies();
   try {
@@ -43,59 +46,38 @@ export async function getAllAthleteGoalData(): Promise<
 
     // Connect to database and get latest user goal
     await connectDB();
-    const userGoalData: GoalDataSchemaType[] = JSON.parse(
+    const athleteGoalData: GoalDataSchemaType[] = JSON.parse(
       JSON.stringify(await Goal.find({ user: userId }))
     );
 
-    const athleteGoals: (GoalSchemaType & { goalDataId: string })[] = [];
-    userGoalData.forEach((goalD) => {
-      const a = goalD.goals.map((goal) => ({ ...goal, goalDataId: goalD._id }));
-      athleteGoals.push(...(a as (GoalSchemaType & { goalDataId: string })[]));
-    });
-
-    return { athleteGoals, error: null };
+    return { athleteGoalData, error: null };
   } catch (error) {
-    return { athleteGoals: null, error: (error as Error).message };
+    return { athleteGoalData: null, error: (error as Error).message };
   }
 }
 
-export async function getAllGoalData() {
+export async function getTeamGoalData(organizationId: string) {
+  const orgId = JSON.parse(organizationId);
   try {
     await connectDB();
-    const goalData: GoalDataSchemaType[] = JSON.parse(
+    const allGoalData: GoalDataSchemaType[] = JSON.parse(
       JSON.stringify(await Goal.find().populate("user"))
     );
-    return { goalData, error: null };
+    const teamGoalData = allGoalData.filter(
+      (goalData) => goalData.user.organization === orgId
+    );
+    return { teamGoalData, error: null };
   } catch (error) {
-    return { goalData: null, error: (error as Error).message };
+    return { teamGoalData: null, error: (error as Error).message };
   }
 }
 
-export async function getAthleteGoalData(
-  goalSubmissionId: string
-): Promise<
-  | { goalData: GoalDataSchemaType; error: null }
-  | { goalData: null; error: string }
-> {
-  const cookieStore = await cookies();
+export async function getAthleteGoalData(goalSubmissionId: string) {
   try {
-    // Get token from cookies
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("User is unauthorized");
-
-    // Get userId from token
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("User is unauthorized");
-    const userId = payload.userId;
-
     // Connect to database and get latest user goal
     await connectDB();
-    const goalData = JSON.parse(
-      JSON.stringify(
-        await Goal.findOne({ _id: goalSubmissionId, user: userId }).populate(
-          "user"
-        )
-      )
+    const goalData: GoalDataSchemaType | null = JSON.parse(
+      JSON.stringify(await Goal.findById(goalSubmissionId).populate("user"))
     );
 
     return { goalData, error: null };

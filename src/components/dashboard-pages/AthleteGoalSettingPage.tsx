@@ -24,7 +24,7 @@ export default async function AthleteGoalSettingPage() {
         </p>
         <GoalSettingNotificationSign
           status={status}
-          dueDate={goalData&&getGoalDueDate(goalData)}
+          dueDate={goalData && getGoalDueDate(goalData)}
         />
         <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
           {canCreateNewGoals ? (

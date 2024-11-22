@@ -8,7 +8,7 @@ export default function NoWeeklyReflectionPage({
   dueDate = "friday",
 }: {
   status: StatusType;
-  dueDate?: string;
+  dueDate: string | null;
 }) {
   if (status === "not_due")
     return (
