@@ -44,10 +44,7 @@ export default function AthleteTeamMembersPage({
       <h3 className="mb-4 font-bold text-2xl">Athletes</h3>
       <div className="gap-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {teamMembers.map((member) => (
-          <>
-            <UserProfileCard member={member} key={member._id as string} />
-            <UserProfileCard member={member} key={`${member._id}-a`} />
-          </>
+          <UserProfileCard member={member} key={member._id as string} />
         ))}
       </div>
     </main>
