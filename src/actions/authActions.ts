@@ -3,7 +3,7 @@
 import connectDB from "@/db/connectDB";
 import Organization from "@/db/models/Organization";
 import User from "@/db/models/User";
-import { uploadImage } from "@/utils/uploadImage";
+import { uploadImage } from "@/lib/utils";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { revalidatePath } from "next/cache";
