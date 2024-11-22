@@ -17,6 +17,7 @@ import { GoalDataSchemaType } from "@/db/models/Goal";
 import { CommentSchemaType } from "@/db/models/Comment";
 import { postComment } from "@/actions/commentActions";
 import Link from "next/link";
+import { getFullname } from "@/lib/utils";
 
 export default function WeeklyReflectionResults({
   goalData,
@@ -66,8 +67,7 @@ export default function WeeklyReflectionResults({
     setLoading(false);
   }
 
-  const reflectionDataUserName =
-    goalData.user.firstName + " " + goalData.user.lastName;
+  const reflectionDataUserName = getFullname(goalData.user);
 
   return (
     <>

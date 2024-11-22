@@ -1,21 +1,16 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import Image from "next/image";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 export type AthleteType = {
-  id: number;
+  _id: string;
+  goalId: string;
   name: string;
-  photo: string;
-  lastGoalDate: string;
+  profilePicture: string;
+  lastGoalDate: Date;
   totalGoals: number;
   weeklyReflections: number;
-  latestUpdate: string;
+  latestUpdate: Date;
 };
 
 export default function AthleteTable({
@@ -51,13 +46,13 @@ export default function AthleteTable({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {athletes.map((athlete) => (
-              <tr key={athlete.id}>
+              <tr key={athlete._id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 w-10 h-10">
                       <Image
                         className="rounded-full w-10 h-10"
-                        src={athlete.photo}
+                        src={athlete.profilePicture}
                         alt=""
                         width={40}
                         height={40}
@@ -102,51 +97,18 @@ export default function AthleteTable({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex space-x-2">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-green-600 bg-white hover:bg-green-600 text-green-600 hover:text-white"
-                        >
-                          View Goals
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>{athlete.name}&apos;s Goals</DialogTitle>
-                        </DialogHeader>
-                        <div className="mt-2">
-                          <p className="text-gray-500 text-sm">
-                            Goals Set: {athlete.totalGoals}
-                          </p>
-                          <p className="text-gray-500 text-sm">
-                            Weekly Reflections: {athlete.weeklyReflections}
-                          </p>
-                          <p className="text-gray-500 text-sm">
-                            Submission Date:{" "}
-                            {new Date(athlete.lastGoalDate).toLocaleDateString(
-                              "en-US",
-                              { month: "long", day: "numeric", year: "numeric" }
-                            )}
-                          </p>
-                          <p className="text-gray-500 text-sm">
-                            Latest Update:{" "}
-                            {new Date(athlete.latestUpdate).toLocaleString(
-                              "en-US",
-                              {
-                                month: "long",
-                                day: "numeric",
-                                year: "numeric",
-                                hour: "numeric",
-                                minute: "numeric",
-                                hour12: true,
-                              }
-                            )}
-                          </p>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-green-600 bg-white hover:bg-green-600 px-0 py-0 text-green-600 hover:text-white"
+                    >
+                      <Link
+                        href={`/dashboard/goal-setting/weekly-reflection/${athlete.goalId}`}
+                        className="px-4 py-2"
+                      >
+                        View Goals
+                      </Link>
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"

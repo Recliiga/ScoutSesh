@@ -12,20 +12,7 @@ import { Card, CardContent } from "../ui/card";
 import { GoalSchemaType } from "@/db/models/Goal";
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
-
-export type GoalSettingSubmissionType = {
-  id: number;
-  date: string;
-  coachName: string;
-  coachAvatar: string;
-  content: string;
-  weeklyReflections: {
-    id: number;
-    date: string;
-    title: string;
-    content: string;
-  }[];
-};
+import { getFullname } from "@/lib/utils";
 
 export default function GoalSettingSubmissions({
   goalSettingSubmissions,
@@ -48,7 +35,7 @@ export default function GoalSettingSubmissions({
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
-  const athleteName = user.firstName + " " + user.lastName;
+  const athleteName = getFullname(user);
 
   return (
     <div className="space-y-4">
@@ -125,38 +112,44 @@ export default function GoalSettingSubmissions({
                   <h3 className="mb-4 font-medium text-gray-900 text-lg">
                     Weekly Reflections
                   </h3>
-                  <ul className="space-y-3">
-                    {submission.weeklyReflections.map((reflection, index) => (
-                      <li
-                        key={reflection._id as string}
-                        className="flex justify-between items-center bg-white shadow-sm p-3 rounded-md"
-                      >
-                        <span className="font-medium text-gray-900 text-sm">
-                          {`Week${index + 1} Reflection`}
-                        </span>
-                        <div className="flex items-center space-x-4">
-                          <span className="text-gray-500 text-sm">
-                            {new Date(reflection.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
+                  {submission.weeklyReflections.length ? (
+                    <ul className="flex flex-col gap-3">
+                      {submission.weeklyReflections.map((reflection, index) => (
+                        <li
+                          key={reflection._id as string}
+                          className="flex justify-between items-center bg-white shadow-sm p-3 rounded-md"
+                        >
+                          <span className="font-medium text-gray-900 text-sm">
+                            {`Week${index + 1} Reflection`}
+                          </span>
+                          <div className="flex items-center space-x-4">
+                            <span className="text-gray-500 text-sm">
+                              {new Date(
+                                reflection.createdAt
+                              ).toLocaleDateString("en-US", {
                                 year: "numeric",
                                 month: "long",
                                 day: "numeric",
-                              }
-                            )}
-                          </span>
-                          <Button variant={"outline"} className="px-0 py-0">
-                            <Link
-                              href={`/dashboard/goal-setting/weekly-reflection/${submission.goalDataId}`}
-                              className="px-4 py-2 w-full h-full"
-                            >
-                              View
-                            </Link>
-                          </Button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                              })}
+                            </span>
+                            <Button variant={"outline"} className="px-0 py-0">
+                              <Link
+                                href={`/dashboard/goal-setting/weekly-reflection/${submission.goalDataId}`}
+                                className="px-4 py-2 w-full h-full"
+                              >
+                                View
+                              </Link>
+                            </Button>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-accent-gray-300">
+                      You have not completed any weekly reflections for this
+                      goal
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             </CollapsibleContent>

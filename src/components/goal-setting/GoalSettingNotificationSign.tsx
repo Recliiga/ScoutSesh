@@ -9,12 +9,12 @@ export type StatusType =
   | "all_complete"
   | "not_due";
 
-export default function NotificationSign({
+export default function GoalSettingNotificationSign({
   status,
   dueDate = "friday",
 }: {
-  status?: StatusType;
-  dueDate?: string;
+  status: StatusType;
+  dueDate: string | null;
 }) {
   let message = "";
   let href = "";
@@ -33,18 +33,19 @@ export default function NotificationSign({
   } else if (status === "all_complete") {
     message =
       "Great job keeping up with your goals! Keep working towards achieving them.";
-    actionText = "View Goal Setting Submissions";
+    actionText = "Set New Goals";
 
-    href = "/dashboard/goal-setting/submissions";
+    href = "/dashboard/goal-setting/new";
   } else if (status === "not_due") {
-    message = `It looks like your weekly assessment is not quite due yet. Please check back on ${dueDate}. In the meantime, feel free to review your progress. We'll notify you when it's time to begin!`;
+    message = `It looks like your weekly assessment is not quite due yet. Please check back on <span style="font-weight:600">${dueDate}</span>. In the meantime, feel free to review your progress. We'll notify you when it's time to begin!`;
     actionText = "View Goal Setting Submissions";
 
     href = "/dashboard/goal-setting/submissions";
   } else {
-    message = "Athlete Evaluation awaiting your action";
-    actionText = "Complete Athlete Evaluation";
-    href = "/dashboard/athlete-evaluation";
+    message =
+      "Keep up the great work! Check out your goals and see what's next.";
+    actionText = "View Goals";
+    href = "/dashboard/goal-setting/submissions";
   }
 
   return (
@@ -56,7 +57,10 @@ export default function NotificationSign({
         </h2>
       </div>
       <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-4 sm:gap-6 md:gap-8">
-        <p className="text-base text-gray-800 sm:text-lg">{message}</p>
+        <p
+          className="text-base text-gray-800 sm:text-lg"
+          dangerouslySetInnerHTML={{ __html: message }}
+        ></p>
         <Button className="border-green-600 bg-white hover:bg-green-600 px-0 py-0 border text-green-600 hover:text-white transition-colors">
           <Link href={href} className="flex-center px-4 py-2 w-full h-full">
             {actionText}

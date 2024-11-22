@@ -15,8 +15,8 @@ export default function CongratulationsScreen({
 }) {
   return (
     <div className="flex flex-col justify-center items-center bg-green-50 py-6 sm:py-8">
-      <Card className="w-full max-w-3xl text-center">
-        <CardHeader>
+      <Card className="flex flex-col gap-6 p-4 sm:p-6 w-[90%] max-w-3xl text-center">
+        <CardHeader className="p-0">
           <div className="mb-4 text-muted-foreground text-sm">
             {goals.length + 2}/{goals.length + 2} Weekly Reflection
           </div>
@@ -28,24 +28,24 @@ export default function CongratulationsScreen({
             Your weekly reflection has been successfully submitted.
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <p className="mb-6 text-gray-600 text-md">
             Great job on completing your reflection! This will help guide your
             future training and goal-setting. Keep up the great work and stay
             focused on your progress.
           </p>
-          <Card className="mb-6">
-            <CardHeader>
+          <Card className="flex flex-col gap-6 mb-6 p-4 sm:p-6">
+            <CardHeader className="p-0">
               <CardTitle className="text-xl">Your Goals</CardTitle>
             </CardHeader>
-            <CardContent>
-              <ul className="space-y-4">
+            <CardContent className="p-0">
+              <ul className="flex flex-col gap-4">
                 {goals.map((goal, index) => (
                   <li
                     key={index}
-                    className="flex sm:flex-row flex-col justify-between sm:items-center bg-white shadow-sm p-4 rounded-lg"
+                    className="flex justify-between sm:items-center bg-white shadow-sm rounded-lg"
                   >
-                    <div className="flex-grow sm:mr-4 mb-2 sm:mb-0">
+                    <div className="flex-1 text-left">
                       <span className="font-medium">Goal #{index + 1}:</span>{" "}
                       {goal.goal}
                     </div>

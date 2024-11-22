@@ -8,7 +8,7 @@ export default async function layout({
 }) {
   return (
     <div className="flex flex-1 justify-center items-center bg-gray-100 p-4">
-      <div className="flex flex-col gap-6 border-accent-gray-200 bg-white shadow-sm p-6 border rounded-lg w-full max-w-md">
+      <div className="flex flex-col gap-6 border-accent-gray-200 bg-white shadow-sm p-3 sm:p-6 border rounded-lg w-full max-w-md">
         <div className="flex flex-col gap-1">
           <h3 className="font-bold text-2xl text-center tracking-tight">
             Welcome to ScoutSesh

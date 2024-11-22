@@ -7,7 +7,7 @@ import {
   UsersIcon,
   UserPlusIcon,
 } from "lucide-react";
-import EvaluationCard from "@/components/app/EvaluationCard";
+import EvaluationCard from "@/components/dashboard/EvaluationCard";
 
 const allAthletesNeedingEvaluation = [
   {

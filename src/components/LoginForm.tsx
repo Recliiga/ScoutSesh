@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import AuthError from "./AuthError";
+import Error from "./AuthError";
 import LoadingIndicator from "./LoadingIndicator";
 import { login } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -66,7 +66,7 @@ export default function LoginForm() {
             placeholder="******"
           />
         </div>
-        {error && <AuthError error={error} />}
+        {error && <Error error={error} />}
         <button
           className="flex-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"
           type="submit"

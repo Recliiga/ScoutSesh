@@ -46,7 +46,24 @@ export async function updateGoal(goalId: string, goalData: GoalSubmissionType) {
 
     // connect to MongoDB and create new Goal
     await connectDB();
-    await Goal.findOneAndUpdate({ _id: goalId, user: userId }, goalData);
+    const goalToUpdate: GoalDataSchemaType | null = await Goal.findById(goalId);
+
+    // Throw error if goal not found
+    if (!goalToUpdate) {
+      throw new Error("Goal not found");
+    }
+
+    // Throw error if user is not the creator of the goal
+    const goalUser = JSON.parse(JSON.stringify(goalToUpdate.user));
+    if (goalUser !== userId) {
+      throw new Error("User is not authorized");
+    }
+
+    const updatedGoal = await Goal.findOneAndUpdate(
+      { _id: goalId, user: userId },
+      goalData
+    );
+    if (!updatedGoal) throw new Error("Unable to update goal");
     return { error: null };
   } catch (error) {
     return { error: (error as Error).message };

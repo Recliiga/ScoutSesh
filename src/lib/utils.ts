@@ -1,5 +1,6 @@
-import { StatusType } from "@/components/app/NotificationSign";
+import { StatusType } from "@/components/goal-setting/GoalSettingNotificationSign";
 import { GoalDataSchemaType } from "@/db/models/Goal";
+import { UserType } from "@/db/models/User";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -51,22 +52,63 @@ export function formatTime(timeString: string) {
   }
 }
 
+export function resizeImage(
+  imgFile: File,
+  width: number = 500
+): Promise<string | null> {
+  return new Promise((resolve) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(imgFile);
+    fileReader.onload = (e) => {
+      const dataUrl = e.target?.result;
+      if (!dataUrl) return;
+      const canvas = document.createElement("canvas");
+      const img = document.createElement("img");
+      img.src = dataUrl as string;
+
+      img.onload = (ev: Event) => {
+        const eventTarget = ev.target as HTMLImageElement;
+        const scaleSize = width / eventTarget.width;
+        canvas.width = width;
+        canvas.height = eventTarget.height * scaleSize;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(eventTarget, 0, 0, canvas.width, canvas.height);
+        const resizedImage = ctx?.canvas.toDataURL(undefined, 0.8) || null;
+        resolve(resizedImage);
+      };
+    };
+  });
+}
+
+function getLatestGoal(goalData: GoalDataSchemaType) {
+  const latestGoal = goalData.goals.reduce(
+    (prev, curr) =>
+      new Date(curr.updatedAt).getTime() > new Date(prev.updatedAt).getTime()
+        ? curr
+        : prev,
+    goalData.goals[0]
+  );
+  return latestGoal;
+}
+
 export async function getWeeklyReflectionStatus(
   goalData: GoalDataSchemaType | null
 ): Promise<StatusType> {
-  let status: StatusType = "needs_reflection";
+  let status: StatusType = "not_due";
+
+  if (!goalData) return "no_goals";
 
   // Check if all goals are completed
-  const allGoalsCompleted = !goalData?.goals.some(
+  const allGoalsCompleted = !goalData.goals.some(
     (goal) => goal.dateCompleted === null
   );
 
-  // Get the creation date of the most recent goal
-  const latestGoalCreationDate = new Date(
-    goalData?.goals.at(-1)?.createdAt as Date
-  );
+  // Get the updated date of the most recent goal
+  const latestGoal = getLatestGoal(goalData);
 
-  const today = new Date("2024-11-14");
+  const latestGoalCreationDate = new Date(latestGoal.updatedAt);
+
+  const today = new Date();
 
   const todayIsFriday = today.getDay() === 5;
 
@@ -80,16 +122,62 @@ export async function getWeeklyReflectionStatus(
   const differenceinDays = differenceinMs / (1000 * 60 * 60 * 24);
 
   // Check if the difference in days is less than 7
-  const notYetTimeForReflection = differenceinDays < 7;
-  const reflectionNotDue = notYetTimeForReflection;
+  const reflectionDue = differenceinDays >= 7;
+
+  const weeklyReflectionDoneToday = latestGoal
+    ? new Date(latestGoal.updatedAt).getDate() === today.getDate()
+    : false;
 
   // Set the status based on the criterias below
-
-  if (reflectionNotDue && !todayIsFriday) status = "not_due";
+  if (!weeklyReflectionDoneToday && (reflectionDue || todayIsFriday))
+    status = "needs_reflection";
 
   if (allGoalsCompleted) status = "all_complete";
 
-  if (!goalData?.goals.length) status = "no_goals";
+  if (goalData && goalData.goals.length < 1) status = "no_goals";
 
   return status;
+}
+
+export function getGoalDueDate(goalData: GoalDataSchemaType) {
+  const latestGoal = getLatestGoal(goalData);
+
+  const nextFriday = new Date();
+  const dayOfWeek = nextFriday.getDay();
+  const daysUntilFriday = dayOfWeek >= 5 ? 12 - dayOfWeek : 5 - dayOfWeek;
+  nextFriday.setDate(nextFriday.getDate() + daysUntilFriday);
+
+  const nextWeekDueDate = new Date(latestGoal.updatedAt);
+  nextWeekDueDate.setDate(nextWeekDueDate.getDate() + 7);
+
+  const dueDate =
+    nextWeekDueDate.getDate() < nextFriday.getDate()
+      ? nextWeekDueDate
+      : nextFriday;
+
+  return dueDate.toDateString();
+}
+
+export function getFullname(user: UserType) {
+  return `${user.firstName} ${user.lastName}`;
+}
+
+import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
+export async function uploadImage(image: string) {
+  // Configuration
+  cloudinary.config({
+    cloud_name: process.env.COUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
+  // Upload an image
+
+  try {
+    const uploadResult = await cloudinary.uploader.upload(image);
+    const { url } = uploadResult as UploadApiResponse;
+    return { url, error: null };
+  } catch (error) {
+    return { url: null, error: (error as Error).message };
+  }
 }

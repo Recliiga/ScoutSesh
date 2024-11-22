@@ -13,16 +13,18 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, resizeImage } from "@/lib/utils";
 import Image from "next/image";
 import { completeProfile } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
-import AuthError from "./AuthError";
+import Error from "./AuthError";
+import useFormEntries from "@/hooks/useFormEntries";
 
 interface ProfileProps {
   firstName: string;
   lastName: string;
   email: string;
+  userId: string;
   role: string;
 }
 
@@ -30,48 +32,65 @@ export default function CompleteAthleteProfileForm({
   firstName,
   lastName,
   email,
+  userId,
   role,
 }: ProfileProps) {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>();
-  const [dob, setDob] = useState<Date>();
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState<number>(
-    new Date().getFullYear()
-  );
-  const [selectedMonth, setSelectedMonth] = useState<number>(
-    new Date().getMonth()
-  );
+
+  const { formEntries, updateField } = useFormEntries({
+    userId,
+    email,
+    firstName,
+    lastName,
+    role,
+    selectedMonth: new Date().getMonth(),
+    selectedYear: new Date().getFullYear(),
+    DOB: "",
+    profilePicture: "",
+    location: "",
+    primarySport: "",
+    experience: "",
+    bio: "",
+  });
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
-  function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
+  const cannotSubmit = Object.values(formEntries).some(
+    (value) => value.toString().trim() === ""
+  );
+
+  async function handleChangeImage(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePicture(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    const resizedImageUrl = await resizeImage(file);
+    if (!resizedImageUrl) return;
+
+    updateField("profilePicture", resizedImageUrl);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (cannotSubmit) return;
+
     setLoading(true);
-    const formData = new FormData(event.currentTarget);
-    if (!profilePicture || !dob) return;
-    formData.set("profilePicture", profilePicture);
-    formData.set("DOB", dob.toString());
-    formData.set("email", email);
+
+    const formData = new FormData();
+    Object.entries(formEntries).forEach(([key, value]) => {
+      formData.set(key, value.toString());
+    });
+
     const { error } = await completeProfile(formData);
     if (!error) {
       router.replace(redirectUrl);
     }
+
     setError(error);
     setLoading(false);
   }
@@ -83,9 +102,9 @@ export default function CompleteAthleteProfileForm({
           Profile Photo
         </Label>
         <div className="relative bg-gray-100 rounded-full w-32 h-32 overflow-hidden">
-          {profilePicture ? (
+          {formEntries.profilePicture ? (
             <Image
-              src={profilePicture}
+              src={formEntries.profilePicture}
               alt="Profile"
               layout="fill"
               objectFit="cover"
@@ -119,7 +138,7 @@ export default function CompleteAthleteProfileForm({
         <input
           type="file"
           ref={fileInputRef}
-          onChange={handleImageUpload}
+          onChange={handleChangeImage}
           accept="image/*"
           className="hidden"
           name="profilePicture"
@@ -133,7 +152,8 @@ export default function CompleteAthleteProfileForm({
             <Input
               id="firstName"
               name="firstName"
-              defaultValue={firstName}
+              value={formEntries.firstName}
+              onChange={(e) => updateField("firstName", e.target.value)}
               required
             />
           </div>
@@ -142,7 +162,8 @@ export default function CompleteAthleteProfileForm({
             <Input
               id="lastName"
               name="lastName"
-              defaultValue={lastName}
+              value={formEntries.lastName}
+              onChange={(e) => updateField("lastName", e.target.value)}
               required
             />
           </div>
@@ -153,7 +174,8 @@ export default function CompleteAthleteProfileForm({
             id="email"
             name="email"
             disabled
-            defaultValue={email}
+            value={formEntries.email}
+            onChange={(e) => updateField("email", e.target.value)}
             type="email"
             required
           />
@@ -165,14 +187,18 @@ export default function CompleteAthleteProfileForm({
               id="role"
               name="role"
               className="border-gray-300 bg-white py-2 pr-10 pl-3 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full text-sm leading-5 appearance-none focus:outline-none"
-              defaultValue={role}
+              value={formEntries.role}
+              onChange={(e) => updateField("role", e.target.value)}
               required
             >
-              <option value="" disabled>
-                Select a role
-              </option>
-              <option value={"Athlete"}>Athlete</option>
-              <option value={"Assistant Coach"}>Assistant Coach</option>
+              {role === "Head Coach" ? (
+                <option value={"Head Coach"}>Head Coach</option>
+              ) : (
+                <>
+                  <option value={"Athlete"}>Athlete</option>
+                  <option value={"Assistant Coach"}>Assistant Coach</option>
+                </>
+              )}
             </select>
             <div className="right-0 absolute inset-y-0 flex items-center px-2 text-gray-700 pointer-events-none">
               <ArrowRight className="w-4 h-4" />
@@ -187,18 +213,24 @@ export default function CompleteAthleteProfileForm({
                 variant={"outline"}
                 className={cn(
                   "w-full justify-start text-left font-normal",
-                  !dob && "text-muted-foreground"
+                  !formEntries.DOB && "text-muted-foreground"
                 )}
               >
                 <CalendarIcon className="mr-2 w-4 h-4" />
-                {dob ? format(dob, "PPP") : <span>Pick a date</span>}
+                {formEntries.DOB ? (
+                  format(formEntries.DOB, "PPP")
+                ) : (
+                  <span>Pick a date</span>
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 w-auto" align="start">
               <div className="flex justify-between p-3">
                 <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                  value={formEntries.selectedYear}
+                  onChange={(e) =>
+                    updateField("selectedYear", parseInt(e.target.value))
+                  }
                   className="px-2 py-1 border rounded"
                 >
                   {Array.from(
@@ -211,8 +243,10 @@ export default function CompleteAthleteProfileForm({
                   ))}
                 </select>
                 <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                  value={formEntries.selectedMonth.toString()}
+                  onChange={(e) =>
+                    updateField("selectedMonth", Number(e.target.value))
+                  }
                   className="px-2 py-1 border rounded"
                 >
                   {Array.from({ length: 12 }, (_, i) => i).map((month) => (
@@ -224,12 +258,16 @@ export default function CompleteAthleteProfileForm({
               </div>
               <Calendar
                 mode="single"
-                selected={dob}
-                onSelect={setDob}
-                month={new Date(selectedYear, selectedMonth)}
+                selected={new Date(formEntries.DOB)}
+                onSelect={(value) =>
+                  value && updateField("DOB", value.toString())
+                }
+                month={
+                  new Date(formEntries.selectedYear, formEntries.selectedMonth)
+                }
                 onMonthChange={(date) => {
-                  setSelectedMonth(date.getMonth());
-                  setSelectedYear(date.getFullYear());
+                  updateField("selectedMonth", date.getMonth());
+                  updateField("selectedYear", date.getFullYear());
                 }}
                 initialFocus
               />
@@ -243,6 +281,8 @@ export default function CompleteAthleteProfileForm({
             <Input
               id="location"
               name="location"
+              value={formEntries.location}
+              onChange={(e) => updateField("location", e.target.value)}
               className="pl-10"
               placeholder="City, Country"
               required
@@ -254,6 +294,8 @@ export default function CompleteAthleteProfileForm({
           <Input
             id="primarySport"
             name="primarySport"
+            value={formEntries.primarySport}
+            onChange={(e) => updateField("primarySport", e.target.value)}
             placeholder="e.g., Basketball, Soccer, Tennis"
             required
           />
@@ -263,6 +305,8 @@ export default function CompleteAthleteProfileForm({
           <Input
             id="experience"
             name="experience"
+            value={formEntries.experience}
+            onChange={(e) => updateField("experience", e.target.value)}
             type="number"
             min="0"
             placeholder="e.g., 5"
@@ -274,15 +318,17 @@ export default function CompleteAthleteProfileForm({
           <textarea
             id="bio"
             name="bio"
+            value={formEntries.bio}
+            onChange={(e) => updateField("bio", e.target.value)}
             className="border-gray-300 bg-white px-3 py-2 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full min-h-[100px] text-sm leading-5 appearance-none focus:outline-none"
             placeholder="Tell us a bit about yourself..."
           />
-          {error && <AuthError error={error} />}
+          {error && <Error error={error} />}
         </div>
         <Button
           className="bg-[#14a800] hover:bg-[#14a800]/90 w-full text-white"
           type="submit"
-          disabled={loading || !profilePicture || !dob}
+          disabled={loading || cannotSubmit}
         >
           {loading && <Loader2 className="mr-2 w-4 h-4 animate-spin" />}
           {loading ? "Saving..." : "Complete Profile"}

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { UserType } from "./User";
 
 export interface OrganizationType extends mongoose.Document {
   name: string;
@@ -8,6 +9,7 @@ export interface OrganizationType extends mongoose.Document {
   primarySport: string;
   yearFounded: number;
   bio: number;
+  user: UserType;
 }
 
 const OrganizationSchema = new mongoose.Schema(
@@ -26,6 +28,11 @@ const OrganizationSchema = new mongoose.Schema(
         true,
         "Please enter the range of members in your organization",
       ],
+    },
+    user: {
+      type: mongoose.SchemaTypes.ObjectId,
+      required: [true, "User is not authenticated"],
+      ref: "User",
     },
     location: {
       type: String,

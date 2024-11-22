@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { BookOpenIcon, SearchIcon, MessageSquare } from "lucide-react";
-import DailyJournalCard from "@/components/app/DailyJournalCard";
+import DailyJournalCard from "@/components/dashboard/DailyJournalCard";
 
 const today = new Date();
 const yesterday = new Date(today);

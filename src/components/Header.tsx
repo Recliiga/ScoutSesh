@@ -6,7 +6,8 @@ import ModalContainer from "./ModalContainer";
 import MobileNav from "./MobileNav";
 import { usePathname } from "next/navigation";
 import Button from "./LinkButton";
-import DashboardHeader from "./app/DashboardHeader";
+import DashboardHeader from "./dashboard/DashboardHeader";
+import DashboardNavUser from "./DashboardNavUser";
 
 const navLinks = [
   { title: "Features", href: "/features" },
@@ -26,7 +27,11 @@ export default function Header({ user }: { user: UserType | null }) {
     setMobileNav((curr) => !curr);
   }
 
-  if (user && pathname.includes("/dashboard"))
+  const isCompleteProfileRoute =
+    pathname.includes("/complete-profile") ||
+    pathname.includes("/create-organization");
+
+  if (user && pathname.startsWith("/dashboard"))
     return <DashboardHeader user={user} />;
 
   return (
@@ -137,9 +142,13 @@ export default function Header({ user }: { user: UserType | null }) {
           </nav>
         </div>
         {user ? (
-          <Button href={"/dashboard"} margin="none">
-            Dashboard
-          </Button>
+          isCompleteProfileRoute ? (
+            <DashboardNavUser user={user} profileCompleted={false} />
+          ) : (
+            <Button href={"/dashboard"} margin="none">
+              Dashboard
+            </Button>
+          )
         ) : (
           <div className="flex items-center gap-4">
             <Button href={"/login"} variant="outline" margin="none">

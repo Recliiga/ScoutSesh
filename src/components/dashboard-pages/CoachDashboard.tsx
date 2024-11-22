@@ -1,6 +1,6 @@
 import React from "react";
-import DashboardCard from "@/components/app/DashboardCard";
-import UpcomingEvaluations from "@/components/app/UpcomingEvaluations";
+import DashboardCard from "@/components/dashboard/DashboardCard";
+import UpcomingEvaluations from "@/components/dashboard/UpcomingEvaluations";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { UserType } from "@/db/models/User";

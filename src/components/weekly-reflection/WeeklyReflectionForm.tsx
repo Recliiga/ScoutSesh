@@ -144,14 +144,14 @@ export default function WeeklyReflectionForm({
         )}
       </main>
       <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
-        <DialogContent>
+        <DialogContent className="w-[90%]">
           <DialogHeader>
             <DialogTitle>Confirm Goal Completion</DialogTitle>
             <DialogDescription>
               Are you sure you want to mark this goal as complete?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="flex gap-2 sm:space-x-0">
             <Button
               variant="outline"
               onClick={() => setShowConfirmation(false)}

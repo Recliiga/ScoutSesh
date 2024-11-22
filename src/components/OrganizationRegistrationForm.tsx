@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { CalendarIcon, MapPinIcon } from "lucide-react";
 import {
   Popover,
@@ -16,39 +16,45 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { createOrganization } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
-import AuthError from "./AuthError";
-
-interface ProfileProps {
-  firstName: string;
-  lastName: string;
-  email: string;
-}
+import Error from "./AuthError";
+import useFormEntries from "@/hooks/useFormEntries";
 
 export default function OrganizationRegistrationForm({
-  firstName,
-  lastName,
-  email,
-}: ProfileProps) {
+  userId,
+}: {
+  userId: string;
+}) {
   const router = useRouter();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>();
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [dateFounded, setDateFounded] = useState<Date>();
-  const [organizationType, setOrganizationType] = useState<string>("");
-  const [customOrganizationType, setCustomOrganizationType] =
-    useState<string>("");
+
+  const { formEntries, updateField } = useFormEntries({
+    userId,
+    profilePicture: "",
+    organizationType: "",
+    organizationName: "",
+    memberCount: "",
+    location: "",
+    primarySport: "",
+    yearFounded: "",
+    bio: "",
+  });
 
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
+
+  const cannotSubmit = Object.entries(formEntries).some(([key, value]) =>
+    key !== "organizationID" ? value.trim() === "" : false
+  );
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfilePicture(reader.result as string);
+        updateField("profilePicture", reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -56,16 +62,15 @@ export default function OrganizationRegistrationForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (cannotSubmit) return;
     setLoading(true);
-    const formData = new FormData(event.currentTarget);
-    formData.set("email", email);
-    formData.set(
-      "type",
-      organizationType === "Other" ? customOrganizationType : organizationType
-    );
-    if (!dateFounded || !profilePicture) return;
-    formData.set("yearFounded", dateFounded.getFullYear().toString());
-    formData.set("profilePicture", profilePicture);
+
+    const formData = new FormData();
+    for (const k in formEntries) {
+      const key = k as keyof typeof formEntries;
+      formData.append(key, formEntries[key]);
+    }
+
     const { error } = await createOrganization(formData);
     setError(error);
     if (!error) {
@@ -81,9 +86,9 @@ export default function OrganizationRegistrationForm({
           Organization Profile Photo
         </Label>
         <div className="relative bg-gray-100 rounded-full w-32 h-32 overflow-hidden">
-          {profilePicture ? (
+          {formEntries.profilePicture ? (
             <Image
-              src={profilePicture}
+              src={formEntries.profilePicture}
               alt="Profile"
               layout="fill"
               objectFit="cover"
@@ -123,62 +128,36 @@ export default function OrganizationRegistrationForm({
           className="hidden"
         />
       </div>
+
       <div className="flex flex-col gap-4">
-        <div className="gap-4 grid grid-cols-2">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="firstName">First name</Label>
-            <Input
-              id="firstName"
-              name="firstName"
-              defaultValue={firstName}
-              required
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="lastName">Last name</Label>
-            <Input
-              id="lastName"
-              name="lastName"
-              defaultValue={lastName}
-              required
-            />
-          </div>
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" value={email} disabled />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="role">Role</Label>
-          <Input id="role" name="role" value="Head Coach" disabled />
-        </div>
-        <div className="flex flex-col gap-2">
+        <div className="relative flex flex-col gap-2">
           <Label htmlFor="organizationType">Organization Type</Label>
           <select
             id="organizationType"
             name="organizationType"
-            value={organizationType}
-            onChange={(e) => setOrganizationType(e.target.value)}
+            value={formEntries["organizationType"]}
+            onChange={(e) => updateField("organizationType", e.target.value)}
             className="border-gray-300 bg-white py-2 pr-10 pl-3 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full text-sm leading-5 appearance-none focus:outline-none"
             required
           >
-            <option disabled>Select organization type</option>
+            <option hidden>Select organization type</option>
             <option value="Team">Team</option>
             <option value="Program">Program</option>
             <option value="Club">Club</option>
             <option value="Association">Association</option>
             <option value="Other">Other</option>
           </select>
+          <ArrowRight className="right-2 bottom-3 absolute w-4 h-4" />
         </div>
-        {organizationType === "Other" && (
+        {formEntries.organizationType === "Other" && (
           <div className="flex flex-col gap-2">
             <Label htmlFor="customOrganizationType">
               Specify Organization Type
             </Label>
             <Input
               id="customOrganizationType"
-              value={customOrganizationType}
-              onChange={(e) => setCustomOrganizationType(e.target.value)}
+              value={formEntries["organizationType"]}
+              onChange={(e) => updateField("organizationType", e.target.value)}
               placeholder="Enter your organization type"
               required
             />
@@ -189,19 +168,23 @@ export default function OrganizationRegistrationForm({
           <Input
             id="organizationName"
             name="organizationName"
+            value={formEntries["organizationName"]}
+            onChange={(e) => updateField("organizationName", e.target.value)}
             placeholder="e.g., Riverside Basketball Club"
             required
           />
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="relative flex flex-col gap-2">
           <Label htmlFor="memberCount">Number of Members</Label>
           <select
             id="memberCount"
             name="memberCount"
+            value={formEntries["memberCount"]}
+            onChange={(e) => updateField("memberCount", e.target.value)}
             className="border-gray-300 bg-white py-2 pr-10 pl-3 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full text-sm leading-5 appearance-none focus:outline-none"
             required
           >
-            <option disabled>Select member count</option>
+            <option hidden>Select member count</option>
             <option value={"1-30 members"}>1-30 members</option>
             <option value={"31-75 members"}>31-75 members</option>
             <option value={"76-125 members"}>76-125 members</option>
@@ -210,6 +193,7 @@ export default function OrganizationRegistrationForm({
             <option value={"501-1000 members"}>501-1000 members</option>
             <option value={"1000+ members"}>1000+ members</option>
           </select>
+          <ArrowRight className="right-2 bottom-3 absolute w-4 h-4" />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="location">Location</Label>
@@ -218,6 +202,8 @@ export default function OrganizationRegistrationForm({
             <Input
               id="location"
               name="location"
+              value={formEntries["location"]}
+              onChange={(e) => updateField("location", e.target.value)}
               className="pl-10"
               placeholder="City, Country"
               required
@@ -229,26 +215,28 @@ export default function OrganizationRegistrationForm({
           <Input
             id="primarySport"
             name="primarySport"
+            value={formEntries["primarySport"]}
+            onChange={(e) => updateField("primarySport", e.target.value)}
             placeholder="e.g., Basketball, Soccer, Tennis"
             required
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="dateFounded">Founded Year</Label>
+          <Label htmlFor="yearFounded">Founded Year</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                id="dateFounded"
-                name="dateFounded"
+                id="yearFounded"
+                name="yearFounded"
                 variant={"outline"}
                 className={cn(
                   "w-full justify-start text-left font-normal",
-                  !dateFounded && "text-muted-foreground"
+                  !formEntries.yearFounded && "text-muted-foreground"
                 )}
               >
                 <CalendarIcon className="mr-2 w-4 h-4" />
-                {dateFounded ? (
-                  format(dateFounded, "yyyy")
+                {formEntries.yearFounded ? (
+                  format(formEntries.yearFounded, "yyyy")
                 ) : (
                   <span>Select year</span>
                 )}
@@ -257,11 +245,8 @@ export default function OrganizationRegistrationForm({
             <PopoverContent className="p-0 w-auto" align="start">
               <div className="flex flex-col gap-2 p-4">
                 <select
-                  value={dateFounded ? format(dateFounded, "yyyy") : ""}
-                  onChange={(e) => {
-                    const year = parseInt(e.target.value);
-                    setDateFounded(new Date(year, 0, 1));
-                  }}
+                  value={formEntries["yearFounded"]}
+                  onChange={(e) => updateField("yearFounded", e.target.value)}
                   className="p-2 border rounded w-full"
                 >
                   <option value="">Select year</option>
@@ -283,15 +268,17 @@ export default function OrganizationRegistrationForm({
           <textarea
             id="bio"
             name="bio"
+            value={formEntries["bio"]}
+            onChange={(e) => updateField("bio", e.target.value)}
             className="border-gray-300 bg-white px-3 py-2 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full min-h-[100px] text-sm leading-5 appearance-none focus:outline-none"
             placeholder="Tell us a bit about your organization..."
           />
-          {error && <AuthError error={error} />}
+          {error && <Error error={error} />}
         </div>
         <Button
           className="bg-[#14a800] hover:bg-[#14a800]/90 w-full text-white"
           type="submit"
-          disabled={loading || !profilePicture || !dateFounded}
+          disabled={loading || cannotSubmit}
         >
           {loading && <Loader2 className="mr-2 w-4 h-4 animate-spin" />}
           {loading ? "Saving..." : "Complete Profile"}

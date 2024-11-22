@@ -3,7 +3,7 @@
 import connectDB from "@/db/connectDB";
 import Organization from "@/db/models/Organization";
 import User from "@/db/models/User";
-import { uploadImage } from "@/utils/uploadImage";
+import { uploadImage } from "@/lib/utils";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { revalidatePath } from "next/cache";
@@ -54,20 +54,24 @@ export async function login(formData: FormData) {
 
 export async function signup(formData: FormData) {
   const cookieStore = await cookies();
+  const role = formData.get("role");
 
   const userData = {
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
     email: formData.get("email"),
     password: formData.get("password") as string,
-    role: formData.get("role"),
+    role,
+    organization: role === "Head Coach" ? null : formData.get("organization"),
   };
 
   try {
     // Run validation
-    Object.keys(userData).forEach((key) => {
-      if (!userData[key as keyof typeof userData])
-        throw new Error(errorMessages[key as keyof typeof errorMessages]);
+    Object.entries(userData).forEach(([key, value]) => {
+      if (!value) {
+        if (!(role === "Head Coach" && key === "organization"))
+          throw new Error(errorMessages[key as keyof typeof errorMessages]);
+      }
     });
 
     if (userData.password.length < 8)
@@ -103,13 +107,7 @@ export async function signup(formData: FormData) {
 }
 
 export async function createOrganization(formData: FormData) {
-  const email = formData.get("email");
-
-  const userData = {
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
-  };
-
+  const userId = formData.get("userId")!;
   const organizationData = {
     name: formData.get("organizationName"),
     profilePicture: formData.get("profilePicture"),
@@ -132,10 +130,9 @@ export async function createOrganization(formData: FormData) {
     // Create new organization and bind to user's profile
     await connectDB();
     const newOrganization = await Organization.create(organizationData);
-    const data = await User.findOneAndUpdate(
-      { email },
-      { ...userData, organization: newOrganization._id }
-    );
+    const data = await User.findByIdAndUpdate(userId, {
+      organization: newOrganization._id,
+    });
     if (!data) throw new Error("An error occured");
 
     return { error: null };
@@ -145,7 +142,7 @@ export async function createOrganization(formData: FormData) {
 }
 
 export async function completeProfile(formData: FormData) {
-  const email = formData.get("email");
+  const userId = formData.get("userId");
   const userData = {
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
@@ -165,7 +162,7 @@ export async function completeProfile(formData: FormData) {
     userData.profilePicture = url;
 
     await connectDB();
-    const data = await User.findOneAndUpdate({ email }, userData);
+    const data = await User.findByIdAndUpdate(userId, userData);
     if (!data) throw new Error("An error occured");
     return { error: null };
   } catch (error) {

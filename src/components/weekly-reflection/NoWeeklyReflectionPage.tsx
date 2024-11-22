@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import { StatusType } from "../app/NotificationSign";
+import { StatusType } from "../goal-setting/GoalSettingNotificationSign";
 import { Button } from "../ui/button";
 
 export default function NoWeeklyReflectionPage({
@@ -8,7 +8,7 @@ export default function NoWeeklyReflectionPage({
   dueDate = "friday",
 }: {
   status: StatusType;
-  dueDate?: string;
+  dueDate: string | null;
 }) {
   if (status === "not_due")
     return (

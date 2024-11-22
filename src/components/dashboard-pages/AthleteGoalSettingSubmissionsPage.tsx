@@ -1,16 +1,27 @@
 import React from "react";
 import Link from "next/link";
-import BackButton from "@/components/app/BackButton";
+import BackButton from "@/components/dashboard/BackButton";
 import GoalSettingSubmissions from "@/components/goal-setting/GoalSettingSubmissions";
-import { getAllAthleteGoalData } from "@/services/goalServices";
+import { fetchAllAthleteGoalData } from "@/services/goalServices";
 import { getSessionFromHeaders } from "@/services/authServices";
-import { notFound } from "next/navigation";
+import { GoalSchemaType } from "@/db/models/Goal";
+
+type AthleteGoalType = GoalSchemaType & { goalDataId: string };
 
 export default async function AthleteGoalSettingSubmissionsPage() {
-  const { athleteGoals } = await getAllAthleteGoalData();
+  const { athleteGoalData, error } = await fetchAllAthleteGoalData();
   const user = await getSessionFromHeaders();
 
-  if (!athleteGoals) return notFound();
+  if (error !== null) throw new Error(error);
+
+  const athleteGoals: AthleteGoalType[] = [];
+  athleteGoalData.forEach((goalD) => {
+    const newAthleteGoals = goalD.goals.map((goal) => ({
+      ...goal,
+      goalDataId: goalD._id as string,
+    }));
+    athleteGoals.push(...(newAthleteGoals as AthleteGoalType[]));
+  });
 
   return (
     <main className="flex-1">

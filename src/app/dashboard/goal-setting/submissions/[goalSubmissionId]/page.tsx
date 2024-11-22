@@ -2,23 +2,27 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getAthleteGoalData } from "@/services/goalServices";
+import { fetchAthleteGoalData } from "@/services/goalServices";
 import ConfidenceMeter from "@/components/weekly-reflection/ConfidenceMeter";
 import Link from "next/link";
+import { getSessionFromHeaders } from "@/services/authServices";
 import { notFound } from "next/navigation";
+import BackButton from "@/components/dashboard/BackButton";
+import { getFullname } from "@/lib/utils";
 
 export default async function GoalSettingResults({
   params,
 }: {
   params: Promise<{ goalSubmissionId: string }>;
 }) {
+  const user = await getSessionFromHeaders();
   const { goalSubmissionId } = await params;
-  const { goalData } = await getAthleteGoalData(goalSubmissionId);
+  const { goalData, error } = await fetchAthleteGoalData(goalSubmissionId);
 
+  if (error !== null) throw new Error(error);
   if (!goalData) notFound();
 
-  const goalDataUserName =
-    goalData.user.firstName + " " + goalData.user.lastName;
+  const goalDataUserName = getFullname(goalData.user);
 
   return (
     <main className="flex-1">
@@ -167,14 +171,18 @@ export default async function GoalSettingResults({
             </CardContent>
           </Card>
           <div className="flex justify-between mt-8 w-full">
-            <Button variant="outline" className="px-0 py-0">
-              <Link
-                className="px-4 py-2"
-                href={`/dashboard/goal-setting/submissions/${goalData._id}/edit`}
-              >
-                Edit Goals
-              </Link>
-            </Button>
+            {user._id === goalData.user._id ? (
+              <Button variant="outline" className="px-0 py-0">
+                <Link
+                  className="px-4 py-2"
+                  href={`/dashboard/goal-setting/submissions/${goalData._id}/edit`}
+                >
+                  Edit Goals
+                </Link>
+              </Button>
+            ) : (
+              <BackButton />
+            )}
             <Button className="bg-green-500 px-0 py-0 text-white">
               <Link className="px-4 py-2" href={`/dashboard/goal-setting`}>
                 Go to Home Page
