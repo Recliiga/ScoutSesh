@@ -85,7 +85,7 @@ export default function CoachTeamMembersPage({
         </div>
       </div>
       <h3 className="mb-4 font-bold text-2xl text-center">Athletes</h3>
-      <div className="gap-6 grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))]">
+      <div className="gap-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {filteredMembers.map((member) => (
           <UserProfileCard
             key={member._id as string}

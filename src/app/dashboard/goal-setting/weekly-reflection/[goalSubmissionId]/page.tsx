@@ -13,12 +13,14 @@ export default async function WeeklyReflectionResultsPage({
   const { goalData, error: goalError } = await getAthleteGoalData(
     goalSubmissionId
   );
-  if (goalError !== null) notFound();
+  if (goalError !== null) throw new Error(goalError);
+
+  if (!goalData) notFound();
 
   const { comments, error: commentError } = await getGoalComments(
     goalData._id as string
   );
-  if (commentError !== null) notFound();
+  if (commentError !== null) throw new Error(commentError);
 
   return <WeeklyReflectionResults goalData={goalData} comments={comments} />;
 }

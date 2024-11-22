@@ -57,14 +57,15 @@ export async function getAllAthleteGoalData(): Promise<
 }
 
 export async function getTeamGoalData(organizationId: string) {
-  const orgId = JSON.parse(organizationId);
   try {
     await connectDB();
     const allGoalData: GoalDataSchemaType[] = JSON.parse(
       JSON.stringify(await Goal.find().populate("user"))
     );
     const teamGoalData = allGoalData.filter(
-      (goalData) => goalData.user.organization === orgId
+      (goalData) =>
+        JSON.parse(JSON.stringify(goalData.user.organization)) ===
+        organizationId
     );
     return { teamGoalData, error: null };
   } catch (error) {
