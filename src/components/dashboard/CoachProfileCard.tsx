@@ -16,9 +16,6 @@ export default function CoachProfileCard({ coach }: { coach: UserType }) {
             alt="Coach profile"
             fill
             className="object-cover"
-            onClick={() =>
-              console.log(`Clicked on ${getFullname(coach)}'s profile picture`)
-            }
           />
         </div>
         <div>
