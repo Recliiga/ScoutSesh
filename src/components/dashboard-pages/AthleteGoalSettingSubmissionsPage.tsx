@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import BackButton from "@/components/app/BackButton";
+import BackButton from "@/components/dashboard/BackButton";
 import GoalSettingSubmissions from "@/components/goal-setting/GoalSettingSubmissions";
 import { getAllAthleteGoalData } from "@/services/goalServices";
 import { getSessionFromHeaders } from "@/services/authServices";

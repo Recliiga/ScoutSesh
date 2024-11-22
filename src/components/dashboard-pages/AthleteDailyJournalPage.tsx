@@ -16,9 +16,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import ScoutSeshStreak from "../app/ScoutSeshStreak";
-import CalendarDay from "../app/CalendarDay";
-import JournalEntryCard from "../app/JournalEntryCard";
+import ScoutSeshStreak from "../dashboard/ScoutSeshStreak";
+import CalendarDay from "../dashboard/CalendarDay";
+import JournalEntryCard from "../dashboard/JournalEntryCard";
 
 // Mock data for journal entries
 const journalEntries = [

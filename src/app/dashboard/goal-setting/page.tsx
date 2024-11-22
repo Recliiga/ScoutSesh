@@ -1,8 +1,8 @@
 import React from "react";
 
 import { getSessionFromHeaders } from "@/services/authServices";
-import CoachGoalSettingPage from "@/components/pages/CoachGoalSettingPage";
-import AthleteGoalSettingPage from "@/components/pages/AthleteGoalSettingPage";
+import CoachGoalSettingPage from "@/components/dashboard-pages/CoachGoalSettingPage";
+import AthleteGoalSettingPage from "@/components/dashboard-pages/AthleteGoalSettingPage";
 import { getAllGoalData } from "@/services/goalServices";
 import { notFound } from "next/navigation";
 

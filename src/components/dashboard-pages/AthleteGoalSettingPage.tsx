@@ -1,7 +1,7 @@
 import React from "react";
 import { Target, ClipboardCheck, FileText } from "lucide-react";
 import GoalSettingNotificationSign from "../goal-setting/GoalSettingNotificationSign";
-import GoalCard from "../app/GoalCard";
+import GoalCard from "../dashboard/GoalCard";
 import { getLatestGoalData } from "@/services/goalServices";
 import { getGoalDueDate, getWeeklyReflectionStatus } from "@/lib/utils";
 
@@ -24,7 +24,7 @@ export default async function AthleteGoalSettingPage() {
         </p>
         <GoalSettingNotificationSign
           status={status}
-          dueDate={getGoalDueDate(goalData)}
+          dueDate={goalData&&getGoalDueDate(goalData)}
         />
         <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
           {canCreateNewGoals ? (

@@ -14,7 +14,7 @@ export default function GoalSettingNotificationSign({
   dueDate = "friday",
 }: {
   status: StatusType;
-  dueDate: string;
+  dueDate: string | null;
 }) {
   let message = "";
   let href = "";

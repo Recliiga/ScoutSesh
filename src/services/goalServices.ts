@@ -17,10 +17,10 @@ export async function getLatestGoalData() {
 
     // Connect to database and get latest user goal
     await connectDB();
-    const [goalData]: GoalDataSchemaType[] = JSON.parse(
+    const allGoalData: GoalDataSchemaType[] | [] = JSON.parse(
       JSON.stringify(await Goal.find({ user: userId }).sort({ createdAt: -1 }))
     );
-    return { goalData: goalData || null, error: null };
+    return { goalData: allGoalData.at(0) || null, error: null };
   } catch (error) {
     return { goalData: null, error: (error as Error).message };
   }

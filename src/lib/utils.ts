@@ -91,9 +91,11 @@ function getLatestGoal(goalData: GoalDataSchemaType) {
 }
 
 export async function getWeeklyReflectionStatus(
-  goalData: GoalDataSchemaType
+  goalData: GoalDataSchemaType | null
 ): Promise<StatusType> {
   let status: StatusType = "not_due";
+
+  if (!goalData) return "no_goals";
 
   // Check if all goals are completed
   const allGoalsCompleted = !goalData.goals.some(

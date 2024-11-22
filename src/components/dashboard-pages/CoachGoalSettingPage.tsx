@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { UsersIcon, SearchIcon } from "lucide-react";
-import GoalSettingCard from "../app/GoalSettingCard";
+import GoalSettingCard from "../dashboard/GoalSettingCard";
 import { GoalDataSchemaType } from "@/db/models/Goal";
 
 const athletesWithGoals2 = [

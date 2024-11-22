@@ -1,8 +1,8 @@
 import React from "react";
 
 import { getSessionFromHeaders } from "@/services/authServices";
-import CoachAthleteEvaluationPage from "@/components/pages/CoachAthleteEvaluationPage";
-import UserAthleteEvaluationPage from "@/components/pages/UserAthleteEvaluationPage";
+import CoachAthleteEvaluationPage from "@/components/dashboard-pages/CoachAthleteEvaluationPage";
+import UserAthleteEvaluationPage from "@/components/dashboard-pages/UserAthleteEvaluationPage";
 
 export default async function AthleteEvaluationPage() {
   const user = await getSessionFromHeaders();
