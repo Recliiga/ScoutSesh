@@ -8,6 +8,7 @@ import Link from "next/link";
 import { getSessionFromHeaders } from "@/services/authServices";
 import { notFound } from "next/navigation";
 import BackButton from "@/components/dashboard/BackButton";
+import { getFullname } from "@/lib/utils";
 
 export default async function GoalSettingResults({
   params,
@@ -21,8 +22,7 @@ export default async function GoalSettingResults({
   if (error !== null) throw new Error(error);
   if (!goalData) notFound();
 
-  const goalDataUserName =
-    goalData.user.firstName + " " + goalData.user.lastName;
+  const goalDataUserName = getFullname(goalData.user);
 
   return (
     <main className="flex-1">

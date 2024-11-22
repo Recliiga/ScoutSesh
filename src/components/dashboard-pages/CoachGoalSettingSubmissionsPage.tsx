@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { SearchIcon } from "lucide-react";
 import AthleteTable from "../dashboard/AthleteTable";
 import { GoalDataSchemaType } from "@/db/models/Goal";
+import { getFullname } from "@/lib/utils";
 
 export default function CoachGoalSubmissionsPage({
   teamGoalData,
@@ -18,7 +19,7 @@ export default function CoachGoalSubmissionsPage({
   const allAthletesWithGoals = teamGoalData.map((gd, index) => ({
     _id: `${gd.user._id}-${index}`,
     goalId: gd._id as string,
-    name: gd.user.firstName + " " + gd.user.lastName,
+    name: getFullname(gd.user),
     profilePicture: gd.user.profilePicture,
     lastGoalDate: new Date(),
     totalGoals: gd.goals.length,

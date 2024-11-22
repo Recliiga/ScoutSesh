@@ -6,6 +6,7 @@ import DashboardCard from "../dashboard/DashboardCard";
 import { UserType } from "@/db/models/User";
 import ScoutSeshStreak from "../dashboard/ScoutSeshStreak";
 import { OrganizationType } from "@/db/models/Organization";
+import { getFullname } from "@/lib/utils";
 
 export default function AthleteDashboard({
   user,
@@ -42,8 +43,6 @@ export default function AthleteDashboard({
     return now >= sessionStart;
   };
 
-  // console.log(organization);
-
   return (
     <main className="flex-grow">
       <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
@@ -67,15 +66,14 @@ export default function AthleteDashboard({
                 <div className="relative bg-accent-gray-100 rounded-full w-16 h-16 overflow-hidden">
                   <Image
                     src={organization.user.profilePicture}
-                    alt={`Coach ${organization.user.firstName} ${organization.user.lastName}`}
+                    alt={`Coach ${getFullname(organization.user)}`}
                     fill
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div>
                   <p className="font-semibold">
-                    Coach {organization.user.firstName}
-                    {organization.user.lastName}
+                    Coach {getFullname(organization.user)}
                   </p>
                   <p className="text-gray-600 text-sm">{organization.name}</p>
                 </div>

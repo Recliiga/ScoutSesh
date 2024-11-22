@@ -1,5 +1,6 @@
 import { StatusType } from "@/components/goal-setting/GoalSettingNotificationSign";
 import { GoalDataSchemaType } from "@/db/models/Goal";
+import { UserType } from "@/db/models/User";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -156,4 +157,8 @@ export function getGoalDueDate(goalData: GoalDataSchemaType) {
       : nextFriday;
 
   return dueDate.toDateString();
+}
+
+export function getFullname(user: UserType) {
+  return `${user.firstName} ${user.lastName}`;
 }

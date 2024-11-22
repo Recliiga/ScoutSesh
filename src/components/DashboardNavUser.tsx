@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { UserType } from "@/db/models/User";
 import ModalContainer from "./ModalContainer";
 import LogoutModal from "./LogoutModal";
+import { getFullname } from "@/lib/utils";
 
 export default function DashboardNavUser({
   user,
@@ -25,7 +26,7 @@ export default function DashboardNavUser({
   const [userMenu, setUserMenu] = useState(false);
   const [signoutModal, setSignoutModal] = useState(false);
 
-  const userName = user.firstName + " " + user.lastName;
+  const userName = getFullname(user);
 
   function handleClickOutside(e: MouseEvent) {
     if (

@@ -12,6 +12,7 @@ import { Card, CardContent } from "../ui/card";
 import { GoalSchemaType } from "@/db/models/Goal";
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
+import { getFullname } from "@/lib/utils";
 
 export default function GoalSettingSubmissions({
   goalSettingSubmissions,
@@ -34,7 +35,7 @@ export default function GoalSettingSubmissions({
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
-  const athleteName = user.firstName + " " + user.lastName;
+  const athleteName = getFullname(user);
 
   return (
     <div className="space-y-4">
