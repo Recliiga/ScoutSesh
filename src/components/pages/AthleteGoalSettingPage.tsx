@@ -1,12 +1,15 @@
 import React from "react";
 import { Target, ClipboardCheck, FileText } from "lucide-react";
-import NotificationSign from "../app/NotificationSign";
+import GoalSettingNotificationSign from "../goal-setting/GoalSettingNotificationSign";
 import GoalCard from "../app/GoalCard";
 import { getLatestGoalData } from "@/services/goalServices";
-import { getWeeklyReflectionStatus } from "@/lib/utils";
+import { getGoalDueDate, getWeeklyReflectionStatus } from "@/lib/utils";
 
 export default async function AthleteGoalSettingPage() {
-  const { goalData } = await getLatestGoalData();
+  const { goalData, error } = await getLatestGoalData();
+
+  if (error !== null) throw new Error(error);
+
   const status = await getWeeklyReflectionStatus(goalData);
 
   const canCreateNewGoals = status === "all_complete" || status === "no_goals";
@@ -19,7 +22,10 @@ export default async function AthleteGoalSettingPage() {
           Set meaningful goals, track your progress, and reflect on your
           achievements to continuously improve your performance.
         </p>
-        <NotificationSign status={status} />
+        <GoalSettingNotificationSign
+          status={status}
+          dueDate={getGoalDueDate(goalData)}
+        />
         <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
           {canCreateNewGoals ? (
             <GoalCard

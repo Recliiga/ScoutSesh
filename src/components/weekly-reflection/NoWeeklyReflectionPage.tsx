@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import { StatusType } from "../app/NotificationSign";
+import { StatusType } from "../goal-setting/GoalSettingNotificationSign";
 import { Button } from "../ui/button";
 
 export default function NoWeeklyReflectionPage({

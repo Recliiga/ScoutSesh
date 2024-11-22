@@ -6,6 +6,8 @@ import React from "react";
 
 export default async function CreateGoalPage() {
   const { goalData, error } = await getLatestGoalData();
+  if (error !== null) throw new Error(error);
+
   const status = await getWeeklyReflectionStatus(goalData);
 
   if (error) throw new Error(error);
