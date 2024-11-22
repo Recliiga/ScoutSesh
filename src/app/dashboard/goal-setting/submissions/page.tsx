@@ -13,7 +13,7 @@ export default async function GoalSettingSubmissionsPage() {
   }
 
   const { teamGoalData, error } = await getTeamGoalData(
-    JSON.stringify(user.organization)
+    user.organization._id as string
   );
   if (error !== null) notFound();
 

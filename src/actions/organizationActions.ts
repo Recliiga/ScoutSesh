@@ -6,7 +6,9 @@ export async function fetchOrganization(organizationId: string) {
   try {
     await connectDB();
     const organization: OrganizationType = JSON.parse(
-      JSON.stringify(await Organization.findById(organizationId))
+      JSON.stringify(
+        await Organization.findById(organizationId).populate("user")
+      )
     );
     return { organization, error: null };
   } catch (err) {

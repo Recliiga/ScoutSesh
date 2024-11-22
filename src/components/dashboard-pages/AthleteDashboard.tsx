@@ -5,10 +5,17 @@ import { AlertCircle } from "lucide-react";
 import DashboardCard from "../dashboard/DashboardCard";
 import { UserType } from "@/db/models/User";
 import ScoutSeshStreak from "../dashboard/ScoutSeshStreak";
+import { OrganizationType } from "@/db/models/Organization";
 
-export default function AthleteDashboard({ user }: { user: UserType }) {
+export default function AthleteDashboard({
+  user,
+  organization,
+}: {
+  user: UserType;
+  organization: OrganizationType;
+}) {
   // Simulating a signed-in athlete who has not completed the journal
-  const athlete = {
+  const demoAthlete = {
     name: "Alex",
     dayStreak: 7,
     upcomingSession: "Goal Setting Workshop",
@@ -20,32 +27,22 @@ export default function AthleteDashboard({ user }: { user: UserType }) {
   };
 
   // Coach information
-  const coach = {
-    name: "Sarah Thompson",
-    profilePhoto: "/placeholder.svg",
-    association: "Riverside Basketball Club",
-  };
+  // const coach = {
+  //   name: "Sarah Thompson",
+  //   profilePhoto: "/placeholder.svg",
+  //   association: "Riverside Basketball Club",
+  // };
 
   // Function to check if the session has started
   const isSessionStarted = () => {
     const now = new Date();
     const sessionStart = new Date(
-      now.toDateString() + " " + athlete.nextSessionStartTime
+      now.toDateString() + " " + demoAthlete.nextSessionStartTime
     );
     return now >= sessionStart;
   };
 
-  //   // State to trigger re-render
-  //   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
-
-  //   // Effect to update component every minute
-  //   React.useEffect(() => {
-  //     const timer = setInterval(() => {
-  //       forceUpdate();
-  //     }, 60000); // Update every minute
-
-  //     return () => clearInterval(timer);
-  //   }, []);
+  // console.log(organization);
 
   return (
     <main className="flex-grow">
@@ -60,22 +57,27 @@ export default function AthleteDashboard({ user }: { user: UserType }) {
           <div className="flex md:flex-row flex-col items-start">
             <div className="mb-6 md:mb-0 md:pr-6 md:w-1/2">
               <h2 className="mb-4 font-semibold text-2xl">Your Next Session</h2>
-              <p className="mb-2 text-xl">{athlete.upcomingSession}</p>
+              <p className="mb-2 text-xl">{demoAthlete.upcomingSession}</p>
               <p className="mb-4 text-gray-600 text-lg">
-                {athlete.nextSessionDate}, {athlete.nextSessionStartTime} -{" "}
-                {athlete.nextSessionEndTime}
+                {demoAthlete.nextSessionDate},{" "}
+                {demoAthlete.nextSessionStartTime} -{" "}
+                {demoAthlete.nextSessionEndTime}
               </p>
-              <div className="flex items-center mb-4">
-                <Image
-                  src={coach.profilePhoto}
-                  alt={`Coach ${coach.name}`}
-                  width={64}
-                  height={64}
-                  className="mr-4 rounded-full"
-                />
+              <div className="flex items-center gap-4 mb-4">
+                <div className="relative bg-accent-gray-100 rounded-full w-16 h-16 overflow-hidden">
+                  <Image
+                    src={organization.user.profilePicture}
+                    alt={`Coach ${organization.user.firstName} ${organization.user.lastName}`}
+                    fill
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <div>
-                  <p className="font-semibold">Coach {coach.name}</p>
-                  <p className="text-gray-600 text-sm">{coach.association}</p>
+                  <p className="font-semibold">
+                    Coach {organization.user.firstName}
+                    {organization.user.lastName}
+                  </p>
+                  <p className="text-gray-600 text-sm">{organization.name}</p>
                 </div>
               </div>
             </div>
@@ -84,8 +86,8 @@ export default function AthleteDashboard({ user }: { user: UserType }) {
               <div className="flex items-start mb-4 text-red-600">
                 <AlertCircle className="mr-2" />
                 <p>
-                  Complete your journal to maintain your {athlete.dayStreak} day
-                  streak!
+                  Complete your journal to maintain your {demoAthlete.dayStreak}{" "}
+                  day streak!
                 </p>
               </div>
               <p className="mb-4 text-gray-600">

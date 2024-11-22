@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
     const userId = payload.userId;
     await connectDB();
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate("organization");
     if (!user) throw new Error("User dosen't exists");
 
     return NextResponse.json({ user, error: null });
