@@ -9,6 +9,8 @@ export default async function AthleteGoalSettingPage() {
   const { goalData } = await getLatestGoalData();
   const status = await getWeeklyReflectionStatus(goalData);
 
+  const canCreateNewGoals = status === "all_complete" || status === "no_goals";
+
   return (
     <main className="flex-1">
       <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
@@ -19,13 +21,23 @@ export default async function AthleteGoalSettingPage() {
         </p>
         <NotificationSign status={status} />
         <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
-          <GoalCard
-            title="Set New Goals"
-            description="Define new short-term and long-term goals to focus your training and development efforts. Set SMART (Specific, Measurable, Achievable, Relevant, Time-bound) goals to enhance your athletic performance and personal growth."
-            icon={<Target className="w-6 h-6 text-green-600" />}
-            actionText="Set Goals"
-            href={"/dashboard/goal-setting/new"}
-          />
+          {canCreateNewGoals ? (
+            <GoalCard
+              title="Set New Goals"
+              description="Define new short-term and long-term goals to focus your training and development efforts. Set SMART (Specific, Measurable, Achievable, Relevant, Time-bound) goals to enhance your athletic performance and personal growth."
+              icon={<Target className="w-6 h-6 text-green-600" />}
+              actionText="Set Goals"
+              href={"/dashboard/goal-setting/new"}
+            />
+          ) : (
+            <GoalCard
+              title="Complete Existing Goals"
+              description="You cannot create new goals until you have completed your current ones. Stay focused and finish your existing goals to make room for new challenges and achievements."
+              icon={<Target className="w-6 h-6 text-green-600" />}
+              actionText="View Latest Goal"
+              href={`/dashboard/goal-setting/submissions/${goalData?._id}`}
+            />
+          )}
           <GoalCard
             title="Complete Weekly Reflection"
             description="Reflect on your progress, identify challenges, and adjust your goals as needed. Regular reflection helps you stay on track and make necessary improvements."

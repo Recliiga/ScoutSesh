@@ -17,7 +17,7 @@ export async function getLatestGoalData() {
 
     // Connect to database and get latest user goal
     await connectDB();
-    const [goalData] = JSON.parse(
+    const [goalData]: GoalDataSchemaType[] = JSON.parse(
       JSON.stringify(await Goal.find({ user: userId }).sort({ createdAt: -1 }))
     );
     return { goalData: goalData || null, error: null };
