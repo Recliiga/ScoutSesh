@@ -52,7 +52,7 @@ export default function EditGoalForm({
       )}
       {currentScreen === "save-template" && (
         <SaveTemplateScreen
-          goalId={goalDataToEdit._id as string}
+          goalId={goalDataToEdit._id}
           goalData={goalData}
           goalName={goalName}
           setGoalName={setGoalName}

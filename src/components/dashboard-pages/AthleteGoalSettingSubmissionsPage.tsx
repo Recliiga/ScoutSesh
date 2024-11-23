@@ -18,7 +18,7 @@ export default async function AthleteGoalSettingSubmissionsPage() {
   athleteGoalData.forEach((goalD) => {
     const newAthleteGoals = goalD.goals.map((goal) => ({
       ...goal,
-      goalDataId: goalD._id as string,
+      goalDataId: goalD._id,
     }));
     athleteGoals.push(...(newAthleteGoals as AthleteGoalType[]));
   });

@@ -9,12 +9,12 @@ import { notFound } from "next/navigation";
 export default async function GoalSettingPage() {
   const user = await getSessionFromHeaders();
 
-  if (user.role === "Athlete") {
+  if (user.role === "Athlete" || "Assistant Coach") {
     return <AthleteGoalSettingPage />;
   }
 
   const { teamGoalData, error } = await fetchTeamGoalData(
-    user.organization._id as string
+    user.organization!._id
   );
   if (error !== null) notFound();
 

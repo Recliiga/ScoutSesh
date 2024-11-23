@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { UserType } from "./User";
 
 export interface WeeklyReflectionSchemaType extends mongoose.Document {
+  _id: string;
   completion: string;
   improvement: string;
   isCompleted: boolean;
@@ -11,6 +12,7 @@ export interface WeeklyReflectionSchemaType extends mongoose.Document {
 }
 
 export interface GoalSchemaType extends mongoose.Document {
+  _id: string;
   goal: string;
   actions: string;
   location: string;
@@ -23,6 +25,7 @@ export interface GoalSchemaType extends mongoose.Document {
 }
 
 export interface GoalDataSchemaType extends mongoose.Document {
+  _id: string;
   name: string;
   details: GoalDetailsType;
   goals: GoalSchemaType[];

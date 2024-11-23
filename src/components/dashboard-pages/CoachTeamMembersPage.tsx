@@ -77,7 +77,7 @@ export default function CoachTeamMembersPage({
               </div>
               <div className="gap-4 grid grid-cols-[repeat(auto-fill,_minmax(150px,_1fr))] sm:grid-cols-[repeat(auto-fill,_minmax(240px,_1fr))] mt-8">
                 {coaches.map((coach) => (
-                  <CoachProfileCard key={coach._id as string} coach={coach} />
+                  <CoachProfileCard key={coach._id} coach={coach} />
                 ))}
               </div>
             </div>
@@ -87,11 +87,7 @@ export default function CoachTeamMembersPage({
       <h3 className="mb-4 font-bold text-2xl text-center">Athletes</h3>
       <div className="gap-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {filteredMembers.map((member) => (
-          <UserProfileCard
-            key={member._id as string}
-            member={member}
-            forCoach
-          />
+          <UserProfileCard key={member._id} member={member} forCoach />
         ))}
       </div>
     </main>

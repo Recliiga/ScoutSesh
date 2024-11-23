@@ -2,7 +2,8 @@
 import connectDB from "@/db/connectDB";
 import Organization, { OrganizationType } from "@/db/models/Organization";
 
-export async function fetchOrganization(organizationId: string) {
+export async function fetchOrganization(organizationId?: string) {
+  if (!organizationId) return { organization: null, error: null };
   try {
     await connectDB();
     const organization: OrganizationType = JSON.parse(

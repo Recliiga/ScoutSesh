@@ -55,7 +55,7 @@ export default function WeeklyReflectionResults({
 
     const { newComment, error } = await postComment(
       text,
-      goalData._id as string,
+      goalData._id,
       activeSection
     );
 
@@ -391,7 +391,7 @@ export default function WeeklyReflectionResults({
                           </h4>
                           {goal.weeklyReflections.map((weeklyReflection, i) => (
                             <div
-                              key={weeklyReflection._id as string}
+                              key={weeklyReflection._id}
                               className="flex flex-col gap-2 bg-white px-4 p-2 rounded-md"
                             >
                               <h5 className="font-semibold text-accent-black">

@@ -9,10 +9,11 @@ export default async function DashboardPage() {
 
   if (user.role === "Athlete") {
     const { organization, error } = await fetchOrganization(
-      user.organization._id as string
+      user.organization?._id
     );
-    if (error) throw new Error(error);
-    return <AthleteDashboard user={user} organization={organization!} />;
+    if (error !== null) throw new Error(error);
+
+    return <AthleteDashboard user={user} organization={organization} />;
   }
 
   return <CoachDashboard user={user} />;

@@ -33,7 +33,7 @@ export default function CommentableText({
           <h5 className="font-semibold">Comments:</h5>
           {sectionComments.map((comment) => (
             <div
-              key={comment._id as string}
+              key={comment._id}
               className="flex flex-col gap-2 border-amber-200 pb-2 border-b last:border-none"
               onClick={(e) => e.stopPropagation}
             >
