@@ -107,7 +107,6 @@ export async function signup(formData: FormData) {
 }
 
 export async function createOrganization(formData: FormData) {
-  const userId = formData.get("userId")!;
   const organizationData = {
     name: formData.get("organizationName"),
     profilePicture: formData.get("profilePicture"),
@@ -120,6 +119,18 @@ export async function createOrganization(formData: FormData) {
   };
 
   try {
+    const cookieStore = await cookies();
+
+    // Get token from cookie
+    const token = cookieStore.get("token")?.value;
+    if (!token) throw new Error("Invalid token");
+
+    // Verify token and get userId
+    const payload = jwt.verify(token, process.env.JWT_SECRET!);
+    if (typeof payload === "string") throw new Error("Invalid token");
+    const userId: string = payload.userId;
+    if (!userId) throw new Error("User is not authenticated");
+
     // Upload organization profile picture
     const { url, error } = await uploadImage(
       organizationData.profilePicture as string
@@ -129,7 +140,10 @@ export async function createOrganization(formData: FormData) {
 
     // Create new organization and bind to user's profile
     await connectDB();
-    const newOrganization = await Organization.create(organizationData);
+    const newOrganization = await Organization.create({
+      ...organizationData,
+      user: userId,
+    });
     const data = await User.findByIdAndUpdate(userId, {
       organization: newOrganization._id,
     });
@@ -158,7 +172,8 @@ export async function completeProfile(formData: FormData) {
   try {
     // Upload organization profile picture
     const { url, error } = await uploadImage(userData.profilePicture as string);
-    if (error) throw new Error("An error occured uploading profile picture");
+    if (error || !url)
+      throw new Error("An error occured uploading profile picture");
     userData.profilePicture = url;
 
     await connectDB();
