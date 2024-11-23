@@ -38,8 +38,6 @@ export default function WeeklyReflectionResults({
     setActiveSection("");
   }
 
-  const isCommentDialogOpen = !!activeComment;
-
   function addComment(sectionId: string) {
     setActiveComment({
       text: "",
@@ -502,7 +500,7 @@ export default function WeeklyReflectionResults({
         </div>
       </ScrollArea>
       <CommentDialog
-        isOpen={isCommentDialogOpen}
+        isOpen={Boolean(activeComment)}
         loading={loading}
         onClose={() => setActiveComment(null)}
         onSubmit={submitComment}
