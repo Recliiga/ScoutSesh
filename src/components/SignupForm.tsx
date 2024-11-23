@@ -122,6 +122,7 @@ export default function SignupForm({
 
   function disconnectOrganization() {
     setOrganization(null);
+    setOrganizationError("");
     setConnectOrganization(false);
     updateField("organizationID", "");
   }
@@ -220,7 +221,10 @@ export default function SignupForm({
               className="border-gray-300 bg-white py-2 pr-10 pl-3 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full text-sm leading-5 appearance-none focus:outline-none"
               required
               value={formEntries["role"]}
-              onChange={(e) => updateField("role", e.target.value)}
+              onChange={(e) => {
+                if (e.target.value === "Head Coach") disconnectOrganization();
+                updateField("role", e.target.value);
+              }}
             >
               <option value={""} hidden>
                 Select a Role
