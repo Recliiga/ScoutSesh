@@ -16,6 +16,7 @@ import DailyJournalCommentDialog from "@/components/daily-journal/CommentDialog"
 import { XIcon } from "lucide-react";
 import { postDailyJournalComment } from "@/actions/commentActions";
 import { DailyJournalCommentType } from "@/db/models/DailyJournalCommen";
+import { DailyJournalType } from "@/db/models/DailyJournal";
 
 export type DailyJournalDetailsType = {
   trainingAndCompetition: string;
@@ -26,18 +27,8 @@ export type DailyJournalDetailsType = {
   continueTomorrow: string;
 };
 
-export type DailyJournalType = {
-  _id: string;
-  name: string;
-  details: DailyJournalDetailsType;
-  user: UserType;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
 const journalData: DailyJournalType = {
   _id: "674134acdd3752b5ad04dbc5",
-  name: "Daily Journal Entry",
   createdAt: new Date("December 10, 2023"),
   updatedAt: new Date("December 10, 2023"),
   details: {
@@ -153,7 +144,6 @@ export default function DailyJournalResults() {
       <ScrollArea className="flex-1">
         <div className="mx-auto py-6 w-[90%] max-w-6xl">
           <h2 className="mb-2 font-semibold text-2xl">Daily Journal Results</h2>
-          <h1 className="mb-2 font-bold text-3xl">{journalData.name}</h1>
           <div className="mb-6 text-muted-foreground text-sm">
             {new Date(journalData.createdAt).toDateString()}
           </div>

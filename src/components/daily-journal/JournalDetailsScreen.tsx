@@ -6,7 +6,7 @@ import { Card, CardContent } from "../ui/card";
 import { useState } from "react";
 import Error from "../AuthError";
 import { createDailyJournal } from "@/actions/dailyJournalActions";
-import { DailyJournalDataType } from "@/db/models/DailyJournal";
+import { DailyJournalType } from "@/db/models/DailyJournal";
 import LoadingIndicator from "../LoadingIndicator";
 
 export default function JournalDetailsScreen({
@@ -15,8 +15,8 @@ export default function JournalDetailsScreen({
   setCurrentScreen,
   isFormValid,
 }: {
-  journalData: DailyJournalDataType;
-  updateJournalData: (field: keyof DailyJournalDataType, value: string) => void;
+  journalData: DailyJournalType;
+  updateJournalData: (field: keyof DailyJournalType, value: string) => void;
   setCurrentScreen: React.Dispatch<React.SetStateAction<ScreenType>>;
   isFormValid: boolean;
 }) {

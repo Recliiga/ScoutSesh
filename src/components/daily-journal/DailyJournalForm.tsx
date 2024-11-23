@@ -4,7 +4,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import CongratulationsScreen from "@/components/daily-journal/CongratulationsScreen";
 import JournalOverviewScreen from "@/components/daily-journal/JournalOverviewScreen";
 import JournalDetailsScreen from "@/components/daily-journal/JournalDetailsScreen";
-import { DailyJournalDataType } from "@/db/models/DailyJournal";
+import { DailyJournalType } from "@/db/models/DailyJournal";
 
 export type ScreenType =
   | "congratulations"
@@ -23,12 +23,12 @@ const initialJournalData = {
 export default function DailyJournalForm() {
   const [currentScreen, setCurrentScreen] =
     useState<ScreenType>("journal-overview");
-  const [journalData, setJournalData] = useState<DailyJournalDataType>(
-    initialJournalData as DailyJournalDataType
+  const [journalData, setJournalData] = useState<DailyJournalType>(
+    initialJournalData as DailyJournalType
   );
 
   const updateJournalData = useCallback(
-    (field: keyof DailyJournalDataType, value: string) => {
+    (field: keyof DailyJournalType, value: string) => {
       setJournalData((prevData) => ({
         ...prevData,
         [field]: value,

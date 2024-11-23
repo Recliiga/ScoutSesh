@@ -1,12 +1,10 @@
 "use server";
 import connectDB from "@/db/connectDB";
-import DailyJournal, { DailyJournalDataType } from "@/db/models/DailyJournal";
+import DailyJournal, { DailyJournalType } from "@/db/models/DailyJournal";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-export async function createDailyJournal(
-  dailyJournalData: DailyJournalDataType
-) {
+export async function createDailyJournal(dailyJournalData: DailyJournalType) {
   const cookieStore = await cookies();
 
   try {
