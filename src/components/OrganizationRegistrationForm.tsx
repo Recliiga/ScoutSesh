@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, resizeImage } from "@/lib/utils";
 import Image from "next/image";
 import { createOrganization } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -49,16 +49,15 @@ export default function OrganizationRegistrationForm({
     key !== "organizationID" ? value.trim() === "" : false
   );
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  async function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        updateField("profilePicture", reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+    if (!file) return;
+
+    const resizedImageUrl = await resizeImage(file);
+    if (!resizedImageUrl) return;
+
+    updateField("profilePicture", resizedImageUrl);
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -123,7 +122,7 @@ export default function OrganizationRegistrationForm({
           type="file"
           id="profilePicture"
           ref={fileInputRef}
-          onChange={handleImageUpload}
+          onChange={handleImageChange}
           accept="image/*"
           className="hidden"
         />
