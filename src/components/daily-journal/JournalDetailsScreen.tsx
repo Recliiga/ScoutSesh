@@ -1,26 +1,37 @@
-import { JournalDataType, ScreenType } from "./DailyJournalForm";
+import { ScreenType } from "./DailyJournalForm";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Card, CardContent } from "../ui/card";
+import { useState } from "react";
+import Error from "../AuthError";
+import { createDailyJournal } from "@/actions/dailyJournalActions";
+import { DailyJournalDataType } from "@/db/models/DailyJournal";
+import LoadingIndicator from "../LoadingIndicator";
 
 export default function JournalDetailsScreen({
   journalData,
   updateJournalData,
   setCurrentScreen,
-  handleSubmitJournal,
   isFormValid,
 }: {
-  journalData: JournalDataType;
-  updateJournalData: (
-    field: keyof JournalDataType,
-    value: string,
-    nestedField?: "changeTomorrow" | "continueTomorrow" | null
-  ) => void;
+  journalData: DailyJournalDataType;
+  updateJournalData: (field: keyof DailyJournalDataType, value: string) => void;
   setCurrentScreen: React.Dispatch<React.SetStateAction<ScreenType>>;
-  handleSubmitJournal(): void;
   isFormValid: boolean;
 }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSaveGoal2() {
+    if (!isFormValid) return;
+    setLoading(true);
+    const { error: saveError } = await createDailyJournal(journalData);
+    if (!saveError) setCurrentScreen("congratulations");
+    setError(saveError);
+    setLoading(false);
+  }
+
   return (
     <div className="flex flex-col mx-auto py-8 w-[90%] max-w-6xl">
       <div className="flex lg:flex-row flex-col flex-1 gap-8">
@@ -34,9 +45,9 @@ export default function JournalDetailsScreen({
             improvement:
           </p>
         </div>
-        <div className="flex flex-col flex-1 gap-4">
-          <Card className="mb-4">
-            <CardContent className="flex flex-col gap-4 p-6">
+        <div className="flex flex-col flex-1 gap-2 mb-4">
+          <Card className="">
+            <CardContent className="flex flex-col gap-4 p-4 sm:p-6">
               <div>
                 <Label
                   htmlFor="trainingAndCompetition"
@@ -101,13 +112,9 @@ export default function JournalDetailsScreen({
                 <Textarea
                   id="changeTomorrow"
                   placeholder="Reflect on your day and identify areas for improvement or new strategies to try."
-                  value={journalData.reflection.changeTomorrow}
+                  value={journalData.changeTomorrow}
                   onChange={(e) =>
-                    updateJournalData(
-                      "reflection",
-                      e.target.value,
-                      "changeTomorrow"
-                    )
+                    updateJournalData("changeTomorrow", e.target.value)
                   }
                   className="mt-2 max-h-24 aspect-[2.5]"
                 />
@@ -119,19 +126,16 @@ export default function JournalDetailsScreen({
                 <Textarea
                   id="continueTomorrow"
                   placeholder="Identify successful habits or actions from today that you want to maintain."
-                  value={journalData.reflection.continueTomorrow}
+                  value={journalData.continueTomorrow}
                   onChange={(e) =>
-                    updateJournalData(
-                      "reflection",
-                      e.target.value,
-                      "continueTomorrow"
-                    )
+                    updateJournalData("continueTomorrow", e.target.value)
                   }
                   className="mt-2 max-h-24 aspect-[2.5]"
                 />
               </div>
             </CardContent>
           </Card>
+          {error && <Error error={error} />}
         </div>
       </div>
       <div className="flex justify-between p-4 border-t">
@@ -143,10 +147,17 @@ export default function JournalDetailsScreen({
         </Button>
         <Button
           className="bg-green-500 text-white"
-          onClick={handleSubmitJournal}
-          disabled={!isFormValid}
+          onClick={handleSaveGoal2}
+          disabled={!isFormValid || loading}
         >
-          Submit Journal
+          {loading ? (
+            <>
+              <LoadingIndicator />
+              Submitting...
+            </>
+          ) : (
+            "Submit Journal"
+          )}
         </Button>
       </div>
     </div>

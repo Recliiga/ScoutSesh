@@ -1,13 +1,11 @@
-import { JournalDataType, ScreenType } from "./DailyJournalForm";
+import { ScreenType } from "./DailyJournalForm";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import BackButton from "../dashboard/BackButton";
 
 export default function JournalOverviewScreen({
-  journalData,
   setCurrentScreen,
 }: {
-  journalData: JournalDataType;
   setCurrentScreen: React.Dispatch<React.SetStateAction<ScreenType>>;
 }) {
   return (
@@ -33,7 +31,7 @@ export default function JournalOverviewScreen({
               Today&apos;s Date
             </Label>
             <div className="bg-muted p-2 border rounded-md w-fit md:w-full">
-              {journalData.date}
+              {new Date().toDateString()}
             </div>
           </div>
         </div>
