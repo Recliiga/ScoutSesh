@@ -172,7 +172,6 @@ export async function completeProfile(formData: FormData) {
   try {
     // Upload organization profile picture
     const { url, error } = await uploadImage(userData.profilePicture as string);
-    console.log({ url, error });
     if (error !== null || url === null) throw new Error(error);
     userData.profilePicture = url;
 
