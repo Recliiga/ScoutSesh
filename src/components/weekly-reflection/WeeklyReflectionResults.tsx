@@ -11,8 +11,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import ConfidenceMeter from "@/components/weekly-reflection/ConfidenceMeter";
-import CommentableText from "@/components/weekly-reflection/CommentableText";
-import CommentDialog from "@/components/weekly-reflection/CommentDialog";
+import WeeklyReflectionCommentableText from "@/components/weekly-reflection/CommentableText";
+import WeeklyReflectionCommentDialog from "@/components/weekly-reflection/CommentDialog";
 import { GoalDataSchemaType } from "@/db/models/Goal";
 import { CommentSchemaType } from "@/db/models/Comment";
 import { postComment } from "@/actions/commentActions";
@@ -118,7 +118,7 @@ export default function WeeklyReflectionResults({
                   <Popover>
                     <PopoverTrigger asChild>
                       <div>
-                        <CommentableText
+                        <WeeklyReflectionCommentableText
                           text={goalData.details.aspiration}
                           sectionId="aspiration"
                           addComment={addComment}
@@ -137,7 +137,7 @@ export default function WeeklyReflectionResults({
                           <XIcon className="w-4 h-4" />
                         </button>
                       </div>
-                      <CommentableText
+                      <WeeklyReflectionCommentableText
                         text={goalData.details.aspiration}
                         sectionId="aspiration"
                         addComment={addComment}
@@ -153,7 +153,7 @@ export default function WeeklyReflectionResults({
                   <Popover>
                     <PopoverTrigger asChild>
                       <div>
-                        <CommentableText
+                        <WeeklyReflectionCommentableText
                           text={goalData.details.strengths}
                           sectionId="strengths"
                           addComment={addComment}
@@ -172,7 +172,7 @@ export default function WeeklyReflectionResults({
                           <XIcon className="w-4 h-4" />
                         </button>
                       </div>
-                      <CommentableText
+                      <WeeklyReflectionCommentableText
                         text={goalData.details.strengths}
                         sectionId="strengths"
                         addComment={addComment}
@@ -188,7 +188,7 @@ export default function WeeklyReflectionResults({
                   <Popover>
                     <PopoverTrigger asChild>
                       <div>
-                        <CommentableText
+                        <WeeklyReflectionCommentableText
                           text={goalData.details.weaknesses}
                           sectionId="weaknesses"
                           addComment={addComment}
@@ -207,7 +207,7 @@ export default function WeeklyReflectionResults({
                           <XIcon className="w-4 h-4" />
                         </button>
                       </div>
-                      <CommentableText
+                      <WeeklyReflectionCommentableText
                         text={goalData.details.weaknesses}
                         sectionId="weaknesses"
                         addComment={addComment}
@@ -239,7 +239,7 @@ export default function WeeklyReflectionResults({
                           <Popover>
                             <PopoverTrigger asChild>
                               <div>
-                                <CommentableText
+                                <WeeklyReflectionCommentableText
                                   text={goal.goal}
                                   sectionId={`goal-${goal._id}`}
                                   addComment={addComment}
@@ -258,7 +258,7 @@ export default function WeeklyReflectionResults({
                                   <XIcon className="w-4 h-4" />
                                 </button>
                               </div>
-                              <CommentableText
+                              <WeeklyReflectionCommentableText
                                 text={goal.goal}
                                 sectionId={`goal-${goal._id}`}
                                 addComment={addComment}
@@ -275,7 +275,7 @@ export default function WeeklyReflectionResults({
                             <Popover>
                               <PopoverTrigger asChild>
                                 <div>
-                                  <CommentableText
+                                  <WeeklyReflectionCommentableText
                                     text={goal.actions}
                                     sectionId={`actions-${goal._id}`}
                                     addComment={addComment}
@@ -294,7 +294,7 @@ export default function WeeklyReflectionResults({
                                     <XIcon className="w-4 h-4" />
                                   </button>
                                 </div>
-                                <CommentableText
+                                <WeeklyReflectionCommentableText
                                   text={goal.actions}
                                   sectionId={`actions-${goal._id}`}
                                   addComment={addComment}
@@ -310,7 +310,7 @@ export default function WeeklyReflectionResults({
                             <Popover>
                               <PopoverTrigger asChild>
                                 <div>
-                                  <CommentableText
+                                  <WeeklyReflectionCommentableText
                                     text={goal.location}
                                     sectionId={`location-${goal._id}`}
                                     addComment={addComment}
@@ -329,7 +329,7 @@ export default function WeeklyReflectionResults({
                                     <XIcon className="w-4 h-4" />
                                   </button>
                                 </div>
-                                <CommentableText
+                                <WeeklyReflectionCommentableText
                                   text={goal.location}
                                   sectionId={`location-${goal._id}`}
                                   addComment={addComment}
@@ -345,7 +345,7 @@ export default function WeeklyReflectionResults({
                             <Popover>
                               <PopoverTrigger asChild>
                                 <div>
-                                  <CommentableText
+                                  <WeeklyReflectionCommentableText
                                     text={goal.frequency}
                                     sectionId={`frequency-${goal._id}`}
                                     addComment={addComment}
@@ -364,7 +364,7 @@ export default function WeeklyReflectionResults({
                                     <XIcon className="w-4 h-4" />
                                   </button>
                                 </div>
-                                <CommentableText
+                                <WeeklyReflectionCommentableText
                                   text={goal.frequency}
                                   sectionId={`frequency-${goal._id}`}
                                   addComment={addComment}
@@ -402,7 +402,7 @@ export default function WeeklyReflectionResults({
                                 <Popover>
                                   <PopoverTrigger asChild>
                                     <div>
-                                      <CommentableText
+                                      <WeeklyReflectionCommentableText
                                         text={weeklyReflection.improvement}
                                         sectionId={`strategy-${goal._id}-${weeklyReflection._id}`}
                                         addComment={addComment}
@@ -423,7 +423,7 @@ export default function WeeklyReflectionResults({
                                         <XIcon className="w-4 h-4" />
                                       </button>
                                     </div>
-                                    <CommentableText
+                                    <WeeklyReflectionCommentableText
                                       text={weeklyReflection.improvement}
                                       sectionId={`strategy-${goal._id}-${weeklyReflection._id}`}
                                       addComment={addComment}
@@ -439,7 +439,7 @@ export default function WeeklyReflectionResults({
                                 <Popover>
                                   <PopoverTrigger asChild>
                                     <div>
-                                      <CommentableText
+                                      <WeeklyReflectionCommentableText
                                         text={weeklyReflection.completion}
                                         sectionId={`completion-${goal._id}-${weeklyReflection._id}`}
                                         addComment={addComment}
@@ -460,7 +460,7 @@ export default function WeeklyReflectionResults({
                                         <XIcon className="w-4 h-4" />
                                       </button>
                                     </div>
-                                    <CommentableText
+                                    <WeeklyReflectionCommentableText
                                       text={weeklyReflection.completion}
                                       sectionId={`completion-${goal._id}-${weeklyReflection._id}`}
                                       addComment={addComment}
@@ -499,7 +499,7 @@ export default function WeeklyReflectionResults({
           </div>
         </div>
       </ScrollArea>
-      <CommentDialog
+      <WeeklyReflectionCommentDialog
         isOpen={Boolean(activeComment)}
         loading={loading}
         onClose={() => setActiveComment(null)}

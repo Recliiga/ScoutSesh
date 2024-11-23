@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import LoadingIndicator from "../LoadingIndicator";
 import { Textarea } from "../ui/textarea";
 
-export default function CommentDialog({
+export default function DailyJournalCommentDialog({
   isOpen,
   onClose,
   onSubmit,

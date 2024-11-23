@@ -11,8 +11,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { UserType } from "@/db/models/User";
-import CommentableText from "@/components/daily-journal/CommentableText";
-import CommentDialog from "@/components/daily-journal/CommentDialog";
+import DailyJournalCommentableText from "@/components/daily-journal/CommentableText";
+import DailyJournalCommentDialog from "@/components/daily-journal/CommentDialog";
 import { XIcon } from "lucide-react";
 
 export type DailyJournalDetailsType = {
@@ -206,7 +206,7 @@ export default function DailyJournalResults() {
                     <Popover>
                       <PopoverTrigger asChild>
                         <div>
-                          <CommentableText
+                          <DailyJournalCommentableText
                             text={section.commentableText}
                             sectionId={section.id}
                             addComment={addComment}
@@ -225,7 +225,7 @@ export default function DailyJournalResults() {
                             <XIcon className="w-4 h-4" />
                           </button>
                         </div>
-                        <CommentableText
+                        <DailyJournalCommentableText
                           text={section.commentableText}
                           sectionId={section.id}
                           addComment={addComment}
@@ -248,7 +248,7 @@ export default function DailyJournalResults() {
           </div>
         </div>
       </ScrollArea>
-      <CommentDialog
+      <DailyJournalCommentDialog
         isOpen={Boolean(activeComment)}
         loading={loading}
         onClose={() => setActiveComment(null)}

@@ -2,7 +2,7 @@ import { MessageSquarePlusIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { CommentSchemaType } from "@/db/models/Comment";
 
-export default function CommentableText({
+export default function WeeklyReflectionCommentableText({
   text,
   sectionId,
   addComment,

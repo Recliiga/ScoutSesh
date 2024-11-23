@@ -2,7 +2,7 @@ import { DailyJournalCommentType } from "@/app/dashboard/daily-journal/[dailyJou
 import { Button } from "../ui/button";
 import { MessageSquarePlusIcon } from "lucide-react";
 
-export default function CommentableText({
+export default function DailyJournalCommentableText({
   text,
   sectionId,
   addComment,
