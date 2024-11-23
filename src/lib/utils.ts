@@ -165,7 +165,7 @@ export function getFullname(user: UserType) {
 
 export async function uploadImage(
   image: string
-): Promise<{ url: string | null; error: string | null }> {
+): Promise<{ url: string; error: null } | { url: null; error: string }> {
   try {
     const formData = new FormData();
     formData.set("image", image);

@@ -68,7 +68,11 @@ export default function DashboardNavUser({
               <div className="p-4 border-b">
                 <div className="flex items-center space-x-3">
                   <Avatar>
-                    <AvatarImage src={user.profilePicture} alt={userName} />
+                    <AvatarImage
+                      src={user.profilePicture}
+                      alt={userName}
+                      className="object-cover"
+                    />
                     <AvatarFallback>
                       {userName
                         .split(" ")
