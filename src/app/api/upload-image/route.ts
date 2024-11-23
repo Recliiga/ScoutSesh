@@ -1,4 +1,4 @@
-import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -15,8 +15,7 @@ export async function POST(request: NextRequest) {
     const { image } = await request.json();
     if (!image) throw new Error("Please provide a valid image");
 
-    const uploadResult = await cloudinary.uploader.upload(image);
-    const { url } = uploadResult as UploadApiResponse;
+    const { url } = await cloudinary.uploader.upload(image);
     return NextResponse.json({ url, error: null });
   } catch (error) {
     return NextResponse.json(

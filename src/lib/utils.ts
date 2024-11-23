@@ -165,11 +165,12 @@ export function getFullname(user: UserType) {
 
 export async function uploadImage(
   image: string
-): Promise<{ url: string | null; error: string | null }> {
+): Promise<{ url: string; error: null } | { url: null; error: string }> {
   try {
     const formData = new FormData();
     formData.set("image", image);
-    const res = await fetch("http://localhost:3000/api/upload-image", {
+    const BASE_URL = process.env.BASE_URL!;
+    const res = await fetch(`${BASE_URL}/api/upload-image`, {
       method: "POST",
       body: JSON.stringify({ image }),
       headers: { "Content-Type": "application/json" },
