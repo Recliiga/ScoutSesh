@@ -1,6 +1,6 @@
 import { MessageSquarePlusIcon } from "lucide-react";
 import { Button } from "../ui/button";
-import { CommentSchemaType } from "@/db/models/Comment";
+import { GoalCommentType } from "@/db/models/GoalComment";
 
 export default function WeeklyReflectionCommentableText({
   text,
@@ -11,7 +11,7 @@ export default function WeeklyReflectionCommentableText({
   text: string;
   sectionId: string;
   addComment(sectionId: string): void;
-  comments: CommentSchemaType[];
+  comments: GoalCommentType[];
 }) {
   const sectionComments = comments.filter(
     (comment) => comment.sectionKey === sectionId

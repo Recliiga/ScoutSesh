@@ -14,6 +14,8 @@ import { UserType } from "@/db/models/User";
 import DailyJournalCommentableText from "@/components/daily-journal/CommentableText";
 import DailyJournalCommentDialog from "@/components/daily-journal/CommentDialog";
 import { XIcon } from "lucide-react";
+import { postDailyJournalComment } from "@/actions/commentActions";
+import { DailyJournalCommentType } from "@/db/models/DailyJournalCommen";
 
 export type DailyJournalDetailsType = {
   trainingAndCompetition: string;
@@ -33,18 +35,8 @@ export type DailyJournalType = {
   updatedAt: Date;
 };
 
-export type DailyJournalCommentType = {
-  _id: string;
-  text: string;
-  dailyJournalId: string;
-  sectionKey: string;
-  author: UserType;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
 const journalData: DailyJournalType = {
-  _id: "asdf",
+  _id: "674134acdd3752b5ad04dbc5",
   name: "Daily Journal Entry",
   createdAt: new Date("December 10, 2023"),
   updatedAt: new Date("December 10, 2023"),
@@ -94,21 +86,23 @@ export default function DailyJournalResults() {
 
     if (!activeComment || noText) return;
 
-    // const { newComment, error } = await postDailyJournalComment(
-    //   text,
-    //   journalData._id,
-    //   activeSection
-    // );
+    const { newComment, error } = await postDailyJournalComment(
+      text,
+      journalData._id,
+      activeSection
+    );
 
-    const {
-      newComment,
-      error,
-    }:
-      | { newComment: DailyJournalCommentType; error: null }
-      | { newComment: null; error: string } = {
-      newComment: null,
-      error: "asdf",
-    };
+    console.log({ newComment, error });
+
+    // const {
+    //   newComment,
+    //   error,
+    // }:
+    //   | { newComment: DailyJournalCommentType; error: null }
+    //   | { newComment: null; error: string } = {
+    //   newComment: null,
+    //   error: "asdf",
+    // };
 
     if (error === null) {
       setComments((prevComments) => [...prevComments, newComment]);

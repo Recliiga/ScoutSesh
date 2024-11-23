@@ -1,21 +1,21 @@
 import mongoose from "mongoose";
 import { UserType } from "./User";
 
-export interface CommentSchemaType extends mongoose.Document {
+export interface DailyJournalCommentType extends mongoose.Document {
   _id: string;
   text: string;
-  goalId: string;
+  dailyJournal: string;
   sectionKey: string;
   author: UserType;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const commentSchema = new mongoose.Schema(
+const dailyJournalCommentSchema = new mongoose.Schema(
   {
     text: { type: String, required: [true, "Please enter a comment"] },
     sectionKey: { type: String, required: [true, "Invalid section key"] },
-    goal: {
+    dailyJournal: {
       type: mongoose.SchemaTypes.ObjectId,
       required: [true, "Invalid goal ID"],
       ref: "Goal",
@@ -29,7 +29,8 @@ const commentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Comment =
-  mongoose.models?.Comment || mongoose.model("Comment", commentSchema);
+const DailyJournalComment =
+  mongoose.models?.DailyJournalComment ||
+  mongoose.model("DailyJournalComment", dailyJournalCommentSchema);
 
-export default Comment;
+export default DailyJournalComment;

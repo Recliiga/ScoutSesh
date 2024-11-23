@@ -14,8 +14,8 @@ import ConfidenceMeter from "@/components/weekly-reflection/ConfidenceMeter";
 import WeeklyReflectionCommentableText from "@/components/weekly-reflection/CommentableText";
 import WeeklyReflectionCommentDialog from "@/components/weekly-reflection/CommentDialog";
 import { GoalDataSchemaType } from "@/db/models/Goal";
-import { CommentSchemaType } from "@/db/models/Comment";
-import { postComment } from "@/actions/commentActions";
+import { GoalCommentType } from "@/db/models/GoalComment";
+import { postGoalComment } from "@/actions/commentActions";
 import Link from "next/link";
 import { getFullname } from "@/lib/utils";
 
@@ -24,14 +24,14 @@ export default function WeeklyReflectionResults({
   comments: goalComments,
 }: {
   goalData: GoalDataSchemaType;
-  comments: CommentSchemaType[];
+  comments: GoalCommentType[];
 }) {
-  const [activeComment, setActiveComment] = useState<CommentSchemaType | null>(
+  const [activeComment, setActiveComment] = useState<GoalCommentType | null>(
     null
   );
   const [loading, setLoading] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const [comments, setComments] = useState<CommentSchemaType[]>(goalComments);
+  const [comments, setComments] = useState<GoalCommentType[]>(goalComments);
 
   function closePopover() {
     setActiveComment(null);
@@ -41,7 +41,7 @@ export default function WeeklyReflectionResults({
   function addComment(sectionId: string) {
     setActiveComment({
       text: "",
-    } as CommentSchemaType);
+    } as GoalCommentType);
     setActiveSection(sectionId);
   }
 
@@ -51,7 +51,7 @@ export default function WeeklyReflectionResults({
 
     if (!activeComment || noText) return;
 
-    const { newComment, error } = await postComment(
+    const { newComment, error } = await postGoalComment(
       text,
       goalData._id,
       activeSection
