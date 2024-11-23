@@ -40,7 +40,7 @@ export default function WeeklyReflectionForm({
   const [showError, setShowError] = useState(false);
   const [reflectionData, setReflectionData] = useState<ReflectionDataType[]>(
     goals.map((goal) => ({
-      goalId: goal._id as string,
+      goalId: goal._id,
       reflection: {
         completion: "",
         improvement: "",
@@ -85,7 +85,7 @@ export default function WeeklyReflectionForm({
     setLoading(true);
     if (isFormValid(currentGoalIndex)) {
       const { error } = await performWeeklyReflection(
-        goalData._id as string,
+        goalData._id,
         reflectionData
       );
       setLoading(false);

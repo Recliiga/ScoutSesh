@@ -7,8 +7,15 @@ import UserProfileCard from "../dashboard/UserProfileCard";
 export default function AthleteTeamMembersPage({
   organizationMembers,
 }: {
-  organizationMembers: UserType[];
+  organizationMembers: UserType[] | null;
 }) {
+  if (!organizationMembers)
+    return (
+      <main className="flex-1 flex-center text-accent-gray-300">
+        You are not connected to any team
+      </main>
+    );
+
   const teamMembers = organizationMembers.filter(
     (teamMember) => teamMember.role === "Athlete"
   );
@@ -18,7 +25,7 @@ export default function AthleteTeamMembersPage({
   );
 
   return (
-    <main className="flex-grow mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
+    <main className="flex-1 mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
       <div className="flex flex-col gap-6 mb-8">
         <div className="items-start gap-2 grid grid-cols-1">
           <div className="w-full">
@@ -34,7 +41,7 @@ export default function AthleteTeamMembersPage({
               </div>
               <div className="gap-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-8">
                 {coaches.map((coach) => (
-                  <CoachProfileCard coach={coach} key={coach._id as string} />
+                  <CoachProfileCard coach={coach} key={coach._id} />
                 ))}
               </div>
             </div>
@@ -44,7 +51,7 @@ export default function AthleteTeamMembersPage({
       <h3 className="mb-4 font-bold text-2xl">Athletes</h3>
       <div className="gap-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {teamMembers.map((member) => (
-          <UserProfileCard member={member} key={member._id as string} />
+          <UserProfileCard member={member} key={member._id} />
         ))}
       </div>
     </main>

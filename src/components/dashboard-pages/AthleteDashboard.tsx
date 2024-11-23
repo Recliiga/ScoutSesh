@@ -13,7 +13,7 @@ export default function AthleteDashboard({
   organization,
 }: {
   user: UserType;
-  organization: OrganizationType;
+  organization: OrganizationType | null;
 }) {
   // Simulating a signed-in athlete who has not completed the journal
   const demoAthlete = {
@@ -56,28 +56,38 @@ export default function AthleteDashboard({
           <div className="flex md:flex-row flex-col items-start">
             <div className="mb-6 md:mb-0 md:pr-6 md:w-1/2">
               <h2 className="mb-4 font-semibold text-2xl">Your Next Session</h2>
-              <p className="mb-2 text-xl">{demoAthlete.upcomingSession}</p>
-              <p className="mb-4 text-gray-600 text-lg">
-                {demoAthlete.nextSessionDate},{" "}
-                {demoAthlete.nextSessionStartTime} -{" "}
-                {demoAthlete.nextSessionEndTime}
-              </p>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="relative bg-accent-gray-100 rounded-full w-16 h-16 overflow-hidden">
-                  <Image
-                    src={organization.user.profilePicture}
-                    alt={`Coach ${getFullname(organization.user)}`}
-                    fill
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <p className="font-semibold">
-                    Coach {getFullname(organization.user)}
+              {organization ? (
+                <>
+                  <p className="mb-2 text-xl">{demoAthlete.upcomingSession}</p>
+                  <p className="mb-4 text-gray-600 text-lg">
+                    {demoAthlete.nextSessionDate},{" "}
+                    {demoAthlete.nextSessionStartTime} -{" "}
+                    {demoAthlete.nextSessionEndTime}
                   </p>
-                  <p className="text-gray-600 text-sm">{organization.name}</p>
-                </div>
-              </div>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="relative bg-accent-gray-100 rounded-full w-16 h-16 overflow-hidden">
+                      <Image
+                        src={organization.user.profilePicture}
+                        alt={`Coach ${getFullname(organization.user)}`}
+                        fill
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-semibold">
+                        Coach {getFullname(organization.user)}
+                      </p>
+                      <p className="text-gray-600 text-sm">
+                        {organization.name}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p className="text-accent-gray-200">
+                  You are not connected to any team
+                </p>
+              )}
             </div>
             <div className="pt-6 md:pt-0 md:pl-6 border-t md:border-t-0 md:border-l md:w-1/2">
               <h2 className="mb-4 font-semibold text-2xl">Daily Journal</h2>

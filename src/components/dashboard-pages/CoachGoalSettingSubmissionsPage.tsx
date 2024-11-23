@@ -18,7 +18,7 @@ export default function CoachGoalSubmissionsPage({
 
   const allAthletesWithGoals = teamGoalData.map((gd, index) => ({
     _id: `${gd.user._id}-${index}`,
-    goalId: gd._id as string,
+    goalId: gd._id,
     name: getFullname(gd.user),
     profilePicture: gd.user.profilePicture,
     lastGoalDate: new Date(),

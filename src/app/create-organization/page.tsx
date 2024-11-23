@@ -16,7 +16,7 @@ export default async function CreateOrganizationPage() {
           </p>
         </div>
         <div className="flex flex-col gap-2 w-full text-sm">
-          <OrganizationRegistrationForm userId={user._id as string} />
+          <OrganizationRegistrationForm userId={user._id} />
         </div>
         <div className="flex flex-col justify-center items-center space-y-2">
           <p className="text-accent-gray-300 text-sm">

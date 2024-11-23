@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { UserType } from "./User";
 
 export interface CommentSchemaType extends mongoose.Document {
+  _id: string;
   text: string;
   goalId: string;
   sectionKey: string;

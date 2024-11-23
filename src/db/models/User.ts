@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { OrganizationType } from "./Organization";
 
 export interface UserType extends mongoose.Document {
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -13,7 +14,7 @@ export interface UserType extends mongoose.Document {
   primarySport: string;
   experience: number;
   bio: string;
-  organization: OrganizationType;
+  organization?: OrganizationType;
 }
 
 const UserSchema: mongoose.Schema = new mongoose.Schema(

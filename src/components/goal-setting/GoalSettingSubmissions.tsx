@@ -28,7 +28,7 @@ export default function GoalSettingSubmissions({
   );
 
   const [openSubmission, setOpenSubmission] = useState<string | null>(
-    mostRecentSubmission?._id as string
+    mostRecentSubmission?._id
   );
 
   const sortedSubmissions = [...goalSettingSubmissions].sort(
@@ -42,13 +42,11 @@ export default function GoalSettingSubmissions({
       {sortedSubmissions.length ? (
         sortedSubmissions.map((submission) => (
           <Collapsible
-            key={submission._id as string}
+            key={submission._id}
             open={openSubmission === submission._id}
             onOpenChange={() =>
               setOpenSubmission(
-                openSubmission === (submission._id as string)
-                  ? null
-                  : (submission._id as string)
+                openSubmission === submission._id ? null : submission._id
               )
             }
           >
@@ -116,7 +114,7 @@ export default function GoalSettingSubmissions({
                     <ul className="flex flex-col gap-3">
                       {submission.weeklyReflections.map((reflection, index) => (
                         <li
-                          key={reflection._id as string}
+                          key={reflection._id}
                           className="flex justify-between items-center bg-white shadow-sm p-3 rounded-md"
                         >
                           <span className="font-medium text-gray-900 text-sm">

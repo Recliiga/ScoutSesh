@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { UserType } from "./User";
 
 export interface OrganizationType extends mongoose.Document {
+  _id: string;
   name: string;
   type: string;
   memberCount: string;

@@ -62,14 +62,14 @@ export async function signup(formData: FormData) {
     email: formData.get("email"),
     password: formData.get("password") as string,
     role,
-    organization: role === "Head Coach" ? null : formData.get("organization"),
+    organization: formData.get("organization"),
   };
 
   try {
     // Run validation
     Object.entries(userData).forEach(([key, value]) => {
       if (!value) {
-        if (!(role === "Head Coach" && key === "organization"))
+        if (key !== "organization")
           throw new Error(errorMessages[key as keyof typeof errorMessages]);
       }
     });

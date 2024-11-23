@@ -18,7 +18,7 @@ export default async function WeeklyReflectionResultsPage({
   if (!goalData) notFound();
 
   const { comments, error: commentError } = await fetchGoalComments(
-    goalData._id as string
+    goalData._id
   );
   if (commentError !== null) throw new Error(commentError);
 
