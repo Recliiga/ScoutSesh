@@ -47,10 +47,10 @@ export default function CalendarDay({
           {isToday && !hasEntries && (
             <div className="mt-2 text-center">
               <Link
-                href="/submit-journal-entry"
+                href="/dashboard/daily-journal/submit-entry"
                 className="text-blue-500 text-xs hover:underline"
               >
-                Submit Journal Entry
+                <p>Submit Journal Entry</p>
               </Link>
             </div>
           )}

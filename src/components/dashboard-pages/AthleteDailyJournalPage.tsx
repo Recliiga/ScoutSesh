@@ -19,6 +19,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import ScoutSeshStreak from "../dashboard/ScoutSeshStreak";
 import CalendarDay from "../dashboard/CalendarDay";
 import JournalEntryCard from "../dashboard/JournalEntryCard";
+import Link from "next/link";
 
 // Mock data for journal entries
 const journalEntries = [
@@ -326,27 +327,19 @@ export default function AthleteDailyJournalPage() {
             </CardContent>
           </Card>
         </div>
-        <div className="flex justify-between mt-6">
-          <Button
-            variant="outline"
-            onClick={() => console.log("Navigate to previous page")}
-          >
-            Back
-          </Button>
-          <Button
-            className={`text-white ${
-              isTodayEntryCompleted ? "bg-blue-500" : "bg-green-500"
-            }`}
-            onClick={() =>
-              console.log(
-                isTodayEntryCompleted
-                  ? "Navigate to home"
-                  : "Complete journal entry"
-              )
+        <div className="flex justify-end mt-6">
+          <Link
+            href={
+              isTodayEntryCompleted
+                ? "/dashboard/daily-journal"
+                : "/dashboard/daily-journal/submit-entry"
             }
+            className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md font-medium text-sm text-white duration-300"
           >
-            {isTodayEntryCompleted ? "Go to Home" : "Complete Journal Entry"}
-          </Button>
+            {isTodayEntryCompleted
+              ? "View Latest Journal Entry"
+              : "Complete Journal Entry"}
+          </Link>
         </div>
       </div>
     </main>
