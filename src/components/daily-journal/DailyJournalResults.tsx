@@ -129,6 +129,7 @@ export default function DailyJournalResults({
                   <AvatarImage
                     src={journalData.user.profilePicture}
                     alt={journalDataUserName}
+                    className="object-cover"
                   />
                   <AvatarFallback>
                     {journalDataUserName

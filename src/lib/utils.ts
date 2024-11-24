@@ -6,6 +6,7 @@ import { clsx, type ClassValue } from "clsx";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { twMerge } from "tailwind-merge";
 import jwt from "jsonwebtoken";
+import { DailyJournalType } from "@/db/models/DailyJournal";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -201,4 +202,31 @@ export async function getUserIdFromCookies(
   } catch (error) {
     return { userId: null, error: (error as Error).message };
   }
+}
+
+export function calculateStreak(journalEntries: DailyJournalType[]) {
+  let streak = 0;
+  let currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+
+  for (const entry of journalEntries) {
+    const entryDate = new Date(entry.createdAt);
+    entryDate.setHours(0, 0, 0, 0);
+
+    const entryIsToday =
+      entryDate.toDateString() === currentDate.toDateString();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const diffInDays = Math.round(
+      (currentDate.getTime() - entryDate.getTime()) / oneDay
+    );
+
+    if (entryIsToday || diffInDays === 1) {
+      streak++;
+      currentDate = entryDate;
+    } else {
+      // break;
+    }
+  }
+
+  return streak;
 }

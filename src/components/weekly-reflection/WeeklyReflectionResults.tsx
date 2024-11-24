@@ -88,6 +88,7 @@ export default function WeeklyReflectionResults({
                   <AvatarImage
                     src={goalData.user.profilePicture}
                     alt={reflectionDataUserName}
+                    className="object-cover"
                   />
                   <AvatarFallback>
                     {reflectionDataUserName

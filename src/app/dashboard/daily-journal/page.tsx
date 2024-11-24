@@ -7,12 +7,12 @@ import { fetchAllUserJournals } from "@/services/journalServices";
 
 export default async function DailyJournalPage() {
   const user = await getSessionFromHeaders();
-  const { dailyJournals, error } = await fetchAllUserJournals();
+  const { journalEntries, error } = await fetchAllUserJournals();
 
   if (error !== null) throw new Error(error);
 
   if (user.role === "Athlete") {
-    return <AthleteDailyJournalPage journalEntries={dailyJournals} />;
+    return <AthleteDailyJournalPage journalEntries={journalEntries} />;
   }
 
   return <CoachDailyJournalPage />;

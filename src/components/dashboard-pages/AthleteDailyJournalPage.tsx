@@ -6,12 +6,8 @@ import {
   startOfMonth,
   endOfMonth,
   eachDayOfInterval,
-  isSameDay,
   addMonths,
   subMonths,
-  parseISO,
-  startOfDay,
-  differenceInDays,
 } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,7 +24,7 @@ export default function AthleteDailyJournalPage({
   journalEntries: DailyJournalType[];
 }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const today = startOfDay(new Date());
+  const today = new Date();
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -54,40 +50,12 @@ export default function AthleteDailyJournalPage({
 
   const isTodayEntryCompleted = Boolean(todaysJournal);
 
-  // Calculate the streak
-  const calculateStreak = () => {
-    const sortedEntries = [...journalEntries].sort(
-      (a, b) =>
-        parseISO(new Date(b.createdAt).toDateString()).getTime() -
-        parseISO(new Date(a.createdAt).toDateString()).getTime()
-    );
-    let streak = 0;
-    let currentDate = today;
-
-    for (const entry of sortedEntries) {
-      const entryDate = parseISO(new Date(entry.createdAt).toDateString());
-      if (
-        isSameDay(entryDate, currentDate) ||
-        differenceInDays(currentDate, entryDate) === 1
-      ) {
-        streak++;
-        currentDate = entryDate;
-      } else {
-        break;
-      }
-    }
-
-    return streak;
-  };
-
-  const streakCount = calculateStreak();
-
   return (
     <main className="flex-1">
       <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
-        <div className="flex sm:flex-row flex-col justify-between items-center gap-2 mb-6">
+        <div className="flex md:flex-row flex-col justify-between items-center gap-2 mb-6">
           <h1 className="font-bold text-3xl">Journal Entry Records</h1>
-          <ScoutSeshStreak streakCount={streakCount} />
+          <ScoutSeshStreak journalEntries={journalEntries} />
         </div>
         <div className="flex lg:flex-row flex-col gap-8">
           <Card className="flex-1 lg:flex-[2]">
