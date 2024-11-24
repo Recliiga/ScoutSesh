@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import DailyJournal, { DailyJournalType } from "@/db/models/DailyJournal";
 
-export async function getAllUserJournals(): Promise<
+export async function fetchAllUserJournals(): Promise<
   | {
       dailyJournals: DailyJournalType[];
       error: null;
@@ -32,5 +32,21 @@ export async function getAllUserJournals(): Promise<
     return { dailyJournals, error: null };
   } catch (error) {
     return { dailyJournals: null, error: (error as Error).message };
+  }
+}
+
+export async function fetchJournal(journalId: string) {
+  try {
+    // Connect to database and get latest user goal
+    await connectDB();
+    const journalData: DailyJournalType = JSON.parse(
+      JSON.stringify(await DailyJournal.findById(journalId).populate("user"))
+    );
+
+    // if(journalData.user._id!==userId)throw new Error("User unauthorized")
+
+    return { journalData, error: null };
+  } catch (error) {
+    return { journalData: null, error: (error as Error).message };
   }
 }

@@ -10,7 +10,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { UserType } from "@/db/models/User";
 import DailyJournalCommentableText from "@/components/daily-journal/CommentableText";
 import DailyJournalCommentDialog from "@/components/daily-journal/CommentDialog";
 import { XIcon } from "lucide-react";
@@ -27,32 +26,11 @@ export type DailyJournalDetailsType = {
   continueTomorrow: string;
 };
 
-const journalData: DailyJournalType = {
-  _id: "674134acdd3752b5ad04dbc5",
-  createdAt: new Date("December 10, 2023"),
-  updatedAt: new Date("December 10, 2023"),
-  details: {
-    trainingAndCompetition:
-      "Today's training session was intense. We focused on power play drills and penalty killing. I felt strong during the scrimmage and scored two goals. However, I need to work on my defensive positioning.",
-    nutrition:
-      "I made mostly healthy choices today. Had a protein-rich breakfast, a balanced lunch, and a light dinner. I did indulge in a small dessert after dinner, which I'll try to avoid next time.",
-    sleep:
-      "I got about 7 hours of sleep last night. The quality was good, but I aim to increase it to 8 hours tonight for better recovery.",
-    mentalState:
-      "I felt focused and motivated today. The team's energy was high, which positively affected my mood. I did experience some pre-scrimmage jitters, but I managed them well using breathing techniques.",
-    changeTomorrow:
-      "Tomorrow, I'll focus more on my defensive positioning during drills. I'll also try to get to bed 30 minutes earlier to increase my sleep duration.",
-    continueTomorrow:
-      "I'll continue with my pre-training routine as it helped me feel prepared and focused. I'll also maintain my healthy eating habits, which gave me sustained energy throughout the day.",
-  },
-  user: {
-    firstName: "John",
-    lastName: "Doe",
-    profilePicture: "/placeholder-profile-picture.png",
-  } as UserType,
-};
-
-export default function DailyJournalResults() {
+export default function DailyJournalResults({
+  journalData,
+}: {
+  journalData: DailyJournalType;
+}) {
   const [activeComment, setActiveComment] =
     useState<DailyJournalCommentType | null>(null);
   const [loading, setLoading] = useState(false);

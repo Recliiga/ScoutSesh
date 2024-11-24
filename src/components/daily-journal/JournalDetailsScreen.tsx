@@ -5,7 +5,7 @@ import { Textarea } from "../ui/textarea";
 import { Card, CardContent } from "../ui/card";
 import { useState } from "react";
 import Error from "../AuthError";
-import { createDailyJournal } from "@/actions/dailyJournalActions";
+import { createJournal } from "@/actions/journalActions";
 import { DailyJournalType } from "@/db/models/DailyJournal";
 import LoadingIndicator from "../LoadingIndicator";
 
@@ -26,7 +26,7 @@ export default function JournalDetailsScreen({
   async function handleSaveGoal2() {
     if (!isFormValid) return;
     setLoading(true);
-    const { error: saveError } = await createDailyJournal(journalData);
+    const { error: saveError } = await createJournal(journalData);
     if (!saveError) setCurrentScreen("congratulations");
     setError(saveError);
     setLoading(false);
