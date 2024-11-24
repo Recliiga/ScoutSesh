@@ -85,6 +85,11 @@ export default function DashboardNavUser({
                     <p className="text-muted-foreground text-xs">{user.role}</p>
                   </div>
                 </div>
+                {user.organization && (
+                  <p className="mt-2 text-accent-gray-300 text-xs">
+                    {user.organization._id}
+                  </p>
+                )}
               </div>
               <div className="p-2">
                 {profileCompleted && (

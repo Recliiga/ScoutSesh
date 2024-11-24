@@ -4,6 +4,7 @@ import UpcomingEvaluations from "@/components/dashboard/UpcomingEvaluations";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { UserType } from "@/db/models/User";
+import { fetchTeamMembers } from "@/services/userServices";
 
 const attendingPlayers = [
   { name: "Alex", photo: "/placeholder-profile-picture.png" },
@@ -37,7 +38,11 @@ const coach = {
   nextSessionEndTime: "3:30 PM",
 };
 
-export default function CoachDashboard({ user }: { user: UserType }) {
+export default async function CoachDashboard({ user }: { user: UserType }) {
+  const { teamMembers, error } = await fetchTeamMembers(user.organization!.id);
+
+  if (error !== null) throw new Error(error);
+
   return (
     <main className="flex-grow">
       <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
@@ -46,7 +51,7 @@ export default function CoachDashboard({ user }: { user: UserType }) {
             Welcome, {user.firstName}!
           </h1>
           <div className="bg-green-100 px-4 py-2 rounded-full font-semibold text-green-800 text-lg">
-            {coach.teamMembers} Team Members 🏅
+            {teamMembers.length} Team Members 🏅
           </div>
         </div>
         <div className="bg-white shadow-lg mb-12 p-4 sm:p-6 rounded-lg">
