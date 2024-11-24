@@ -3,15 +3,6 @@ import { fetchJournalComments } from "@/services/commentServices";
 import { fetchJournal } from "@/services/journalServices";
 import { notFound } from "next/navigation";
 
-export type DailyJournalDetailsType = {
-  trainingAndCompetition: string;
-  nutrition: string;
-  sleep: string;
-  mentalState: string;
-  changeTomorrow: string;
-  continueTomorrow: string;
-};
-
 export default async function DailyJournalResultsPage({
   params,
 }: {

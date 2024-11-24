@@ -13,15 +13,14 @@ import { DailyJournalType } from "@/db/models/DailyJournal";
 export default function CalendarDay({
   day,
   entry,
-  today,
 }: {
   day: Date;
   entry: DailyJournalType | null;
-  today: Date;
 }) {
+  const today = new Date();
   const hasEntry = entry !== null;
-  const isToday = day.getDate() === today.getDate();
-  const isFuture = day.getDate() > today.getDate();
+  const isToday = day.toDateString() === today.toDateString();
+  const isFuture = day.getTime() > today.getTime();
 
   return (
     <Popover>
@@ -37,7 +36,7 @@ export default function CalendarDay({
               {hasEntry ? (
                 <CheckCircle className="w-6 h-6 text-green-500" />
               ) : (
-                <XCircle className="w-6 h-6 text-red-500" />
+                !isToday && <XCircle className="w-6 h-6 text-red-500" />
               )}
             </div>
           )}

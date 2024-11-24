@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -16,15 +15,7 @@ import { XIcon } from "lucide-react";
 import { postDailyJournalComment } from "@/actions/commentActions";
 import { DailyJournalCommentType } from "@/db/models/DailyJournalCommen";
 import { DailyJournalType } from "@/db/models/DailyJournal";
-
-export type DailyJournalDetailsType = {
-  trainingAndCompetition: string;
-  nutrition: string;
-  sleep: string;
-  mentalState: string;
-  changeTomorrow: string;
-  continueTomorrow: string;
-};
+import Link from "next/link";
 
 export default function DailyJournalResults({
   journalData,
@@ -203,12 +194,12 @@ export default function DailyJournalResults({
             </CardContent>
           </Card>
           <div className="flex justify-end mt-8 mb-4 w-full">
-            <Button
-              className="bg-green-500 text-white"
-              onClick={() => console.log("Navigate to dashboard")}
+            <Link
+              href={"/dashboard/daily-journal"}
+              className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md text-sm text-white duration-300"
             >
               Go to Home Page
-            </Button>
+            </Link>
           </div>
         </div>
       </ScrollArea>

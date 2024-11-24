@@ -6,7 +6,10 @@ import { Card, CardContent } from "../ui/card";
 import { useState } from "react";
 import Error from "../AuthError";
 import { createJournal } from "@/actions/journalActions";
-import { DailyJournalType } from "@/db/models/DailyJournal";
+import {
+  DailyJournalDetailsType,
+  DailyJournalType,
+} from "@/db/models/DailyJournal";
 import LoadingIndicator from "../LoadingIndicator";
 
 export default function JournalDetailsScreen({
@@ -16,7 +19,10 @@ export default function JournalDetailsScreen({
   isFormValid,
 }: {
   journalData: DailyJournalType;
-  updateJournalData: (field: keyof DailyJournalType, value: string) => void;
+  updateJournalData: (
+    field: keyof DailyJournalDetailsType,
+    value: string
+  ) => void;
   setCurrentScreen: React.Dispatch<React.SetStateAction<ScreenType>>;
   isFormValid: boolean;
 }) {
@@ -58,7 +64,7 @@ export default function JournalDetailsScreen({
                 <Textarea
                   id="trainingAndCompetition"
                   placeholder="Describe your training session and any competitions you participated in. Include specific drills, skills you worked on, and your performance in competitions."
-                  value={journalData.trainingAndCompetition}
+                  value={journalData.details.trainingAndCompetition}
                   onChange={(e) =>
                     updateJournalData("trainingAndCompetition", e.target.value)
                   }
@@ -72,7 +78,7 @@ export default function JournalDetailsScreen({
                 <Textarea
                   id="nutrition"
                   placeholder="Reflect on your food choices. Did you fuel your body properly for your athletic needs?"
-                  value={journalData.nutrition}
+                  value={journalData.details.nutrition}
                   onChange={(e) =>
                     updateJournalData("nutrition", e.target.value)
                   }
@@ -86,7 +92,7 @@ export default function JournalDetailsScreen({
                 <Textarea
                   id="sleep"
                   placeholder="How many hours did you sleep? How was the quality of your sleep?"
-                  value={journalData.sleep}
+                  value={journalData.details.sleep}
                   onChange={(e) => updateJournalData("sleep", e.target.value)}
                   className="mt-2 max-h-24 aspect-[2.5]"
                 />
@@ -98,7 +104,7 @@ export default function JournalDetailsScreen({
                 <Textarea
                   id="mentalState"
                   placeholder="Describe your mood, stress level, and overall mental state."
-                  value={journalData.mentalState}
+                  value={journalData.details.mentalState}
                   onChange={(e) =>
                     updateJournalData("mentalState", e.target.value)
                   }
@@ -112,7 +118,7 @@ export default function JournalDetailsScreen({
                 <Textarea
                   id="changeTomorrow"
                   placeholder="Reflect on your day and identify areas for improvement or new strategies to try."
-                  value={journalData.changeTomorrow}
+                  value={journalData.details.changeTomorrow}
                   onChange={(e) =>
                     updateJournalData("changeTomorrow", e.target.value)
                   }
@@ -126,7 +132,7 @@ export default function JournalDetailsScreen({
                 <Textarea
                   id="continueTomorrow"
                   placeholder="Identify successful habits or actions from today that you want to maintain."
-                  value={journalData.continueTomorrow}
+                  value={journalData.details.continueTomorrow}
                   onChange={(e) =>
                     updateJournalData("continueTomorrow", e.target.value)
                   }

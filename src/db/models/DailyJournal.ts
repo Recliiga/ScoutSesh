@@ -1,17 +1,19 @@
 import mongoose from "mongoose";
 import { UserType } from "./User";
 
+export type DailyJournalDetailsType = {
+  trainingAndCompetition: string;
+  nutrition: string;
+  sleep: string;
+  mentalState: string;
+  changeTomorrow: string;
+  continueTomorrow: string;
+};
+
 export type DailyJournalType = {
   _id: string;
   user: UserType;
-  details: {
-    trainingAndCompetition: string;
-    nutrition: string;
-    sleep: string;
-    mentalState: string;
-    changeTomorrow: string;
-    continueTomorrow: string;
-  };
+  details: DailyJournalDetailsType;
   createdAt: Date;
   updatedAt: Date;
 };

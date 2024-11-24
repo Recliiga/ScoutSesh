@@ -4,7 +4,10 @@ import React, { useState, useCallback, useMemo } from "react";
 import CongratulationsScreen from "@/components/daily-journal/CongratulationsScreen";
 import JournalOverviewScreen from "@/components/daily-journal/JournalOverviewScreen";
 import JournalDetailsScreen from "@/components/daily-journal/JournalDetailsScreen";
-import { DailyJournalType } from "@/db/models/DailyJournal";
+import {
+  DailyJournalDetailsType,
+  DailyJournalType,
+} from "@/db/models/DailyJournal";
 
 export type ScreenType =
   | "congratulations"
@@ -12,12 +15,14 @@ export type ScreenType =
   | "journal-overview";
 
 const initialJournalData = {
-  trainingAndCompetition: "",
-  nutrition: "",
-  sleep: "",
-  mentalState: "",
-  changeTomorrow: "",
-  continueTomorrow: "",
+  details: {
+    trainingAndCompetition: "",
+    nutrition: "",
+    sleep: "",
+    mentalState: "",
+    changeTomorrow: "",
+    continueTomorrow: "",
+  },
 };
 
 export default function DailyJournalForm() {
@@ -28,10 +33,10 @@ export default function DailyJournalForm() {
   );
 
   const updateJournalData = useCallback(
-    (field: keyof DailyJournalType, value: string) => {
+    (field: keyof DailyJournalDetailsType, value: string) => {
       setJournalData((prevData) => ({
         ...prevData,
-        [field]: value,
+        details: { ...prevData["details"], [field]: value },
       }));
     },
     []
@@ -39,12 +44,12 @@ export default function DailyJournalForm() {
 
   const isFormValid = useMemo(() => {
     return (
-      journalData.trainingAndCompetition.trim() !== "" &&
-      journalData.nutrition.trim() !== "" &&
-      journalData.sleep.trim() !== "" &&
-      journalData.mentalState.trim() !== "" &&
-      journalData.changeTomorrow.trim() !== "" &&
-      journalData.continueTomorrow.trim() !== ""
+      journalData.details.trainingAndCompetition.trim() !== "" &&
+      journalData.details.nutrition.trim() !== "" &&
+      journalData.details.sleep.trim() !== "" &&
+      journalData.details.mentalState.trim() !== "" &&
+      journalData.details.changeTomorrow.trim() !== "" &&
+      journalData.details.continueTomorrow.trim() !== ""
     );
   }, [journalData]);
 
