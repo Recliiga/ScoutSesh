@@ -1,7 +1,7 @@
 "use client";
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ModalContainer from "../ModalContainer";
 import DashboardMobileNav from "./DashboardMobileNav";
 import { usePathname } from "next/navigation";
@@ -19,6 +19,15 @@ const navLinks = [
 
 export default function DashboardHeader({ user }: { user: UserType }) {
   const [mobileNav, setMobileNav] = useState(false);
+  const [docWidth, setDocWidth] = useState(900);
+
+  useEffect(() => {
+    function handleResize() {
+      setDocWidth(window.innerWidth);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.addEventListener("resize", handleResize);
+  }, []);
 
   const pathname = usePathname();
 
@@ -138,16 +147,18 @@ export default function DashboardHeader({ user }: { user: UserType }) {
           <DashboardNavUser user={user} />
         </div>
       </header>
-      <ModalContainer
-        open={mobileNav}
-        closeModal={() => setMobileNav(false)}
-        className="lg:hidden"
-      >
-        <DashboardMobileNav
+      {docWidth < 1024 && (
+        <ModalContainer
           open={mobileNav}
           closeModal={() => setMobileNav(false)}
-        />
-      </ModalContainer>
+          className="lg:hidden"
+        >
+          <DashboardMobileNav
+            open={mobileNav}
+            closeModal={() => setMobileNav(false)}
+          />
+        </ModalContainer>
+      )}
     </>
   );
 }
