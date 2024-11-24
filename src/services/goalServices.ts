@@ -12,7 +12,7 @@ export async function fetchAllAthleteGoalData(): Promise<
 > {
   try {
     const cookieStore = await cookies();
-    const { userId, error } = await getUserIdFromCookies(cookieStore);
+    const { userId, error } = getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
 
     // Connect to database and get latest user goal
@@ -44,7 +44,7 @@ export async function fetchAthleteGoalData(goalSubmissionId: string) {
 export async function fetchAthleteLatestGoalData() {
   try {
     const cookieStore = await cookies();
-    const { userId, error } = await getUserIdFromCookies(cookieStore);
+    const { userId, error } = getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
 
     // Connect to database and get latest user goal

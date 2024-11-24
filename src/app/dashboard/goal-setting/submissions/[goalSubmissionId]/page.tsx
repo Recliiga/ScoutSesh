@@ -43,6 +43,7 @@ export default async function GoalSettingResults({
                   <AvatarImage
                     src={goalData.user.profilePicture}
                     alt={goalDataUserName}
+                    className="object-cover"
                   />
                   <AvatarFallback>
                     {goalDataUserName

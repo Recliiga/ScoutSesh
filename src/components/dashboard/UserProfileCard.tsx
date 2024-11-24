@@ -32,9 +32,8 @@ export default function UserProfileCard({
           {getFullname(member)}
         </p>
         <ScoutSeshStreak
-          streakCount={0}
           journalEntries={journalEntries?.filter(
-            (entry) => String(entry.user) === member._id
+            (entry) => entry.user._id === member._id
           )}
           className="px-[8px] sm:px-4 py-[4px] sm:py-2 text-[12px] text-center sm:text-sm"
         />

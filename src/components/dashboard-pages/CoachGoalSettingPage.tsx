@@ -35,7 +35,7 @@ export default function CoachGoalSettingPage({
   }));
 
   const filteredAthletes = athletesWithGoals.filter((athlete) =>
-    athlete.name.toLowerCase().includes(searchTerm.toLowerCase())
+    athlete.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
   );
 
   const sortedAthletes = filteredAthletes.sort(
@@ -64,9 +64,15 @@ export default function CoachGoalSettingPage({
             </Button>
           </div>
           <div className="overflow-x-auto">
-            <div className="max-h-96 overflow-y-auto">
-              <AthleteTable athletes={sortedAthletes} />
-            </div>
+            {athletesWithGoals.length > 0 ? (
+              <div className="max-h-96 overflow-y-auto">
+                <AthleteTable athletes={sortedAthletes} />
+              </div>
+            ) : (
+              <p className="text-accent-gray-300">
+                You currently have to Goal Setting Submissions from your team
+              </p>
+            )}
           </div>
         </div>
 

@@ -12,13 +12,15 @@ export async function fetchAllUserJournals(): Promise<
 > {
   const cookieStore = await cookies();
   try {
-    const { userId, error } = await getUserIdFromCookies(cookieStore);
+    const { userId, error } = getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
 
     await connectDB();
     const journalEntries: DailyJournalType[] = JSON.parse(
       JSON.stringify(
-        await DailyJournal.find({ user: userId }).sort({ createdAt: -1 })
+        await DailyJournal.find({ user: userId })
+          .populate({ path: "user", select: "" })
+          .sort({ createdAt: -1 })
       )
     );
 
@@ -36,8 +38,16 @@ export async function fetchTeamJournalEntries(organizationId: string): Promise<
 > {
   try {
     await connectDB();
-    const teamJournalEntries: DailyJournalType[] = JSON.parse(
-      JSON.stringify(await DailyJournal.find().sort({ createdAt: -1 }))
+    const allJournalEntries: DailyJournalType[] = JSON.parse(
+      JSON.stringify(
+        await DailyJournal.find()
+          .populate({ path: "user", select: "organization" })
+          .sort({ createdAt: -1 })
+      )
+    );
+
+    const teamJournalEntries = allJournalEntries.filter(
+      (entry) => String(entry.user.organization) === organizationId
     );
 
     return { teamJournalEntries, error: null };

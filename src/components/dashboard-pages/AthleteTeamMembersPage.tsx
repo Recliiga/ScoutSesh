@@ -59,7 +59,12 @@ export default function AthleteTeamMembersPage({
           <UserProfileCard
             member={member}
             key={member._id}
-            journalEntries={teamJournalEntries}
+            journalEntries={
+              teamJournalEntries &&
+              teamJournalEntries.filter(
+                (entry) => entry.user._id === member._id
+              )
+            }
           />
         ))}
       </div>

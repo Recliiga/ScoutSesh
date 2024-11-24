@@ -3,7 +3,7 @@
 import connectDB from "@/db/connectDB";
 import Organization from "@/db/models/Organization";
 import User from "@/db/models/User";
-import { uploadImage } from "@/lib/utils";
+import { getUserIdFromCookies, uploadImage } from "@/lib/utils";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { revalidatePath } from "next/cache";
@@ -121,15 +121,8 @@ export async function createOrganization(formData: FormData) {
   try {
     const cookieStore = await cookies();
 
-    // Get token from cookie
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("Invalid token");
-
-    // Verify token and get userId
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("Invalid token");
-    const userId: string = payload.userId;
-    if (!userId) throw new Error("User is not authenticated");
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) throw new Error(authError);
 
     // Upload organization profile picture
     const { url, error } = await uploadImage(
@@ -156,7 +149,6 @@ export async function createOrganization(formData: FormData) {
 }
 
 export async function completeProfile(formData: FormData) {
-  const userId = formData.get("userId");
   const userData = {
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
@@ -170,6 +162,10 @@ export async function completeProfile(formData: FormData) {
   };
 
   try {
+    const cookieStore = await cookies();
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) throw new Error(authError);
+
     // Upload organization profile picture
     const { url, error } = await uploadImage(userData.profilePicture as string);
     if (error !== null || url === null) throw new Error(error);

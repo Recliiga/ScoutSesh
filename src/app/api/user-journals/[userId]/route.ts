@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const cookieStore = await cookies();
-    const { userId, error } = await getUserIdFromCookies(cookieStore);
+    const { userId, error } = getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
 
     await connectDB();

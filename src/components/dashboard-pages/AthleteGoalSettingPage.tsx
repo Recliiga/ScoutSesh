@@ -4,11 +4,11 @@ import GoalSettingNotificationSign from "../goal-setting/GoalSettingNotification
 import GoalCard from "../dashboard/GoalCard";
 import { fetchAthleteLatestGoalData } from "@/services/goalServices";
 import { getGoalDueDate, getWeeklyReflectionStatus } from "@/lib/utils";
+import { notFound } from "next/navigation";
 
 export default async function AthleteGoalSettingPage() {
   const { goalData, error } = await fetchAthleteLatestGoalData();
-
-  if (error !== null) throw new Error(error);
+  if (error !== null) notFound();
 
   const status = await getWeeklyReflectionStatus(goalData);
 

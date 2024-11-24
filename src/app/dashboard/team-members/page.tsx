@@ -20,7 +20,7 @@ export default async function TeamMembersPage() {
   if (error !== null) throw new Error(error);
   if (journalError !== null) throw new Error(journalError);
 
-  if (user.role === "Athlete" || "Assistant Coach") {
+  if (user.role === "Athlete" || user.role === "Assistant Coach") {
     return (
       <AthleteTeamMembersPage
         organizationMembers={teamMembers}
@@ -29,5 +29,10 @@ export default async function TeamMembersPage() {
     );
   }
 
-  return <CoachTeamMembersPage organizationMembers={teamMembers!} />;
+  return (
+    <CoachTeamMembersPage
+      organizationMembers={teamMembers!}
+      teamJournalEntries={teamJournalEntries}
+    />
+  );
 }

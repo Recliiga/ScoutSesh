@@ -107,7 +107,9 @@ export default function CoachDailyJournalPage() {
     return athletesWithJournals
       .filter(
         (athlete) =>
-          athlete.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          athlete.name
+            .toLowerCase()
+            .includes(searchTerm.trim().toLowerCase()) &&
           athlete.scoutSeshStreak > 0
       )
       .sort((a, b) => b.scoutSeshStreak - a.scoutSeshStreak);

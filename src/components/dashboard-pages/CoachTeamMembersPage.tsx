@@ -7,10 +7,13 @@ import { UserType } from "@/db/models/User";
 import { getFullname } from "@/lib/utils";
 import CoachProfileCard from "../dashboard/CoachProfileCard";
 import UserProfileCard from "../dashboard/UserProfileCard";
+import { DailyJournalType } from "@/db/models/DailyJournal";
 
 export default function CoachTeamMembersPage({
+  teamJournalEntries,
   organizationMembers,
 }: {
+  teamJournalEntries: DailyJournalType[] | null;
   organizationMembers: UserType[];
 }) {
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -24,11 +27,11 @@ export default function CoachTeamMembersPage({
   );
 
   const filteredMembers = teamMembers.filter((member) =>
-    getFullname(member).toLowerCase().includes(searchTerm.toLowerCase())
+    getFullname(member).toLowerCase().includes(searchTerm.trim().toLowerCase())
   );
 
   function handleMessageAll() {
-    console.log("Messaging all members");
+    return;
   }
 
   return (
@@ -56,7 +59,6 @@ export default function CoachTeamMembersPage({
               Message All Members
             </Button>
             <Button
-              onClick={() => console.log("Adding team members")}
               variant="outline"
               className="hover:bg-green-700 w-full md:w-48 hover:text-white whitespace-nowrap transition-colors"
             >
@@ -87,7 +89,17 @@ export default function CoachTeamMembersPage({
       <h3 className="mb-4 font-bold text-2xl text-center">Athletes</h3>
       <div className="gap-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {filteredMembers.map((member) => (
-          <UserProfileCard key={member._id} member={member} forCoach />
+          <UserProfileCard
+            key={member._id}
+            member={member}
+            forCoach
+            journalEntries={
+              teamJournalEntries &&
+              teamJournalEntries.filter(
+                (entry) => entry.user._id === member._id
+              )
+            }
+          />
         ))}
       </div>
     </main>

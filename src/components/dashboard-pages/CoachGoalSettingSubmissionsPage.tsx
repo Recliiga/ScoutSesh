@@ -38,7 +38,7 @@ export default function CoachGoalSubmissionsPage({
   const fourWeeksAgo = new Date();
   fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
   const filtered = allAthletesWithGoals.filter((athlete) =>
-    athlete.name.toLowerCase().includes(searchTerm.toLowerCase())
+    athlete.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
   );
   const activeAthletes = filtered.filter(
     (athlete) => new Date(athlete.latestUpdate) > fourWeeksAgo

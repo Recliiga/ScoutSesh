@@ -5,22 +5,15 @@ import Goal, {
   WeeklyReflectionSchemaType,
 } from "@/db/models/Goal";
 import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 import { ReflectionDataType } from "@/components/weekly-reflection/WeeklyReflectionForm";
 import { GoalSubmissionType } from "@/components/goal-setting/CreateGoalForm";
+import { getUserIdFromCookies } from "@/lib/utils";
 
 export async function createGoal(goalData: GoalSubmissionType) {
-  const cookieStore = await cookies();
-
   try {
-    // Get token from cookie
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("Invalid token");
-
-    // Verify token and get userId
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("Invalid token");
-    const userId = payload.userId;
+    const cookieStore = await cookies();
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) throw new Error(authError);
 
     // connect to MongoDB and create new Goal
     await connectDB();
@@ -32,17 +25,10 @@ export async function createGoal(goalData: GoalSubmissionType) {
 }
 
 export async function updateGoal(goalId: string, goalData: GoalSubmissionType) {
-  const cookieStore = await cookies();
-
   try {
-    // Get token from cookie
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("Invalid token");
-
-    // Verify token and get userId
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("Invalid token");
-    const userId = payload.userId;
+    const cookieStore = await cookies();
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) throw new Error(authError);
 
     // connect to MongoDB and create new Goal
     await connectDB();
@@ -74,17 +60,10 @@ export async function performWeeklyReflection(
   goalId: string,
   reflectionData: ReflectionDataType[]
 ) {
-  const cookieStore = await cookies();
-
   try {
-    // Get token from cookie
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("Invalid token");
-
-    // Verify token and get userId
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("Invalid token");
-    const userId = payload.userId;
+    const cookieStore = await cookies();
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) throw new Error(authError);
 
     // connect to MongoDB and update Goal
     await connectDB();

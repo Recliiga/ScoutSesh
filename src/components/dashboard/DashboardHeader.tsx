@@ -141,7 +141,7 @@ export default function DashboardHeader({ user }: { user: UserType }) {
       <ModalContainer
         open={mobileNav}
         closeModal={() => setMobileNav(false)}
-        className={mobileNav ? "lg:hidden" : ""}
+        className="lg:hidden"
       >
         <DashboardMobileNav
           open={mobileNav}

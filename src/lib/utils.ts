@@ -155,7 +155,7 @@ export function getGoalDueDate(goalData: GoalDataSchemaType) {
   nextWeekDueDate.setDate(nextWeekDueDate.getDate() + 7);
 
   const dueDate =
-    nextWeekDueDate.getDate() < nextFriday.getDate()
+    nextWeekDueDate.getTime() < nextFriday.getTime()
       ? nextWeekDueDate
       : nextFriday;
 
@@ -186,9 +186,7 @@ export async function uploadImage(
   }
 }
 
-export async function getUserIdFromCookies(
-  cookieStore: ReadonlyRequestCookies
-) {
+export function getUserIdFromCookies(cookieStore: ReadonlyRequestCookies) {
   try {
     // Get token from cookies
     const token = cookieStore.get("token")?.value;
@@ -224,7 +222,7 @@ export function calculateStreak(journalEntries: DailyJournalType[]) {
       streak++;
       currentDate = entryDate;
     } else {
-      // break;
+      break;
     }
   }
 

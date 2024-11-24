@@ -9,7 +9,7 @@ import { notFound } from "next/navigation";
 export default async function GoalSettingPage() {
   const user = await getSessionFromHeaders();
 
-  if (user.role === "Athlete" || "Assistant Coach") {
+  if (user.role === "Athlete" || user.role === "Assistant Coach") {
     return <AthleteGoalSettingPage />;
   }
 
