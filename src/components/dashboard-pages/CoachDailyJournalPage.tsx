@@ -12,96 +12,46 @@ import {
 } from "@/components/ui/dialog";
 import { BookOpenIcon, SearchIcon, MessageSquare } from "lucide-react";
 import DailyJournalCard from "@/components/dashboard/DailyJournalCard";
+import { DailyJournalType } from "@/db/models/DailyJournal";
+import { calculateStreak } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const today = new Date();
-const yesterday = new Date(today);
-yesterday.setDate(yesterday.getDate() - 1);
 
-const athletesWithJournals = [
-  {
-    id: 1,
-    name: "John Doe",
-    photo: "/placeholder-profile-picture.png",
-    scoutSeshStreak: 15,
-    submittedToday: false,
-    lastUpdate: yesterday,
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    photo: "/placeholder-profile-picture.png",
-    scoutSeshStreak: 0,
-    submittedToday: false,
-    lastUpdate: new Date("2024-10-21T09:15:00"),
-  },
-  {
-    id: 3,
-    name: "Mike Johnson",
-    photo: "/placeholder-profile-picture.png",
-    scoutSeshStreak: 18,
-    submittedToday: true,
-    lastUpdate: today,
-  },
-  {
-    id: 4,
-    name: "Emily Brown",
-    photo: "/placeholder-profile-picture.png",
-    scoutSeshStreak: 0,
-    submittedToday: false,
-    lastUpdate: new Date("2024-10-19T16:20:00"),
-  },
-  {
-    id: 5,
-    name: "Alex Lee",
-    photo: "/placeholder-profile-picture.png",
-    scoutSeshStreak: 10,
-    submittedToday: true,
-    lastUpdate: today,
-  },
-  {
-    id: 6,
-    name: "Sarah Wilson",
-    photo: "/placeholder-profile-picture.png",
-    scoutSeshStreak: 0,
-    submittedToday: false,
-    lastUpdate: new Date("2024-10-17T13:30:00"),
-  },
-  {
-    id: 7,
-    name: "Tom Davis",
-    photo: "/placeholder-profile-picture.png",
-    scoutSeshStreak: 5,
-    submittedToday: false,
-    lastUpdate: yesterday,
-  },
-  {
-    id: 8,
-    name: "Lisa Chen",
-    photo: "/placeholder-profile-picture.png",
-    scoutSeshStreak: 0,
-    submittedToday: false,
-    lastUpdate: new Date("2024-10-15T11:20:00"),
-  },
-  {
-    id: 9,
-    name: "Ryan Taylor",
-    photo: "/placeholder-profile-picture.png",
-    scoutSeshStreak: 3,
-    submittedToday: true,
-    lastUpdate: today,
-  },
-  {
-    id: 10,
-    name: "Emma White",
-    photo: "/placeholder-profile-picture.png",
-    scoutSeshStreak: 0,
-    submittedToday: false,
-    lastUpdate: new Date("2024-10-13T09:50:00"),
-  },
-];
-
-export default function CoachDailyJournalPage() {
+export default function CoachDailyJournalPage({
+  teamJournalEntries,
+}: {
+  teamJournalEntries: DailyJournalType[];
+}) {
   const [searchTerm, setSearchTerm] = useState("");
+
+  const athletesWithJournals = teamJournalEntries.map((entry) => {
+    const athleteJournalEntries = teamJournalEntries.filter(
+      (teamEntry) => teamEntry.user._id === entry.user._id
+    );
+
+    const latestEntry = athleteJournalEntries.reduce(
+      (prev, curr) =>
+        new Date(curr.createdAt).getTime() > new Date(prev.createdAt).getTime()
+          ? curr
+          : prev,
+      athleteJournalEntries[0]
+    );
+
+    const latestEntryDate = new Date(latestEntry.createdAt);
+
+    const submittedToday =
+      latestEntryDate.toDateString() === today.toDateString();
+
+    return {
+      _id: entry.user._id,
+      name: entry.user.firstName + " " + entry.user.lastName,
+      profilePicture: entry.user.profilePicture,
+      scoutSeshStreak: calculateStreak(athleteJournalEntries),
+      submittedToday,
+      lastUpdate: latestEntryDate.toDateString(),
+    };
+  });
 
   const sortedAndFilteredAthletes = useMemo(() => {
     return athletesWithJournals
@@ -113,7 +63,7 @@ export default function CoachDailyJournalPage() {
           athlete.scoutSeshStreak > 0
       )
       .sort((a, b) => b.scoutSeshStreak - a.scoutSeshStreak);
-  }, [searchTerm]);
+  }, [athletesWithJournals, searchTerm]);
 
   return (
     <main className="flex-1">
@@ -158,17 +108,23 @@ export default function CoachDailyJournalPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {sortedAndFilteredAthletes.map((athlete) => (
-                    <tr key={athlete.id}>
+                    <tr key={athlete._id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 w-10 h-10">
-                            <Image
-                              className="rounded-full w-10 h-10"
-                              src={athlete.photo}
-                              alt=""
-                              width={40}
-                              height={40}
-                            />
+                            <Avatar className="w-10 h-10">
+                              <AvatarImage
+                                src={athlete.profilePicture}
+                                alt={athlete.name}
+                                className="object-cover"
+                              />
+                              <AvatarFallback>
+                                {athlete.name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")}
+                              </AvatarFallback>
+                            </Avatar>
                           </div>
                           <div className="ml-4">
                             <div className="font-medium text-gray-900 text-sm">

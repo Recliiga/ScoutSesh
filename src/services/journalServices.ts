@@ -41,7 +41,10 @@ export async function fetchTeamJournalEntries(organizationId: string): Promise<
     const allJournalEntries: DailyJournalType[] = JSON.parse(
       JSON.stringify(
         await DailyJournal.find()
-          .populate({ path: "user", select: "organization" })
+          .populate({
+            path: "user",
+            select: "firstName lastName profilePicture organization",
+          })
           .sort({ createdAt: -1 })
       )
     );
