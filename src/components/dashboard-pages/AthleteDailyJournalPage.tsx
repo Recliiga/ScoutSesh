@@ -20,8 +20,10 @@ import { DailyJournalType } from "@/db/models/DailyJournal";
 
 export default function AthleteDailyJournalPage({
   journalEntries,
+  isCoachView,
 }: {
   journalEntries: DailyJournalType[];
+  isCoachView?: boolean;
 }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const today = new Date();
@@ -114,20 +116,22 @@ export default function AthleteDailyJournalPage({
             </CardContent>
           </Card>
         </div>
-        <div className="flex justify-end mt-6">
-          <Link
-            href={
-              isTodayEntryCompleted
-                ? `/dashboard/daily-journal/${todaysJournal?._id}`
-                : "/dashboard/daily-journal/submit-entry"
-            }
-            className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md font-medium text-sm text-white duration-300"
-          >
-            {isTodayEntryCompleted
-              ? "View Latest Journal Entry"
-              : "Complete Journal Entry"}
-          </Link>
-        </div>
+        {!isCoachView && (
+          <div className="flex justify-end mt-6">
+            <Link
+              href={
+                isTodayEntryCompleted
+                  ? `/dashboard/daily-journal/${todaysJournal?._id}`
+                  : "/dashboard/daily-journal/submit-entry"
+              }
+              className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md font-medium text-sm text-white duration-300"
+            >
+              {isTodayEntryCompleted
+                ? "View Latest Journal Entry"
+                : "Complete Journal Entry"}
+            </Link>
+          </div>
+        )}
       </div>
     </main>
   );

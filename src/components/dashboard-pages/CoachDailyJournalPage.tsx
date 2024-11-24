@@ -2,18 +2,12 @@
 import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { BookOpenIcon, SearchIcon, MessageSquare } from "lucide-react";
 import DailyJournalCard from "@/components/dashboard/DailyJournalCard";
 import { DailyJournalType } from "@/db/models/DailyJournal";
 import { calculateStreak } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import Link from "next/link";
 
 const today = new Date();
 
@@ -149,36 +143,14 @@ export default function CoachDailyJournalPage({
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex space-x-2">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-green-600 bg-white hover:bg-green-600 text-green-600 hover:text-white"
-                              >
-                                View Entries
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>
-                                  {athlete.name}&apos;s Journal Entries
-                                </DialogTitle>
-                              </DialogHeader>
-                              <div className="mt-2">
-                                <p className="text-gray-500 text-sm">
-                                  ScoutSesh Streak: {athlete.scoutSeshStreak}
-                                </p>
-                                <p className="text-gray-500 text-sm">
-                                  Today&apos;s Submission:{" "}
-                                  {athlete.submittedToday
-                                    ? "Submitted"
-                                    : "Not Submitted"}
-                                </p>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
+                        <div className="flex gap-2">
+                          <Link
+                            className="border-green-600 bg-white hover:bg-green-600 px-3 py-1.5 border rounded-md text-green-600 text-xs hover:text-white duration-300"
+                            href={`/dashboard/daily-journal/entries/${athlete._id}`}
+                          >
+                            View Entries
+                          </Link>
+
                           <Button
                             variant="outline"
                             size="sm"

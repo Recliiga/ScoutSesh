@@ -29,6 +29,30 @@ export async function fetchAllUserJournals(): Promise<
     return { journalEntries: null, error: (error as Error).message };
   }
 }
+
+export async function fetchJournalEntriesByUser(userId: string): Promise<
+  | {
+      journalEntries: DailyJournalType[];
+      error: null;
+    }
+  | { journalEntries: null; error: string }
+> {
+  try {
+    await connectDB();
+    const journalEntries: DailyJournalType[] = JSON.parse(
+      JSON.stringify(
+        await DailyJournal.find({ user: userId })
+          .populate({ path: "user", select: "" })
+          .sort({ createdAt: -1 })
+      )
+    );
+
+    return { journalEntries, error: null };
+  } catch (error) {
+    return { journalEntries: null, error: (error as Error).message };
+  }
+}
+
 export async function fetchTeamJournalEntries(organizationId: string): Promise<
   | {
       teamJournalEntries: DailyJournalType[];
