@@ -39,7 +39,7 @@ const coach = {
 };
 
 export default async function CoachDashboard({ user }: { user: UserType }) {
-  const { teamMembers, error } = await fetchTeamMembers(user.organization!.id);
+  const { teamMembers, error } = await fetchTeamMembers(user.organization!._id);
 
   if (error !== null) throw new Error(error);
 
