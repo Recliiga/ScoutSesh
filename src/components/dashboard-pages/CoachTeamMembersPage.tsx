@@ -74,7 +74,7 @@ export default function CoachTeamMembersPage({
               <h2 className="mb-6 font-bold text-2xl">
                 Riverside Basketball Club
               </h2>
-              <div className="top-4 right-4 bg-green-100 px-4 py-2 rounded-full w-fit font-bold text-2xl text-green-800 whitespace-nowrap">
+              <div className="top-4 right-4 bg-green-100 px-4 py-2 rounded-full w-fit font-bold text-green-800 text-xl sm:text-2xl whitespace-nowrap">
                 {teamMembers.length + coaches.length} Team Members 🏅
               </div>
               <div className="gap-4 grid grid-cols-[repeat(auto-fill,_minmax(150px,_1fr))] sm:grid-cols-[repeat(auto-fill,_minmax(240px,_1fr))] mt-8">
