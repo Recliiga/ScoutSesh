@@ -54,18 +54,6 @@ export default function DailyJournalResults({
       activeSection
     );
 
-    console.log({ newComment, error });
-
-    // const {
-    //   newComment,
-    //   error,
-    // }:
-    //   | { newComment: DailyJournalCommentType; error: null }
-    //   | { newComment: null; error: string } = {
-    //   newComment: null,
-    //   error: "asdf",
-    // };
-
     if (error === null) {
       setComments((prevComments) => [...prevComments, newComment]);
       closePopover();

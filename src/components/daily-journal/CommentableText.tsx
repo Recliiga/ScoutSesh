@@ -1,4 +1,4 @@
-import { DailyJournalCommentType } from "@/app/dashboard/daily-journal/[journalId]/page";
+import { DailyJournalCommentType } from "@/db/models/DailyJournalCommen";
 import { Button } from "../ui/button";
 import { MessageSquarePlusIcon } from "lucide-react";
 
