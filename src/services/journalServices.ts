@@ -1,7 +1,7 @@
 import connectDB from "@/db/connectDB";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 import DailyJournal, { DailyJournalType } from "@/db/models/DailyJournal";
+import { getUserIdFromCookies } from "@/lib/utils";
+import { cookies } from "next/headers";
 
 export async function fetchAllUserJournals(): Promise<
   | {
@@ -12,16 +12,9 @@ export async function fetchAllUserJournals(): Promise<
 > {
   const cookieStore = await cookies();
   try {
-    // Get token from cookies
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("User is unauthorized");
+    const { userId, error } = await getUserIdFromCookies(cookieStore);
+    if (error !== null) throw new Error(error);
 
-    // Get userId from token
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("User is unauthorized");
-    const userId = payload.userId;
-
-    // Connect to database and get latest user goal
     await connectDB();
     const dailyJournals: DailyJournalType[] = JSON.parse(
       JSON.stringify(
@@ -37,13 +30,10 @@ export async function fetchAllUserJournals(): Promise<
 
 export async function fetchJournal(journalId: string) {
   try {
-    // Connect to database and get latest user goal
     await connectDB();
-    const journalData: DailyJournalType = JSON.parse(
+    const journalData: DailyJournalType | null = JSON.parse(
       JSON.stringify(await DailyJournal.findById(journalId).populate("user"))
     );
-
-    // if(journalData.user._id!==userId)throw new Error("User unauthorized")
 
     return { journalData, error: null };
   } catch (error) {

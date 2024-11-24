@@ -1,7 +1,7 @@
 import connectDB from "@/db/connectDB";
 import Goal, { GoalDataSchemaType } from "@/db/models/Goal";
 import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
+import { getUserIdFromCookies } from "@/lib/utils";
 
 export async function fetchAllAthleteGoalData(): Promise<
   | {
@@ -10,16 +10,10 @@ export async function fetchAllAthleteGoalData(): Promise<
     }
   | { athleteGoalData: null; error: string }
 > {
-  const cookieStore = await cookies();
   try {
-    // Get token from cookies
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("User is unauthorized");
-
-    // Get userId from token
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("User is unauthorized");
-    const userId = payload.userId;
+    const cookieStore = await cookies();
+    const { userId, error } = await getUserIdFromCookies(cookieStore);
+    if (error !== null) throw new Error(error);
 
     // Connect to database and get latest user goal
     await connectDB();
@@ -48,16 +42,10 @@ export async function fetchAthleteGoalData(goalSubmissionId: string) {
 }
 
 export async function fetchAthleteLatestGoalData() {
-  const cookieStore = await cookies();
   try {
-    // Get token from cookies
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("User is unauthorized");
-
-    // Get userId from token
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("User is unauthorized");
-    const userId = payload.userId;
+    const cookieStore = await cookies();
+    const { userId, error } = await getUserIdFromCookies(cookieStore);
+    if (error !== null) throw new Error(error);
 
     // Connect to database and get latest user goal
     await connectDB();

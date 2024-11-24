@@ -28,14 +28,16 @@ export type DailyJournalDetailsType = {
 
 export default function DailyJournalResults({
   journalData,
+  journalComments,
 }: {
   journalData: DailyJournalType;
+  journalComments: DailyJournalCommentType[];
 }) {
   const [activeComment, setActiveComment] =
     useState<DailyJournalCommentType | null>(null);
   const [loading, setLoading] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const [comments, setComments] = useState<DailyJournalCommentType[]>([]);
+  const [comments, setComments] = useState(journalComments);
 
   function closePopover() {
     setActiveComment(null);

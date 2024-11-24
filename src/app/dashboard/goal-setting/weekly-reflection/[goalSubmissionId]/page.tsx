@@ -13,14 +13,16 @@ export default async function WeeklyReflectionResultsPage({
   const { goalData, error: goalError } = await fetchAthleteGoalData(
     goalSubmissionId
   );
+  const { goalComments, error: commentError } = await fetchGoalComments(
+    goalSubmissionId
+  );
+
   if (goalError !== null) throw new Error(goalError);
+  if (commentError !== null) throw new Error(commentError);
 
   if (!goalData) notFound();
 
-  const { comments, error: commentError } = await fetchGoalComments(
-    goalData._id
+  return (
+    <WeeklyReflectionResults goalData={goalData} comments={goalComments} />
   );
-  if (commentError !== null) throw new Error(commentError);
-
-  return <WeeklyReflectionResults goalData={goalData} comments={comments} />;
 }

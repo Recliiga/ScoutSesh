@@ -3,7 +3,9 @@ import { StatusType } from "@/components/goal-setting/GoalSettingNotificationSig
 import { GoalDataSchemaType } from "@/db/models/Goal";
 import { UserType } from "@/db/models/User";
 import { clsx, type ClassValue } from "clsx";
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { twMerge } from "tailwind-merge";
+import jwt from "jsonwebtoken";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -180,5 +182,23 @@ export async function uploadImage(
     return { url, error };
   } catch (error) {
     return { url: null, error: (error as Error).message };
+  }
+}
+
+export async function getUserIdFromCookies(
+  cookieStore: ReadonlyRequestCookies
+) {
+  try {
+    // Get token from cookies
+    const token = cookieStore.get("token")?.value;
+    if (!token) throw new Error("User is unauthorized");
+
+    // Get userId from token
+    const payload = jwt.verify(token, process.env.JWT_SECRET!);
+    if (typeof payload === "string") throw new Error("User is unauthorized");
+    const userId = payload.userId;
+    return { userId, error: null };
+  } catch (error) {
+    return { userId: null, error: (error as Error).message };
   }
 }

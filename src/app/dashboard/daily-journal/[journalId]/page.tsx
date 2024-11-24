@@ -1,5 +1,7 @@
 import DailyJournalResults from "@/components/daily-journal/DailyJournalResults";
+import { fetchJournalComments } from "@/services/commentServices";
 import { fetchJournal } from "@/services/journalServices";
+import { notFound } from "next/navigation";
 
 export type DailyJournalDetailsType = {
   trainingAndCompetition: string;
@@ -16,9 +18,20 @@ export default async function DailyJournalResultsPage({
   params: Promise<{ journalId: string }>;
 }) {
   const { journalId } = await params;
-  const { journalData, error } = await fetchJournal(journalId);
+  const { journalData, error: journalError } = await fetchJournal(journalId);
+  const { journalComments, error: commentError } = await fetchJournalComments(
+    journalId
+  );
 
-  if (error !== null) throw new Error(error);
+  if (journalError !== null) throw new Error(journalError);
+  if (commentError !== null) throw new Error(commentError);
 
-  return <DailyJournalResults journalData={journalData} />;
+  if (!journalData) notFound();
+
+  return (
+    <DailyJournalResults
+      journalData={journalData}
+      journalComments={journalComments}
+    />
+  );
 }
