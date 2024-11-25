@@ -174,24 +174,18 @@ export default function CoachGroupClassesPage() {
       return dateA.getTime() - dateB.getTime();
     });
 
-  const handleViewClassLibrary = () => {
-    // Add logic for viewing class library
-    console.log("Viewing class library");
-  };
-
   return (
     <main className="flex-1">
       <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
         <div className="flex sm:flex-row flex-col justify-between items-center gap-4 mb-6">
           <h1 className="font-bold text-3xl">My Class Sessions</h1>
           <div className="flex gap-2 sm:gap-4">
-            <Button
-              variant="outline"
-              className="border-green-600 hover:bg-green-600 text-green-600 hover:text-white transition-colors"
-              onClick={handleViewClassLibrary}
+            <Link
+              href="/dashboard/group-classes/courses"
+              className="border-green-600 hover:bg-green-600 duration-300 border font-medium text-green-600 hover:text-white transition-colors px-4 py-2 rounded-md text-sm"
             >
               View Class Library
-            </Button>
+            </Link>
             <Link
               href="/dashboard/group-classes/create"
               className="border-green-600 hover:bg-green-600 duration-300 border font-medium text-green-600 hover:text-white transition-colors px-4 py-2 rounded-md text-sm"
