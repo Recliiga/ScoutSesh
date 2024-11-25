@@ -12,9 +12,14 @@ export async function fetchLatestInvitationCode() {
       return { invitationCode: null, error: "User not authenticated" };
 
     await connectDB();
-    const invitationCode: InvitationCodeType | null = JSON.parse(
-      JSON.stringify(await InvitationCode.findOne({ user: userId }))
+    const invitationCodes: InvitationCodeType[] | null = JSON.parse(
+      JSON.stringify(await InvitationCode.find({ user: userId }))
     );
+
+    const invitationCode =
+      invitationCodes?.find(
+        (code) => new Date(code.exp).getTime() > new Date().getTime()
+      ) || null;
 
     return { invitationCode, error: null };
   } catch (err) {
@@ -44,6 +49,11 @@ export async function fetchInvitationCode(code: string) {
           })
       )
     );
+
+    if (!invitationData) throw new Error("Invalid code");
+
+    if (new Date(invitationData.exp).getTime() < new Date().getTime())
+      throw new Error("Code Expired");
 
     return { invitationData: invitationData, error: null };
   } catch (err) {
