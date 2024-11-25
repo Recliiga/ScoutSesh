@@ -16,34 +16,39 @@ export default function CoachDailyJournalSubmissionsPage({
   const [searchTerm, setSearchTerm] = useState("");
 
   const athletesWithJournals = useMemo(() => {
-    return teamJournalEntries.map((entry) => {
-      const athleteJournalEntries = teamJournalEntries.filter(
-        (teamEntry) => teamEntry.user._id === entry.user._id
+    return teamJournalEntries
+      .map((entry) => {
+        const athleteJournalEntries = teamJournalEntries.filter(
+          (teamEntry) => teamEntry.user._id === entry.user._id
+        );
+
+        const latestEntry = athleteJournalEntries.reduce(
+          (prev, curr) =>
+            new Date(curr.createdAt).getTime() >
+            new Date(prev.createdAt).getTime()
+              ? curr
+              : prev,
+          athleteJournalEntries[0]
+        );
+
+        const latestEntryDate = new Date(latestEntry.createdAt);
+
+        const submittedToday =
+          latestEntryDate.toDateString() === new Date().toDateString();
+
+        return {
+          _id: entry.user._id,
+          name: entry.user.firstName + " " + entry.user.lastName,
+          profilePicture: entry.user.profilePicture,
+          scoutSeshStreak: calculateStreak(athleteJournalEntries),
+          submittedToday,
+          lastUpdate: latestEntryDate.toDateString(),
+        };
+      })
+      .filter(
+        (athlete, index, self) =>
+          index === self.findIndex((obj) => obj._id === athlete._id)
       );
-
-      const latestEntry = athleteJournalEntries.reduce(
-        (prev, curr) =>
-          new Date(curr.createdAt).getTime() >
-          new Date(prev.createdAt).getTime()
-            ? curr
-            : prev,
-        athleteJournalEntries[0]
-      );
-
-      const latestEntryDate = new Date(latestEntry.createdAt);
-
-      const submittedToday =
-        latestEntryDate.toDateString() === new Date().toDateString();
-
-      return {
-        _id: entry.user._id,
-        name: entry.user.firstName + " " + entry.user.lastName,
-        profilePicture: entry.user.profilePicture,
-        scoutSeshStreak: calculateStreak(athleteJournalEntries),
-        submittedToday,
-        lastUpdate: latestEntryDate.toDateString(),
-      };
-    });
   }, [teamJournalEntries]);
 
   const { activeAthletes, inactiveAthletes } = useMemo(() => {

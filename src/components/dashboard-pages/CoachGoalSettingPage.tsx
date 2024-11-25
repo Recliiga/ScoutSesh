@@ -15,24 +15,29 @@ export default function CoachGoalSettingPage({
 }) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const athletesWithGoals = teamGoalData.map((gd, index) => ({
-    _id: `${gd.user._id}-${index}`,
-    goalId: gd._id,
-    name: getFullname(gd.user),
-    profilePicture: gd.user.profilePicture,
-    lastGoalDate: new Date(),
-    totalGoals: gd.goals.length,
-    weeklyReflections: gd.goals.reduce(
-      (prev, curr) => prev + curr.weeklyReflections.length,
-      0
-    ),
-    latestUpdate: new Date(
-      [...gd.goals].sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      )[0].updatedAt
-    ),
-  }));
+  const athletesWithGoals = teamGoalData
+    .map((gd, index) => ({
+      _id: `${gd.user._id}-${index}`,
+      goalId: gd._id,
+      name: getFullname(gd.user),
+      profilePicture: gd.user.profilePicture,
+      lastGoalDate: new Date(),
+      totalGoals: gd.goals.length,
+      weeklyReflections: gd.goals.reduce(
+        (prev, curr) => prev + curr.weeklyReflections.length,
+        0
+      ),
+      latestUpdate: new Date(
+        [...gd.goals].sort(
+          (a, b) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        )[0].updatedAt
+      ),
+    }))
+    .filter(
+      (athlete, index, self) =>
+        index === self.findIndex((obj) => obj._id === athlete._id)
+    );
 
   const filteredAthletes = athletesWithGoals.filter((athlete) =>
     athlete.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
