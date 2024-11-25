@@ -18,7 +18,7 @@ export default function UserProfileCard({
   journalEntries: DailyJournalType[] | null;
 }) {
   return (
-    <div className="flex flex-col flex-center items-center gap-2 w-full">
+    <div className="flex flex-col items-center gap-2 w-full">
       <Image
         src={member.profilePicture}
         alt={`${getFullname(member)}'s profile`}

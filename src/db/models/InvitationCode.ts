@@ -14,7 +14,11 @@ export interface InvitationCodeType extends mongoose.Document {
 
 const InvitationCodeSchema = new mongoose.Schema<InvitationCodeType>(
   {
-    code: { type: String, required: [true, "Please enter an invitation code"] },
+    code: {
+      type: String,
+      required: [true, "Please enter an invitation code"],
+      unique: true,
+    },
     user: {
       type: mongoose.SchemaTypes.ObjectId,
       required: [true, "Invalid User"],

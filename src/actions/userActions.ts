@@ -7,7 +7,8 @@ import { cookies } from "next/headers";
 export async function joinTeam(organizationId: string) {
   try {
     const cookieStore = await cookies();
-    const userId = getUserIdFromCookies(cookieStore);
+    const { userId, error } = getUserIdFromCookies(cookieStore);
+    if (error !== null) throw new Error("User is unauthenticated");
 
     await connectDB();
     const updatedUser = await User.findByIdAndUpdate(userId, {

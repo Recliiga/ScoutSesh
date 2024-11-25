@@ -14,10 +14,10 @@ export default function JoinOrganizationButton({
   async function handleJoinTeam() {
     setLoading(true);
     const { error } = await joinTeam(organizationId);
-    if (error) {
-      setLoading(false);
+    if (!error) {
+      router.replace("/dashboard");
     }
-    router.replace("/dashboard");
+    setLoading(false);
   }
 
   return (
