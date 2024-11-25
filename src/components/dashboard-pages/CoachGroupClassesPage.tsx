@@ -174,11 +174,6 @@ export default function CoachGroupClassesPage() {
       return dateA.getTime() - dateB.getTime();
     });
 
-  const handleCreateNewClass = () => {
-    // Add logic for creating a new class
-    console.log("Creating a new class");
-  };
-
   const handleViewClassLibrary = () => {
     // Add logic for viewing class library
     console.log("Viewing class library");
@@ -197,13 +192,12 @@ export default function CoachGroupClassesPage() {
             >
               View Class Library
             </Button>
-            <Button
-              variant="outline"
-              className="border-green-600 hover:bg-green-600 text-green-600 hover:text-white transition-colors"
-              onClick={handleCreateNewClass}
+            <Link
+              href="/dashboard/group-classes/create"
+              className="border-green-600 hover:bg-green-600 duration-300 border font-medium text-green-600 hover:text-white transition-colors px-4 py-2 rounded-md text-sm"
             >
               Create New Class
-            </Button>
+            </Link>
           </div>
         </div>
 
