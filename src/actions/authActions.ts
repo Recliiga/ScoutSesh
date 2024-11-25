@@ -109,7 +109,7 @@ export async function signup(formData: FormData) {
 export async function createOrganization(formData: FormData) {
   const organizationData = {
     name: formData.get("organizationName"),
-    profilePicture: formData.get("profilePicture"),
+    logo: formData.get("profilePicture"),
     type: formData.get("organizationType"),
     memberCount: formData.get("memberCount"),
     location: formData.get("location"),
@@ -125,11 +125,9 @@ export async function createOrganization(formData: FormData) {
     if (authError !== null) throw new Error(authError);
 
     // Upload organization profile picture
-    const { url, error } = await uploadImage(
-      organizationData.profilePicture as string
-    );
+    const { url, error } = await uploadImage(organizationData.logo as string);
     if (error) throw new Error("An error occured uploading profile picture");
-    organizationData.profilePicture = url;
+    organizationData.logo = url;
 
     // Create new organization and bind to user's profile
     await connectDB();

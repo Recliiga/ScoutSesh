@@ -109,20 +109,22 @@ export default function DashboardNavUser({
                         View/Edit Profile
                       </Link>
                     </Button>
-                    <Button
-                      onClick={() => {
-                        setUserMenu(false);
-                        setOpenModal("addTeamMember");
-                      }}
-                      variant="ghost"
-                      className="justify-start px-2 sm:px-4 w-full text-left"
-                      asChild
-                    >
-                      <Link href="">
-                        <UserPlusIcon className="sm:mr-2 w-4 h-4" />
-                        Invite Team Members
-                      </Link>
-                    </Button>
+                    {user.role === "Head Coach" && (
+                      <Button
+                        onClick={() => {
+                          setUserMenu(false);
+                          setOpenModal("addTeamMember");
+                        }}
+                        variant="ghost"
+                        className="justify-start px-2 sm:px-4 w-full text-left"
+                        asChild
+                      >
+                        <Link href="">
+                          <UserPlusIcon className="sm:mr-2 w-4 h-4" />
+                          Invite Team Members
+                        </Link>
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       className="justify-start px-2 sm:px-4 w-full text-left"

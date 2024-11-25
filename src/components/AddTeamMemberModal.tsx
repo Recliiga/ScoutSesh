@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Copy, Send, XIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
@@ -14,7 +14,12 @@ export default function AddTeamMemberModal({
   const [email, setEmail] = useState("");
   const [isCopied, setIsCopied] = useState(false);
 
-  const inviteLink = "https://scoutsesh.com/invite/abc123";
+  const [inviteLink, setInviteLink] = useState("");
+
+  useEffect(() => {
+    const BASE_URL = window.location.origin;
+    setInviteLink(`${BASE_URL}/invite/abc123`);
+  }, []);
 
   function handleCopyLink() {
     navigator.clipboard.writeText(inviteLink);
@@ -47,15 +52,19 @@ export default function AddTeamMemberModal({
         <div className="gap-2 grid">
           <Label htmlFor="invite-link">Shareable Invite Link</Label>
           <div className="flex gap-2">
-            <Input
-              id="invite-link"
-              value={inviteLink}
-              readOnly
-              className="flex-grow"
-            />
+            {Boolean(inviteLink) ? (
+              <Input
+                id="invite-link"
+                value={inviteLink}
+                readOnly
+                className="flex-grow"
+              />
+            ) : (
+              <div className="flex-1 bg-accent-gray-200 border rounded-md animate-pulse"></div>
+            )}
             <Button
               onClick={handleCopyLink}
-              className="bg-green-600 hover:bg-green-700 px-2 sm:px-4 text-white"
+              className="bg-green-600 hover:bg-green-700 px-3 sm:px-4 text-white"
             >
               {isCopied ? (
                 <>
@@ -84,7 +93,7 @@ export default function AddTeamMemberModal({
             />
             <Button
               onClick={handleSendInvite}
-              className="bg-green-600 hover:bg-green-700 px-2 sm:px-4 text-white"
+              className="bg-green-600 hover:bg-green-700 px-3 sm:px-4 text-white"
             >
               <Send className="mr-2 w-4 h-4" />
               Send
