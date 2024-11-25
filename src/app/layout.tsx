@@ -18,9 +18,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { user } = await getSession();
-  const { invitationCode, error } = await fetchLatestInvitationCode();
-
-  if (error !== null) throw new Error(error);
+  const { invitationCode } = await fetchLatestInvitationCode();
 
   return (
     <html lang="en">
