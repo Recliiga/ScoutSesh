@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import Button from "./LinkButton";
 import DashboardHeader from "./dashboard/DashboardHeader";
 import DashboardNavUser from "./DashboardNavUser";
+import { InvitationCodeType } from "@/db/models/InvitationCode";
 
 const navLinks = [
   { title: "Features", href: "/features" },
@@ -18,7 +19,13 @@ const navLinks = [
   { title: "Contact", href: "/contact" },
 ];
 
-export default function Header({ user }: { user: UserType | null }) {
+export default function Header({
+  user,
+  invitationCode,
+}: {
+  user: UserType | null;
+  invitationCode: InvitationCodeType | null;
+}) {
   const [mobileNav, setMobileNav] = useState(false);
   const [docWidth, setDocWidth] = useState(900);
 
@@ -41,7 +48,7 @@ export default function Header({ user }: { user: UserType | null }) {
     pathname.includes("/create-organization");
 
   if (user && pathname.startsWith("/dashboard"))
-    return <DashboardHeader user={user} />;
+    return <DashboardHeader user={user} invitationCode={invitationCode} />;
 
   return (
     <>
@@ -152,7 +159,11 @@ export default function Header({ user }: { user: UserType | null }) {
         </div>
         {user ? (
           isCompleteProfileRoute ? (
-            <DashboardNavUser user={user} profileCompleted={false} />
+            <DashboardNavUser
+              user={user}
+              profileCompleted={false}
+              invitationCode={invitationCode}
+            />
           ) : (
             <Button href={"/dashboard"} margin="none">
               Dashboard

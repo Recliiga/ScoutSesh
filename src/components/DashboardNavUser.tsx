@@ -14,13 +14,16 @@ import ModalContainer from "./ModalContainer";
 import LogoutModal from "./LogoutModal";
 import { getFullname } from "@/lib/utils";
 import AddTeamMemberModal from "./AddTeamMemberModal";
+import { InvitationCodeType } from "@/db/models/InvitationCode";
 
 export default function DashboardNavUser({
   user,
   profileCompleted = true,
+  invitationCode,
 }: {
   user: UserType;
   profileCompleted?: boolean;
+  invitationCode: InvitationCodeType | null;
 }) {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const userIconRef = useRef<HTMLDivElement>(null);
@@ -90,11 +93,6 @@ export default function DashboardNavUser({
                     <p className="text-muted-foreground text-xs">{user.role}</p>
                   </div>
                 </div>
-                {user.organization && (
-                  <p className="mt-2 text-accent-gray-300 text-xs">
-                    {user.organization._id}
-                  </p>
-                )}
               </div>
               <div className="p-2">
                 {profileCompleted && (
@@ -165,6 +163,7 @@ export default function DashboardNavUser({
       </div>
       <ModalContainer open={openModal !== null} closeModal={closeModal}>
         <AddTeamMemberModal
+          invitationCode={invitationCode}
           open={openModal === "addTeamMember"}
           closeModal={closeModal}
         />

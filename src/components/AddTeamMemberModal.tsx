@@ -3,23 +3,50 @@ import { Check, Copy, Send, XIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
+import { generateInvitationCode } from "@/actions/invitationActions";
+import { customAlphabet } from "nanoid";
+import { InvitationCodeType } from "@/db/models/InvitationCode";
 
 export default function AddTeamMemberModal({
   open,
   closeModal,
+  invitationCode,
 }: {
   open: boolean;
   closeModal: () => void;
+  invitationCode: InvitationCodeType | null;
 }) {
   const [email, setEmail] = useState("");
   const [isCopied, setIsCopied] = useState(false);
-
+  const [generating, setGenerating] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [inviteLink, setInviteLink] = useState("");
 
   useEffect(() => {
+    if (!invitationCode) return;
+    setLoading(true);
     const BASE_URL = window.location.origin;
-    setInviteLink(`${BASE_URL}/invite/abc123`);
-  }, []);
+    setInviteLink(`${BASE_URL}/invite/${invitationCode.code}`);
+    setLoading(false);
+  }, [invitationCode]);
+
+  async function handleGenerateInviteLink() {
+    setGenerating(true);
+    const characterSet =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const customNanoId = customAlphabet(characterSet, 8);
+    const newInvitationCode = customNanoId();
+    const BASE_URL = window.location.origin;
+
+    const { invitationCode, error } = await generateInvitationCode(
+      newInvitationCode
+    );
+    if (error === null) {
+      setInviteLink(`${BASE_URL}/invite/${invitationCode.code}`);
+    }
+
+    setGenerating(false);
+  }
 
   function handleCopyLink() {
     navigator.clipboard.writeText(inviteLink);
@@ -49,37 +76,48 @@ export default function AddTeamMemberModal({
       </div>
 
       <div className="gap-4 grid">
-        <div className="gap-2 grid">
-          <Label htmlFor="invite-link">Shareable Invite Link</Label>
-          <div className="flex gap-2">
-            {Boolean(inviteLink) ? (
-              <Input
-                id="invite-link"
-                value={inviteLink}
-                readOnly
-                className="flex-grow"
-              />
-            ) : (
-              <div className="flex-1 bg-accent-gray-200 border rounded-md animate-pulse"></div>
-            )}
-            <Button
-              onClick={handleCopyLink}
-              className="bg-green-600 hover:bg-green-700 px-3 sm:px-4 text-white"
-            >
-              {isCopied ? (
-                <>
-                  <Check />
-                  Copied!
-                </>
+        {invitationCode || inviteLink ? (
+          <div className="gap-2 grid">
+            <Label htmlFor="invite-link">Shareable Invite Link</Label>
+            <div className="flex gap-2">
+              {!loading ? (
+                <Input
+                  id="invite-link"
+                  value={inviteLink}
+                  readOnly
+                  className="flex-grow"
+                />
               ) : (
-                <>
-                  <Copy className="mr-2 w-4 h-4" />
-                  Copy
-                </>
+                <div className="flex-1 bg-accent-gray-200 border rounded-md animate-pulse"></div>
               )}
-            </Button>
+              <Button
+                disabled={loading}
+                onClick={handleCopyLink}
+                className="bg-green-600 hover:bg-green-700 px-3 sm:px-4 text-white"
+              >
+                {isCopied ? (
+                  <>
+                    <Check />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="mr-2 w-4 h-4" />
+                    Copy
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <Button
+            disabled={generating}
+            onClick={handleGenerateInviteLink}
+            className="bg-green-600 hover:bg-green-700 px-3 sm:px-4 text-white"
+          >
+            {generating ? "Generating..." : "Generate Invitation Link"}
+          </Button>
+        )}
         <div className="gap-2 grid">
           <Label htmlFor="email-invite">Invite by Email</Label>
           <div className="flex gap-2">

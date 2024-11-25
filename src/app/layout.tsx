@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import Header from "@/components/Header";
 import { getSession } from "@/services/authServices";
 import Footer from "@/components/Footer";
+import { fetchLatestInvitationCode } from "@/services/invitationServices";
 
 export const metadata: Metadata = {
   title: "ScoutSesh",
@@ -17,13 +18,16 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { user } = await getSession();
+  const { invitationCode, error } = await fetchLatestInvitationCode();
+
+  if (error !== null) throw new Error(error);
 
   return (
     <html lang="en">
       <body
         className={`${GeistSans.className} antialiased text-accent-black flex flex-col min-h-screen`}
       >
-        <Header user={user} />
+        <Header user={user} invitationCode={invitationCode} />
         {children}
         <Footer />
       </body>
