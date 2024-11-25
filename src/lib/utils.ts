@@ -195,7 +195,7 @@ export function getUserIdFromCookies(cookieStore: ReadonlyRequestCookies) {
     // Get userId from token
     const payload = jwt.verify(token, process.env.JWT_SECRET!);
     if (typeof payload === "string") throw new Error("User is unauthorized");
-    const userId = payload.userId;
+    const userId: string = payload.userId;
     return { userId, error: null };
   } catch (error) {
     return { userId: null, error: (error as Error).message };

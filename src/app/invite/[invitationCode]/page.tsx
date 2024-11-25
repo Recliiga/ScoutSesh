@@ -13,8 +13,7 @@ export default async function InvitationPage({
 }) {
   const user = await getSessionFromHeaders();
   const { invitationCode } = await params;
-  const { invitationData, error } = await fetchInvitationCode(invitationCode);
-  if (error !== null) throw new Error(error);
+  const { invitationData } = await fetchInvitationCode(invitationCode);
 
   const coachName =
     invitationData?.user.firstName + " " + invitationData?.user.lastName;

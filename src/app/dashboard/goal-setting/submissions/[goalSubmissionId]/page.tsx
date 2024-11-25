@@ -17,9 +17,8 @@ export default async function GoalSettingResults({
 }) {
   const user = await getSessionFromHeaders();
   const { goalSubmissionId } = await params;
-  const { goalData, error } = await fetchAthleteGoalData(goalSubmissionId);
+  const { goalData } = await fetchAthleteGoalData(goalSubmissionId);
 
-  if (error !== null) throw new Error(error);
   if (!goalData) notFound();
 
   const goalDataUserName = getFullname(goalData.user);
