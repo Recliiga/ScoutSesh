@@ -13,18 +13,28 @@ import { UserType } from "@/db/models/User";
 import ModalContainer from "./ModalContainer";
 import LogoutModal from "./LogoutModal";
 import { getFullname } from "@/lib/utils";
+import AddTeamMemberModal from "./AddTeamMemberModal";
+import { InvitationCodeType } from "@/db/models/InvitationCode";
 
 export default function DashboardNavUser({
   user,
   profileCompleted = true,
+  invitationCode,
 }: {
   user: UserType;
   profileCompleted?: boolean;
+  invitationCode: InvitationCodeType | null;
 }) {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const userIconRef = useRef<HTMLDivElement>(null);
   const [userMenu, setUserMenu] = useState(false);
-  const [signoutModal, setSignoutModal] = useState(false);
+  const [openModal, setOpenModal] = useState<
+    "addTeamMember" | "signout" | null
+  >(null);
+
+  function closeModal() {
+    setOpenModal(null);
+  }
 
   const userName = getFullname(user);
 
@@ -60,9 +70,7 @@ export default function DashboardNavUser({
         {userMenu && (
           <div
             ref={userMenuRef}
-            className={
-              "top-[calc(100%_+_.5rem)] right-0 z-10 absolute p-0 w-52"
-            }
+            className={"top-[calc(100%_+_.5rem)] right-0 z-10 absolute"}
           >
             <div className="bg-background shadow-lg border rounded-lg">
               <div className="p-4 border-b">
@@ -99,16 +107,22 @@ export default function DashboardNavUser({
                         View/Edit Profile
                       </Link>
                     </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start px-2 sm:px-4 w-full text-left"
-                      asChild
-                    >
-                      <Link href="">
-                        <UserPlusIcon className="sm:mr-2 w-4 h-4" />
-                        Invite Team Members
-                      </Link>
-                    </Button>
+                    {user.role === "Head Coach" && (
+                      <Button
+                        onClick={() => {
+                          setUserMenu(false);
+                          setOpenModal("addTeamMember");
+                        }}
+                        variant="ghost"
+                        className="justify-start px-2 sm:px-4 w-full text-left"
+                        asChild
+                      >
+                        <Link href="">
+                          <UserPlusIcon className="sm:mr-2 w-4 h-4" />
+                          Invite Team Members
+                        </Link>
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       className="justify-start px-2 sm:px-4 w-full text-left"
@@ -136,7 +150,7 @@ export default function DashboardNavUser({
                   className="justify-start px-2 sm:px-4 w-full text-left"
                   onClick={() => {
                     setUserMenu(false);
-                    setSignoutModal(true);
+                    setOpenModal("signout");
                   }}
                 >
                   <LogOutIcon className="sm:mr-2 w-4 h-4" />
@@ -147,14 +161,13 @@ export default function DashboardNavUser({
           </div>
         )}
       </div>
-      <ModalContainer
-        open={signoutModal}
-        closeModal={() => setSignoutModal(false)}
-      >
-        <LogoutModal
-          open={signoutModal}
-          closeModal={() => setSignoutModal(false)}
+      <ModalContainer open={openModal !== null} closeModal={closeModal}>
+        <AddTeamMemberModal
+          invitationCode={invitationCode}
+          open={openModal === "addTeamMember"}
+          closeModal={closeModal}
         />
+        <LogoutModal open={openModal === "signout"} closeModal={closeModal} />
       </ModalContainer>
     </>
   );

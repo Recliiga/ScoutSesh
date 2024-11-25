@@ -1,13 +1,15 @@
 import React from "react";
-import { Button } from "../ui/button";
+import Link from "next/link";
 
 export default function DailyJournalCard({
   title,
+  href,
   description,
   icon,
   action,
 }: {
   title: string;
+  href: string;
   description: string;
   icon: React.ReactElement;
   action: string;
@@ -21,9 +23,12 @@ export default function DailyJournalCard({
         <h3 className="ml-2 font-semibold text-xl leading-6">{title}</h3>
       </div>
       <p className="flex-grow mb-4 text-gray-600">{description}</p>
-      <Button className="bg-green-600 hover:bg-green-700 text-white self-start">
+      <Link
+        href={href}
+        className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-sm text-white self-start"
+      >
         {action}
-      </Button>
+      </Link>
     </div>
   );
 }

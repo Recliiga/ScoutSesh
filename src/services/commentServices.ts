@@ -1,14 +1,35 @@
 import connectDB from "@/db/connectDB";
-import Comment, { CommentSchemaType } from "@/db/models/Comment";
+import DailyJournalComment, {
+  DailyJournalCommentType,
+} from "@/db/models/DailyJournalCommen";
+import GoalComment, { GoalCommentType } from "@/db/models/GoalComment";
 
 export async function fetchGoalComments(goalId: string) {
   try {
     await connectDB();
-    const comments: CommentSchemaType[] = JSON.parse(
-      JSON.stringify(await Comment.find({ goal: goalId }).populate("author"))
+    const goalComments: GoalCommentType[] = JSON.parse(
+      JSON.stringify(
+        await GoalComment.find({ goal: goalId }).populate("author")
+      )
     );
-    return { comments, error: null };
+    return { goalComments, error: null };
   } catch (error) {
-    return { comments: null, error: (error as Error).message };
+    return { goalComments: null, error: (error as Error).message };
+  }
+}
+
+export async function fetchJournalComments(journalId: string) {
+  try {
+    await connectDB();
+    const journalComments: DailyJournalCommentType[] = JSON.parse(
+      JSON.stringify(
+        await DailyJournalComment.find({ dailyJournal: journalId }).populate(
+          "author"
+        )
+      )
+    );
+    return { journalComments, error: null };
+  } catch (error) {
+    return { journalComments: null, error: (error as Error).message };
   }
 }

@@ -9,7 +9,7 @@ import {
 import { Button } from "../ui/button";
 import LoadingIndicator from "../LoadingIndicator";
 
-export default function CommentDialog({
+export default function WeeklyReflectionCommentDialog({
   isOpen,
   onClose,
   onSubmit,

@@ -7,9 +7,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
+
+  const canSubmit = Boolean(email.trim()) && Boolean(password.trim());
 
   const router = useRouter();
 
@@ -48,6 +52,8 @@ export default function LoginForm() {
             className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
             id="email"
             name="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="name@example.com"
             required
             type="email"
@@ -61,6 +67,8 @@ export default function LoginForm() {
             className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
             id="password"
             name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
             type="password"
             placeholder="******"
@@ -70,7 +78,7 @@ export default function LoginForm() {
         <button
           className="flex-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"
           type="submit"
-          disabled={loading}
+          disabled={loading || !canSubmit}
         >
           {loading ? <LoadingIndicator /> : "Log In"}
         </button>

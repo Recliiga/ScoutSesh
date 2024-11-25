@@ -9,6 +9,7 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/signup");
   const isProtectedRoute = pathname.startsWith("/dashboard");
+  const isInviteRoute = pathname.startsWith("/invite");
   const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
   const isCreateOrganizationRoute = pathname.startsWith("/create-organization");
   const isCreateGoalRoute = pathname === "/dashboard/goal-setting/new";
@@ -25,6 +26,19 @@ export async function middleware(request: NextRequest) {
     response.headers.set("x-user-session", JSON.stringify(user));
   } else {
     response.headers.delete("x-user-session");
+  }
+
+  // Redirect unauthenticated user from invitation route
+  if (isInviteRoute && !isAuthenticated) {
+    const url = new URL("/login", request.url);
+    url.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(url);
+  }
+
+  // Redirect Head Coach from invitation route
+  if (isInviteRoute && isAuthenticated && userIsHeadCoach) {
+    const url = new URL("/dashboard", request.url);
+    return NextResponse.redirect(url);
   }
 
   // Redirect authenticated user from auth routes
@@ -97,6 +111,7 @@ export const config: MiddlewareConfig = {
     "/login",
     "/signup",
     "/dashboard/:path*",
+    "/invite/:path*",
     "/complete-profile",
     "/create-organization",
   ],

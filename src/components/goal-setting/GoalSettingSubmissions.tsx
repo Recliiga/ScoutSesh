@@ -58,6 +58,7 @@ export default function GoalSettingSubmissions({
                       <AvatarImage
                         src={user.profilePicture}
                         alt={athleteName}
+                        className="object-cover"
                       />
                       <AvatarFallback>
                         {athleteName

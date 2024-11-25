@@ -6,19 +6,32 @@ import DashboardCard from "../dashboard/DashboardCard";
 import { UserType } from "@/db/models/User";
 import ScoutSeshStreak from "../dashboard/ScoutSeshStreak";
 import { OrganizationType } from "@/db/models/Organization";
-import { getFullname } from "@/lib/utils";
+import { calculateStreak, getFullname } from "@/lib/utils";
+import { DailyJournalType } from "@/db/models/DailyJournal";
+import Link from "next/link";
 
 export default function AthleteDashboard({
   user,
   organization,
+  journalEntries,
 }: {
   user: UserType;
   organization: OrganizationType | null;
+  journalEntries: DailyJournalType[];
 }) {
+  const today = new Date();
+  const todaysJournal = journalEntries.find(
+    (entry) => new Date(entry.createdAt).toDateString() === today.toDateString()
+  );
+
+  const isTodayEntryCompleted = Boolean(todaysJournal);
+
+  const streakCount = calculateStreak(journalEntries);
+
   // Simulating a signed-in athlete who has not completed the journal
   const demoAthlete = {
     name: "Alex",
-    dayStreak: 7,
+    dayStreak: calculateStreak(journalEntries),
     upcomingSession: "Goal Setting Workshop",
     nextSessionDate: "Tomorrow",
     nextSessionStartTime: "2:00 PM",
@@ -26,13 +39,6 @@ export default function AthleteDashboard({
     sport: "Track and Field",
     journalCompletedToday: false,
   };
-
-  // Coach information
-  // const coach = {
-  //   name: "Sarah Thompson",
-  //   profilePhoto: "/placeholder.svg",
-  //   association: "Riverside Basketball Club",
-  // };
 
   // Function to check if the session has started
   const isSessionStarted = () => {
@@ -50,7 +56,7 @@ export default function AthleteDashboard({
           <h1 className="font-bold text-3xl text-black sm:text-4xl">
             Welcome back, {user.firstName}!
           </h1>
-          <ScoutSeshStreak streakCount={7} />
+          <ScoutSeshStreak journalEntries={journalEntries} />
         </div>
         <div className="bg-white shadow-lg mb-12 p-6 rounded-lg">
           <div className="flex md:flex-row flex-col items-start">
@@ -91,13 +97,15 @@ export default function AthleteDashboard({
             </div>
             <div className="pt-6 md:pt-0 md:pl-6 border-t md:border-t-0 md:border-l md:w-1/2">
               <h2 className="mb-4 font-semibold text-2xl">Daily Journal</h2>
-              <div className="flex items-start mb-4 text-red-600">
-                <AlertCircle className="mr-2" />
-                <p>
-                  Complete your journal to maintain your {demoAthlete.dayStreak}{" "}
-                  day streak!
-                </p>
-              </div>
+              {!isTodayEntryCompleted && streakCount > 0 && (
+                <div className="flex items-start mb-4 text-red-600">
+                  <AlertCircle className="mr-2" />
+                  <p>
+                    Complete your journal to maintain your {streakCount} day
+                    streak!
+                  </p>
+                </div>
+              )}
               <p className="mb-4 text-gray-600">
                 Reflect on your progress, set goals, and track your journey.
                 Your daily journal is key to consistent improvement and keeping
@@ -106,17 +114,28 @@ export default function AthleteDashboard({
             </div>
           </div>
           <div className="flex sm:flex-row flex-col justify-between gap-4 mt-6 pt-6 border-t">
-            <Button
-              disabled={!isSessionStarted()}
-              //   onClick={() => console.log("Joining session...")}
+            {!isSessionStarted() ? (
+              <Button disabled>Session Not Started</Button>
+            ) : (
+              <Link
+                href={"#"}
+                className="bg-accent-black hover:bg-accent-black/90 px-4 py-2 rounded-md font-medium text-center text-sm text-white duration-300"
+              >
+                Join Session
+              </Link>
+            )}
+            <Link
+              href={
+                isTodayEntryCompleted
+                  ? `/dashboard/daily-journal/${todaysJournal?._id}`
+                  : "/dashboard/daily-journal/submit-entry"
+              }
+              className="bg-accent-black hover:bg-accent-black/90 disabled:bg-accent-gray-300 px-4 py-2 rounded-md font-medium text-center text-sm text-white duration-300"
             >
-              {isSessionStarted() ? "Join Session" : "Session Not Started"}
-            </Button>
-            <Button
-            //   onClick={() => console.log("Navigating to journal page...")}
-            >
-              Complete Today&apos;s Journal
-            </Button>
+              {isTodayEntryCompleted
+                ? "View Latest Journal Entry"
+                : "Complete Today's Journal"}
+            </Link>
           </div>
         </div>
         <h2 className="mb-6 font-bold text-2xl">Your ScoutSesh Dashboard</h2>

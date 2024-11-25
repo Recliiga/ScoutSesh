@@ -5,38 +5,18 @@ import { signup } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
 import Error from "./AuthError";
 import LoadingIndicator from "./LoadingIndicator";
-import { fetchOrganization } from "@/actions/organizationActions";
-import { OrganizationType } from "@/db/models/Organization";
 import useFormEntries from "@/hooks/useFormEntries";
-import { Button } from "./ui/button";
 
-export default function SignupForm({
-  orgId,
-  defaultOrganization,
-}: {
-  orgId: string;
-  defaultOrganization: OrganizationType | null;
-}) {
+export default function SignupForm({ orgId }: { orgId: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
-
-  const [connectOrganization, setConnectOrganization] = useState(
-    Boolean(orgId)
-  );
 
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [signupError, setSignupError] = useState<string | null>(null);
-  const [organizationError, setOrganizationError] = useState(
-    orgId && !defaultOrganization ? "Invalid Organization ID" : ""
-  );
-  const [orgDataLoading, setOrgDataLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [organization, setOrganization] = useState<OrganizationType | null>(
-    defaultOrganization
-  );
 
   const { formEntries, updateField } = useFormEntries({
     firstName: "",
@@ -45,7 +25,6 @@ export default function SignupForm({
     password: "",
     confirmPassword: "",
     role: orgId ? "Athlete" : "",
-    organizationID: orgId,
   });
 
   const emptyField = Object.entries(formEntries).some(([key, value]) =>
@@ -104,27 +83,6 @@ export default function SignupForm({
     }
 
     setSignupError(error);
-  }
-
-  async function verifyOrgId() {
-    setOrganization(null);
-    setOrgDataLoading(true);
-    setOrganizationError("");
-    if (!formEntries.organizationID) return;
-
-    const { organization } = await fetchOrganization(
-      formEntries.organizationID
-    );
-    if (!organization) setOrganizationError("Invalid Organization ID");
-    setOrganization(organization);
-    setOrgDataLoading(false);
-  }
-
-  function disconnectOrganization() {
-    setOrganization(null);
-    setOrganizationError("");
-    setConnectOrganization(false);
-    updateField("organizationID", "");
   }
 
   return (
@@ -221,10 +179,7 @@ export default function SignupForm({
               className="border-gray-300 bg-white py-2 pr-10 pl-3 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full text-sm leading-5 appearance-none focus:outline-none"
               required
               value={formEntries["role"]}
-              onChange={(e) => {
-                if (e.target.value === "Head Coach") disconnectOrganization();
-                updateField("role", e.target.value);
-              }}
+              onChange={(e) => updateField("role", e.target.value)}
             >
               <option value={""} hidden>
                 Select a Role
@@ -262,51 +217,6 @@ export default function SignupForm({
           </div>
         </div>
 
-        {formEntries.role === "Athlete" ||
-        formEntries.role === "Assistant Coach" ? (
-          connectOrganization ? (
-            <div className="flex flex-col gap-2">
-              <label className="font-medium text-sm" htmlFor="organization">
-                Organization ID
-              </label>
-              <div className="relative flex items-center gap-2">
-                <input
-                  className="flex-1 px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 min-w-0 text-sm disabled:text-accent-gray-300"
-                  id="organization"
-                  name="organization"
-                  placeholder="Enter Organization ID"
-                  required
-                  autoComplete="off"
-                  disabled={orgDataLoading}
-                  value={formEntries["organizationID"]}
-                  onChange={(e) =>
-                    updateField("organizationID", e.target.value)
-                  }
-                />
-                {organization ? (
-                  <Button onClick={disconnectOrganization}>Disconnect</Button>
-                ) : (
-                  <button
-                    className="flex-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md font-medium text-sm text-white disabled:cursor-not-allowed"
-                    type="button"
-                    disabled={orgDataLoading}
-                    onClick={verifyOrgId}
-                  >
-                    {orgDataLoading ? "Verifying..." : "Verify"}
-                  </button>
-                )}
-              </div>
-              {organization && (
-                <p className="text-accent-green-100">{organization.name}</p>
-              )}
-              {organizationError && <Error error={organizationError} />}
-            </div>
-          ) : (
-            <Button onClick={() => setConnectOrganization(true)}>
-              Connect Organization
-            </Button>
-          )
-        ) : null}
         {signupError && <Error error={signupError} />}
         <button
           className="flex-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"

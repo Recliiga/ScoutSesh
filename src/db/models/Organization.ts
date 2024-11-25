@@ -5,6 +5,7 @@ export interface OrganizationType extends mongoose.Document {
   _id: string;
   name: string;
   type: string;
+  logo: string;
   memberCount: string;
   location: string;
   primarySport: string;
@@ -22,6 +23,10 @@ const OrganizationSchema = new mongoose.Schema(
     type: {
       type: String,
       required: [true, "Please enter the organization type"],
+    },
+    logo: {
+      type: String,
+      required: [true, "Please upload your organization logo"],
     },
     memberCount: {
       type: String,

@@ -92,12 +92,21 @@ export default function SaveTemplateScreen({
           disabled={!goalName.trim() || loading}
         >
           {loading ? (
-            <>
-              <LoadingIndicator />
-              Updating...
-            </>
-          ) : (
+            goalId ? (
+              <>
+                <LoadingIndicator />
+                Updating...
+              </>
+            ) : (
+              <>
+                <LoadingIndicator />
+                Creating...
+              </>
+            )
+          ) : goalId ? (
             "Update Submission"
+          ) : (
+            "Create Submission"
           )}
         </Button>
       </div>

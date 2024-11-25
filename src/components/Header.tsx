@@ -1,13 +1,14 @@
 "use client";
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ModalContainer from "./ModalContainer";
 import MobileNav from "./MobileNav";
 import { usePathname } from "next/navigation";
 import Button from "./LinkButton";
 import DashboardHeader from "./dashboard/DashboardHeader";
 import DashboardNavUser from "./DashboardNavUser";
+import { InvitationCodeType } from "@/db/models/InvitationCode";
 
 const navLinks = [
   { title: "Features", href: "/features" },
@@ -18,8 +19,23 @@ const navLinks = [
   { title: "Contact", href: "/contact" },
 ];
 
-export default function Header({ user }: { user: UserType | null }) {
+export default function Header({
+  user,
+  invitationCode,
+}: {
+  user: UserType | null;
+  invitationCode: InvitationCodeType | null;
+}) {
   const [mobileNav, setMobileNav] = useState(false);
+  const [docWidth, setDocWidth] = useState(900);
+
+  useEffect(() => {
+    function handleResize() {
+      setDocWidth(window.innerWidth);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.addEventListener("resize", handleResize);
+  }, []);
 
   const pathname = usePathname();
 
@@ -32,7 +48,7 @@ export default function Header({ user }: { user: UserType | null }) {
     pathname.includes("/create-organization");
 
   if (user && pathname.startsWith("/dashboard"))
-    return <DashboardHeader user={user} />;
+    return <DashboardHeader user={user} invitationCode={invitationCode} />;
 
   return (
     <>
@@ -143,7 +159,11 @@ export default function Header({ user }: { user: UserType | null }) {
         </div>
         {user ? (
           isCompleteProfileRoute ? (
-            <DashboardNavUser user={user} profileCompleted={false} />
+            <DashboardNavUser
+              user={user}
+              profileCompleted={false}
+              invitationCode={invitationCode}
+            />
           ) : (
             <Button href={"/dashboard"} margin="none">
               Dashboard
@@ -164,17 +184,15 @@ export default function Header({ user }: { user: UserType | null }) {
           </div>
         )}
       </header>
-      <ModalContainer
-        open={mobileNav}
-        closeModal={() => setMobileNav(false)}
-        className="min-[870px]:hidden"
-      >
-        <MobileNav
-          user={user}
-          open={mobileNav}
-          closeModal={() => setMobileNav(false)}
-        />
-      </ModalContainer>
+      {docWidth < 870 && (
+        <ModalContainer open={mobileNav} closeModal={() => setMobileNav(false)}>
+          <MobileNav
+            user={user}
+            open={mobileNav}
+            closeModal={() => setMobileNav(false)}
+          />
+        </ModalContainer>
+      )}
     </>
   );
 }

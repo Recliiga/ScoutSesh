@@ -1,24 +1,15 @@
 import Link from "next/link";
 import { Card, CardContent } from "../ui/card";
 import { CalendarIcon, CheckCircle, ChevronRightIcon } from "lucide-react";
-import { format, parseISO } from "date-fns";
+import { DailyJournalType } from "@/db/models/DailyJournal";
 
-export type EntryType = {
-  id: number;
-  date: string;
-  trainingAndCompetition: string;
-  nutrition: string;
-  sleep: string;
-  mentalState: string;
-  reflection: {
-    changeTomorrow: string;
-    continueTomorrow: string;
-  };
-};
-
-export default function JournalEntryCard({ entry }: { entry: EntryType }) {
+export default function JournalEntryCard({
+  entry,
+}: {
+  entry: DailyJournalType;
+}) {
   return (
-    <Link href={`/journal-entries/${entry.id}`}>
+    <Link href={`/dashboard/daily-journal/${entry._id}`}>
       <Card className="hover:bg-gray-100 transition-colors">
         <CardContent className="flex justify-between items-center p-4">
           <div className="flex items-center space-x-4">
@@ -27,7 +18,7 @@ export default function JournalEntryCard({ entry }: { entry: EntryType }) {
             </div>
             <div className="flex items-center font-medium text-sm">
               <CalendarIcon className="mr-1 w-4 h-4" />
-              {format(parseISO(entry.date), "MMMM d, yyyy")}
+              {new Date(entry.createdAt).toDateString()}
             </div>
           </div>
           <ChevronRightIcon className="w-5 h-5 text-muted-foreground" />

@@ -1,12 +1,13 @@
 "use client";
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ModalContainer from "../ModalContainer";
 import DashboardMobileNav from "./DashboardMobileNav";
 import { usePathname } from "next/navigation";
 import { BellIcon } from "lucide-react";
 import DashboardNavUser from "../DashboardNavUser";
+import { InvitationCodeType } from "@/db/models/InvitationCode";
 
 const navLinks = [
   { title: "Athlete Evaluation", href: "/dashboard/athlete-evaluation" },
@@ -17,8 +18,23 @@ const navLinks = [
   { title: "My Team Members", href: "/dashboard/team-members" },
 ];
 
-export default function DashboardHeader({ user }: { user: UserType }) {
+export default function DashboardHeader({
+  user,
+  invitationCode,
+}: {
+  user: UserType;
+  invitationCode: InvitationCodeType | null;
+}) {
   const [mobileNav, setMobileNav] = useState(false);
+  const [docWidth, setDocWidth] = useState(900);
+
+  useEffect(() => {
+    function handleResize() {
+      setDocWidth(window.innerWidth);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.addEventListener("resize", handleResize);
+  }, []);
 
   const pathname = usePathname();
 
@@ -135,19 +151,21 @@ export default function DashboardHeader({ user }: { user: UserType }) {
         </div>
         <div className="flex items-center space-x-4">
           <BellIcon className="w-6 h-6 text-muted-foreground hover:text-green-600 cursor-pointer" />
-          <DashboardNavUser user={user} />
+          <DashboardNavUser user={user} invitationCode={invitationCode} />
         </div>
       </header>
-      <ModalContainer
-        open={mobileNav}
-        closeModal={() => setMobileNav(false)}
-        className={mobileNav ? "lg:hidden" : ""}
-      >
-        <DashboardMobileNav
+      {docWidth < 1024 && (
+        <ModalContainer
           open={mobileNav}
           closeModal={() => setMobileNav(false)}
-        />
-      </ModalContainer>
+          className="lg:hidden"
+        >
+          <DashboardMobileNav
+            open={mobileNav}
+            closeModal={() => setMobileNav(false)}
+          />
+        </ModalContainer>
+      )}
     </>
   );
 }

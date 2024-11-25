@@ -15,27 +15,32 @@ export default function CoachGoalSettingPage({
 }) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const athletesWithGoals = teamGoalData.map((gd, index) => ({
-    _id: `${gd.user._id}-${index}`,
-    goalId: gd._id,
-    name: getFullname(gd.user),
-    profilePicture: gd.user.profilePicture,
-    lastGoalDate: new Date(),
-    totalGoals: gd.goals.length,
-    weeklyReflections: gd.goals.reduce(
-      (prev, curr) => prev + curr.weeklyReflections.length,
-      0
-    ),
-    latestUpdate: new Date(
-      [...gd.goals].sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      )[0].updatedAt
-    ),
-  }));
+  const athletesWithGoals = teamGoalData
+    .map((gd, index) => ({
+      _id: `${gd.user._id}-${index}`,
+      goalId: gd._id,
+      name: getFullname(gd.user),
+      profilePicture: gd.user.profilePicture,
+      lastGoalDate: new Date(),
+      totalGoals: gd.goals.length,
+      weeklyReflections: gd.goals.reduce(
+        (prev, curr) => prev + curr.weeklyReflections.length,
+        0
+      ),
+      latestUpdate: new Date(
+        [...gd.goals].sort(
+          (a, b) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        )[0].updatedAt
+      ),
+    }))
+    .filter(
+      (athlete, index, self) =>
+        index === self.findIndex((obj) => obj._id === athlete._id)
+    );
 
   const filteredAthletes = athletesWithGoals.filter((athlete) =>
-    athlete.name.toLowerCase().includes(searchTerm.toLowerCase())
+    athlete.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
   );
 
   const sortedAthletes = filteredAthletes.sort(
@@ -64,9 +69,15 @@ export default function CoachGoalSettingPage({
             </Button>
           </div>
           <div className="overflow-x-auto">
-            <div className="max-h-96 overflow-y-auto">
-              <AthleteTable athletes={sortedAthletes} />
-            </div>
+            {athletesWithGoals.length > 0 ? (
+              <div className="max-h-96 overflow-y-auto">
+                <AthleteTable athletes={sortedAthletes} />
+              </div>
+            ) : (
+              <p className="text-accent-gray-300">
+                You currently have to Goal Setting Submissions from your team
+              </p>
+            )}
           </div>
         </div>
 

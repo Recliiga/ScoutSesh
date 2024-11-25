@@ -15,6 +15,7 @@ export default function CoachProfileCard({ coach }: { coach: UserType }) {
             src={coach.profilePicture}
             alt="Coach profile"
             fill
+            sizes="160px"
             className="object-cover"
           />
         </div>

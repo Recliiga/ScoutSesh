@@ -273,6 +273,7 @@ export default function CoachGroupClassesPage() {
                               <AvatarImage
                                 src="/placeholder.svg?height=40&width=40"
                                 alt={course.instructors}
+                                className="object-cover"
                               />
 
                               <AvatarFallback>

@@ -3,12 +3,17 @@ import React from "react";
 import { UserType } from "@/db/models/User";
 import CoachProfileCard from "../dashboard/CoachProfileCard";
 import UserProfileCard from "../dashboard/UserProfileCard";
+import { DailyJournalType } from "@/db/models/DailyJournal";
+
+type PropsType = {
+  teamJournalEntries: DailyJournalType[] | null;
+  organizationMembers: UserType[] | null;
+};
 
 export default function AthleteTeamMembersPage({
+  teamJournalEntries,
   organizationMembers,
-}: {
-  organizationMembers: UserType[] | null;
-}) {
+}: PropsType) {
   if (!organizationMembers)
     return (
       <main className="flex-1 flex-center text-accent-gray-300">
@@ -39,7 +44,7 @@ export default function AthleteTeamMembersPage({
               <div className="top-4 right-4 bg-green-100 px-4 py-2 rounded-full w-fit font-bold text-2xl text-green-800 whitespace-nowrap">
                 {teamMembers.length + coaches.length} Team Members 🏅
               </div>
-              <div className="gap-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-8">
+              <div className="gap-4 grid grid-cols-2 min-[540px]:grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 mt-8">
                 {coaches.map((coach) => (
                   <CoachProfileCard coach={coach} key={coach._id} />
                 ))}
@@ -51,7 +56,16 @@ export default function AthleteTeamMembersPage({
       <h3 className="mb-4 font-bold text-2xl">Athletes</h3>
       <div className="gap-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {teamMembers.map((member) => (
-          <UserProfileCard member={member} key={member._id} />
+          <UserProfileCard
+            member={member}
+            key={member._id}
+            journalEntries={
+              teamJournalEntries &&
+              teamJournalEntries.filter(
+                (entry) => entry.user._id === member._id
+              )
+            }
+          />
         ))}
       </div>
     </main>

@@ -26,7 +26,7 @@ export default function MobileNav({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className={`bg-white w-[50%] relative min-w-[16rem] h-full flex flex-col gap-8 p-4 duration-300 text-sm ${
+      className={`bg-white w-[50%] relative min-w-[16rem] overflow-y-scroll h-full flex flex-col gap-8 p-4 duration-300 text-sm ${
         open ? "translate-x-0" : "-translate-x-[100%]"
       }`}
     >

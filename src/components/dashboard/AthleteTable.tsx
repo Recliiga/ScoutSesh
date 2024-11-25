@@ -49,13 +49,12 @@ export default function AthleteTable({
               <tr key={athlete._id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 w-10 h-10">
+                    <div className="relative flex-shrink-0 rounded-full w-10 h-10 overflow-hidden">
                       <Image
-                        className="rounded-full w-10 h-10"
+                        className="object-cover"
                         src={athlete.profilePicture}
-                        alt=""
-                        width={40}
-                        height={40}
+                        alt={athlete.name}
+                        fill
                       />
                     </div>
                     <div className="ml-4">

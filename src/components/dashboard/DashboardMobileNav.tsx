@@ -22,7 +22,7 @@ export default function DashboardMobileNav({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className={`bg-white w-[50%] min-w-[16rem] relative max-w-[24rem] h-full flex flex-col gap-8 p-4 duration-300 text-sm ${
+      className={`bg-white w-[50%] overflow-y-scroll min-w-[16rem] relative max-w-[24rem] h-full flex flex-col gap-8 p-4 duration-300 text-sm ${
         open ? "translate-x-0" : "-translate-x-[100%]"
       }`}
     >

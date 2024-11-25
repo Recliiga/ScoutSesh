@@ -7,7 +7,7 @@ import { getGoalDueDate, getWeeklyReflectionStatus } from "@/lib/utils";
 
 export default async function WeeklyReflectionPage() {
   const { goalData, error } = await fetchAthleteLatestGoalData();
-  if (error !== null) return notFound();
+  if (error !== null) notFound();
 
   const status = await getWeeklyReflectionStatus(goalData);
 
