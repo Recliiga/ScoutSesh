@@ -1,10 +1,10 @@
-import { CourseType } from "@/app/dashboard/group-classes/courses/page";
+import { GroupClassType } from "@/db/models/GroupClass";
 import Image from "next/image";
 import React from "react";
 import { PersonIcon, TicketIcon } from "./CardIcons";
 import { Button } from "../ui/button";
 
-export default function CourseCard({ course }: { course: CourseType }) {
+export default function CourseCard({ course }: { course: GroupClassType }) {
   return (
     <div className="flex flex-col md:flex-row gap-4 border rounded-lg p-4">
       <Image
@@ -29,11 +29,12 @@ export default function CourseCard({ course }: { course: CourseType }) {
           <div className="flex items-start text-sm text-muted-foreground">
             <TicketIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
             <span>
-              {course.numberOfLessons} Lessons • {course.averageDuration} mins /
-              Lesson •{" "}
+              {course.numberOfLessons} Lessons • {45} mins / Lesson •{" "}
               {course.skillLevels.length === 3
                 ? "All Levels"
-                : course.skillLevels.join(" and ")}
+                : course.skillLevels
+                    .map((level) => level[0].toUpperCase() + level.slice(1))
+                    .join(" and ")}
             </span>
           </div>
           <div className="text-sm text-green-500">Available for Purchase</div>

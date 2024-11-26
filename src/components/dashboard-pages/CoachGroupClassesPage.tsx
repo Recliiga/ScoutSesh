@@ -177,7 +177,7 @@ export default function CoachGroupClassesPage() {
   return (
     <main className="flex-1">
       <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
-        <div className="flex sm:flex-row flex-col justify-between items-center gap-4 mb-6">
+        <div className="flex min-[710px]:flex-row flex-col justify-between items-center gap-4 mb-6">
           <h1 className="font-bold text-3xl">My Class Sessions</h1>
           <div className="flex gap-2 sm:gap-4">
             <Link

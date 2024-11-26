@@ -4,7 +4,7 @@ import { Badge } from "../ui/badge";
 import { CalendarIcon, PersonIcon, TicketIcon } from "./CardIcons";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
-import { LiveClassType } from "@/app/dashboard/group-classes/courses/page";
+import { GroupClassType } from "@/db/models/GroupClass";
 
 const daysOfTheWeek = [
   "Sunday",
@@ -31,7 +31,7 @@ const monthsOfTheYear = [
   "December",
 ];
 
-function getDay(date: string) {
+function getDay(date: Date) {
   const dayNum = new Date(date).getDay();
   return daysOfTheWeek[dayNum];
 }
@@ -39,7 +39,7 @@ function getDay(date: string) {
 export default function LiveClassCard({
   liveClass,
 }: {
-  liveClass: LiveClassType;
+  liveClass: GroupClassType;
 }) {
   const remainingSpots = liveClass.spots - liveClass.students.length;
 
@@ -120,8 +120,8 @@ export default function LiveClassCard({
           <div className="flex items-start text-sm text-muted-foreground">
             <TicketIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
             <span>
-              {liveClass.numberOfLessons} Lessons • {liveClass.averageDuration}{" "}
-              mins / Lesson •{" "}
+              {/* {liveClass.numberOfLessons} Lessons • {liveClass.averageDuration}{" "}
+              mins / Lesson •{" "} */}
               {liveClass.skillLevels.length === 3
                 ? "All Levels"
                 : liveClass.skillLevels.join(" and ")}

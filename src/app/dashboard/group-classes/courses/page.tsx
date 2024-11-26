@@ -1,29 +1,11 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
 import LiveClassCard from "@/components/group-classes/LiveClassCard";
 import CourseCard from "@/components/group-classes/CourseCard";
+import Link from "next/link";
+import BackButton from "@/components/dashboard/BackButton";
+import { GroupClassType } from "@/db/models/GroupClass";
 
-export type CourseType = {
-  _id: string;
-  title: string;
-  thumbnail: string;
-  description: string;
-  students: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    profilePicture: string;
-  }[];
-  numberOfLessons: number;
-  averageDuration: number;
-  skillLevels: string[];
-  price: number;
-  spots: number;
-  createdAt: string;
-  isRecurring: boolean;
-};
-
-const courses: CourseType[] = [
+const courses: GroupClassType[] = [
   {
     _id: "1",
     title: "Mastering Ice Hockey: From Beginner to Pro",
@@ -45,11 +27,11 @@ const courses: CourseType[] = [
       },
     ],
     numberOfLessons: 8,
-    averageDuration: 45,
     skillLevels: ["beginner", "intermediate", "advanced"],
     price: 49.99,
     spots: 8,
-    createdAt: "2024 11 24",
+    createdAt: new Date("2024 11 24"),
+    updatedAt: new Date("2024 11 24"),
     isRecurring: false,
   },
   {
@@ -79,31 +61,16 @@ const courses: CourseType[] = [
       },
     ],
     numberOfLessons: 12,
-    averageDuration: 30,
     skillLevels: ["beginner", "intermediate"],
     price: 59.99,
     spots: 8,
-    createdAt: "2024 11 24",
+    createdAt: new Date("2024 11 24"),
+    updatedAt: new Date("2024 11 24"),
     isRecurring: false,
   },
-];
+] as GroupClassType[];
 
-type RepeatFrequencyType =
-  | "daily"
-  | "weekly"
-  | "bi-weekly"
-  | "monthly"
-  | "yearly";
-
-export type LiveClassType = CourseType & {
-  repeatFrequency: RepeatFrequencyType;
-  startDate: string;
-  endDate: string;
-  time: { hours: number; mins: number };
-  duration: number;
-};
-
-const liveClass: LiveClassType = {
+const liveClass: GroupClassType = {
   _id: "1",
   title: "Mastering Ice Hockey Goaltending",
   thumbnail: "/placeholder.svg",
@@ -130,18 +97,18 @@ const liveClass: LiveClassType = {
     },
   ],
   numberOfLessons: 10,
-  averageDuration: 60,
   skillLevels: ["beginner", "intermediate", "advanced"],
   isRecurring: true,
   repeatFrequency: "weekly",
   duration: 15,
-  startDate: "2024 11 24",
-  endDate: "2024 12 01",
+  startDate: new Date("2024 11 24"),
+  endDate: new Date("2024 12 01"),
   time: { hours: 11, mins: 0 },
-  createdAt: "2024 11 24",
+  createdAt: new Date("2024 11 24"),
+  updatedAt: new Date("2024 11 24"),
   price: 49.99,
   spots: 7,
-};
+} as GroupClassType;
 
 export default function CoachCoursesView() {
   return (
@@ -163,10 +130,13 @@ export default function CoachCoursesView() {
       </section>
 
       <div className="mt-8 flex justify-between">
-        <Button variant="outline">Back</Button>
-        <Button className="bg-white text-green-600 border border-green-600 hover:bg-green-600 hover:text-white transition-colors">
+        <BackButton />
+        <Link
+          href={"/dashboard/group-classes/create"}
+          className="bg-white text-green-600 border px-4 py-2 rounded-md text-sm border-green-600 hover:bg-green-600 hover:text-white transition-colors"
+        >
           Create New Class
-        </Button>
+        </Link>
       </div>
     </div>
   );

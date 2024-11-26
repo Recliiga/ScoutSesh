@@ -283,9 +283,16 @@ export default function CreateClassForm({
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2">
               <Label htmlFor="startTime">Start Time</Label>
-              <Input id="startTime" name="startTime" type="time" required />
+              <Input
+                id="startTime"
+                name="startTime"
+                type="time"
+                defaultValue={"10:00"}
+                required
+                className="w-fit"
+              />
             </div>
 
             <div>
