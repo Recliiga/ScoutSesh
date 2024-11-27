@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { UserType } from "./User";
 
 type RepeatFrequencyType =
   | "daily"
@@ -14,6 +15,7 @@ export interface GroupClassType extends mongoose.Document {
   title: string;
   thumbnail: string;
   description: string;
+  courseType: "live" | "video";
   students: {
     _id: string;
     firstName: string;
@@ -31,6 +33,8 @@ export interface GroupClassType extends mongoose.Document {
   time: { hours: number; mins: number };
   duration: number;
   videos: string[];
+  coaches: UserType[];
+  user: UserType;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,9 +50,26 @@ const GroupClassSchema = new mongoose.Schema<GroupClassType>(
       type: String,
       required: [true, "Please enter the course description"],
     },
+    courseType: {
+      type: String,
+      required: [true, "Please enter the course type"],
+    },
     students: [
       { type: mongoose.SchemaTypes.ObjectId, ref: "User", default: [] },
     ],
+    coaches: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "User",
+        default: [],
+      },
+    ],
+    user: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "User",
+      required: [true, "Please provide a coaach"],
+    },
+
     numberOfLessons: { type: Number },
     skillLevels: [
       { type: String, required: [true, "Pleas select the skill levels"] },

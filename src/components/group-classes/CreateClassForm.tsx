@@ -45,25 +45,34 @@ export default function CreateClassForm({
 }) {
   const router = useRouter();
 
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [courseType, setCourseType] = useState<"live" | "video" | undefined>();
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
-  const [lessonDuration, setLessonDuration] = useState("");
+  const [startTime, setStartTime] = useState<{ hours: string; mins: string }>({
+    hours: "10",
+    mins: "00",
+  });
+  const [duration, setDuration] = useState("");
   const [customDuration, setCustomDuration] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
+  const [repeatFrequency, setRepeatFrequency] = useState("");
   const [loading, setLoading] = useState(false);
   const [coaches, setCoaches] = useState<string[]>(
     assistantCoaches
       .filter((user) => user.role === "Head Coach")
       .map((user) => user._id)
   );
-  const [thumbnail, setThumbnail] = useState<string>("");
+  const [thumbnail, setThumbnail] = useState("");
   const [videoLessons, setVideoLessons] = useState<
     { id: string; title: string; url: string }[]
   >([]);
   const [uploadingVideo, setUploadingVideo] = useState<string | null>(null);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [skillLevels, setSkillLevels] = useState<string[]>([]);
+  const [totalSpots, setTotalSpots] = useState("");
+  const [price, setPrice] = useState("");
 
   async function handleUploadThumbnail(e: React.ChangeEvent<HTMLInputElement>) {
     if (!(e.target.files && e.target.files.length)) {
@@ -74,7 +83,6 @@ export default function CreateClassForm({
     if (!resizedImage) return;
     setUploadingThumbnail(true);
     const { url, error } = await uploadImageClient(resizedImage);
-    console.log({ url, error });
     if (error === null) {
       setThumbnail(url);
     }
@@ -96,7 +104,6 @@ export default function CreateClassForm({
       const videoDataUrl = e.target.result as string;
       setUploadingVideo(id);
       const { url, error } = await uploadVideoClient(videoDataUrl);
-      console.log({ url, error });
       if (error === null) {
         setVideoLessons((prev) =>
           prev.map((vid) => (vid.id === id ? { ...vid, url } : vid))
@@ -126,19 +133,55 @@ export default function CreateClassForm({
     }
   }
 
+  const anyLoading =
+    loading || uploadingThumbnail || Boolean(uploadingVideo?.trim());
+  const formFieldVacant =
+    !Boolean(title.trim()) ||
+    !Boolean(description.trim()) ||
+    !Boolean(skillLevels.length) ||
+    !Boolean(courseType?.trim()) ||
+    !Boolean(price.trim());
+  const videoFieldVacant = !Boolean(
+    videoLessons.length && videoLessons.some((vid) => vid.url.trim())
+  );
+  const liveClassFieldVacant =
+    !Boolean(startDate) ||
+    !Boolean(endDate) ||
+    !Boolean(startTime.hours) ||
+    !Boolean(startTime.mins) ||
+    !Boolean(repeatFrequency.trim()) ||
+    !Boolean(totalSpots.trim());
+  const cannotSubmit =
+    anyLoading ||
+    formFieldVacant ||
+    (courseType === "video" && videoFieldVacant) ||
+    (courseType === "live" && liveClassFieldVacant);
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const isLiveClass = courseType === "live";
     if (isLiveClass && (!startDate || !endDate)) return;
     setLoading(true);
-    const formData = new FormData(event.currentTarget);
-    if (startDate) formData.set("startDate", startDate.toDateString());
-    if (endDate) formData.set("endDate", endDate.toDateString());
-    formData.set("isRecurring", String(isRecurring));
-    formData.set("skillLevels", skillLevels.toString());
-    formData.set("videoLessons", videoLessons.toString());
+    if (cannotSubmit) return;
+    const classData = {
+      title,
+      description,
+      thumbnail,
+      coaches,
+      courseType,
+      startDate,
+      endDate,
+      startTime,
+      duration,
+      isRecurring,
+      repeatFrequency,
+      totalSpots,
+      skillLevels,
+      videoLessons: videoLessons.map((vid) => vid.url),
+      price,
+    };
 
-    const { error } = await createClass(formData);
+    const { error } = await createClass(classData);
     if (error === null) {
       router.push("/dashboard/group-classes/courses");
     }
@@ -165,6 +208,8 @@ export default function CreateClassForm({
           <Input
             name="title"
             id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Mastering Ice Hockey Goaltending"
             required
           />
@@ -203,6 +248,8 @@ export default function CreateClassForm({
           <Textarea
             id="description"
             name="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe your course..."
             required
           />
@@ -354,8 +401,14 @@ export default function CreateClassForm({
               <Input
                 id="startTime"
                 name="startTime"
+                value={`${startTime.hours}:${startTime.mins}`}
+                onChange={(e) =>
+                  setStartTime({
+                    hours: e.target.value.split(":")[0],
+                    mins: e.target.value.split(":")[1],
+                  })
+                }
                 type="time"
-                defaultValue={"10:00"}
                 required
                 className="w-fit"
               />
@@ -365,9 +418,9 @@ export default function CreateClassForm({
               <Label>Lesson Duration (minutes)</Label>
               <RadioGroup
                 name="lessonDuration"
-                value={lessonDuration}
+                value={duration}
                 onValueChange={(value) => {
-                  setLessonDuration(value);
+                  setDuration(value);
                   if (value !== "custom") setCustomDuration("");
                 }}
                 className="grid grid-cols-2 gap-4"
@@ -401,7 +454,7 @@ export default function CreateClassForm({
                   ))}
                 </div>
               </RadioGroup>
-              {lessonDuration === "custom" && (
+              {duration === "custom" && (
                 <Input
                   type="number"
                   min="1"
@@ -426,16 +479,20 @@ export default function CreateClassForm({
             {isRecurring && (
               <div className="flex flex-col gap-2">
                 <Label htmlFor="repeatFrequency">Repeat</Label>
-                <Select name="repeatFrequency">
+                <Select
+                  name="repeatFrequency"
+                  value={repeatFrequency}
+                  onValueChange={(value) => setRepeatFrequency(value)}
+                >
                   <SelectTrigger id="repeatFrequency">
                     <SelectValue placeholder="Select repeat option" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="every-day">Every Day</SelectItem>
-                    <SelectItem value="every-week">Every Week</SelectItem>
-                    <SelectItem value="every-2-weeks">Every 2 Weeks</SelectItem>
-                    <SelectItem value="every-month">Every Month</SelectItem>
-                    <SelectItem value="every-year">Every Year</SelectItem>
+                    <SelectItem value="daily">Every Day</SelectItem>
+                    <SelectItem value="weekly">Every Week</SelectItem>
+                    <SelectItem value="bi-weekly">Every 2 Weeks</SelectItem>
+                    <SelectItem value="monthly">Every Month</SelectItem>
+                    <SelectItem value="yearly">Every Year</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -445,6 +502,8 @@ export default function CreateClassForm({
               <Input
                 id="totalSpots"
                 name="totalSpots"
+                value={totalSpots}
+                onChange={(e) => setTotalSpots(e.target.value)}
                 type="number"
                 min="1"
                 required
@@ -501,6 +560,8 @@ export default function CreateClassForm({
           <Input
             id="price"
             name="price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
             type="number"
             min="0"
             step="0.01"
@@ -508,7 +569,7 @@ export default function CreateClassForm({
           />
         </div>
         <Button
-          disabled={loading}
+          disabled={cannotSubmit}
           type="submit"
           className="bg-green-500 hover:bg-green-600 text-white"
         >
