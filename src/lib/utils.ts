@@ -186,6 +186,25 @@ export async function uploadImage(
   }
 }
 
+export async function uploadImageClient(
+  image: string
+): Promise<{ url: string; error: null } | { url: null; error: string }> {
+  try {
+    const formData = new FormData();
+    formData.set("image", image);
+    const res = await fetch(`/api/upload-image`, {
+      method: "POST",
+      body: JSON.stringify({ image }),
+      headers: { "Content-Type": "application/json" },
+    });
+    const { url, error } = await res.json();
+
+    return { url, error };
+  } catch (error) {
+    return { url: null, error: (error as Error).message };
+  }
+}
+
 export function getUserIdFromCookies(cookieStore: ReadonlyRequestCookies) {
   try {
     // Get token from cookies

@@ -1,21 +1,15 @@
 "use server";
 import connectDB from "@/db/connectDB";
 import DailyJournal, { DailyJournalType } from "@/db/models/DailyJournal";
-import jwt from "jsonwebtoken";
+import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
 
 export async function createJournal(dailyJournalData: DailyJournalType) {
   const cookieStore = await cookies();
 
   try {
-    // Get token from cookie
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("Invalid token");
-
-    // Verify token and get userId
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("Invalid token");
-    const userId = payload.userId;
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) throw new Error(authError);
 
     // connect to MongoDB and create new Goal
     await connectDB();

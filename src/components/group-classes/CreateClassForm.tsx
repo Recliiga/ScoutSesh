@@ -22,12 +22,23 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, PencilIcon } from "lucide-react";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
+import { createClass } from "@/actions/groupClassActions";
+import { UserType } from "@/db/models/User";
+import Image from "next/image";
+import placeholderThumbnail from "@/assets/placeholder-thumbnail.png";
+import { resizeImage, uploadImageClient } from "@/lib/utils";
+import LoadingIndicator from "../LoadingIndicator";
 
 export default function CreateClassForm({
+  assistantCoaches,
   isEditing = false,
 }: {
+  assistantCoaches: UserType[];
   isEditing?: boolean;
 }) {
+  const router = useRouter();
+
   const [courseType, setCourseType] = useState<"live" | "video" | undefined>();
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
@@ -36,71 +47,38 @@ export default function CreateClassForm({
   const [isRecurring, setIsRecurring] = useState(false);
   const [numberOfLessons, setNumberOfLessons] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [coaches, setCoaches] = useState<string[]>(
+    assistantCoaches
+      .filter((user) => user.role === "Head Coach")
+      .map((user) => user._id)
+  );
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnail, setThumbnail] = useState<string>("");
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [skillLevels, setSkillLevels] = useState<string[]>([]);
 
-  //   useEffect(() => {
-  //     if (isLiveClass && startDate && endDate && isRecurring) {
-  //       const dates: { start: Date; end: Date }[] = [];
-  //       let currentDate = new Date(startDate);
-  //       const endDateTime = new Date(endDate);
+  async function handleUploadThumbnail(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!(e.target.files && e.target.files.length)) {
+      return;
+    }
+    const imageFile = e.target.files[0];
+    const resizedImage = await resizeImage(imageFile, 800);
+    if (!resizedImage) return;
+    setUploadingThumbnail(true);
+    const { url, error } = await uploadImageClient(resizedImage);
+    if (error !== null) return;
+    setUploadingThumbnail(false);
+    setThumbnail(url);
+    setThumbnailFile(imageFile);
+  }
 
-  //       while (isBefore(currentDate, endDateTime)) {
-  //         const [hours, minutes] = startTime.split(":").map(Number);
-  //         const courseStartDate = setMinutes(
-  //           setHours(new Date(currentDate), hours),
-  //           minutes
-  //         );
-  //         const duration =
-  //           lessonDuration === "custom"
-  //             ? parseInt(customDuration)
-  //             : parseInt(lessonDuration);
-  //         const courseEndDate = addMinutes(courseStartDate, duration);
-  //         dates.push({ start: courseStartDate, end: courseEndDate });
-
-  //         switch (repeatOption) {
-  //           case "every-day":
-  //             currentDate = addDays(currentDate, 1);
-  //             break;
-  //           case "every-week":
-  //             currentDate = addWeeks(currentDate, 1);
-  //             break;
-  //           case "every-2-weeks":
-  //             currentDate = addWeeks(currentDate, 2);
-  //             break;
-  //           case "every-month":
-  //             currentDate = addMonths(currentDate, 1);
-  //             break;
-  //           case "every-year":
-  //             currentDate = addYears(currentDate, 1);
-  //             break;
-  //         }
-  //       }
-  //       setCourseDates(dates);
-  //     } else if (isLiveClass && startDate) {
-  //       const [hours, minutes] = startTime.split(":").map(Number);
-  //       const courseStartDate = setMinutes(
-  //         setHours(new Date(startDate), hours),
-  //         minutes
-  //       );
-  //       const duration =
-  //         lessonDuration === "custom"
-  //           ? parseInt(customDuration)
-  //           : parseInt(lessonDuration);
-  //       const courseEndDate = addMinutes(courseStartDate, duration);
-  //       setCourseDates([{ start: courseStartDate, end: courseEndDate }]);
-  //     } else {
-  //       setCourseDates([]);
-  //     }
-  //   }, [
-  //     isLiveClass,
-  //     startDate,
-  //     endDate,
-  //     startTime,
-  //     isRecurring,
-  //     repeatOption,
-  //     lessonDuration,
-  //     customDuration,
-  //   ]);
+  function toggleCoaches(coachId: string) {
+    if (coaches.includes(coachId)) {
+      setCoaches(coaches.filter((coach) => coach !== coachId));
+    } else {
+      setCoaches([...coaches, coachId]);
+    }
+  }
 
   function toggleSkillLevel(level: "beginner" | "intermediate" | "advanced") {
     if (skillLevels.includes(level)) {
@@ -110,22 +88,27 @@ export default function CreateClassForm({
     }
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!startDate || !endDate) return;
+    const isLiveClass = courseType === "live";
+    if (isLiveClass && (!startDate || !endDate)) return;
     setLoading(true);
     const formData = new FormData(event.currentTarget);
-    formData.set("startDate", startDate.toDateString());
-    formData.set("endDate", endDate.toDateString());
+    if (startDate) formData.set("startDate", startDate.toDateString());
+    if (endDate) formData.set("endDate", endDate.toDateString());
     formData.set("isRecurring", String(isRecurring));
     formData.set("skillLevels", skillLevels.toString());
-    const courseData = Object.fromEntries(formData);
-    console.log(courseData);
+
+    const { error } = await createClass(formData);
+    if (error === null) {
+      router.push("/dashboard/group-classes/courses");
+    }
+
     setLoading(false);
   }
 
   return (
-    <div className="max-w-4xl w-[90%] mx-auto p-4">
+    <div className="max-w-3xl w-[90%] mx-auto py-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">
           {isEditing ? "Edit Course" : "Create Class"}
@@ -137,9 +120,9 @@ export default function CreateClassForm({
           </Button>
         )}
       </div>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="title">Course Title</Label>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="title">Title</Label>
           <Input
             name="title"
             id="title"
@@ -148,19 +131,49 @@ export default function CreateClassForm({
           />
         </div>
 
-        <div>
-          <Label htmlFor="thumbnail">Course Image</Label>
+        <div className="flex flex-col gap-2">
+          <h3 className="text-sm font-medium">Thumbnail</h3>
+          <div className="aspect-video flex-center relative max-h-[21rem] w-full overflow-hidden border rounded-md">
+            {uploadingThumbnail ? (
+              <LoadingIndicator color="#666" />
+            ) : (
+              <Image
+                src={thumbnail || placeholderThumbnail}
+                alt="Thumbnail"
+                fill
+                sizes="1024px"
+                priority
+                className="absolute w-full h-full object-cover"
+              />
+            )}
+          </div>
           <Input
             id="thumbnail"
             name="thumbnail"
+            onChange={handleUploadThumbnail}
             type="file"
             accept="image/*"
             required
+            className="hidden"
           />
+          <Label
+            role="button"
+            tabIndex={0}
+            htmlFor="thumbnail"
+            onKeyDown={(key) => {
+              if (key.code === "Enter") key.currentTarget.click();
+            }}
+            className="border font-normal focus-visible:border-accent-black p-2 truncate cursor-pointer block rounded-md hover:bg-zinc-50 duration-200"
+          >
+            <span className="bg-zinc-100 block w-fit px-2 py-1 rounded-sm">
+              {thumbnail ? `Change File` : "Choose File"}
+            </span>{" "}
+            <span className="text-zinc-600">{thumbnailFile?.name}</span>
+          </Label>
         </div>
 
-        <div>
-          <Label htmlFor="description">Course Description</Label>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="description">Description</Label>
           <Textarea
             id="description"
             name="description"
@@ -169,17 +182,44 @@ export default function CreateClassForm({
           />
         </div>
 
-        <div>
-          <Label htmlFor="coaches">Coach(es)</Label>
-          <Input
-            id="coaches"
-            name="coaches"
-            placeholder="e.g. Sarah Lee, Mike Johnson"
-            required
-          />
+        <div className="flex flex-col gap-2">
+          <Label>Coach(es)</Label>
+          <div className="flex gap-x-8 gap-y-4 flex-wrap mt-2">
+            {assistantCoaches.map((user) => (
+              <div
+                onClick={() => {
+                  if (user.role === "Head Coach") return;
+                  toggleCoaches(user._id);
+                }}
+                key={user._id}
+                className={`flex gap-2 p-2 px-4 cursor-pointer duration-200 rounded-md items-center ${
+                  coaches.includes(user._id) ? "bg-green-50" : "grayscale"
+                }`}
+              >
+                <div className="w-10 h-10 font-medium relative rounded-full overflow-hidden">
+                  <div className="absolute flex-center w-full h-full bg-accent-gray-100">
+                    {user.firstName[0] + user.lastName[0]}
+                  </div>
+                  <Image
+                    src={user.profilePicture}
+                    alt={user.firstName}
+                    fill
+                    sizes="160px"
+                    className="object-cover absolute w-full h-full"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <h4 className="text-accent-black">
+                    {user.firstName} {user.lastName}
+                  </h4>
+                  <p className="text-xs text-accent-gray-300">{user.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div>
+        <div className="flex flex-col gap-2">
           <Label>Skill Level</Label>
           <div className="flex flex-col space-y-2 mt-2">
             <Label
@@ -218,7 +258,7 @@ export default function CreateClassForm({
           </div>
         </div>
 
-        <div>
+        <div className="flex flex-col gap-2">
           <Label>Course Type</Label>
           <RadioGroup
             name="courseType"
@@ -295,7 +335,7 @@ export default function CreateClassForm({
               />
             </div>
 
-            <div>
+            <div className="flex flex-col gap-2">
               <Label>Lesson Duration (minutes)</Label>
               <RadioGroup
                 name="lessonDuration"
@@ -358,7 +398,7 @@ export default function CreateClassForm({
             </div>
 
             {isRecurring && (
-              <div>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="repeatFrequency">Repeat</Label>
                 <Select name="repeatFrequency">
                   <SelectTrigger id="repeatFrequency">
@@ -374,7 +414,7 @@ export default function CreateClassForm({
                 </Select>
               </div>
             )}
-            <div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="totalSpots">Total Spots</Label>
               <Input
                 id="totalSpots"
@@ -389,7 +429,7 @@ export default function CreateClassForm({
 
         {courseType === "video" && (
           <>
-            <div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="numberOfLessons">Number of Video Lessons</Label>
               <Input
                 id="numberOfLessons"
@@ -418,7 +458,7 @@ export default function CreateClassForm({
           </>
         )}
 
-        <div>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="price">Price ($)</Label>
           <Input
             id="price"
