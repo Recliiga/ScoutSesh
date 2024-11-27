@@ -20,15 +20,21 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, PencilIcon } from "lucide-react";
+import {
+  CalendarIcon,
+  GripVertical,
+  PencilIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { createClass } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
 import Image from "next/image";
 import placeholderThumbnail from "@/assets/placeholder-thumbnail.png";
-import { resizeImage, uploadImageClient } from "@/lib/utils";
+import { resizeImage, uploadImageClient, uploadVideoClient } from "@/lib/utils";
 import LoadingIndicator from "../LoadingIndicator";
+import { nanoid } from "nanoid";
 
 export default function CreateClassForm({
   assistantCoaches,
@@ -45,15 +51,17 @@ export default function CreateClassForm({
   const [lessonDuration, setLessonDuration] = useState("");
   const [customDuration, setCustomDuration] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
-  const [numberOfLessons, setNumberOfLessons] = useState(1);
   const [loading, setLoading] = useState(false);
   const [coaches, setCoaches] = useState<string[]>(
     assistantCoaches
       .filter((user) => user.role === "Head Coach")
       .map((user) => user._id)
   );
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnail, setThumbnail] = useState<string>("");
+  const [videoLessons, setVideoLessons] = useState<
+    { id: string; title: string; url: string }[]
+  >([]);
+  const [uploadingVideo, setUploadingVideo] = useState<string | null>(null);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [skillLevels, setSkillLevels] = useState<string[]>([]);
 
@@ -66,10 +74,40 @@ export default function CreateClassForm({
     if (!resizedImage) return;
     setUploadingThumbnail(true);
     const { url, error } = await uploadImageClient(resizedImage);
-    if (error !== null) return;
+    console.log({ url, error });
+    if (error === null) {
+      setThumbnail(url);
+    }
     setUploadingThumbnail(false);
-    setThumbnail(url);
-    setThumbnailFile(imageFile);
+  }
+
+  async function handleUploadVideo(
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: string
+  ) {
+    if (!(e.target.files && e.target.files.length)) {
+      return;
+    }
+    const videoFile = e.target.files[0];
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(videoFile);
+    fileReader.onload = async (e) => {
+      if (!(e.target && e.target.result)) return;
+      const videoDataUrl = e.target.result as string;
+      setUploadingVideo(id);
+      const { url, error } = await uploadVideoClient(videoDataUrl);
+      console.log({ url, error });
+      if (error === null) {
+        setVideoLessons((prev) =>
+          prev.map((vid) => (vid.id === id ? { ...vid, url } : vid))
+        );
+      }
+      setUploadingVideo(null);
+    };
+  }
+
+  function deleteVideoLesson(id: string) {
+    setVideoLessons((prev) => prev.filter((vid) => vid.id !== id));
   }
 
   function toggleCoaches(coachId: string) {
@@ -98,6 +136,7 @@ export default function CreateClassForm({
     if (endDate) formData.set("endDate", endDate.toDateString());
     formData.set("isRecurring", String(isRecurring));
     formData.set("skillLevels", skillLevels.toString());
+    formData.set("videoLessons", videoLessons.toString());
 
     const { error } = await createClass(formData);
     if (error === null) {
@@ -154,22 +193,9 @@ export default function CreateClassForm({
             type="file"
             accept="image/*"
             required
-            className="hidden"
+            className="text-sm"
+            disabled={uploadingThumbnail}
           />
-          <Label
-            role="button"
-            tabIndex={0}
-            htmlFor="thumbnail"
-            onKeyDown={(key) => {
-              if (key.code === "Enter") key.currentTarget.click();
-            }}
-            className="border font-normal focus-visible:border-accent-black p-2 truncate cursor-pointer block rounded-md hover:bg-zinc-50 duration-200"
-          >
-            <span className="bg-zinc-100 block w-fit px-2 py-1 rounded-sm">
-              {thumbnail ? `Change File` : "Choose File"}
-            </span>{" "}
-            <span className="text-zinc-600">{thumbnailFile?.name}</span>
-          </Label>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -428,34 +454,46 @@ export default function CreateClassForm({
         )}
 
         {courseType === "video" && (
-          <>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="numberOfLessons">Number of Video Lessons</Label>
-              <Input
-                id="numberOfLessons"
-                name="numberOfLessons"
-                type="number"
-                min="1"
-                value={numberOfLessons}
-                onChange={(e) => setNumberOfLessons(Number(e.target.value))}
-                required
-              />
-            </div>
-            {[...Array(numberOfLessons)].map((_, index) => (
-              <div key={index}>
-                <Label htmlFor={`video-upload-${index}`}>
-                  Video Lesson {index + 1}
-                </Label>
+          <div className="flex flex-col gap-2">
+            <h3 className="font-medium">Video Lessons</h3>
+            {videoLessons.map((videoLesson) => (
+              <div key={videoLesson.id} className="flex gap-2 items-center">
+                <button type="button" className="p-1.5">
+                  <GripVertical className="w-4 h-4" />
+                </button>
                 <Input
-                  id={`video-upload-${index}`}
-                  name={`videoUpload-${index}`}
+                  id={`video-upload-${videoLesson.id}`}
+                  name={`videoUpload-${videoLesson.id}`}
+                  onChange={(e) => handleUploadVideo(e, videoLesson.id)}
                   type="file"
+                  disabled={uploadingVideo === videoLesson.id}
                   accept="video/*"
                   required
+                  className="text-sm"
                 />
+                <Button
+                  type="button"
+                  variant={"outline"}
+                  className="p-1.5"
+                  onClick={() => deleteVideoLesson(videoLesson.id)}
+                >
+                  <Trash2Icon className="w-4 h-4" />
+                </Button>
               </div>
             ))}
-          </>
+            <Button
+              type="button"
+              variant={"outline"}
+              onClick={() =>
+                setVideoLessons((prev) => [
+                  ...prev,
+                  { id: nanoid(8), title: "", url: "" },
+                ])
+              }
+            >
+              Add {videoLessons.length > 0 ? "another" : "video"}
+            </Button>
+          </div>
         )}
 
         <div className="flex flex-col gap-2">

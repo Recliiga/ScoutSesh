@@ -2,6 +2,7 @@ import { v2 as cloudinary } from "cloudinary";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
+  // Configuration
   cloudinary.config({
     cloud_name: process.env.COUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -9,10 +10,12 @@ export async function POST(request: NextRequest) {
   });
 
   try {
-    const { image } = await request.json();
-    if (!image) throw new Error("Please provide a valid image");
+    const { video } = await request.json();
+    if (!video) throw new Error("Please provide a valid video");
 
-    const { url } = await cloudinary.uploader.upload(image);
+    const { url } = await cloudinary.uploader.upload(video, {
+      resource_type: "video",
+    });
     return NextResponse.json({ url, error: null });
   } catch (error) {
     return NextResponse.json(

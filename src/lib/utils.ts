@@ -205,6 +205,25 @@ export async function uploadImageClient(
   }
 }
 
+export async function uploadVideoClient(
+  video: string
+): Promise<{ url: string; error: null } | { url: null; error: string }> {
+  try {
+    const formData = new FormData();
+    formData.set("video", video);
+    const res = await fetch(`/api/upload-video`, {
+      method: "POST",
+      body: JSON.stringify({ video }),
+      headers: { "Content-Type": "application/json" },
+    });
+    const { url, error } = await res.json();
+
+    return { url, error };
+  } catch (error) {
+    return { url: null, error: (error as Error).message };
+  }
+}
+
 export function getUserIdFromCookies(cookieStore: ReadonlyRequestCookies) {
   try {
     // Get token from cookies
