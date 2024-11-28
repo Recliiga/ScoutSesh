@@ -3,18 +3,20 @@ import Image from "next/image";
 import React from "react";
 import { PersonIcon, TicketIcon } from "./CardIcons";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 export default function CourseCard({ course }: { course: GroupClassType }) {
   return (
     <div className="flex flex-col md:flex-row gap-4 border rounded-lg p-4">
-      <Image
-        src={course.thumbnail}
-        alt="Course Image"
-        className="w-full md:w-48 aspect-video md:aspect-[1.5] object-cover rounded"
-        width="200"
-        height="150"
-      />
-      <div className=" flex flex-col justify-between flex-grow">
+      <div className="relative overflow-hidden rounded-md md:w-[30%] aspect-video md:aspect-[1.5]">
+        <Image
+          src={course.thumbnail}
+          alt="Course Image"
+          className="w-full h-full object-cover"
+          fill
+        />
+      </div>
+      <div className="flex flex-col justify-between flex-1">
         <div className="space-y-2">
           <h2 className="text-xl font-bold">{course.title}</h2>
           <p className="text-sm text-muted-foreground">{course.description}</p>
@@ -41,9 +43,12 @@ export default function CourseCard({ course }: { course: GroupClassType }) {
         </div>
         <div className="flex items-center justify-between mt-4">
           <span className="text-xl font-bold">${course.price}</span>
-          <Button className="bg-green-600 hover:bg-green-700 text-white">
+          <Link
+            href={`/dashboard/group-classes/${course._id}/edit`}
+            className="bg-green-600 hover:bg-green-700 duration-200 text-white px-4 py-2 rounded-md text-sm font-medium"
+          >
             Edit Course
-          </Button>
+          </Link>
         </div>
       </div>
     </div>

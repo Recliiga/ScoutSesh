@@ -1,5 +1,6 @@
 "use server";
 
+import connectDB from "@/db/connectDB";
 import GroupClass from "@/db/models/GroupClass";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
@@ -27,6 +28,7 @@ export async function createClass(classData: ClassDataType) {
     const { userId, error } = getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
 
+    await connectDB();
     const newGroupClass = JSON.parse(
       JSON.stringify(await GroupClass.create({ ...classData, user: userId }))
     );
