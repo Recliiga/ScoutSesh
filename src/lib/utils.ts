@@ -205,13 +205,14 @@ export async function uploadImageClient(
   }
 }
 
-export async function uploadVideoClient(
+export async function uploadVideo(
   video: string
 ): Promise<{ url: string; error: null } | { url: null; error: string }> {
   try {
     const formData = new FormData();
     formData.set("video", video);
-    const res = await fetch(`/api/upload-video`, {
+    const BASE_URL = process.env.BASE_URL!;
+    const res = await fetch(`${BASE_URL}/api/upload-video`, {
       method: "POST",
       body: JSON.stringify({ video }),
       headers: { "Content-Type": "application/json" },

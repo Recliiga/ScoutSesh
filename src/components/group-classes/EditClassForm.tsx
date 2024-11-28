@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,7 +27,7 @@ import { createClass } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
 import Image from "next/image";
 import placeholderThumbnail from "@/assets/placeholder-thumbnail.png";
-import { resizeImage, uploadImageClient, uploadVideoClient } from "@/lib/utils";
+import { resizeImage } from "@/lib/utils";
 import LoadingIndicator from "../LoadingIndicator";
 import { nanoid } from "nanoid";
 import { GroupClassType, RepeatFrequencyType } from "@/db/models/GroupClass";
@@ -52,15 +51,15 @@ export default function EditClassForm({
   );
   const [endDate, setEndDate] = useState<Date | undefined>(course.endDate);
   const [startTime, setStartTime] = useState<{ hours: string; mins: string }>({
-    hours: course.startTime?.hours.toString() || "10",
-    mins: course.startTime?.mins.toString() || "00",
+    hours: course.startTime.hours.toString() || "10",
+    mins: course.startTime.mins.toString() || "10",
   });
-  const [duration, setDuration] = useState(course.duration?.toString());
+  const [duration, setDuration] = useState(course.duration.toString() || "");
   const [customDuration, setCustomDuration] = useState(
-    course.customDuration?.toString()
+    course.customDuration.toString() || ""
   );
-  const [isRecurring, setIsRecurring] = useState(course.isRecurring);
-  const [repeatFrequency, setRepeatFrequency] = useState(
+  const [isRecurring, setIsRecurring] = useState(course.isRecurring || false);
+  const [repeatFrequency, setRepeatFrequency] = useState<RepeatFrequencyType>(
     course.repeatFrequency || ""
   );
   const [loading, setLoading] = useState(false);
@@ -69,13 +68,13 @@ export default function EditClassForm({
   );
   const [thumbnail, setThumbnail] = useState(course.thumbnail);
   const [videoLessons, setVideoLessons] = useState<
-    { _id: string; title: string; url: string }[]
+    { _id: string; title: string; url: string; duration: number }[]
   >(course.videos || []);
-  const [uploadingVideo, setUploadingVideo] = useState<string | null>(null);
-  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
-  const [skillLevels, setSkillLevels] = useState<string[]>([]);
-  const [totalSpots, setTotalSpots] = useState("");
-  const [price, setPrice] = useState("");
+  const [skillLevels, setSkillLevels] = useState<string[]>(
+    course.skillLevels || []
+  );
+  const [totalSpots, setTotalSpots] = useState(course.spots.toString() || "");
+  const [price, setPrice] = useState(course.price.toString());
 
   async function handleUploadThumbnail(e: React.ChangeEvent<HTMLInputElement>) {
     if (!(e.target.files && e.target.files.length)) {
@@ -84,13 +83,23 @@ export default function EditClassForm({
     const imageFile = e.target.files[0];
     const resizedImage = await resizeImage(imageFile, 800);
     if (!resizedImage) return;
-    setUploadingThumbnail(true);
-    const { url, error } = await uploadImageClient(resizedImage);
-    if (error === null) {
-      setThumbnail(url);
-    }
-    setUploadingThumbnail(false);
+    setThumbnail(resizedImage);
   }
+
+  // async function handleUploadThumbnail(e: React.ChangeEvent<HTMLInputElement>) {
+  //   if (!(e.target.files && e.target.files.length)) {
+  //     return;
+  //   }
+  //   const imageFile = e.target.files[0];
+  //   const resizedImage = await resizeImage(imageFile, 800);
+  //   if (!resizedImage) return;
+  //   setUploadingThumbnail(true);
+  //   const { url, error } = await uploadImageClient(resizedImage);
+  //   if (error === null) {
+  //     setThumbnail(url);
+  //   }
+  //   setUploadingThumbnail(false);
+  // }
 
   async function handleUploadVideo(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -105,16 +114,55 @@ export default function EditClassForm({
     fileReader.onload = async (e) => {
       if (!(e.target && e.target.result)) return;
       const videoDataUrl = e.target.result as string;
-      setUploadingVideo(id);
-      const { url, error } = await uploadVideoClient(videoDataUrl);
-      if (error === null) {
-        setVideoLessons((prev) =>
-          prev.map((vid) => (vid._id === id ? { ...vid, url } : vid))
-        );
-      }
-      setUploadingVideo(null);
+      setVideoLessons((prev) =>
+        prev.map((vid) =>
+          vid._id === id ? { ...vid, url: videoDataUrl } : vid
+        )
+      );
     };
   }
+
+  function handleLoadedMetadata(
+    e: React.SyntheticEvent<HTMLVideoElement, Event>,
+    id: string
+  ) {
+    const duration = e.currentTarget?.duration;
+    if (duration) {
+      setVideoLessons((prev) =>
+        prev.map((vid) => (vid._id === id ? { ...vid, duration } : vid))
+      );
+    }
+  }
+
+  function handleUpdateVideoLessonTitle(value: string, id: string) {
+    setVideoLessons((prev) =>
+      prev.map((vid) => (vid._id === id ? { ...vid, title: value } : vid))
+    );
+  }
+
+  // async function handleUploadVideo(
+  //   e: React.ChangeEvent<HTMLInputElement>,
+  //   id: string
+  // ) {
+  //   if (!(e.target.files && e.target.files.length)) {
+  //     return;
+  //   }
+  //   const videoFile = e.target.files[0];
+  //   const fileReader = new FileReader();
+  //   fileReader.readAsDataURL(videoFile);
+  //   fileReader.onload = async (e) => {
+  //     if (!(e.target && e.target.result)) return;
+  //     const videoDataUrl = e.target.result as string;
+  //     setUploadingVideo(id);
+  //     const { url, error } = await uploadVideoClient(videoDataUrl);
+  //     if (error === null) {
+  //       setVideoLessons((prev) =>
+  //         prev.map((vid) => (vid.id === id ? { ...vid, url } : vid))
+  //       );
+  //     }
+  //     setUploadingVideo(null);
+  //   };
+  // }
 
   function deleteVideoLesson(id: string) {
     setVideoLessons((prev) => prev.filter((vid) => vid._id !== id));
@@ -136,8 +184,6 @@ export default function EditClassForm({
     }
   }
 
-  const anyLoading =
-    loading || uploadingThumbnail || Boolean(uploadingVideo?.trim());
   const formFieldVacant =
     !Boolean(title.trim()) ||
     !Boolean(description.trim()) ||
@@ -145,17 +191,19 @@ export default function EditClassForm({
     !Boolean(courseType?.trim()) ||
     !Boolean(price.trim());
   const videoFieldVacant = !Boolean(
-    videoLessons.length && videoLessons.some((vid) => vid.url.trim())
+    videoLessons.length &&
+      videoLessons.some((vid) => vid.url.trim() && vid.title.trim())
   );
   const liveClassFieldVacant =
     !Boolean(startDate) ||
     !Boolean(endDate) ||
     !Boolean(startTime.hours) ||
     !Boolean(startTime.mins) ||
-    !Boolean(repeatFrequency.trim()) ||
+    !Boolean(repeatFrequency?.trim()) ||
     !Boolean(totalSpots.trim());
+
   const cannotSubmit =
-    anyLoading ||
+    loading ||
     formFieldVacant ||
     (courseType === "video" && videoFieldVacant) ||
     (courseType === "live" && liveClassFieldVacant);
@@ -181,11 +229,16 @@ export default function EditClassForm({
       repeatFrequency,
       totalSpots,
       skillLevels,
-      videos: videoLessons.map((vid) => ({ title: vid.title, url: vid.url })),
+      videos: videoLessons.map((vid) => ({
+        title: vid.title,
+        duration: vid.duration,
+        url: vid.url,
+      })),
       price,
     };
 
-    const { error } = await createClass(classData);
+    const { newGroupClass, error } = await createClass(classData);
+    console.log({ newGroupClass, error });
     if (error === null) {
       router.push("/dashboard/group-classes/courses");
     }
@@ -195,8 +248,8 @@ export default function EditClassForm({
 
   return (
     <div className="max-w-3xl w-[90%] mx-auto py-4">
-      <div className="flex mb-4">
-        <h1 className="text-2xl font-bold">Edit Course</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Create Class</h1>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
@@ -213,18 +266,14 @@ export default function EditClassForm({
         <div className="flex flex-col gap-2">
           <h3 className="text-sm font-medium">Thumbnail</h3>
           <div className="aspect-video flex-center relative w-full overflow-hidden border rounded-md">
-            {uploadingThumbnail ? (
-              <LoadingIndicator color="#666" />
-            ) : (
-              <Image
-                src={thumbnail || placeholderThumbnail}
-                alt="Thumbnail"
-                fill
-                sizes="1024px"
-                priority
-                className="absolute w-full h-full object-cover"
-              />
-            )}
+            <Image
+              src={thumbnail || placeholderThumbnail}
+              alt="Thumbnail"
+              fill
+              sizes="1024px"
+              priority
+              className="absolute w-full h-full object-cover"
+            />
           </div>
           <Input
             id="thumbnail"
@@ -234,7 +283,6 @@ export default function EditClassForm({
             accept="image/*"
             required
             className="text-sm"
-            disabled={uploadingThumbnail}
           />
         </div>
 
@@ -265,8 +313,8 @@ export default function EditClassForm({
                   coaches.includes(user._id) ? "bg-green-50" : "grayscale"
                 }`}
               >
-                <div className="w-10 h-10 relative rounded-full overflow-hidden">
-                  <div className="absolute flex-center w-full h-full bg-accent-gray-100 font-medium">
+                <div className="w-10 h-10 font-medium relative rounded-full overflow-hidden">
+                  <div className="absolute flex-center w-full h-full bg-accent-gray-100">
                     {user.firstName[0] + user.lastName[0]}
                   </div>
                   <Image
@@ -278,7 +326,7 @@ export default function EditClassForm({
                   />
                 </div>
                 <div className="flex flex-col">
-                  <h4 className="text-accent-black font-medium">
+                  <h4 className="text-accent-black">
                     {user.firstName} {user.lastName}
                   </h4>
                   <p className="text-xs text-accent-gray-300">{user.role}</p>
@@ -515,19 +563,44 @@ export default function EditClassForm({
             <h3 className="font-medium">Video Lessons</h3>
             {videoLessons.map((videoLesson) => (
               <div key={videoLesson._id} className="flex gap-2 items-center">
-                <button type="button" className="p-1.5">
+                <button
+                  type="button"
+                  className="p-1.5 cursor-grab active:cursor-grabbing"
+                >
                   <GripVertical className="w-4 h-4" />
                 </button>
-                <Input
-                  id={`video-upload-${videoLesson._id}`}
-                  name={`videoUpload-${videoLesson._id}`}
-                  onChange={(e) => handleUploadVideo(e, videoLesson._id)}
-                  type="file"
-                  disabled={uploadingVideo === videoLesson._id}
-                  accept="video/*"
-                  required
-                  className="text-sm"
-                />
+                <div className="aspect-video w-40 overflow-hidden bg-zinc-100">
+                  {videoLesson.url && (
+                    <video
+                      src={videoLesson.url}
+                      onLoadedMetadata={(e) =>
+                        handleLoadedMetadata(e, videoLesson._id)
+                      }
+                    />
+                  )}
+                </div>
+                <div className="flex-1 flex flex-col gap-2">
+                  <Input
+                    type="text"
+                    placeholder="Video title"
+                    value={videoLesson.title}
+                    onChange={(e) =>
+                      handleUpdateVideoLessonTitle(
+                        e.target.value,
+                        videoLesson._id
+                      )
+                    }
+                  />
+                  <Input
+                    id={`video-upload-${videoLesson._id}`}
+                    name={`videoUpload-${videoLesson._id}`}
+                    onChange={(e) => handleUploadVideo(e, videoLesson._id)}
+                    type="file"
+                    accept="video/*"
+                    required
+                    className="text-sm"
+                  />
+                </div>
                 <Button
                   type="button"
                   variant={"outline"}
@@ -544,7 +617,7 @@ export default function EditClassForm({
               onClick={() =>
                 setVideoLessons((prev) => [
                   ...prev,
-                  { _id: nanoid(8), title: "", url: "" },
+                  { _id: nanoid(8), title: "", url: "", duration: 0 },
                 ])
               }
             >
@@ -574,10 +647,10 @@ export default function EditClassForm({
         >
           {loading ? (
             <>
-              <LoadingIndicator /> Updating...
+              <LoadingIndicator /> Creating...
             </>
           ) : (
-            "Update Class"
+            "Create Class"
           )}
         </Button>
       </form>
