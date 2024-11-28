@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { UserType } from "./User";
 
-type RepeatFrequencyType =
+export type RepeatFrequencyType =
   | "daily"
   | "weekly"
   | "bi-weekly"
@@ -9,6 +9,13 @@ type RepeatFrequencyType =
   | "yearly";
 
 type SkillLevelType = "beginner" | "intermediate" | "advanced";
+
+export interface VideoType extends mongoose.Document {
+  _id: string;
+  title: string;
+  url: string;
+  duration: number;
+}
 
 export interface GroupClassType extends mongoose.Document {
   _id: string;
@@ -30,14 +37,30 @@ export interface GroupClassType extends mongoose.Document {
   repeatFrequency: RepeatFrequencyType;
   startDate: Date;
   endDate: Date;
-  time: { hours: number; mins: number };
+  startTime: { hours: number; mins: number };
   duration: number;
-  videos: string[];
+  customDuration: number;
+  videos: VideoType[];
   coaches: UserType[];
   user: UserType;
   createdAt: Date;
   updatedAt: Date;
 }
+
+const VideoSchema = new mongoose.Schema<VideoType>({
+  title: {
+    type: String,
+    required: [true, "Please provide a title for your video lesson"],
+  },
+  url: {
+    type: String,
+    required: [true, "Please provide a url for your video lesson"],
+  },
+  duration: {
+    type: Number,
+    required: [true, "Please provide the video duration"],
+  },
+});
 
 const GroupClassSchema = new mongoose.Schema<GroupClassType>(
   {
@@ -82,9 +105,10 @@ const GroupClassSchema = new mongoose.Schema<GroupClassType>(
     },
     repeatFrequency: { type: String },
     startDate: { type: Date },
-    time: { hours: { type: Number }, mins: { type: Number } },
+    startTime: { hours: { type: Number }, mins: { type: Number } },
     duration: { type: Number },
-    videos: [{ type: String, default: [] }],
+    customDuration: { type: Number },
+    videos: { type: [VideoSchema], default: [] },
   },
   { timestamps: true }
 );

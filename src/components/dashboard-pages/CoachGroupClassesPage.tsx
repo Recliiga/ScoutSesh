@@ -255,8 +255,8 @@ export default function CoachGroupClassesPage() {
                           isPast ? "past-session" : ""
                         }`}
                       >
-                        <CardContent className="flex justify-between items-center p-4">
-                          <div className="flex items-center space-x-4">
+                        <CardContent className="flex lg:flex-col items-center p-4 gap-2">
+                          <div className="flex items-center gap-4">
                             <Avatar className="w-10 h-10">
                               <AvatarImage
                                 src="/placeholder.svg?height=40&width=40"
@@ -290,11 +290,11 @@ export default function CoachGroupClassesPage() {
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-2 ml-auto lg:w-full">
                             <Button
                               size="sm"
                               variant="outline"
-                              className={`${
+                              className={`flex-1 ${
                                 isPast ? "opacity-50 cursor-not-allowed" : ""
                               }`}
                               disabled={isPast}

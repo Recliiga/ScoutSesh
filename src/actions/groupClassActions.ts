@@ -24,6 +24,7 @@ type ClassDataType = {
 
 export async function createClass(classData: ClassDataType) {
   try {
+    return { newGroupClass: classData, error: "null" };
     const cookieStore = await cookies();
     const { userId, error } = getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);

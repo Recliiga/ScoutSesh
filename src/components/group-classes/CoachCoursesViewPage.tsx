@@ -18,7 +18,7 @@ export default function CoachCoursesView({
         <div className="grid gap-4">
           {liveClasses.length > 0 ? (
             liveClasses.map((liveClass) => (
-              <LiveClassCard liveClass={liveClass} />
+              <LiveClassCard key={liveClass._id} liveClass={liveClass} />
             ))
           ) : (
             <p className="text-accent-gray-300">

@@ -44,10 +44,12 @@ export default function LiveClassCard({
   const remainingSpots = liveClass.spots - liveClass.students.length;
 
   const startTime = new Date();
-  startTime.setHours(liveClass.time.hours, liveClass.time.mins);
+  startTime.setHours(liveClass.startTime.hours, liveClass.startTime.mins);
   const endTime = new Date();
-  endTime.setHours(liveClass.time.hours, liveClass.time.mins);
-  endTime.setMinutes(startTime.getMinutes() + liveClass.duration);
+  endTime.setHours(liveClass.startTime.hours, liveClass.startTime.mins);
+  endTime.setMinutes(
+    startTime.getMinutes() + (liveClass.duration || liveClass.customDuration)
+  );
 
   const startDate = new Date(liveClass.startDate);
   const endDate = new Date(liveClass.endDate);
