@@ -1,5 +1,9 @@
 "use server";
 
+import GroupClass from "@/db/models/GroupClass";
+import { getUserIdFromCookies } from "@/lib/utils";
+import { cookies } from "next/headers";
+
 type ClassDataType = {
   title: string;
   description: string;
@@ -19,9 +23,14 @@ type ClassDataType = {
 
 export async function createClass(classData: ClassDataType) {
   try {
-    console.log(classData);
+    const cookieStore = await cookies();
+    const { userId, error } = getUserIdFromCookies(cookieStore);
+    if (error !== null) throw new Error(error);
 
-    return { error: "null" };
+    const newGroupClass = JSON.parse(
+      JSON.stringify(await GroupClass.create({ ...classData, user: userId }))
+    );
+    return { newGroupClass, error: null };
   } catch (error) {
     return { error: (error as Error).message };
   }

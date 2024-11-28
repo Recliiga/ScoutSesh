@@ -182,6 +182,7 @@ export default function CreateClassForm({
     };
 
     const { error } = await createClass(classData);
+    console.log(error);
     if (error === null) {
       router.push("/dashboard/group-classes/courses");
     }
@@ -248,6 +249,7 @@ export default function CreateClassForm({
           <Textarea
             id="description"
             name="description"
+            rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe your course..."
@@ -568,6 +570,7 @@ export default function CreateClassForm({
             required
           />
         </div>
+
         <Button
           disabled={cannotSubmit}
           type="submit"

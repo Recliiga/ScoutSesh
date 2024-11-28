@@ -90,6 +90,6 @@ const GroupClassSchema = new mongoose.Schema<GroupClassType>(
 );
 
 const GroupClass =
-  mongoose.models.GroupClass || mongoose.model("Group Class", GroupClassSchema);
+  mongoose.models.GroupClass || mongoose.model("GroupClass", GroupClassSchema);
 
 export default GroupClass;
