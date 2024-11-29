@@ -25,7 +25,8 @@ export default function AthleteCoursesView({
             ))
           ) : (
             <p className="text-accent-gray-300">
-              You haven&apos;t created any live classes yet
+              It looks like there are no live classes available at the moment.
+              Please check back later for new live sessions and updates.
             </p>
           )}
         </div>
@@ -40,7 +41,8 @@ export default function AthleteCoursesView({
             ))
           ) : (
             <p className="text-accent-gray-300">
-              You haven&apos;t created any courses yet
+              It looks like there are no available courses at the moment. Please
+              check back later for new courses and updates.
             </p>
           )}
         </div>
