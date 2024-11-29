@@ -27,7 +27,6 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { format } from "date-fns";
-import { useRouter } from "next/navigation";
 import { updateClass } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
 import Image from "next/image";
@@ -36,6 +35,7 @@ import { resizeImage } from "@/lib/utils";
 import LoadingIndicator from "../LoadingIndicator";
 import { nanoid } from "nanoid";
 import { GroupClassType, RepeatFrequencyType } from "@/db/models/GroupClass";
+import Error from "../AuthError";
 
 export default function EditClassForm({
   assistantCoaches,
@@ -44,8 +44,6 @@ export default function EditClassForm({
   assistantCoaches: UserType[];
   course: GroupClassType;
 }) {
-  const router = useRouter();
-
   const [title, setTitle] = useState(course.title || "");
   const [description, setDescription] = useState(course.description || "");
   const [startDate, setStartDate] = useState<Date | undefined>(
@@ -65,6 +63,7 @@ export default function EditClassForm({
     RepeatFrequencyType | undefined
   >(course.repeatFrequency);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [coaches, setCoaches] = useState<string[]>(
     course.coaches.map((coach) => coach._id)
   );
@@ -223,11 +222,8 @@ export default function EditClassForm({
       price,
     };
 
-    const { newGroupClass, error } = await updateClass(classData);
-    console.log({ newGroupClass, error });
-    if (error === null) {
-      router.push("/dashboard/group-classes/courses");
-    }
+    const data = await updateClass(course._id, classData);
+    if (data?.error) setError(data.error);
 
     setLoading(false);
   }
@@ -634,6 +630,7 @@ export default function EditClassForm({
             step="0.01"
             required
           />
+          {error.trim() !== "" && <Error error={error} />}
         </div>
 
         <Button

@@ -647,9 +647,8 @@ export default function CreateClassForm({
             step="0.01"
             required
           />
+          {error.trim() !== "" && <Error error={error} />}
         </div>
-
-        {error.trim() !== "" && <Error error={error} />}
 
         <Button
           disabled={cannotSubmit}

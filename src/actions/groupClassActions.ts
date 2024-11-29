@@ -66,8 +66,10 @@ export async function createClass(classData: ClassDataType) {
   }
 }
 
-export async function updateClass(classData: ClassDataType) {
-  return { newGroupClass: classData, error: "asdfa" };
+export async function updateClass(
+  groupClassId: string,
+  classData: ClassDataType
+) {
   let redirectUrl;
   try {
     const cookieStore = await cookies();
@@ -77,23 +79,33 @@ export async function updateClass(classData: ClassDataType) {
     if (!classData.thumbnail) throw new Error("Please select a thumbnail");
 
     // Upload thumbnail
-    const { url, error: uploadThumbnailError } = await uploadImage(
-      classData.thumbnail
-    );
-    if (uploadThumbnailError !== null) throw new Error(uploadThumbnailError);
-    classData.thumbnail = url;
+    if (!classData.thumbnail.startsWith("http")) {
+      const { url, error: uploadThumbnailError } = await uploadImage(
+        classData.thumbnail
+      );
+      if (uploadThumbnailError !== null) throw new Error(uploadThumbnailError);
+      classData.thumbnail = url;
+    }
 
     // Upload videos
     classData.videos = await Promise.all(
       classData.videos.map(async (video) => {
-        const { url, error: uploadVideoError } = await uploadVideo(video.url);
-        if (uploadVideoError !== null) throw new Error(uploadVideoError);
-        return { ...video, url };
+        let uploadedUrl = video.url;
+        if (!classData.thumbnail.startsWith("http")) {
+          const { url, error: uploadVideoError } = await uploadVideo(video.url);
+          if (uploadVideoError !== null) throw new Error(uploadVideoError);
+          uploadedUrl = url;
+        }
+        return { ...video, url: uploadedUrl };
       })
     );
 
     await connectDB();
-    await GroupClass.create({ ...classData, user: userId });
+    const updatedGroupClass = await GroupClass.findByIdAndUpdate(groupClassId, {
+      ...classData,
+      user: userId,
+    });
+    if (!updatedGroupClass) throw new Error("An error occured updating course");
     redirectUrl = "/dashboard/group-classes/courses";
   } catch (error) {
     return { error: (error as Error).message };
