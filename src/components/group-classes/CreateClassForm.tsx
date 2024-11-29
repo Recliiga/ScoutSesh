@@ -37,6 +37,41 @@ import { nanoid } from "nanoid";
 import { RepeatFrequencyType } from "@/db/models/GroupClass";
 import Error from "../AuthError";
 
+function getDatesBetween(
+  startDate: Date,
+  endDate: Date,
+  frequency: RepeatFrequencyType
+) {
+  const dates = [];
+  const currentDate = new Date(startDate);
+
+  const intervalDays: Record<RepeatFrequencyType, number> = {
+    daily: 1,
+    weekly: 7,
+    "bi-weekly": 14,
+    monthly: 1,
+    yearly: 1,
+  };
+
+  while (currentDate <= endDate) {
+    dates.push(new Date(currentDate));
+    if (
+      frequency === "daily" ||
+      frequency === "weekly" ||
+      frequency === "bi-weekly"
+    )
+      currentDate.setDate(currentDate.getDate() + intervalDays[frequency]);
+    if (frequency === "monthly")
+      currentDate.setMonth(currentDate.getMonth() + intervalDays[frequency]);
+    if (frequency === "yearly")
+      currentDate.setFullYear(
+        currentDate.getFullYear() + intervalDays[frequency]
+      );
+  }
+
+  return dates;
+}
+
 export default function CreateClassForm({
   assistantCoaches,
 }: {
@@ -176,7 +211,8 @@ export default function CreateClassForm({
     !Boolean(endDate) ||
     !Boolean(startTime.hours) ||
     !Boolean(startTime.mins) ||
-    !Boolean(repeatFrequency?.trim()) ||
+    (isRecurring && !Boolean(repeatFrequency?.trim())) ||
+    (!Boolean(duration.trim()) && !Boolean(customDuration.trim())) ||
     !Boolean(totalSpots.trim());
 
   const cannotSubmit =
@@ -201,24 +237,35 @@ export default function CreateClassForm({
       startDate,
       endDate,
       startTime,
-      duration,
-      customDuration,
+      duration: Number(duration) || 0,
+      customDuration: Number(customDuration) || 0,
       isRecurring,
       repeatFrequency,
-      totalSpots,
+      totalSpots: Number(totalSpots) || 0,
       skillLevels,
       videos: videoLessons.map((vid) => ({
         title: vid.title,
         duration: vid.duration,
         url: vid.url,
       })),
-      price,
+      price: Number(price),
     };
 
     const data = await createClass(classData);
     if (data?.error) setError(data.error);
 
     setLoading(false);
+  }
+
+  function clearLiveClassFields() {
+    setStartDate(undefined);
+    setEndDate(undefined);
+    setStartTime({ hours: "10", mins: "00" });
+    setDuration("");
+    setCustomDuration("");
+    setRepeatFrequency(undefined);
+    setTotalSpots("");
+    setIsRecurring(false);
   }
 
   return (
@@ -357,6 +404,7 @@ export default function CreateClassForm({
             value={courseType}
             onValueChange={(value: "live" | "video") => {
               if (value === "live") setVideoLessons([]);
+              if (value === "video") clearLiveClassFields();
               setCourseType(value);
             }}
             className="flex space-x-4 mt-2"
@@ -392,6 +440,7 @@ export default function CreateClassForm({
                       mode="single"
                       selected={startDate}
                       onSelect={setStartDate}
+                      fromDate={new Date()}
                       initialFocus
                     />
                   </PopoverContent>
@@ -400,7 +449,11 @@ export default function CreateClassForm({
                   <PopoverTrigger asChild>
                     <div className="flex gap-2 items-center">
                       End Date:
-                      <Button variant="outline" type="button">
+                      <Button
+                        variant="outline"
+                        type="button"
+                        disabled={!startDate}
+                      >
                         {endDate ? format(endDate, "PPP") : "Select Date"}
                         <CalendarIcon className="ml-2 h-4 w-4" />
                       </Button>
@@ -411,6 +464,8 @@ export default function CreateClassForm({
                       mode="single"
                       selected={endDate}
                       onSelect={setEndDate}
+                      fromDate={startDate}
+                      disabled={!startDate}
                       initialFocus
                     />
                   </PopoverContent>
@@ -485,6 +540,7 @@ export default function CreateClassForm({
                   onChange={(e) => setCustomDuration(e.target.value)}
                   placeholder="Enter custom duration"
                   className="mt-2 w-full"
+                  required
                 />
               )}
             </div>
@@ -499,27 +555,46 @@ export default function CreateClassForm({
             </div>
 
             {isRecurring && (
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="repeatFrequency">Repeat</Label>
-                <Select
-                  name="repeatFrequency"
-                  value={repeatFrequency}
-                  onValueChange={(value) =>
-                    setRepeatFrequency(value as RepeatFrequencyType)
-                  }
-                >
-                  <SelectTrigger id="repeatFrequency">
-                    <SelectValue placeholder="Select repeat option" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="daily">Every Day</SelectItem>
-                    <SelectItem value="weekly">Every Week</SelectItem>
-                    <SelectItem value="bi-weekly">Every 2 Weeks</SelectItem>
-                    <SelectItem value="monthly">Every Month</SelectItem>
-                    <SelectItem value="yearly">Every Year</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="repeatFrequency">Repeat</Label>
+                  <Select
+                    name="repeatFrequency"
+                    value={repeatFrequency}
+                    onValueChange={(value) =>
+                      setRepeatFrequency(value as RepeatFrequencyType)
+                    }
+                  >
+                    <SelectTrigger id="repeatFrequency">
+                      <SelectValue placeholder="Select repeat option" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">Every Day</SelectItem>
+                      <SelectItem value="weekly">Every Week</SelectItem>
+                      <SelectItem value="bi-weekly">Every 2 Weeks</SelectItem>
+                      <SelectItem value="monthly">Every Month</SelectItem>
+                      <SelectItem value="yearly">Every Year</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {startDate && endDate && repeatFrequency && (
+                  <div>
+                    <h3 className="font-medium mb-2">Class Sessions</h3>
+                    <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 gap-y-2 text-sm">
+                      {getDatesBetween(startDate, endDate, repeatFrequency).map(
+                        (date) => (
+                          <li
+                            key={date.getTime()}
+                            className="list-disc list-inside text-zinc-700"
+                          >
+                            {date.toDateString()}
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </>
             )}
             <div className="flex flex-col gap-2">
               <Label htmlFor="totalSpots">Total Spots</Label>

@@ -74,7 +74,9 @@ export default function EditClassForm({
   const [skillLevels, setSkillLevels] = useState<string[]>(
     course.skillLevels || []
   );
-  const [totalSpots, setTotalSpots] = useState(course.spots?.toString() || "");
+  const [totalSpots, setTotalSpots] = useState(
+    course.totalSpots?.toString() || ""
+  );
   const [price, setPrice] = useState(course.price.toString() || "");
 
   const courseType = course.courseType;

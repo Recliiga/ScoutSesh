@@ -21,14 +21,14 @@ type ClassDataType = {
   startDate?: Date;
   endDate?: Date;
   startTime: { hours: string; mins: string };
-  duration: string;
-  customDuration: string;
+  duration: number;
+  customDuration: number;
   isRecurring: boolean;
   repeatFrequency?: RepeatFrequencyType;
-  totalSpots: string;
+  totalSpots: number;
   skillLevels: string[];
   videos: ClassDataVideoType[];
-  price: string;
+  price: number;
 };
 
 export async function createClass(classData: ClassDataType) {

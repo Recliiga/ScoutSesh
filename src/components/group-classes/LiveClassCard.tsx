@@ -43,7 +43,7 @@ export default function LiveClassCard({
   liveClass: GroupClassType;
   forAthlete?: boolean;
 }) {
-  const remainingSpots = liveClass.spots - liveClass.students.length;
+  const remainingSpots = liveClass.totalSpots - liveClass.students.length;
 
   const startTime = new Date();
   startTime.setHours(liveClass.startTime.hours, liveClass.startTime.mins);
@@ -93,7 +93,7 @@ export default function LiveClassCard({
   return (
     <div className="flex flex-col gap-4 md:flex-row border rounded-lg p-4">
       <Image
-        src="/placeholder.svg"
+        src={liveClass.thumbnail}
         alt="Course Image"
         className="w-full md:w-48 aspect-video md:aspect-[1.5] object-cover rounded"
         width="200"
@@ -113,14 +113,17 @@ export default function LiveClassCard({
           <p className="text-sm text-muted-foreground">
             {liveClass.description}
           </p>
-          <div className="flex items-start text-sm text-muted-foreground">
-            <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
-            <span>
-              {liveClass.students
-                .map((student) => student.firstName + " " + student.lastName)
-                .join(", ")}
-            </span>
-          </div>
+          {liveClass.students.length > 0 && (
+            <div className="flex items-start text-sm text-muted-foreground">
+              <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+              <span className="line-clamp-1">
+                {liveClass.students
+                  .slice(0, 3)
+                  .map((student) => student.firstName + " " + student.lastName)
+                  .join(", ")}
+              </span>
+            </div>
+          )}
           <div className="flex items-start text-sm text-muted-foreground">
             <TicketIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
             <span>

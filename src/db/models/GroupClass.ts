@@ -32,7 +32,7 @@ export interface GroupClassType extends mongoose.Document {
   numberOfLessons: number;
   skillLevels: SkillLevelType[];
   price: number;
-  spots: number;
+  totalSpots: number;
   isRecurring: boolean;
   repeatFrequency: RepeatFrequencyType;
   startDate: Date;
@@ -98,7 +98,7 @@ const GroupClassSchema = new mongoose.Schema<GroupClassType>(
       { type: String, required: [true, "Pleas select the skill levels"] },
     ],
     price: { type: Number, required: [true, "Please enter the price"] },
-    spots: { type: Number },
+    totalSpots: { type: Number },
     isRecurring: {
       type: Boolean,
       required: [true, "Please specify if the class is recurring"],
