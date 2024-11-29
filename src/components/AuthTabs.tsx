@@ -11,7 +11,7 @@ export default function AuthTabs() {
   return (
     <div className="flex bg-accent-gray-100 p-1 rounded-md w-full font-medium text-sm">
       <Link
-        href={`/login${redirect && `?redirect=${redirect}`}`}
+        href={`/login${redirect ? `?redirect=${redirect}` : ""}`}
         className={`flex-1 flex-center px-3 py-1.5 rounded-sm ${
           pathname === "/login" ? "bg-white" : "text-accent-gray-300"
         }`}
@@ -19,7 +19,7 @@ export default function AuthTabs() {
         Log In
       </Link>
       <Link
-        href={`/signup${redirect && `?redirect=${redirect}`}`}
+        href={`/signup${redirect ? `?redirect=${redirect}` : ""}`}
         className={`flex-1 flex-center px-3 py-1.5 rounded-sm ${
           pathname === "/signup" ? "bg-white" : "text-accent-gray-300"
         }`}
