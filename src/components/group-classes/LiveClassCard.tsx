@@ -97,6 +97,8 @@ export default function LiveClassCard({
     return monthsOfTheYear[date.getMonth()] + " " + monthDate + suffix;
   }
 
+  console.log(endDate);
+
   return (
     <div className="flex flex-col gap-4 md:flex-row border rounded-lg p-3 sm:p-4">
       <Image

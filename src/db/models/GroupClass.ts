@@ -105,6 +105,7 @@ const GroupClassSchema = new mongoose.Schema<GroupClassType>(
     },
     repeatFrequency: { type: String },
     startDate: { type: Date },
+    endDate: { type: Date },
     startTime: { hours: { type: Number }, mins: { type: Number } },
     duration: { type: Number },
     customDuration: { type: Number },
