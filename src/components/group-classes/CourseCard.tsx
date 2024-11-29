@@ -1,17 +1,27 @@
+"use client";
 import { GroupClassType } from "@/db/models/GroupClass";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { PersonIcon, TicketIcon } from "./CardIcons";
 import Link from "next/link";
 
 export default function CourseCard({ course }: { course: GroupClassType }) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   return (
     <div className="flex flex-col md:flex-row gap-4 border rounded-lg p-4">
-      <div className="relative overflow-hidden rounded-md md:w-[30%] aspect-video md:aspect-[1.5]">
+      <div
+        className={`relative overflow-hidden rounded-md md:w-[30%] aspect-video md:aspect-[1.5] bg-zinc-300 ${
+          imageLoaded ? "" : "animate-pulse"
+        }`}
+      >
         <Image
           src={course.thumbnail}
           alt="Course Image"
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover duration-200 ${
+            imageLoaded ? "opacity-100" : "opacity-0"
+          }`}
+          onLoad={() => setImageLoaded(true)}
           fill
           sizes="(max-width: 768px) 720px, 240px"
         />

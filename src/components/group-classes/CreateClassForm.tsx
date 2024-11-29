@@ -24,7 +24,6 @@ import {
   ArrowBigDown,
   ArrowBigUp,
   CalendarIcon,
-  GripVertical,
   Trash2Icon,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -548,12 +547,6 @@ export default function CreateClassForm({
                 key={videoLesson._id}
                 className="flex gap-2 sm:items-center flex-col sm:flex-row"
               >
-                <button
-                  type="button"
-                  className="p-1.5 cursor-grab active:cursor-grabbing hidden sm:block"
-                >
-                  <GripVertical className="w-4 h-4" />
-                </button>
                 <Label
                   htmlFor={`video-upload-${videoLesson._id}`}
                   className="aspect-video relative flex-center cursor-pointer border w-full sm:w-40 rounded-sm overflow-hidden bg-zinc-50 hover:bg-zinc-100 duration-200"
