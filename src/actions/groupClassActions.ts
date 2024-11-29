@@ -68,13 +68,15 @@ export async function createClass(classData: ClassDataType) {
 
 export async function updateClass(
   groupClassId: string,
-  classData: ClassDataType
+  classData: ClassDataType & { user: { _id: string } }
 ) {
   let redirectUrl;
   try {
     const cookieStore = await cookies();
     const { userId, error } = getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
+
+    if (classData.user._id !== userId) throw new Error("Unauthorized!");
 
     if (!classData.thumbnail) throw new Error("Please select a thumbnail");
 

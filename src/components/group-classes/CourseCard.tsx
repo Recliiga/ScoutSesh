@@ -5,7 +5,13 @@ import React, { useState } from "react";
 import { PersonIcon, TicketIcon } from "./CardIcons";
 import Link from "next/link";
 
-export default function CourseCard({ course }: { course: GroupClassType }) {
+export default function CourseCard({
+  course,
+  forAthlete,
+}: {
+  course: GroupClassType;
+  forAthlete?: boolean;
+}) {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
@@ -57,12 +63,21 @@ export default function CourseCard({ course }: { course: GroupClassType }) {
         </div>
         <div className="flex items-center justify-between mt-4">
           <span className="text-xl font-bold">${course.price}</span>
-          <Link
-            href={`/dashboard/group-classes/courses/${course._id}/edit`}
-            className="bg-green-600 hover:bg-green-700 duration-200 text-white px-4 py-2 rounded-md text-sm font-medium"
-          >
-            Edit Course
-          </Link>
+          {forAthlete ? (
+            <Link
+              href={`#`}
+              className="bg-green-500 hover:bg-green-600 duration-200 text-white px-4 py-2 rounded-md text-sm font-medium"
+            >
+              Buy Now
+            </Link>
+          ) : (
+            <Link
+              href={`/dashboard/group-classes/courses/${course._id}/edit`}
+              className="bg-green-500 hover:bg-green-600 duration-200 text-white px-4 py-2 rounded-md text-sm font-medium"
+            >
+              Edit Course
+            </Link>
+          )}
         </div>
       </div>
     </div>

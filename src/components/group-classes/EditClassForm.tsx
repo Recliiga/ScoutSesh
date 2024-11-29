@@ -220,6 +220,7 @@ export default function EditClassForm({
         url: vid.url,
       })),
       price,
+      user: { _id: course.user._id },
     };
 
     const data = await updateClass(course._id, classData);

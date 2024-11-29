@@ -179,12 +179,20 @@ export default function AthleteGroupClassesPage() {
       <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
         <div className="flex sm:flex-row flex-col justify-between items-center gap-4 mb-6">
           <h1 className="font-bold text-3xl">My Class Sessions</h1>
-          <Button
-            variant="outline"
-            className="border-green-600 hover:bg-green-600 text-green-600 hover:text-white transition-colors"
-          >
-            See More Group Classes
-          </Button>
+          <div className="flex gap-2 sm:gap-4">
+            <Link
+              href="/dashboard/group-classes/my-classes"
+              className="border-green-600 hover:bg-green-600 duration-300 border font-medium text-green-600 hover:text-white transition-colors px-4 py-2 rounded-md text-sm"
+            >
+              My Classes
+            </Link>
+            <Link
+              href="/dashboard/group-classes/courses"
+              className="border-green-600 hover:bg-green-600 duration-300 border font-medium text-green-600 hover:text-white transition-colors px-4 py-2 rounded-md text-sm"
+            >
+              See More Group Classes
+            </Link>
+          </div>
         </div>
 
         <div className="flex lg:flex-row flex-col items-start gap-8">

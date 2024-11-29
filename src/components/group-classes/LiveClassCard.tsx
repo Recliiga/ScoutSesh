@@ -38,8 +38,10 @@ function getDay(date: Date) {
 
 export default function LiveClassCard({
   liveClass,
+  forAthlete,
 }: {
   liveClass: GroupClassType;
+  forAthlete?: boolean;
 }) {
   const remainingSpots = liveClass.spots - liveClass.students.length;
 
@@ -170,9 +172,15 @@ export default function LiveClassCard({
         </div>
         <div className="flex items-center justify-between mt-4">
           <span className="text-xl font-bold">$99.99</span>
-          <Button className="bg-green-600 hover:bg-green-700 text-white">
-            Edit Course
-          </Button>
+          {forAthlete ? (
+            <Button className="bg-green-500 hover:bg-green-600 text-white">
+              Join Now
+            </Button>
+          ) : (
+            <Button className="bg-green-500 hover:bg-green-600 text-white">
+              Edit Course
+            </Button>
+          )}
         </div>
       </div>
     </div>

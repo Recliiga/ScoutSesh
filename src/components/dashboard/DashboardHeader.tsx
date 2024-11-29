@@ -141,7 +141,7 @@ export default function DashboardHeader({
                 key={navLink.title}
                 href={navLink.href}
                 className={`font-medium text-sm hover:text-green-600 whitespace-nowrap transition-colors ${
-                  pathname === navLink.href ? "text-green-600" : ""
+                  pathname.startsWith(navLink.href) ? "text-green-600" : ""
                 }`}
               >
                 {navLink.title}
