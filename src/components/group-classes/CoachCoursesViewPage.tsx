@@ -31,9 +31,15 @@ export default function CoachCoursesView({
       <section>
         <h2 className="text-2xl font-bold mb-4">Course Library</h2>
         <div className="grid gap-4">
-          {courses.map((course) => (
-            <CourseCard key={course._id} course={course} />
-          ))}
+          {courses.length > 0 ? (
+            courses.map((course) => (
+              <CourseCard key={course._id} course={course} />
+            ))
+          ) : (
+            <p className="text-accent-gray-300">
+              You haven&apos;t created any courses yet
+            </p>
+          )}
         </div>
       </section>
 

@@ -27,7 +27,6 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { format } from "date-fns";
-import { useRouter } from "next/navigation";
 import { createClass } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
 import Image from "next/image";
@@ -36,14 +35,13 @@ import { resizeImage } from "@/lib/utils";
 import LoadingIndicator from "../LoadingIndicator";
 import { nanoid } from "nanoid";
 import { RepeatFrequencyType } from "@/db/models/GroupClass";
+import Error from "../AuthError";
 
 export default function CreateClassForm({
   assistantCoaches,
 }: {
   assistantCoaches: UserType[];
 }) {
-  const router = useRouter();
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [courseType, setCourseType] = useState<"live" | "video" | undefined>();
@@ -58,6 +56,7 @@ export default function CreateClassForm({
   const [isRecurring, setIsRecurring] = useState(false);
   const [repeatFrequency, setRepeatFrequency] = useState<RepeatFrequencyType>();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [coaches, setCoaches] = useState<string[]>(
     assistantCoaches
       .filter((user) => user.role === "Head Coach")
@@ -191,6 +190,7 @@ export default function CreateClassForm({
     const isLiveClass = courseType === "live";
     if (isLiveClass && (!startDate || !endDate)) return;
     setLoading(true);
+    setError("");
     if (cannotSubmit) return;
     const classData = {
       title,
@@ -215,11 +215,8 @@ export default function CreateClassForm({
       price,
     };
 
-    const { newGroupClass, error } = await createClass(classData);
-    console.log({ newGroupClass, error });
-    if (error === null) {
-      router.push("/dashboard/group-classes/courses");
-    }
+    const data = await createClass(classData);
+    if (data?.error) setError(data.error);
 
     setLoading(false);
   }
@@ -651,6 +648,8 @@ export default function CreateClassForm({
             required
           />
         </div>
+
+        {error.trim() !== "" && <Error error={error} />}
 
         <Button
           disabled={cannotSubmit}

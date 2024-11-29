@@ -20,10 +20,15 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, GripVertical, Trash2Icon } from "lucide-react";
+import {
+  ArrowBigDown,
+  ArrowBigUp,
+  CalendarIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { createClass } from "@/actions/groupClassActions";
+import { updateClass } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
 import Image from "next/image";
 import placeholderThumbnail from "@/assets/placeholder-thumbnail.png";
@@ -41,40 +46,39 @@ export default function EditClassForm({
 }) {
   const router = useRouter();
 
-  const [title, setTitle] = useState(course.title);
-  const [description, setDescription] = useState(course.description);
-  const [courseType, setCourseType] = useState<"live" | "video" | undefined>(
-    course.courseType
-  );
+  const [title, setTitle] = useState(course.title || "");
+  const [description, setDescription] = useState(course.description || "");
   const [startDate, setStartDate] = useState<Date | undefined>(
     course.startDate
   );
   const [endDate, setEndDate] = useState<Date | undefined>(course.endDate);
   const [startTime, setStartTime] = useState<{ hours: string; mins: string }>({
-    hours: course.startTime.hours.toString() || "10",
-    mins: course.startTime.mins.toString() || "10",
+    hours: course.startTime?.hours.toString() || "10",
+    mins: course.startTime?.mins.toString() || "00",
   });
-  const [duration, setDuration] = useState(course.duration.toString() || "");
+  const [duration, setDuration] = useState(course.duration?.toString() || "");
   const [customDuration, setCustomDuration] = useState(
-    course.customDuration.toString() || ""
+    course.customDuration?.toString() || ""
   );
   const [isRecurring, setIsRecurring] = useState(course.isRecurring || false);
-  const [repeatFrequency, setRepeatFrequency] = useState<RepeatFrequencyType>(
-    course.repeatFrequency || ""
-  );
+  const [repeatFrequency, setRepeatFrequency] = useState<
+    RepeatFrequencyType | undefined
+  >(course.repeatFrequency);
   const [loading, setLoading] = useState(false);
   const [coaches, setCoaches] = useState<string[]>(
     course.coaches.map((coach) => coach._id)
   );
-  const [thumbnail, setThumbnail] = useState(course.thumbnail);
+  const [thumbnail, setThumbnail] = useState(course.thumbnail || "");
   const [videoLessons, setVideoLessons] = useState<
     { _id: string; title: string; url: string; duration: number }[]
   >(course.videos || []);
   const [skillLevels, setSkillLevels] = useState<string[]>(
     course.skillLevels || []
   );
-  const [totalSpots, setTotalSpots] = useState(course.spots.toString() || "");
-  const [price, setPrice] = useState(course.price.toString());
+  const [totalSpots, setTotalSpots] = useState(course.spots?.toString() || "");
+  const [price, setPrice] = useState(course.price.toString() || "");
+
+  const courseType = course.courseType;
 
   async function handleUploadThumbnail(e: React.ChangeEvent<HTMLInputElement>) {
     if (!(e.target.files && e.target.files.length)) {
@@ -85,21 +89,6 @@ export default function EditClassForm({
     if (!resizedImage) return;
     setThumbnail(resizedImage);
   }
-
-  // async function handleUploadThumbnail(e: React.ChangeEvent<HTMLInputElement>) {
-  //   if (!(e.target.files && e.target.files.length)) {
-  //     return;
-  //   }
-  //   const imageFile = e.target.files[0];
-  //   const resizedImage = await resizeImage(imageFile, 800);
-  //   if (!resizedImage) return;
-  //   setUploadingThumbnail(true);
-  //   const { url, error } = await uploadImageClient(resizedImage);
-  //   if (error === null) {
-  //     setThumbnail(url);
-  //   }
-  //   setUploadingThumbnail(false);
-  // }
 
   async function handleUploadVideo(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -140,32 +129,30 @@ export default function EditClassForm({
     );
   }
 
-  // async function handleUploadVideo(
-  //   e: React.ChangeEvent<HTMLInputElement>,
-  //   id: string
-  // ) {
-  //   if (!(e.target.files && e.target.files.length)) {
-  //     return;
-  //   }
-  //   const videoFile = e.target.files[0];
-  //   const fileReader = new FileReader();
-  //   fileReader.readAsDataURL(videoFile);
-  //   fileReader.onload = async (e) => {
-  //     if (!(e.target && e.target.result)) return;
-  //     const videoDataUrl = e.target.result as string;
-  //     setUploadingVideo(id);
-  //     const { url, error } = await uploadVideoClient(videoDataUrl);
-  //     if (error === null) {
-  //       setVideoLessons((prev) =>
-  //         prev.map((vid) => (vid.id === id ? { ...vid, url } : vid))
-  //       );
-  //     }
-  //     setUploadingVideo(null);
-  //   };
-  // }
-
   function deleteVideoLesson(id: string) {
     setVideoLessons((prev) => prev.filter((vid) => vid._id !== id));
+  }
+
+  function moveVideoLessonUp(id: string) {
+    const videoLessonIndex = videoLessons.findIndex(
+      (video) => video._id === id
+    );
+    if (videoLessonIndex <= 0) return;
+    const newVideoLessons = [...videoLessons];
+    const [videoLesson] = newVideoLessons.splice(videoLessonIndex, 1);
+    newVideoLessons.splice(videoLessonIndex - 1, 0, videoLesson);
+    setVideoLessons(newVideoLessons);
+  }
+
+  function moveVideoLessonDown(id: string) {
+    const videoLessonIndex = videoLessons.findIndex(
+      (video) => video._id === id
+    );
+    if (videoLessonIndex >= videoLessons.length - 1) return;
+    const newVideoLessons = [...videoLessons];
+    const [videoLesson] = newVideoLessons.splice(videoLessonIndex, 1);
+    newVideoLessons.splice(videoLessonIndex + 1, 0, videoLesson);
+    setVideoLessons(newVideoLessons);
   }
 
   function toggleCoaches(coachId: string) {
@@ -188,7 +175,6 @@ export default function EditClassForm({
     !Boolean(title.trim()) ||
     !Boolean(description.trim()) ||
     !Boolean(skillLevels.length) ||
-    !Boolean(courseType?.trim()) ||
     !Boolean(price.trim());
   const videoFieldVacant = !Boolean(
     videoLessons.length &&
@@ -237,7 +223,7 @@ export default function EditClassForm({
       price,
     };
 
-    const { newGroupClass, error } = await createClass(classData);
+    const { newGroupClass, error } = await updateClass(classData);
     console.log({ newGroupClass, error });
     if (error === null) {
       router.push("/dashboard/group-classes/courses");
@@ -249,7 +235,7 @@ export default function EditClassForm({
   return (
     <div className="max-w-3xl w-[90%] mx-auto py-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Create Class</h1>
+        <h1 className="text-2xl font-bold">Edit Class</h1>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
@@ -281,7 +267,6 @@ export default function EditClassForm({
             onChange={handleUploadThumbnail}
             type="file"
             accept="image/*"
-            required
             className="text-sm"
           />
         </div>
@@ -373,25 +358,6 @@ export default function EditClassForm({
               Advanced
             </Label>
           </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label>Course Type</Label>
-          <RadioGroup
-            name="courseType"
-            value={courseType}
-            onValueChange={(value: "live" | "video") => setCourseType(value)}
-            className="flex space-x-4 mt-2"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="live" id="live-course" />
-              <Label htmlFor="live-course">Live Class</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="video" id="video-course" />
-              <Label htmlFor="video-course">Video Course</Label>
-            </div>
-          </RadioGroup>
         </div>
 
         {courseType === "live" && (
@@ -562,27 +528,37 @@ export default function EditClassForm({
           <div className="flex flex-col gap-2">
             <h3 className="font-medium">Video Lessons</h3>
             {videoLessons.map((videoLesson) => (
-              <div key={videoLesson._id} className="flex gap-2 items-center">
-                <button
-                  type="button"
-                  className="p-1.5 cursor-grab active:cursor-grabbing"
+              <div
+                key={videoLesson._id}
+                className="flex gap-2 sm:items-center flex-col sm:flex-row"
+              >
+                <Label
+                  htmlFor={`video-upload-${videoLesson._id}`}
+                  className="aspect-video relative flex-center cursor-pointer border w-full sm:w-40 rounded-sm overflow-hidden bg-zinc-50 hover:bg-zinc-100 duration-200"
                 >
-                  <GripVertical className="w-4 h-4" />
-                </button>
-                <div className="aspect-video w-40 overflow-hidden bg-zinc-100">
-                  {videoLesson.url && (
-                    <video
-                      src={videoLesson.url}
-                      onLoadedMetadata={(e) =>
-                        handleLoadedMetadata(e, videoLesson._id)
-                      }
-                    />
+                  {videoLesson.url ? (
+                    <>
+                      <video
+                        src={videoLesson.url}
+                        onLoadedMetadata={(e) =>
+                          handleLoadedMetadata(e, videoLesson._id)
+                        }
+                      />
+                      <span className="text-white bg-black/50 text-xs p-1 px-2 rounded-sm absolute bottom-1 right-1">
+                        Change video
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-accent-gray-300 text-xs">
+                      Select a video
+                    </span>
                   )}
-                </div>
+                </Label>
                 <div className="flex-1 flex flex-col gap-2">
                   <Input
                     type="text"
                     placeholder="Video title"
+                    required
                     value={videoLesson.title}
                     onChange={(e) =>
                       handleUpdateVideoLessonTitle(
@@ -597,23 +573,43 @@ export default function EditClassForm({
                     onChange={(e) => handleUploadVideo(e, videoLesson._id)}
                     type="file"
                     accept="video/*"
-                    required
-                    className="text-sm"
+                    className="text-sm hidden"
                   />
+                  <div className="flex gap-4">
+                    <div className="flex-1 gap-4 flex">
+                      <Button
+                        type="button"
+                        variant={"outline"}
+                        className="p-1.5 flex-1 sm:flex-0"
+                        onClick={() => moveVideoLessonUp(videoLesson._id)}
+                      >
+                        <ArrowBigUp className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={"outline"}
+                        className="p-1.5 flex-1 sm:flex-0"
+                        onClick={() => moveVideoLessonDown(videoLesson._id)}
+                      >
+                        <ArrowBigDown className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <Button
+                      type="button"
+                      variant={"outline"}
+                      className="p-1.5 flex-1 sm:flex-0"
+                      onClick={() => deleteVideoLesson(videoLesson._id)}
+                    >
+                      <Trash2Icon className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-                <Button
-                  type="button"
-                  variant={"outline"}
-                  className="p-1.5"
-                  onClick={() => deleteVideoLesson(videoLesson._id)}
-                >
-                  <Trash2Icon className="w-4 h-4" />
-                </Button>
               </div>
             ))}
             <Button
               type="button"
               variant={"outline"}
+              className="mt-4"
               onClick={() =>
                 setVideoLessons((prev) => [
                   ...prev,
@@ -647,10 +643,10 @@ export default function EditClassForm({
         >
           {loading ? (
             <>
-              <LoadingIndicator /> Creating...
+              <LoadingIndicator /> Saving...
             </>
           ) : (
-            "Create Class"
+            "Save Changes"
           )}
         </Button>
       </form>
