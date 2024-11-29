@@ -98,7 +98,7 @@ export default function LiveClassCard({
   }
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row border rounded-lg p-4">
+    <div className="flex flex-col gap-4 md:flex-row border rounded-lg p-3 sm:p-4">
       <Image
         src={liveClass.thumbnail}
         alt="Course Image"

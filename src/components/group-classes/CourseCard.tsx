@@ -15,7 +15,7 @@ export default function CourseCard({
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 border rounded-lg p-4">
+    <div className="flex flex-col md:flex-row gap-4 border rounded-lg p-3 sm:p-4">
       <div
         className={`relative overflow-hidden rounded-md md:w-[30%] aspect-video md:aspect-[1.5] bg-zinc-300 ${
           imageLoaded ? "" : "animate-pulse"
