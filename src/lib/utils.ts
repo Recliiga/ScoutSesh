@@ -1,4 +1,3 @@
-// import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
 import { StatusType } from "@/components/goal-setting/GoalSettingNotificationSign";
 import { GoalDataSchemaType } from "@/db/models/Goal";
 import { UserType } from "@/db/models/User";
@@ -7,6 +6,7 @@ import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adap
 import { twMerge } from "tailwind-merge";
 import jwt from "jsonwebtoken";
 import { DailyJournalType } from "@/db/models/DailyJournal";
+import { RepeatFrequencyType } from "@/db/models/GroupClass";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -190,6 +190,8 @@ export async function uploadImageClient(
   image: string
 ): Promise<{ url: string; error: null } | { url: null; error: string }> {
   try {
+    if (image.startsWith("http")) return { url: image, error: null };
+
     const formData = new FormData();
     formData.set("image", image);
     const res = await fetch(`/api/upload-image`, {
@@ -217,12 +219,12 @@ export async function uploadVideosClient(
   try {
     const uploadedVideos = await Promise.all(
       videos.map(async (video) => {
+        if (video.url.startsWith("http")) return video;
         const formData = new FormData();
         formData.set("video", video.url);
         const res = await fetch(`/api/upload-video`, {
           method: "POST",
-          body: JSON.stringify({ video }),
-          headers: { "Content-Type": "application/json" },
+          body: formData,
         });
         const { url, error } = await res.json();
         if (error) throw new Error(error);
@@ -277,4 +279,39 @@ export function calculateStreak(journalEntries: DailyJournalType[]) {
   }
 
   return streak;
+}
+
+export function getDatesBetween(
+  startDate: Date,
+  endDate: Date,
+  frequency: RepeatFrequencyType
+) {
+  const dates = [];
+  const currentDate = new Date(startDate);
+
+  const intervalDays: Record<RepeatFrequencyType, number> = {
+    daily: 1,
+    weekly: 7,
+    "bi-weekly": 14,
+    monthly: 1,
+    yearly: 1,
+  };
+
+  while (currentDate <= endDate) {
+    dates.push(new Date(currentDate));
+    if (
+      frequency === "daily" ||
+      frequency === "weekly" ||
+      frequency === "bi-weekly"
+    )
+      currentDate.setDate(currentDate.getDate() + intervalDays[frequency]);
+    if (frequency === "monthly")
+      currentDate.setMonth(currentDate.getMonth() + intervalDays[frequency]);
+    if (frequency === "yearly")
+      currentDate.setFullYear(
+        currentDate.getFullYear() + intervalDays[frequency]
+      );
+  }
+
+  return dates;
 }

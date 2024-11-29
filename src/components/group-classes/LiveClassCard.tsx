@@ -5,6 +5,7 @@ import { CalendarIcon, PersonIcon, TicketIcon } from "./CardIcons";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { GroupClassType } from "@/db/models/GroupClass";
+import Link from "next/link";
 
 const daysOfTheWeek = [
   "Sunday",
@@ -46,9 +47,15 @@ export default function LiveClassCard({
   const remainingSpots = liveClass.totalSpots - liveClass.students.length;
 
   const startTime = new Date();
-  startTime.setHours(liveClass.startTime.hours, liveClass.startTime.mins);
+  startTime.setHours(
+    Number(liveClass.startTime.hours),
+    Number(liveClass.startTime.mins)
+  );
   const endTime = new Date();
-  endTime.setHours(liveClass.startTime.hours, liveClass.startTime.mins);
+  endTime.setHours(
+    Number(liveClass.startTime.hours),
+    Number(liveClass.startTime.mins)
+  );
   endTime.setMinutes(
     startTime.getMinutes() + (liveClass.duration || liveClass.customDuration)
   );
@@ -180,9 +187,12 @@ export default function LiveClassCard({
               Join Now
             </Button>
           ) : (
-            <Button className="bg-green-500 hover:bg-green-600 text-white">
+            <Link
+              href={`/dashboard/group-classes/courses/${liveClass._id}/edit`}
+              className="bg-green-500 hover:bg-green-600 duration-200 text-white px-4 py-2 rounded-md text-sm font-medium"
+            >
               Edit Course
-            </Button>
+            </Link>
           )}
         </div>
       </div>

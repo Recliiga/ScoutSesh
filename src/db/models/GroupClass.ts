@@ -37,7 +37,7 @@ export interface GroupClassType extends mongoose.Document {
   repeatFrequency: RepeatFrequencyType;
   startDate: Date;
   endDate: Date;
-  startTime: { hours: number; mins: number };
+  startTime: { hours: string; mins: string };
   duration: number;
   customDuration: number;
   videos: VideoType[];
