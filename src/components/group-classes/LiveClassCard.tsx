@@ -78,7 +78,8 @@ export default function LiveClassCard({
   function formatDate(date: Date) {
     let suffix = "st";
     const monthDate = date.getDate();
-    switch (monthDate) {
+    const lastDigit = monthDate % 10;
+    switch (lastDigit) {
       case 1:
         suffix = "st";
         break;
@@ -140,7 +141,9 @@ export default function LiveClassCard({
               mins / Lesson •{" "} */}
               {liveClass.skillLevels.length === 3
                 ? "All Levels"
-                : liveClass.skillLevels.join(" and ")}
+                : liveClass.skillLevels
+                    .map((level) => level[0].toUpperCase() + level.slice(1))
+                    .join(" and ")}
             </span>
           </div>
           {liveClass.isRecurring && (
