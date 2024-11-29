@@ -31,7 +31,11 @@ import { createClass } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
 import Image from "next/image";
 import placeholderThumbnail from "@/assets/placeholder-thumbnail.png";
-import { resizeImage } from "@/lib/utils";
+import {
+  resizeImage,
+  uploadImageClient,
+  uploadVideosClient,
+} from "@/lib/utils";
 import LoadingIndicator from "../LoadingIndicator";
 import { nanoid } from "nanoid";
 import { RepeatFrequencyType } from "@/db/models/GroupClass";
@@ -90,7 +94,7 @@ export default function CreateClassForm({
   const [customDuration, setCustomDuration] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
   const [repeatFrequency, setRepeatFrequency] = useState<RepeatFrequencyType>();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState({ status: false, message: "" });
   const [error, setError] = useState("");
   const [coaches, setCoaches] = useState<string[]>(
     assistantCoaches
@@ -105,7 +109,7 @@ export default function CreateClassForm({
   const [totalSpots, setTotalSpots] = useState("");
   const [price, setPrice] = useState("");
 
-  async function handleUploadThumbnail(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleChangeThumbnail(e: React.ChangeEvent<HTMLInputElement>) {
     if (!(e.target.files && e.target.files.length)) {
       return;
     }
@@ -115,7 +119,7 @@ export default function CreateClassForm({
     setThumbnail(resizedImage);
   }
 
-  async function handleUploadVideo(
+  async function handleChangeVideo(
     e: React.ChangeEvent<HTMLInputElement>,
     id: string
   ) {
@@ -196,6 +200,17 @@ export default function CreateClassForm({
     }
   }
 
+  function clearLiveClassFields() {
+    setStartDate(undefined);
+    setEndDate(undefined);
+    setStartTime({ hours: "10", mins: "00" });
+    setDuration("");
+    setCustomDuration("");
+    setRepeatFrequency(undefined);
+    setTotalSpots("");
+    setIsRecurring(false);
+  }
+
   const formFieldVacant =
     !Boolean(title.trim()) ||
     !Boolean(description.trim()) ||
@@ -216,7 +231,7 @@ export default function CreateClassForm({
     !Boolean(totalSpots.trim());
 
   const cannotSubmit =
-    loading ||
+    loading.status ||
     formFieldVacant ||
     (courseType === "video" && videoFieldVacant) ||
     (courseType === "live" && liveClassFieldVacant);
@@ -225,9 +240,10 @@ export default function CreateClassForm({
     event.preventDefault();
     const isLiveClass = courseType === "live";
     if (isLiveClass && (!startDate || !endDate)) return;
-    setLoading(true);
+    setLoading((prev) => ({ ...prev, status: true }));
     setError("");
     if (cannotSubmit) return;
+
     const classData = {
       title,
       description,
@@ -251,21 +267,39 @@ export default function CreateClassForm({
       price: Number(price),
     };
 
+    setLoading({ message: "Uploading Thumbnail", status: true });
+    // Upload thumbnail
+    if (!classData.thumbnail)
+      setError("Please select an image for the thumbnail");
+
+    const { url, error: uploadThumbnailError } = await uploadImageClient(
+      classData.thumbnail
+    );
+    if (uploadThumbnailError !== null) {
+      setError(uploadThumbnailError);
+      return;
+    }
+    classData.thumbnail = url;
+
+    setLoading({ message: "Uploading Videos", status: true });
+    // Upload videos
+    if (!classData.thumbnail)
+      setError("Please select an image for the thumbnail");
+
+    const { uploadedVideos, error: uploadVideoError } =
+      await uploadVideosClient(classData.videos);
+
+    if (uploadVideoError !== null) {
+      setError(uploadVideoError);
+      return;
+    }
+    classData.videos = uploadedVideos;
+
+    setLoading({ message: "", status: true });
     const data = await createClass(classData);
     if (data?.error) setError(data.error);
 
-    setLoading(false);
-  }
-
-  function clearLiveClassFields() {
-    setStartDate(undefined);
-    setEndDate(undefined);
-    setStartTime({ hours: "10", mins: "00" });
-    setDuration("");
-    setCustomDuration("");
-    setRepeatFrequency(undefined);
-    setTotalSpots("");
-    setIsRecurring(false);
+    setLoading({ message: "", status: false });
   }
 
   return (
@@ -300,7 +334,7 @@ export default function CreateClassForm({
           <Input
             id="thumbnail"
             name="thumbnail"
-            onChange={handleUploadThumbnail}
+            onChange={handleChangeThumbnail}
             type="file"
             accept="image/*"
             required
@@ -657,7 +691,7 @@ export default function CreateClassForm({
                   <Input
                     id={`video-upload-${videoLesson._id}`}
                     name={`videoUpload-${videoLesson._id}`}
-                    onChange={(e) => handleUploadVideo(e, videoLesson._id)}
+                    onChange={(e) => handleChangeVideo(e, videoLesson._id)}
                     type="file"
                     accept="video/*"
                     required
@@ -730,9 +764,9 @@ export default function CreateClassForm({
           type="submit"
           className="bg-green-500 flex-center hover:bg-green-600 text-white"
         >
-          {loading ? (
+          {loading.status ? (
             <>
-              <LoadingIndicator /> Creating...
+              <LoadingIndicator /> {loading.status || "Creating"}...
             </>
           ) : (
             "Create Class"

@@ -72,7 +72,8 @@ export default function CourseCard({
             </Link>
           ) : (
             <Link
-              href={`/dashboard/group-classes/courses/${course._id}/edit`}
+              // href={`/dashboard/group-classes/courses/${course._id}/edit`}
+              href={`#`}
               className="bg-green-500 hover:bg-green-600 duration-200 text-white px-4 py-2 rounded-md text-sm font-medium"
             >
               Edit Course

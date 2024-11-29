@@ -205,23 +205,34 @@ export async function uploadImageClient(
   }
 }
 
-export async function uploadVideo(
-  video: string
-): Promise<{ url: string; error: null } | { url: null; error: string }> {
+export async function uploadVideosClient(
+  videos: { title: string; duration: number; url: string }[]
+): Promise<
+  | {
+      uploadedVideos: { title: string; duration: number; url: string }[];
+      error: null;
+    }
+  | { uploadedVideos: null; error: string }
+> {
   try {
-    const formData = new FormData();
-    formData.set("video", video);
-    const BASE_URL = process.env.BASE_URL!;
-    const res = await fetch(`${BASE_URL}/api/upload-video`, {
-      method: "POST",
-      body: JSON.stringify({ video }),
-      headers: { "Content-Type": "application/json" },
-    });
-    const { url, error } = await res.json();
+    const uploadedVideos = await Promise.all(
+      videos.map(async (video) => {
+        const formData = new FormData();
+        formData.set("video", video.url);
+        const res = await fetch(`/api/upload-video`, {
+          method: "POST",
+          body: JSON.stringify({ video }),
+          headers: { "Content-Type": "application/json" },
+        });
+        const { url, error } = await res.json();
+        if (error) throw new Error(error);
 
-    return { url, error };
+        return { ...video, url };
+      })
+    );
+    return { uploadedVideos, error: null };
   } catch (error) {
-    return { url: null, error: (error as Error).message };
+    return { uploadedVideos: null, error: (error as Error).message };
   }
 }
 
