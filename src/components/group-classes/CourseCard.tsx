@@ -45,7 +45,7 @@ export default function CourseCard({
         <Image
           src={course.thumbnail}
           alt={course.title + " thumbnail"}
-          className={`w-full h-full object-contain duration-200 ${
+          className={`w-full h-full object-cover duration-200 ${
             imageLoaded ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setImageLoaded(true)}
