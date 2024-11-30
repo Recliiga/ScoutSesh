@@ -1,5 +1,6 @@
+"use client";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { Badge } from "../ui/badge";
 import { CalendarIcon, PersonIcon, TicketIcon } from "./CardIcons";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -44,6 +45,8 @@ export default function LiveClassCard({
   liveClass: GroupClassType;
   forAthlete?: boolean;
 }) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   const remainingSpots = liveClass.totalSpots - liveClass.students.length;
 
   const startTime = new Date();
@@ -100,13 +103,22 @@ export default function LiveClassCard({
 
   return (
     <div className="flex flex-col gap-4 md:flex-row border rounded-lg p-3 sm:p-4">
-      <Image
-        src={liveClass.thumbnail}
-        alt="Course Image"
-        className="w-full md:w-48 aspect-video md:aspect-[1.5] object-cover rounded"
-        width="200"
-        height="150"
-      />
+      <div
+        className={`relative overflow-hidden rounded-md md:w-[30%] aspect-video md:aspect-[1.5] bg-zinc-300 ${
+          imageLoaded ? "" : "animate-pulse"
+        }`}
+      >
+        <Image
+          src={liveClass.thumbnail}
+          alt={liveClass.title + " thumbnail"}
+          className={`w-full h-full object-cover duration-200 ${
+            imageLoaded ? "opacity-100" : "opacity-0"
+          }`}
+          onLoad={() => setImageLoaded(true)}
+          fill
+          sizes="(max-width: 768px) 720px, 240px"
+        />
+      </div>
       <div className=" flex flex-col justify-between flex-grow">
         <div className="space-y-2">
           <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-2">

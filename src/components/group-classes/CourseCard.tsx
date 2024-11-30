@@ -1,9 +1,28 @@
 "use client";
-import { GroupClassType } from "@/db/models/GroupClass";
+import { GroupClassType, VideoType } from "@/db/models/GroupClass";
 import Image from "next/image";
 import React, { useState } from "react";
 import { PersonIcon, TicketIcon } from "./CardIcons";
 import Link from "next/link";
+
+function getAverageVideoLength(videos: VideoType[]) {
+  let suffix = "secs";
+  const totalVideoLength = videos.reduce(
+    (prev, curr) => prev + curr.duration,
+    0
+  );
+  let averageVideoLength = totalVideoLength / videos.length;
+  if (averageVideoLength / 60 > 1) {
+    suffix = "mins";
+    averageVideoLength /= 60;
+  }
+  if (averageVideoLength / 60 > 1) {
+    suffix = "hours";
+    averageVideoLength /= 60;
+  }
+
+  return Math.round(averageVideoLength) + " " + suffix;
+}
 
 export default function CourseCard({
   course,
@@ -14,6 +33,8 @@ export default function CourseCard({
 }) {
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  const averageVideoLength = getAverageVideoLength(course.videos);
+
   return (
     <div className="flex flex-col md:flex-row gap-4 border rounded-lg p-3 sm:p-4">
       <div
@@ -23,8 +44,8 @@ export default function CourseCard({
       >
         <Image
           src={course.thumbnail}
-          alt="Course Image"
-          className={`w-full h-full object-cover duration-200 ${
+          alt={course.title + " thumbnail"}
+          className={`w-full h-full object-contain duration-200 ${
             imageLoaded ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setImageLoaded(true)}
@@ -51,7 +72,7 @@ export default function CourseCard({
             <TicketIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
             <span>
               {course.videos.length} Lesson{course.videos.length > 1 && "s"} •{" "}
-              {45} mins / Lesson •{" "}
+              {averageVideoLength} / Lesson •{" "}
               {course.skillLevels.length === 3
                 ? "All Levels"
                 : course.skillLevels

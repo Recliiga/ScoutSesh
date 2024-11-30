@@ -41,6 +41,7 @@ import LoadingIndicator from "../LoadingIndicator";
 import { nanoid } from "nanoid";
 import { GroupClassType, RepeatFrequencyType } from "@/db/models/GroupClass";
 import Error from "../AuthError";
+import BackButton from "../dashboard/BackButton";
 
 export default function EditClassForm({
   course,
@@ -297,7 +298,8 @@ export default function EditClassForm({
 
   return (
     <div className="max-w-3xl w-[90%] mx-auto py-4">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex gap-4 items-center mb-4">
+        <BackButton />
         <h1 className="text-2xl font-bold">Edit Class</h1>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
