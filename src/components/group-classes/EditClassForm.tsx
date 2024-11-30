@@ -296,8 +296,6 @@ export default function EditClassForm({
     setLoading({ message: "", status: false });
   }
 
-  console.log(course.startTime);
-
   return (
     <div className="max-w-3xl w-[90%] mx-auto py-4">
       <div className="flex gap-4 items-center mb-4">
