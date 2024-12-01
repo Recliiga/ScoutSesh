@@ -7,6 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { GroupClassType } from "@/db/models/GroupClass";
 import Link from "next/link";
+import ModalContainer from "../ModalContainer";
+import DeleteGroupClassModal from "../DeleteGroupClassModal";
 
 const daysOfTheWeek = [
   "Sunday",
@@ -46,6 +48,7 @@ export default function LiveClassCard({
   forAthlete?: boolean;
 }) {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
   const remainingSpots = liveClass.totalSpots - liveClass.students.length;
 
@@ -102,115 +105,141 @@ export default function LiveClassCard({
   }
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row border rounded-lg p-3 sm:p-4">
-      <div
-        className={`relative overflow-hidden rounded-md md:w-[30%] aspect-video md:aspect-[1.5] bg-zinc-300 ${
-          imageLoaded ? "" : "animate-pulse"
-        }`}
-      >
-        <Image
-          src={liveClass.thumbnail}
-          alt={liveClass.title + " thumbnail"}
-          className={`w-full h-full object-cover duration-200 ${
-            imageLoaded ? "opacity-100" : "opacity-0"
+    <>
+      <div className="flex flex-col gap-4 md:flex-row border rounded-lg p-3 sm:p-4">
+        <div
+          className={`relative overflow-hidden rounded-md md:w-[33%] aspect-video md:aspect-[1.5] bg-zinc-300 ${
+            imageLoaded ? "" : "animate-pulse"
           }`}
-          onLoad={() => setImageLoaded(true)}
-          fill
-          sizes="(max-width: 768px) 720px, 240px"
-        />
-      </div>
-      <div className=" flex flex-col justify-between flex-grow">
-        <div className="space-y-2">
-          <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-2">
-            <h2 className="text-xl font-bold">{liveClass.title}</h2>
-            <Badge
-              variant="secondary"
-              className="bg-red-500 text-white hover:bg-red-500 px-2 "
-            >
-              Live Class
-            </Badge>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {liveClass.description}
-          </p>
-          {liveClass.students.length > 0 && (
-            <div className="flex items-start text-sm text-muted-foreground">
-              <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
-              <span className="line-clamp-1">
-                {liveClass.students
-                  .slice(0, 3)
-                  .map((student) => student.firstName + " " + student.lastName)
-                  .join(", ")}
-              </span>
+        >
+          <Image
+            src={liveClass.thumbnail}
+            alt={liveClass.title + " thumbnail"}
+            className={`w-full h-full object-cover duration-200 ${
+              imageLoaded ? "opacity-100" : "opacity-0"
+            }`}
+            onLoad={() => setImageLoaded(true)}
+            fill
+            sizes="(max-width: 768px) 720px, 240px"
+          />
+        </div>
+        <div className=" flex flex-col justify-between flex-grow">
+          <div className="space-y-2">
+            <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-2">
+              <h2 className="text-xl font-bold">{liveClass.title}</h2>
+              <Badge
+                variant="secondary"
+                className="bg-red-500 text-white hover:bg-red-500 px-2 "
+              >
+                Live Class
+              </Badge>
             </div>
-          )}
-          <div className="flex items-start text-sm text-muted-foreground">
-            <TicketIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
-            <span>
-              {/* {liveClass.numberOfLessons} Lessons • {liveClass.averageDuration}{" "}
-              mins / Lesson •{" "} */}
-              {liveClass.skillLevels.length === 3
-                ? "All Levels"
-                : liveClass.skillLevels
-                    .map((level) => level[0].toUpperCase() + level.slice(1))
-                    .join(" and ")}
-            </span>
-          </div>
-          {liveClass.isRecurring && (
+            <p className="text-sm text-muted-foreground">
+              {liveClass.description}
+            </p>
+            {liveClass.students.length > 0 && (
+              <div className="flex items-start text-sm text-muted-foreground">
+                <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+                <span className="line-clamp-1">
+                  {liveClass.students
+                    .slice(0, 3)
+                    .map(
+                      (student) => student.firstName + " " + student.lastName
+                    )
+                    .join(", ")}
+                </span>
+              </div>
+            )}
             <div className="flex items-start text-sm text-muted-foreground">
-              <CalendarIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+              <TicketIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
               <span>
-                Every {getDay(liveClass.createdAt)} at {formatTime(startTime)}-
-                {formatTime(endTime)} from {formatDate(startDate)} to{" "}
-                {formatDate(endDate)}
+                {/* {liveClass.numberOfLessons} Lessons • {liveClass.averageDuration}{" "}
+              mins / Lesson •{" "} */}
+                {liveClass.skillLevels.length === 3
+                  ? "All Levels"
+                  : liveClass.skillLevels
+                      .map((level) => level[0].toUpperCase() + level.slice(1))
+                      .join(" and ")}
               </span>
             </div>
-          )}
-          <div>
-            <div
-              className={`text-sm ${
-                remainingSpots > 5 ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {remainingSpots} Spots Remaining
-            </div>
-            <div className="flex items-center space-x-2 mt-1">
-              <span className="text-sm text-muted-foreground">
-                {liveClass.students.length} enrolled
-              </span>
-              <div className="flex -space-x-2">
-                {liveClass.students.map((student) => (
-                  <Avatar
-                    key={student._id}
-                    className="w-6 h-6 border-2 border-white rounded-full"
-                  >
-                    <AvatarImage
-                      src="/placeholder-profile-picture.png"
-                      alt="Participant 1"
-                    />
-                    <AvatarFallback>P1</AvatarFallback>
-                  </Avatar>
-                ))}
+            {liveClass.isRecurring && (
+              <div className="flex items-start text-sm text-muted-foreground">
+                <CalendarIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+                <span>
+                  Every {getDay(liveClass.createdAt)} at {formatTime(startTime)}
+                  -{formatTime(endTime)} from {formatDate(startDate)} to{" "}
+                  {formatDate(endDate)}
+                </span>
+              </div>
+            )}
+            <div>
+              <div
+                className={`text-sm ${
+                  remainingSpots > 5 ? "text-green-500" : "text-red-500"
+                }`}
+              >
+                {remainingSpots} Spots Remaining
+              </div>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="text-sm text-muted-foreground">
+                  {liveClass.students.length} enrolled
+                </span>
+                <div className="flex -space-x-2">
+                  {liveClass.students.map((student) => (
+                    <Avatar
+                      key={student._id}
+                      className="w-6 h-6 border-2 border-white rounded-full"
+                    >
+                      <AvatarImage
+                        src="/placeholder-profile-picture.png"
+                        alt="Participant 1"
+                      />
+                      <AvatarFallback>P1</AvatarFallback>
+                    </Avatar>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex items-center justify-between mt-4">
-          <span className="text-xl font-bold">$99.99</span>
-          {forAthlete ? (
-            <Button className="bg-green-500 hover:bg-green-600 text-white">
-              Join Now
-            </Button>
-          ) : (
-            <Link
-              href={`/dashboard/group-classes/courses/${liveClass._id}/edit`}
-              className="bg-green-500 hover:bg-green-600 duration-200 text-white px-4 py-2 rounded-md text-sm font-medium"
-            >
-              Edit Course
-            </Link>
-          )}
+          <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center justify-between mt-4 gap-2">
+            <span className="text-xl font-bold">${liveClass.price}</span>
+            {forAthlete ? (
+              <Link
+                href={`#`}
+                className="bg-green-500 hover:bg-green-600 duration-200 text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                Join Now
+              </Link>
+            ) : (
+              <div className="flex items-center gap-4 max-[360px]:w-full">
+                <Link
+                  href={`/dashboard/group-classes/courses/${liveClass._id}/edit`}
+                  className="bg-green-500 hover:bg-green-600 duration-200 flex-1 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
+                >
+                  Edit Course
+                </Link>
+                <Button
+                  variant={"outline"}
+                  className="flex-1"
+                  onClick={() => setDeleteModal(true)}
+                >
+                  Delete
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+      <ModalContainer
+        open={deleteModal}
+        closeModal={() => setDeleteModal(false)}
+      >
+        <DeleteGroupClassModal
+          open={deleteModal}
+          closeModal={() => setDeleteModal(false)}
+          course={liveClass}
+        />
+      </ModalContainer>
+    </>
   );
 }

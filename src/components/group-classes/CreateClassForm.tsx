@@ -286,9 +286,9 @@ export default function CreateClassForm({
 
   return (
     <div className="max-w-3xl w-[90%] mx-auto py-4">
-      <div className="flex gap-4 items-center mb-4">
-        <BackButton />
+      <div className="flex gap-4 items-center mb-4 justify-between">
         <h1 className="text-2xl font-bold">Create Class</h1>
+        <BackButton />
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
