@@ -2,6 +2,7 @@ import { useState } from "react";
 import { LogOutIcon, XIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { GroupClassType } from "@/db/models/GroupClass";
+import { deleteClass } from "@/actions/groupClassActions";
 
 export default function DeleteGroupClassModal({
   open,
@@ -15,7 +16,12 @@ export default function DeleteGroupClassModal({
   const [loading, setLoading] = useState(false);
   async function handleDeleteCourse() {
     setLoading(true);
-    setLoading(false);
+    const { error } = await deleteClass(course);
+    if (error) {
+      setLoading(false);
+    } else {
+      closeModal();
+    }
   }
   return (
     <div

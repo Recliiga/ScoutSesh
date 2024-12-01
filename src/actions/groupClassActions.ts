@@ -1,8 +1,12 @@
 "use server";
 
 import connectDB from "@/db/connectDB";
-import GroupClass, { RepeatFrequencyType } from "@/db/models/GroupClass";
+import GroupClass, {
+  GroupClassType,
+  RepeatFrequencyType,
+} from "@/db/models/GroupClass";
 import { getUserIdFromCookies } from "@/lib/utils";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -71,5 +75,26 @@ export async function updateClass(
     return { error: (error as Error).message };
   } finally {
     if (redirectUrl) redirect(redirectUrl);
+  }
+}
+
+export async function deleteClass(groupClass: GroupClassType) {
+  try {
+    const cookieStore = await cookies();
+    const { userId, error } = getUserIdFromCookies(cookieStore);
+    if (error !== null) throw new Error(error);
+
+    if (groupClass.user._id !== userId) throw new Error("Unauthorized!");
+
+    await connectDB();
+    const deletedGroupClass = await GroupClass.findByIdAndDelete(
+      groupClass._id
+    );
+    if (!deletedGroupClass) throw new Error("An error occured deleting course");
+    revalidatePath("/dashboard/group-classes/courses");
+    return { error:null};
+  } catch (error) {
+    return { error: (error as Error).message };
+  } finally {
   }
 }
