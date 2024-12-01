@@ -120,7 +120,7 @@ export default function LiveClassCard({
             }`}
             onLoad={() => setImageLoaded(true)}
             fill
-            sizes="(max-width: 768px) 720px, 240px"
+            sizes="(max-width: 768px) 720px, 320px"
           />
         </div>
         <div className=" flex flex-col justify-between flex-grow">
