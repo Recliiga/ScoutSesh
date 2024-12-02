@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-import { GroupClassType } from "./GroupClass";
+import { GroupClassType, VideoType } from "./GroupClass";
 import { UserType } from "./User";
 
 export interface OrderType extends mongoose.Document {
   _id: string;
   course: GroupClassType;
   user: UserType;
-  completedLessons: number;
+  completedLessons: VideoType[];
 }
 
 const OrderSchema = new mongoose.Schema<OrderType>({
@@ -21,8 +21,8 @@ const OrderSchema = new mongoose.Schema<OrderType>({
     ref: "User",
   },
   completedLessons: {
-    type: Number,
-    default: 0,
+    type: [mongoose.SchemaTypes.ObjectId],
+    default: [],
   },
 });
 

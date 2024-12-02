@@ -31,7 +31,8 @@ export default async function MyClassesPage() {
                   {userOrders
                     .filter(
                       (order) =>
-                        order.completedLessons < order.course.videos.length
+                        order.completedLessons.length <
+                        order.course.videos.length
                     )
                     .map((order) => (
                       <VideoLibraryCourseCard key={order._id} order={order} />
@@ -43,7 +44,8 @@ export default async function MyClassesPage() {
                   {userOrders
                     .filter(
                       (order) =>
-                        order.completedLessons >= order.course.videos.length
+                        order.completedLessons.length >=
+                        order.course.videos.length
                     )
                     .map((order) => (
                       <VideoLibraryCourseCard key={order._id} order={order} />

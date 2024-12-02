@@ -13,7 +13,7 @@ export default function VideoLibraryCourseCard({
   const totalLessons = course.videos.length;
   const completedLessons = order.completedLessons;
   const progress = Math.floor(
-    (order.completedLessons / course.videos.length) * 100
+    (order.completedLessons.length / course.videos.length) * 100
   );
 
   const coaches = course.coaches.map(
@@ -40,7 +40,7 @@ export default function VideoLibraryCourseCard({
         <div className="flex justify-between items-center text-sm text-gray-600 mb-4">
           <span>{progress}% complete</span>
           <span>
-            {completedLessons}/{totalLessons} lessons
+            {completedLessons.length}/{totalLessons} lessons
           </span>
         </div>
         <Link
