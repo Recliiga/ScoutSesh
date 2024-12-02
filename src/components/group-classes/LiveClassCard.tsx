@@ -9,6 +9,7 @@ import { GroupClassType } from "@/db/models/GroupClass";
 import Link from "next/link";
 import ModalContainer from "../ModalContainer";
 import DeleteGroupClassModal from "../DeleteGroupClassModal";
+import { purchaseCourse } from "@/actions/OrderActions";
 
 const daysOfTheWeek = [
   "Sunday",
@@ -49,6 +50,7 @@ export default function LiveClassCard({
 }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const remainingSpots = liveClass.totalSpots - liveClass.students.length;
 
@@ -102,6 +104,16 @@ export default function LiveClassCard({
     }
 
     return monthsOfTheYear[date.getMonth()] + " " + monthDate + suffix;
+  }
+
+  async function handlePurchaseCourse(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    const data = await purchaseCourse(liveClass._id);
+    if (data.error) {
+      console.log(data.error);
+    }
+    setLoading(false);
   }
 
   return (
@@ -204,12 +216,15 @@ export default function LiveClassCard({
           <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center justify-between mt-4 gap-2">
             <span className="text-xl font-bold">${liveClass.price}</span>
             {forAthlete ? (
-              <Link
-                href={`#`}
-                className="bg-green-500 hover:bg-green-600 duration-200 text-white px-4 py-2 rounded-md text-sm font-medium"
-              >
-                Join Now
-              </Link>
+              <form onSubmit={handlePurchaseCourse}>
+                <Button
+                disabled={loading}
+                  type="submit"
+                  className="bg-green-500 hover:bg-green-600 duration-200 text-white"
+                >
+                  {loading ? "Processing..." : "Buy Now"}
+                </Button>
+              </form>
             ) : (
               <div className="flex items-center gap-4 max-[360px]:w-full">
                 <Link
