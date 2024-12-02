@@ -31,9 +31,11 @@ function getAverageVideoLength(videos: VideoType[]) {
 export default function CourseCard({
   course,
   forAthlete,
+  isPurchased,
 }: {
   course: GroupClassType;
   forAthlete?: boolean;
+  isPurchased: boolean;
 }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -106,15 +108,24 @@ export default function CourseCard({
           <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center justify-between mt-4 gap-2">
             <span className="text-xl font-bold">${course.price}</span>
             {forAthlete ? (
-              <form onSubmit={handlePurchaseCourse}>
-                <Button
-                  disabled={loading}
-                  type="submit"
-                  className="bg-green-500 hover:bg-green-600 duration-200 text-white"
+              isPurchased ? (
+                <Link
+                  href={`/dashboard/group-classes/my-classes`}
+                  className="bg-green-500 hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
                 >
-                  {loading ? "Processing..." : "Buy Now"}
-                </Button>
-              </form>
+                  Continue Learning
+                </Link>
+              ) : (
+                <form onSubmit={handlePurchaseCourse}>
+                  <Button
+                    disabled={loading}
+                    type="submit"
+                    className="bg-green-500 hover:bg-green-600 duration-200 text-white"
+                  >
+                    {loading ? "Processing..." : "Buy Now"}
+                  </Button>
+                </form>
+              )
             ) : (
               <div className="flex items-center gap-4 max-[360px]:w-full">
                 <Link

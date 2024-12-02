@@ -2,11 +2,16 @@ import LiveClassCard from "@/components/group-classes/LiveClassCard";
 import CourseCard from "@/components/group-classes/CourseCard";
 import BackButton from "@/components/dashboard/BackButton";
 import { GroupClassType } from "@/db/models/GroupClass";
+import { OrderType } from "@/db/models/Order";
 
 export default function AthleteCoursesView({
+  userId,
+  userOrders,
   liveClasses,
   courses,
 }: {
+  userId: string;
+  userOrders: OrderType[];
   liveClasses: GroupClassType[];
   courses: GroupClassType[];
 }) {
@@ -37,7 +42,14 @@ export default function AthleteCoursesView({
         <div className="grid gap-4">
           {courses.length > 0 ? (
             courses.map((course) => (
-              <CourseCard key={course._id} course={course} forAthlete />
+              <CourseCard
+                key={course._id}
+                course={course}
+                forAthlete
+                isPurchased={userOrders.some(
+                  (order) => order.user._id === userId
+                )}
+              />
             ))
           ) : (
             <p className="text-accent-gray-300">
