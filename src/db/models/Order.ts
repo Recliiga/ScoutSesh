@@ -6,6 +6,7 @@ export interface OrderType extends mongoose.Document {
   _id: string;
   course: GroupClassType;
   user: UserType;
+  completedLessons: number;
 }
 
 const OrderSchema = new mongoose.Schema<OrderType>({
@@ -18,6 +19,10 @@ const OrderSchema = new mongoose.Schema<OrderType>({
     type: mongoose.SchemaTypes.ObjectId,
     required: [true, "Please provide the userId"],
     ref: "User",
+  },
+  completedLessons: {
+    type: Number,
+    default: 0,
   },
 });
 

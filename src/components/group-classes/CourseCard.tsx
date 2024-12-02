@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import ModalContainer from "../ModalContainer";
 import DeleteGroupClassModal from "../DeleteGroupClassModal";
 import { purchaseCourse } from "@/actions/OrderActions";
+import { PlayCircle } from "lucide-react";
 
 function getAverageVideoLength(videos: VideoType[]) {
   let suffix = "secs";
@@ -111,8 +112,9 @@ export default function CourseCard({
               isPurchased ? (
                 <Link
                   href={`/dashboard/group-classes/my-classes`}
-                  className="bg-green-500 hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
+                  className="bg-green-500 flex items-center hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
                 >
+                  <PlayCircle className="mr-2 h-4 w-4" />
                   Continue Learning
                 </Link>
               ) : (

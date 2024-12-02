@@ -10,6 +10,7 @@ import Link from "next/link";
 import ModalContainer from "../ModalContainer";
 import DeleteGroupClassModal from "../DeleteGroupClassModal";
 import { purchaseCourse } from "@/actions/OrderActions";
+import { Calendar } from "lucide-react";
 
 const daysOfTheWeek = [
   "Sunday",
@@ -221,8 +222,9 @@ export default function LiveClassCard({
               isPurchased ? (
                 <Link
                   href={`/dashboard/group-classes`}
-                  className="bg-green-500 hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
+                  className="bg-green-500 flex items-center hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
                 >
+                  <Calendar className="mr-2 h-4 w-4" />
                   View Schedule
                 </Link>
               ) : (

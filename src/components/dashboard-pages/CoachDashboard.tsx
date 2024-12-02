@@ -51,7 +51,8 @@ export default async function CoachDashboard({ user }: { user: UserType }) {
             Welcome, {user.firstName}!
           </h1>
           <div className="bg-green-100 px-4 py-2 rounded-full font-semibold text-green-800 text-lg">
-            {teamMembers.length} Team Members 🏅
+            {teamMembers.length} Team Member{teamMembers.length > 1 ? "s" : ""}{" "}
+            🏅
           </div>
         </div>
         <div className="bg-white shadow-lg mb-12 p-4 sm:p-6 rounded-lg">
