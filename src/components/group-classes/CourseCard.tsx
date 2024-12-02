@@ -35,7 +35,7 @@ export default function CourseCard({
 }: {
   course: GroupClassType;
   forAthlete?: boolean;
-  isPurchased: boolean;
+  isPurchased?: boolean;
 }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -47,8 +47,8 @@ export default function CourseCard({
     e.preventDefault();
     setLoading(true);
     const data = await purchaseCourse(course._id);
-    if (data.error) {
-      console.log(data.error);
+    if (data?.error) {
+      console.log(data?.error);
     }
     setLoading(false);
   }

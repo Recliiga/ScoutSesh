@@ -26,6 +26,9 @@ export default function AthleteCoursesView({
                 key={liveClass._id}
                 liveClass={liveClass}
                 forAthlete
+                isPurchased={userOrders.some(
+                  (order) => order.user._id === userId
+                )}
               />
             ))
           ) : (

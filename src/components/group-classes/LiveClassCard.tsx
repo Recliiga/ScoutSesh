@@ -44,9 +44,11 @@ function getDay(date: Date) {
 export default function LiveClassCard({
   liveClass,
   forAthlete,
+  isPurchased,
 }: {
   liveClass: GroupClassType;
   forAthlete?: boolean;
+  isPurchased?: boolean;
 }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -110,8 +112,8 @@ export default function LiveClassCard({
     e.preventDefault();
     setLoading(true);
     const data = await purchaseCourse(liveClass._id);
-    if (data.error) {
-      console.log(data.error);
+    if (data?.error) {
+      console.log(data?.error);
     }
     setLoading(false);
   }
@@ -216,15 +218,24 @@ export default function LiveClassCard({
           <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center justify-between mt-4 gap-2">
             <span className="text-xl font-bold">${liveClass.price}</span>
             {forAthlete ? (
-              <form onSubmit={handlePurchaseCourse}>
-                <Button
-                disabled={loading}
-                  type="submit"
-                  className="bg-green-500 hover:bg-green-600 duration-200 text-white"
+              isPurchased ? (
+                <Link
+                  href={`/dashboard/group-classes`}
+                  className="bg-green-500 hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
                 >
-                  {loading ? "Processing..." : "Buy Now"}
-                </Button>
-              </form>
+                  View Schedule
+                </Link>
+              ) : (
+                <form onSubmit={handlePurchaseCourse}>
+                  <Button
+                    disabled={loading}
+                    type="submit"
+                    className="bg-green-500 hover:bg-green-600 duration-200 text-white"
+                  >
+                    {loading ? "Processing..." : "Buy Now"}
+                  </Button>
+                </form>
+              )
             ) : (
               <div className="flex items-center gap-4 max-[360px]:w-full">
                 <Link
