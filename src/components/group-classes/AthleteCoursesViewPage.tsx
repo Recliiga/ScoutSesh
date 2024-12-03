@@ -9,11 +9,13 @@ export default function AthleteCoursesView({
   userOrders,
   liveClasses,
   courses,
+  groupClassOrders,
 }: {
   userId: string;
   userOrders: OrderType[];
   liveClasses: GroupClassType[];
   courses: GroupClassType[];
+  groupClassOrders: OrderType[];
 }) {
   return (
     <div className="max-w-5xl mx-auto py-4 flex-1 w-[90%]">
@@ -27,8 +29,13 @@ export default function AthleteCoursesView({
                 liveClass={liveClass}
                 forAthlete
                 isPurchased={userOrders.some(
-                  (order) => order.user._id === userId
+                  (order) =>
+                    order.user._id === userId &&
+                    order.course._id === liveClass._id
                 )}
+                students={groupClassOrders
+                  .filter((order) => order.course._id === liveClass._id)
+                  .map((order) => order.user)}
               />
             ))
           ) : (
@@ -50,8 +57,12 @@ export default function AthleteCoursesView({
                 course={course}
                 forAthlete
                 isPurchased={userOrders.some(
-                  (order) => order.user._id === userId
+                  (order) =>
+                    order.user._id === userId && order.course._id === course._id
                 )}
+                students={groupClassOrders
+                  .filter((order) => order.course._id === course._id)
+                  .map((order) => order.user)}
               />
             ))
           ) : (

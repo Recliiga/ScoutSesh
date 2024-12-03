@@ -1,5 +1,6 @@
 import connectDB from "@/db/connectDB";
 import GroupClass, { GroupClassType } from "@/db/models/GroupClass";
+import { fetchUserOrders } from "./orderServices";
 
 export async function fetchGroupClassesByCoach(coachId: string) {
   try {
@@ -18,20 +19,47 @@ export async function fetchGroupClassesByCoach(coachId: string) {
   }
 }
 
-export async function fetchLiveClassesByCoach(coachId: string) {
+export async function fetchCoachLiveClasses(coachId: string) {
   try {
     await connectDB();
-    const groupClasses: GroupClassType[] = JSON.parse(
+    const liveClasses: GroupClassType[] = JSON.parse(
       JSON.stringify(
         await GroupClass.find({ user: coachId, courseType: "live" })
           .populate("coaches user")
           .sort({ createdAt: -1 })
       )
     );
-    return { groupClasses, error: null };
+    return { liveClasses, error: null };
   } catch (err) {
     const error = err as Error;
-    return { groupClasses: null, error: error.message };
+    return { liveClasses: null, error: error.message };
+  }
+}
+
+export async function fetchAthleteLiveClasses(athleteId: string) {
+  try {
+    await connectDB();
+    const { userOrders, error: orderError } = await fetchUserOrders(athleteId);
+    if (orderError !== null) throw new Error(orderError);
+
+    const allLiveClasses: GroupClassType[] = JSON.parse(
+      JSON.stringify(
+        await GroupClass.find({
+          courseType: "live",
+        })
+          .populate("coaches user")
+          .sort({ createdAt: -1 })
+      )
+    );
+
+    const liveClasses = allLiveClasses.filter((liveClass) =>
+      userOrders.some((order) => order.course._id === liveClass._id)
+    );
+
+    return { liveClasses, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { liveClasses: null, error: error.message };
   }
 }
 

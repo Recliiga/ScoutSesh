@@ -23,7 +23,6 @@ export interface GroupClassType extends mongoose.Document {
   thumbnail: string;
   description: string;
   courseType: "live" | "video";
-  students: UserType[];
   numberOfLessons: number;
   skillLevels: SkillLevelType[];
   price: number;
@@ -72,9 +71,6 @@ const GroupClassSchema = new mongoose.Schema<GroupClassType>(
       type: String,
       required: [true, "Please enter the course type"],
     },
-    students: [
-      { type: mongoose.SchemaTypes.ObjectId, ref: "User", default: [] },
-    ],
     coaches: [
       {
         type: mongoose.SchemaTypes.ObjectId,

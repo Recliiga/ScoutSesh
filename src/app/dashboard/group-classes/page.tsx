@@ -2,30 +2,48 @@ import React from "react";
 
 import { getSessionFromHeaders } from "@/services/authServices";
 import CoachGroupClassesPage from "@/components/dashboard-pages/CoachGroupClassesPage";
-import AthleteGroupClassesPage from "@/components/dashboard-pages/AthleteGroupClassesPage";
-import { fetchLiveClassesByCoach } from "@/services/groupClassServices";
+import {
+  fetchAthleteLiveClasses,
+  fetchCoachLiveClasses,
+} from "@/services/groupClassServices";
 import { getDatesBetween } from "@/lib/utils";
+import AthleteGroupClassesPage from "@/components/dashboard-pages/AthleteGroupClassesPage";
 
-export default async function AthleteEvaluationPage() {
+export default async function GroupClassesPage() {
   const user = await getSessionFromHeaders();
 
   if (user.role === "Athlete") {
-    return <AthleteGroupClassesPage />;
+    const { liveClasses, error } = await fetchAthleteLiveClasses(user._id);
+    if (error !== null) throw new Error(error);
+
+    const courses = liveClasses.map((liveClass) => ({
+      _id: liveClass._id,
+      title: liveClass.title,
+      coach: user,
+      sessions: getDatesBetween(
+        liveClass.startDate,
+        liveClass.endDate,
+        liveClass.repeatFrequency
+      ),
+      time: liveClass.startTime,
+    }));
+
+    return <AthleteGroupClassesPage courses={courses} />;
   }
 
-  const { groupClasses, error } = await fetchLiveClassesByCoach(user._id);
+  const { liveClasses, error } = await fetchCoachLiveClasses(user._id);
   if (error !== null) throw new Error(error);
 
-  const courses = groupClasses.map((groupClass) => ({
-    _id: groupClass._id,
-    title: groupClass.title,
+  const courses = liveClasses.map((liveClass) => ({
+    _id: liveClass._id,
+    title: liveClass.title,
     coach: user,
     sessions: getDatesBetween(
-      groupClass.startDate,
-      groupClass.endDate,
-      groupClass.repeatFrequency
+      liveClass.startDate,
+      liveClass.endDate,
+      liveClass.repeatFrequency
     ),
-    time: groupClass.startTime,
+    time: liveClass.startTime,
   }));
 
   return <CoachGroupClassesPage courses={courses} />;

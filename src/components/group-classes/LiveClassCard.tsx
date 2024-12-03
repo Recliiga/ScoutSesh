@@ -10,7 +10,9 @@ import Link from "next/link";
 import ModalContainer from "../ModalContainer";
 import DeleteGroupClassModal from "../DeleteGroupClassModal";
 import { purchaseCourse } from "@/actions/OrderActions";
-import { Calendar } from "lucide-react";
+import { TvMinimalPlay } from "lucide-react";
+import { UserType } from "@/db/models/User";
+import { getFullname } from "@/lib/utils";
 
 const daysOfTheWeek = [
   "Sunday",
@@ -46,16 +48,18 @@ export default function LiveClassCard({
   liveClass,
   forAthlete,
   isPurchased,
+  students,
 }: {
   liveClass: GroupClassType;
   forAthlete?: boolean;
   isPurchased?: boolean;
+  students: UserType[];
 }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const remainingSpots = liveClass.totalSpots - liveClass.students.length;
+  const remainingSpots = liveClass.totalSpots - students.length;
 
   const startTime = new Date();
   startTime.setHours(
@@ -152,15 +156,13 @@ export default function LiveClassCard({
             <p className="text-sm text-muted-foreground line-clamp-2">
               {liveClass.description}
             </p>
-            {liveClass.students.length > 0 && (
+            {!forAthlete && students.length > 0 && (
               <div className="flex items-start text-sm text-muted-foreground">
                 <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
                 <span className="line-clamp-1">
-                  {liveClass.students
+                  {students
                     .slice(0, 3)
-                    .map(
-                      (student) => student.firstName + " " + student.lastName
-                    )
+                    .map((student) => getFullname(student))
                     .join(", ")}
                 </span>
               </div>
@@ -195,38 +197,41 @@ export default function LiveClassCard({
               >
                 {remainingSpots} Spots Remaining
               </div>
-              <div className="flex items-center space-x-2 mt-1">
-                <span className="text-sm text-muted-foreground">
-                  {liveClass.students.length} enrolled
-                </span>
-                <div className="flex -space-x-2">
-                  {liveClass.students.map((student) => (
-                    <Avatar
-                      key={student._id}
-                      className="w-6 h-6 border-2 border-white rounded-full"
-                    >
-                      <AvatarImage
-                        src={student.profilePicture}
-                        alt="Participant 1"
-                      />
-                      <AvatarFallback>P1</AvatarFallback>
-                    </Avatar>
-                  ))}
+              {!forAthlete && (
+                <div className="flex items-center space-x-2 mt-1">
+                  <span className="text-sm text-muted-foreground">
+                    {students.length} enrolled
+                  </span>
+                  <div className="flex -space-x-2">
+                    {students.slice(0, 3).map((student) => (
+                      <Avatar
+                        key={student._id}
+                        className="w-8 h-8 border-2 border-white rounded-full"
+                      >
+                        <AvatarImage
+                          src={student.profilePicture}
+                          alt="Participant 1"
+                          className="object-cover"
+                          sizes="64px"
+                        />
+                        <AvatarFallback>
+                          {student.firstName[0] + student.lastName[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
           <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center justify-between mt-4 gap-2">
             <span className="text-xl font-bold">${liveClass.price}</span>
             {forAthlete ? (
               isPurchased ? (
-                <Link
-                  href={`/dashboard/group-classes`}
-                  className="bg-green-500 flex items-center hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
-                >
-                  <Calendar className="mr-2 h-4 w-4" />
-                  View Schedule
-                </Link>
+                <Button className="bg-green-500 flex items-center gap-0 hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium">
+                  <TvMinimalPlay className="mr-2 h-4 w-4" />
+                  Join Now
+                </Button>
               ) : (
                 <form onSubmit={handlePurchaseCourse}>
                   <Button

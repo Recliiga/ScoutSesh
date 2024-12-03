@@ -3,13 +3,16 @@ import CourseCard from "@/components/group-classes/CourseCard";
 import Link from "next/link";
 import BackButton from "@/components/dashboard/BackButton";
 import { GroupClassType } from "@/db/models/GroupClass";
+import { OrderType } from "@/db/models/Order";
 
 export default function CoachCoursesView({
   liveClasses,
   courses,
+  groupClassOrders,
 }: {
   liveClasses: GroupClassType[];
   courses: GroupClassType[];
+  groupClassOrders: OrderType[];
 }) {
   return (
     <div className="max-w-5xl mx-auto py-4 flex-1 w-[90%]">
@@ -18,7 +21,13 @@ export default function CoachCoursesView({
         <div className="grid gap-4">
           {liveClasses.length > 0 ? (
             liveClasses.map((liveClass) => (
-              <LiveClassCard key={liveClass._id} liveClass={liveClass} />
+              <LiveClassCard
+                key={liveClass._id}
+                liveClass={liveClass}
+                students={groupClassOrders
+                  .filter((order) => order.course._id === liveClass._id)
+                  .map((order) => order.user)}
+              />
             ))
           ) : (
             <p className="text-accent-gray-300">
@@ -33,7 +42,13 @@ export default function CoachCoursesView({
         <div className="grid gap-4">
           {courses.length > 0 ? (
             courses.map((course) => (
-              <CourseCard key={course._id} course={course} />
+              <CourseCard
+                key={course._id}
+                course={course}
+                students={groupClassOrders
+                  .filter((order) => order.course._id === course._id)
+                  .map((order) => order.user)}
+              />
             ))
           ) : (
             <p className="text-accent-gray-300">

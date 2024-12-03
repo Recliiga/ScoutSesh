@@ -9,6 +9,8 @@ import ModalContainer from "../ModalContainer";
 import DeleteGroupClassModal from "../DeleteGroupClassModal";
 import { purchaseCourse } from "@/actions/OrderActions";
 import { PlayCircle } from "lucide-react";
+import { UserType } from "@/db/models/User";
+import { getFullname } from "@/lib/utils";
 
 function getAverageVideoLength(videos: VideoType[]) {
   let suffix = "secs";
@@ -33,10 +35,12 @@ export default function CourseCard({
   course,
   forAthlete,
   isPurchased,
+  students,
 }: {
   course: GroupClassType;
   forAthlete?: boolean;
   isPurchased?: boolean;
+  students: UserType[];
 }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -58,7 +62,7 @@ export default function CourseCard({
     <>
       <div className="flex flex-col md:flex-row gap-4 border rounded-lg p-3 sm:p-4">
         <div
-          className={`relative overflow-hidden rounded-md md:w-[33%] aspect-video md:aspect-[1.5] bg-zinc-300 ${
+          className={`relative overflow-hidden rounded-md md:w-[33%] aspect-video bg-zinc-300 ${
             imageLoaded ? "" : "animate-pulse"
           }`}
         >
@@ -79,15 +83,13 @@ export default function CourseCard({
             <p className="text-sm text-muted-foreground line-clamp-2">
               {course.description}
             </p>
-            {course.students.length > 0 && (
+            {!forAthlete && students.length > 0 && (
               <div className="flex items-start text-sm text-muted-foreground">
                 <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
                 <span>
-                  {course.students
+                  {students
                     .slice(0, 3)
-                    .map(
-                      (student) => student.firstName + " " + student.lastName
-                    )
+                    .map((student) => getFullname(student))
                     .join(", ")}
                 </span>
               </div>
@@ -111,7 +113,7 @@ export default function CourseCard({
             {forAthlete ? (
               isPurchased ? (
                 <Link
-                  href={`/dashboard/group-classes/my-classes`}
+                  href={`/dashboard/group-classes/my-classes/${course._id}`}
                   className="bg-green-500 flex items-center hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
                 >
                   <PlayCircle className="mr-2 h-4 w-4" />
