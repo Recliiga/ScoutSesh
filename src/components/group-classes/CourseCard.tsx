@@ -76,7 +76,7 @@ export default function CourseCard({
         <div className="flex flex-col justify-between flex-1">
           <div className="space-y-2">
             <h2 className="text-xl font-bold">{course.title}</h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground line-clamp-2">
               {course.description}
             </p>
             {course.students.length > 0 && (

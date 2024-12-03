@@ -18,6 +18,23 @@ export async function fetchGroupClassesByCoach(coachId: string) {
   }
 }
 
+export async function fetchLiveClassesByCoach(coachId: string) {
+  try {
+    await connectDB();
+    const groupClasses: GroupClassType[] = JSON.parse(
+      JSON.stringify(
+        await GroupClass.find({ user: coachId, courseType: "live" })
+          .populate("coaches user")
+          .sort({ createdAt: -1 })
+      )
+    );
+    return { groupClasses, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { groupClasses: null, error: error.message };
+  }
+}
+
 export async function fetchGroupClass(classId: string) {
   try {
     await connectDB();

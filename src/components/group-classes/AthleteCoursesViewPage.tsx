@@ -16,7 +16,7 @@ export default function AthleteCoursesView({
   courses: GroupClassType[];
 }) {
   return (
-    <div className="max-w-4xl mx-auto py-4 flex-1 w-[90%]">
+    <div className="max-w-5xl mx-auto py-4 flex-1 w-[90%]">
       <section className="mb-8">
         <h2 className="text-2xl font-bold mb-4">Live Classes</h2>
         <div className="grid gap-4">

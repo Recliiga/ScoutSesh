@@ -23,12 +23,7 @@ export interface GroupClassType extends mongoose.Document {
   thumbnail: string;
   description: string;
   courseType: "live" | "video";
-  students: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    profilePicture: string;
-  }[];
+  students: UserType[];
   numberOfLessons: number;
   skillLevels: SkillLevelType[];
   price: number;

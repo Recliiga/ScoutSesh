@@ -1,18 +1,21 @@
-import { format, isAfter, isSameDay, parseISO } from "date-fns";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { formatTime } from "@/lib/utils";
+import { getCourseTimeString } from "@/lib/utils";
 import CalendarDayContent from "./CalendarDayContent";
+import { UserType } from "@/db/models/User";
 
 export type CourseType = {
-  id: number;
+  _id: string;
   title: string;
-  instructors: string;
-  sessions: string[];
-  time: string;
+  coach: UserType;
+  sessions: Date[];
+  time: {
+    hours: string;
+    mins: string;
+  };
 };
 
 export default function CalendarDay({
@@ -24,10 +27,12 @@ export default function CalendarDay({
   courses: CourseType[];
   today: Date;
 }) {
-  const isFutureOrToday = isAfter(day, today) || isSameDay(day, today);
+  const isFutureOrToday =
+    day.toDateString() === today.toDateString() ||
+    day.getTime() === today.getTime();
   const dayCourses = courses.flatMap((course) =>
     course.sessions
-      .filter((session) => isSameDay(parseISO(session), day))
+      .filter((session) => session.toDateString() === day.toDateString())
       .map((session) => ({ ...course, session }))
   );
 
@@ -35,20 +40,22 @@ export default function CalendarDay({
     <Popover>
       <PopoverTrigger asChild>
         <div className="p-2 border h-32 cursor-pointer overflow-hidden">
-          <div className="font-bold">{format(day, "d")}</div>
-          {dayCourses.map((course, index) => (
-            <div
-              key={`${course.id}-${index}`}
-              className={`text-[10px] leading-tight mt-1 p-1 rounded ${
-                isFutureOrToday ? "bg-green-100" : ""
-              }`}
-            >
-              {formatTime(course.time)}
-              <div className="line-clamp-2 text-ellipsis overflow-hidden">
-                {course.title}
+          <div className="font-bold">{day.getDate()}</div>
+          {dayCourses.map((course, index) => {
+            return (
+              <div
+                key={`${course._id}-${index}`}
+                className={`text-[10px] leading-tight mt-1 p-1 rounded ${
+                  isFutureOrToday ? "bg-green-100" : ""
+                }`}
+              >
+                {getCourseTimeString(course.time)}
+                <div className="line-clamp-2 text-ellipsis overflow-hidden">
+                  {course.title}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-80">

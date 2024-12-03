@@ -123,7 +123,7 @@ export default function LiveClassCard({
     <>
       <div className="flex flex-col gap-4 md:flex-row border rounded-lg p-3 sm:p-4">
         <div
-          className={`relative overflow-hidden rounded-md md:w-[33%] aspect-video md:aspect-[1.5] bg-zinc-300 ${
+          className={`relative overflow-hidden rounded-md md:w-[33%] md:min-w-[250px] aspect-video bg-zinc-300 ${
             imageLoaded ? "" : "animate-pulse"
           }`}
         >
@@ -138,18 +138,18 @@ export default function LiveClassCard({
             sizes="(max-width: 768px) 720px, 320px"
           />
         </div>
-        <div className=" flex flex-col justify-between flex-grow">
+        <div className=" flex flex-col justify-between flex-1">
           <div className="space-y-2">
-            <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-2">
+            <div className="flex justify-between flex-col md:flex-row items-start gap-2">
               <h2 className="text-xl font-bold">{liveClass.title}</h2>
               <Badge
                 variant="secondary"
-                className="bg-red-500 text-white hover:bg-red-500 px-2 "
+                className="bg-red-500 text-white hover:bg-red-500 px-2 whitespace-nowrap"
               >
                 Live Class
               </Badge>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground line-clamp-2">
               {liveClass.description}
             </p>
             {liveClass.students.length > 0 && (
@@ -206,7 +206,7 @@ export default function LiveClassCard({
                       className="w-6 h-6 border-2 border-white rounded-full"
                     >
                       <AvatarImage
-                        src="/placeholder-profile-picture.png"
+                        src={student.profilePicture}
                         alt="Participant 1"
                       />
                       <AvatarFallback>P1</AvatarFallback>

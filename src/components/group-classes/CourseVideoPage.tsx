@@ -46,7 +46,7 @@ export default function CourseVideoPage({
   return (
     <div className="py-6 flex-1 flex flex-col max-w-7xl w-[90%] mx-auto">
       <div className="flex-1 flex flex-col lg:flex-row gap-4">
-        <div className="flex-1">
+        <div className="lg:flex-1">
           <div className="bg-white shadow-md">
             <div className="relative w-full aspect-video">
               <video className="w-full h-full" controls src={selectedVideo.url}>

@@ -297,7 +297,7 @@ export function getDatesBetween(
     yearly: 1,
   };
 
-  while (currentDate <= endDate) {
+  while (currentDate <= new Date(endDate)) {
     dates.push(new Date(currentDate));
     if (
       frequency === "daily" ||
@@ -314,4 +314,20 @@ export function getDatesBetween(
   }
 
   return dates;
+}
+
+export function getCourseTimeString(courseTime: {
+  hours: string;
+  mins: string;
+}) {
+  let hours = Number(courseTime.hours);
+  const mins = courseTime.mins;
+  let suffix = "AM";
+
+  if (hours > 12) {
+    hours -= 12;
+    suffix = "PM";
+  }
+
+  return `${hours}:${mins} ${suffix}`;
 }
