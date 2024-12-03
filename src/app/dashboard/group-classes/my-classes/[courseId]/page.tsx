@@ -7,7 +7,7 @@ import React from "react";
 export default async function CourseViewPage({
   params,
 }: {
-  params: { courseId: string };
+  params: Promise<{ courseId: string }>;
 }) {
   const user = await getSessionFromHeaders();
   if (user.role !== "Athlete") notFound();
