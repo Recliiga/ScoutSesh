@@ -1,5 +1,5 @@
 import { getSessionFromHeaders } from "@/services/authServices";
-import { fetchUserOrders } from "@/services/orderServices";
+import { fetchUserLiveClassOrders } from "@/services/orderServices";
 import { notFound } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VideoLibraryCourseCard from "@/components/group-classes/VideoLibraryCourseCard";
@@ -10,7 +10,9 @@ export default async function MyClassesPage() {
   const user = await getSessionFromHeaders();
   if (user.role !== "Athlete") notFound();
 
-  const { userOrders, error: orderError } = await fetchUserOrders(user._id);
+  const { liveClassOrders, error: orderError } = await fetchUserLiveClassOrders(
+    user._id
+  );
   if (orderError !== null) throw new Error(orderError);
 
   return (
@@ -24,11 +26,11 @@ export default async function MyClassesPage() {
             <TabsTrigger value="in-progress">In Progress</TabsTrigger>
             <TabsTrigger value="completed">Completed</TabsTrigger>
           </TabsList>
-          {userOrders.length > 0 ? (
+          {liveClassOrders.length > 0 ? (
             <>
               <TabsContent value="in-progress" tabIndex={undefined}>
                 <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))]">
-                  {userOrders
+                  {liveClassOrders
                     .filter(
                       (order) =>
                         order.completedLessons.length <
@@ -41,7 +43,7 @@ export default async function MyClassesPage() {
               </TabsContent>
               <TabsContent value="completed" tabIndex={undefined}>
                 <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))]">
-                  {userOrders
+                  {liveClassOrders
                     .filter(
                       (order) =>
                         order.completedLessons.length >=
@@ -54,7 +56,7 @@ export default async function MyClassesPage() {
               </TabsContent>
               <TabsContent value="all" tabIndex={undefined}>
                 <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))]">
-                  {userOrders.map((order) => (
+                  {liveClassOrders.map((order) => (
                     <VideoLibraryCourseCard key={order._id} order={order} />
                   ))}
                 </div>

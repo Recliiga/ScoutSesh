@@ -27,6 +27,34 @@ export async function fetchUserOrders(userId: string) {
   }
 }
 
+export async function fetchUserLiveClassOrders(userId: string) {
+  try {
+    await connectDB();
+    const userOrders: OrderType[] = JSON.parse(
+      JSON.stringify(
+        await Order.find({ user: userId })
+          .populate({
+            path: "user",
+            select: "firstName lastName profilePicture",
+          })
+          .populate({
+            path: "course",
+            select: "title videos thumbnail coaches courseType",
+            populate: { path: "coaches", select: "firstName lastName" },
+          })
+          .populate("completedLessons")
+      )
+    );
+
+    const liveClassOrders = userOrders.filter(
+      (order) => order.course.courseType === "video"
+    );
+    return { liveClassOrders, error: null };
+  } catch (error) {
+    return { liveClassOrders: null, error: (error as Error).message };
+  }
+}
+
 export async function fetchCourseOrders(courses: GroupClassType[]) {
   try {
     await connectDB();
