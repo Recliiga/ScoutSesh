@@ -47,7 +47,9 @@ export async function addVideoToCompletedLessons(
     if (
       !updatedOrder.completedLessons.some((lesson) => lesson.url === video.url)
     ) {
+      console.log(video);
       updatedOrder.completedLessons.push(video);
+      console.log("updatedCompletedLessons");
       await updatedOrder.save();
     }
 

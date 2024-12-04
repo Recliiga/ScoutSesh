@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { GroupClassType, VideoType } from "@/db/models/GroupClass";
 import VideoPlayer from "./VideoPlayer";
 import { addVideoToCompletedLessons } from "@/actions/OrderActions";
+import BackButton from "../dashboard/BackButton";
 
 function formatVideoDuration(duration: number) {
   let suffix = "secs";
@@ -42,6 +43,7 @@ export default function CourseVideoPage({
     (completedVideos.length / course.videos.length) * 100
   );
 
+  console.log({ completedLessons, videos });
   function isCompleted(video: VideoType) {
     return completedVideos.some((vid) => vid.url === video.url);
   }
@@ -75,7 +77,7 @@ export default function CourseVideoPage({
               updateCompletedVideos={updateCompletedVideos}
             />
             <div className="p-4">
-              <h1 className="text-xl sm:text-2xl font-bold mb-2">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold">
                 {selectedVideo.title}
               </h1>
             </div>
@@ -84,8 +86,9 @@ export default function CourseVideoPage({
 
         <div className="lg:w-96 relative">
           <div className="w-full h-full lg:absolute flex flex-col">
-            <div className="pb-2 border-b">
+            <div className="pb-2 border-b flex justify-between items-center">
               <h2 className="text-lg font-semibold">Course content</h2>
+              <BackButton />
             </div>
             <ScrollArea className="flex-1">
               <div className="p-4">
@@ -120,8 +123,10 @@ export default function CourseVideoPage({
       </div>
 
       <div className="mt-6 border-t order-1">
-        <Progress value={progress} className="mb-2" />
-        <div className="text-sm text-gray-600">{progress}% complete</div>
+        <Progress value={progress > 100 ? 100 : progress} className="mb-2" />
+        <div className="text-sm text-gray-600">
+          {progress > 100 ? 100 : progress}% complete
+        </div>
       </div>
     </div>
   );

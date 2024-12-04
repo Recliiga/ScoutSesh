@@ -12,7 +12,7 @@ import DeleteGroupClassModal from "../DeleteGroupClassModal";
 import { purchaseCourse } from "@/actions/OrderActions";
 import { TvMinimalPlay } from "lucide-react";
 import { UserType } from "@/db/models/User";
-import { getFullname } from "@/lib/utils";
+import { getDatesBetween, getFullname } from "@/lib/utils";
 
 const daysOfTheWeek = [
   "Sunday",
@@ -167,11 +167,28 @@ export default function LiveClassCard({
                 </span>
               </div>
             )}
+            {forAthlete && liveClass.coaches.length > 0 && (
+              <div className="flex items-start text-sm text-muted-foreground">
+                <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+                <span className="line-clamp-1">
+                  {liveClass.coaches
+                    .slice(0, 3)
+                    .map((coach) => getFullname(coach))
+                    .join(", ")}
+                </span>
+              </div>
+            )}
             <div className="flex items-start text-sm text-muted-foreground">
               <TicketIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
               <span>
-                {/* {liveClass.numberOfLessons} Lessons • {liveClass.averageDuration}{" "}
-              mins / Lesson •{" "} */}
+                {
+                  getDatesBetween(
+                    liveClass.startDate,
+                    liveClass.endDate,
+                    liveClass.repeatFrequency
+                  ).length
+                }{" "}
+                Lessons •{" "}
                 {liveClass.skillLevels.length === 3
                   ? "All Levels"
                   : liveClass.skillLevels

@@ -94,6 +94,17 @@ export default function CourseCard({
                 </span>
               </div>
             )}
+            {forAthlete && course.coaches.length > 0 && (
+              <div className="flex items-start text-sm text-muted-foreground">
+                <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+                <span>
+                  {course.coaches
+                    .slice(0, 3)
+                    .map((coach) => getFullname(coach))
+                    .join(", ")}
+                </span>
+              </div>
+            )}
             <div className="flex items-start text-sm text-muted-foreground">
               <TicketIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
               <span>

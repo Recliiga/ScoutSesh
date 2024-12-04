@@ -65,7 +65,7 @@ export default function AthleteGroupClassesPage({
         .map((session) => ({ ...course, session }))
     )
     .sort(
-      (a, b) => new Date(b.session).getTime() - new Date(a.session).getTime()
+      (a, b) => new Date(a.session).getTime() - new Date(b.session).getTime()
     );
 
   return (
@@ -84,7 +84,7 @@ export default function AthleteGroupClassesPage({
               href="/dashboard/group-classes/my-classes"
               className="border-green-600 hover:bg-green-600 duration-300 border font-medium text-green-600 hover:text-white transition-colors px-4 py-2 rounded-md text-sm"
             >
-              My Classes
+              My Video Courses
             </Link>
           </div>
         </div>

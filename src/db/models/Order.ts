@@ -21,7 +21,7 @@ const OrderSchema = new mongoose.Schema<OrderType>({
     ref: "User",
   },
   completedLessons: {
-    type: [mongoose.SchemaTypes.ObjectId],
+    type: [{ _id: String, title: String, url: String, duration: Number }],
     default: [],
   },
 });

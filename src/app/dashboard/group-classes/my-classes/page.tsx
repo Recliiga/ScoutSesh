@@ -18,7 +18,7 @@ export default async function MyClassesPage() {
       <div className="flex flex-col w-full">
         <h1 className="text-3xl font-bold mb-4 sm:mb-6">My Courses</h1>
 
-        <Tabs defaultValue="in-progress" className="mb-6">
+        <Tabs defaultValue="all" className="mb-6">
           <TabsList>
             <TabsTrigger value="all">All Courses</TabsTrigger>
             <TabsTrigger value="in-progress">In Progress</TabsTrigger>
