@@ -11,6 +11,7 @@ export default async function EditClassPage({
 }) {
   const { classId } = await params;
   const user = await getSessionFromHeaders();
+
   if (user.role !== "Head Coach") notFound();
 
   const { teamMembers, error } = await fetchTeamMembers(user.organization!._id);

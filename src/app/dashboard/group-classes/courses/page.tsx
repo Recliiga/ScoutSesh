@@ -29,10 +29,18 @@ export default async function CourseViewPage() {
   }
 
   if (user.role === "Athlete") {
+    if (!user.organization)
+      return (
+        <div className="flex-1 flex-center">
+          You are not connected to an organization yet
+        </div>
+      );
+
     const { groupClasses, error } = await fetchGroupClassesByCoach(
-      String(user.organization!.user)
+      String(user.organization.user)
     );
     if (error !== null) throw new Error(error);
+
     const { groupClassOrders, error: groupClassOrderError } =
       await fetchCourseOrders(groupClasses);
     if (groupClassOrderError !== null) notFound();

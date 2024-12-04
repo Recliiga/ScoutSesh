@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { GroupClassType, VideoType } from "@/db/models/GroupClass";
 import VideoPlayer from "./VideoPlayer";
+import { addVideoToCompletedLessons } from "@/actions/OrderActions";
 
 function formatVideoDuration(duration: number) {
   let suffix = "secs";
@@ -32,16 +33,36 @@ export default function CourseVideoPage({
 }) {
   const videos = course.videos;
   const [selectedVideoId, setSelectedVideoId] = useState(videos[0]._id);
+  const [completedVideos, setCompletedVideos] = useState(completedLessons);
 
   const selectedVideo =
     videos.find((video) => video._id === selectedVideoId) || videos[0];
 
   const progress = Math.floor(
-    (completedLessons.length / course.videos.length) * 100
+    (completedVideos.length / course.videos.length) * 100
   );
 
-  function isCompleted(videoId: string) {
-    return completedLessons.some((lesson) => lesson._id === videoId);
+  function isCompleted(video: VideoType) {
+    return completedVideos.some((vid) => vid.url === video.url);
+  }
+
+  async function updateCompletedVideos(video: VideoType) {
+    const prevCompletedVideos = completedVideos;
+    setCompletedVideos((curr) =>
+      isCompleted(video) ? curr : [...curr, video]
+    );
+    setSelectedVideoId((curr) => {
+      const currentIndex = videos.findIndex((video) => video._id === curr);
+      if (currentIndex >= videos.length - 1) return curr;
+      return videos[currentIndex + 1]._id;
+    });
+    const { error } = await addVideoToCompletedLessons(
+      course._id,
+      selectedVideo
+    );
+    if (error !== null) {
+      setCompletedVideos(prevCompletedVideos);
+    }
   }
 
   return (
@@ -49,7 +70,10 @@ export default function CourseVideoPage({
       <div className="flex-1 flex flex-col lg:flex-row gap-4">
         <div className="lg:flex-1">
           <div className="bg-white shadow-md">
-            <VideoPlayer selectedVideo={selectedVideo}/>
+            <VideoPlayer
+              selectedVideo={selectedVideo}
+              updateCompletedVideos={updateCompletedVideos}
+            />
             <div className="p-4">
               <h1 className="text-xl sm:text-2xl font-bold mb-2">
                 {selectedVideo.title}
@@ -74,7 +98,7 @@ export default function CourseVideoPage({
                     }`}
                   >
                     <div className="mt-1 mr-3">
-                      {isCompleted(video._id) ? (
+                      {isCompleted(video) ? (
                         <CheckCircle className="h-4 w-4 text-green-500" />
                       ) : (
                         <PlayCircle className="h-4 w-4 text-gray-400" />

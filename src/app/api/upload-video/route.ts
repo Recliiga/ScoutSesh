@@ -14,8 +14,6 @@ export async function POST(request: NextRequest) {
     const video = formData.get("video") as string;
     if (!video) throw new Error("Please provide a valid video");
 
-    console.log({ video });
-
     const { url } = await cloudinary.uploader.upload(video, {
       resource_type: "video",
     });

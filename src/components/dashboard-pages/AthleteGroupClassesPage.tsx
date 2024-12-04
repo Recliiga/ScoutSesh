@@ -81,10 +81,10 @@ export default function AthleteGroupClassesPage({
               View Class Library
             </Link>
             <Link
-              href="/dashboard/group-classes/create"
+              href="/dashboard/group-classes/my-classes"
               className="border-green-600 hover:bg-green-600 duration-300 border font-medium text-green-600 hover:text-white transition-colors px-4 py-2 rounded-md text-sm"
             >
-              Create New Class
+              My Classes
             </Link>
           </div>
         </div>

@@ -5,8 +5,10 @@ import { VideoType } from "@/db/models/GroupClass";
 
 export default function VideoPlayer({
   selectedVideo,
+  updateCompletedVideos,
 }: {
   selectedVideo: VideoType;
+  updateCompletedVideos(video: VideoType): Promise<void>;
 }) {
   const [showControls, setShowControls] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
@@ -118,11 +120,6 @@ export default function VideoPlayer({
     }
   }
 
-  function handleVideoEnded() {
-    setIsPlaying(false);
-    console.log("Video Completed");
-  }
-
   function toggleFullScreen() {
     const videoContainer = videoContainerRef.current;
     if (videoContainer) {
@@ -194,6 +191,11 @@ export default function VideoPlayer({
     handleMouseUp,
     handleMouseLeave,
   };
+
+  async function handleVideoEnded() {
+    setIsPlaying(false);
+    updateCompletedVideos(selectedVideo);
+  }
 
   return (
     <div

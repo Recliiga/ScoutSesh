@@ -18,6 +18,7 @@ export async function fetchUserOrders(userId: string) {
             select: "title videos thumbnail coaches",
             populate: { path: "coaches", select: "firstName lastName" },
           })
+          .populate("completedLessons")
       )
     );
     return { userOrders, error: null };
@@ -41,6 +42,7 @@ export async function fetchCourseOrders(courses: GroupClassType[]) {
             select: "title videos thumbnail coaches",
             populate: { path: "coaches", select: "firstName lastName" },
           })
+          .populate("completedLessons")
       )
     );
 
@@ -68,6 +70,7 @@ export async function fetchUserOrderCourse(userId: string, courseId: string) {
           .populate({
             path: "course",
           })
+          .populate("completedLessons")
       )
     );
     return { userOrder, error: null };
