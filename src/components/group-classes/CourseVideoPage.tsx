@@ -5,6 +5,7 @@ import { PlayCircle, CheckCircle, Clock } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { GroupClassType, VideoType } from "@/db/models/GroupClass";
+import VideoPlayer from "./VideoPlayer";
 
 function formatVideoDuration(duration: number) {
   let suffix = "secs";
@@ -48,11 +49,7 @@ export default function CourseVideoPage({
       <div className="flex-1 flex flex-col lg:flex-row gap-4">
         <div className="lg:flex-1">
           <div className="bg-white shadow-md">
-            <div className="relative w-full aspect-video">
-              <video className="w-full h-full" controls src={selectedVideo.url}>
-                Your browser does not support the video tag.
-              </video>
-            </div>
+            <VideoPlayer selectedVideo={selectedVideo}/>
             <div className="p-4">
               <h1 className="text-xl sm:text-2xl font-bold mb-2">
                 {selectedVideo.title}
