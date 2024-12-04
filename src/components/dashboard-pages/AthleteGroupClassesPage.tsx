@@ -173,16 +173,12 @@ export default function AthleteGroupClassesPage({
                           </div>
                         </div>
                         <div className="flex items-center space-x-2 ml-auto lg:w-full">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className={`flex-1 ${
-                              isPast ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
-                            disabled={isPast}
+                          <Link
+                            href={`/dashboard/group-classes/live-classes/${course._id}`}
+                            className={`flex-1 text-xs px-3 py-1.5 border flex-center rounded-md hover:bg-accent-gray-100 duration-200`}
                           >
                             Join
-                          </Button>
+                          </Link>
                           <ChevronRightIcon className="w-5 h-5 text-muted-foreground" />
                         </div>
                       </CardContent>

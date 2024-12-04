@@ -245,10 +245,13 @@ export default function LiveClassCard({
             <span className="text-xl font-bold">${liveClass.price}</span>
             {forAthlete ? (
               isPurchased ? (
-                <Button className="bg-green-500 flex items-center gap-0 hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium">
+                <Link
+                  href={`/dashboard/group-classes/live-classes/${liveClass._id}`}
+                  className="bg-green-500 flex items-center gap-0 hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
+                >
                   <TvMinimalPlay className="mr-2 h-4 w-4" />
                   Join Now
-                </Button>
+                </Link>
               ) : (
                 <form onSubmit={handlePurchaseCourse}>
                   <Button

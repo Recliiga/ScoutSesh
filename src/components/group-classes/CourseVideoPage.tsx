@@ -43,7 +43,6 @@ export default function CourseVideoPage({
     (completedVideos.length / course.videos.length) * 100
   );
 
-  console.log({ completedLessons, videos });
   function isCompleted(video: VideoType) {
     return completedVideos.some((vid) => vid.url === video.url);
   }
@@ -68,7 +67,13 @@ export default function CourseVideoPage({
   }
 
   return (
-    <div className="py-6 flex-1 flex flex-col max-w-7xl w-[90%] mx-auto">
+    <div className="py-6 flex-1 flex flex-col max-w-7xl w-[90%] mx-auto gap-4">
+      <div className="flex justify-between items-center">
+        <h1 className="text-xl sm:text-2xl line-clamp-1 font-semibold">
+          {course.title}
+        </h1>
+        <BackButton />
+      </div>
       <div className="flex-1 flex flex-col lg:flex-row gap-4">
         <div className="lg:flex-1">
           <div className="bg-white shadow-md">
@@ -77,7 +82,7 @@ export default function CourseVideoPage({
               updateCompletedVideos={updateCompletedVideos}
             />
             <div className="p-4">
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
                 {selectedVideo.title}
               </h1>
             </div>
@@ -86,9 +91,8 @@ export default function CourseVideoPage({
 
         <div className="lg:w-96 relative">
           <div className="w-full h-full lg:absolute flex flex-col">
-            <div className="pb-2 border-b flex justify-between items-center">
+            <div className="pb-2 border-b">
               <h2 className="text-lg font-semibold">Course content</h2>
-              <BackButton />
             </div>
             <ScrollArea className="flex-1">
               <div className="p-4">
@@ -122,7 +126,7 @@ export default function CourseVideoPage({
         </div>
       </div>
 
-      <div className="mt-6 border-t order-1">
+      <div className="border-t order-1">
         <Progress value={progress > 100 ? 100 : progress} className="mb-2" />
         <div className="text-sm text-gray-600">
           {progress > 100 ? 100 : progress}% complete
