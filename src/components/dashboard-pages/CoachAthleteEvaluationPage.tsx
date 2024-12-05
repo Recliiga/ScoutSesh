@@ -177,7 +177,7 @@ export default function CoachAthleteEvaluationPage() {
             description="Modify the current evaluation template or create a new one."
             icon={<FileEditIcon className="w-8 h-8 text-green-600" />}
             action="View Templates"
-            href="#"
+            href="/dashboard/athlete-evaluation/templates"
           />
           <EvaluationCard
             title="All Evaluations"
