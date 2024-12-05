@@ -21,12 +21,14 @@ export default function UserAthleteEvaluationPage() {
             description="Schedule a new evaluation session with a coach to assess your current skills and performance."
             icon={<ClipboardList className="w-6 h-6 text-green-600" />}
             action="Request Evaluation"
+            href="#"
           />
           <EvaluationCard
             title="View Evaluation Records"
             description="Access your past evaluation reports, track your progress over time, and review coach feedback."
             icon={<FileText className="w-6 h-6 text-green-600" />}
             action="View Records"
+            href="#"
           />
         </div>
       </div>

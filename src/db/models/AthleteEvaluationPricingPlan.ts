@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 export type StandardPlanType = {
-  name: string;
+  name: "Monthly" | "Quarterly" | "Semi Annual" | "Yearly";
   evaluations: number;
   price: number;
 };
@@ -43,33 +43,49 @@ type AEVirtualConsultationType =
       discussionTopics: undefined;
     };
 
-interface BaseAthleteEvaluationPricingType extends mongoose.Document {
+interface BaseAEPricingPlanType extends mongoose.Document {
+  _id: string;
   standardPlans: StandardPlanType[];
   firstEvaluationDays: number;
 }
 
-export type AthleteEvaluationPricingType = BaseAthleteEvaluationPricingType &
+export type AEPricingPlanType = BaseAEPricingPlanType &
   AECustomPlanType &
   AEVirtualConsultationType;
 
-const AthleteEvaluationPricingSchema =
-  new mongoose.Schema<AthleteEvaluationPricingType>({
-    standardPlans: {
-      name: { type: String, required: true },
-      evaluations: { type: Number, required: true },
-      price: { type: Number, required: true },
+const StandardPlanSchema = new mongoose.Schema<StandardPlanType>({
+  name: {
+    type: String,
+    enum: ["Monthly", "Quarterly", "Semi Annual", "Yearly"],
+    required: true,
+  },
+  evaluations: { type: Number, required: true },
+  price: { type: Number, required: true },
+});
+
+const CustomPlanTierSchema = new mongoose.Schema<CustomPlanType>({
+  type: {
+    type: String,
+    enum: ["single", "range"], // Only allow "single" or "range"
+  },
+  evaluations: {
+    from: {
+      type: Number,
     },
+    to: {
+      type: Number,
+    },
+  },
+  price: {
+    type: Number,
+  },
+});
+const AthleteEvaluationPricingPlanSchema =
+  new mongoose.Schema<AEPricingPlanType>({
+    standardPlans: [StandardPlanSchema],
     firstEvaluationDays: { type: Number, required: true },
     offerCustomPlan: { type: Boolean, required: true },
-    customPlanTiers: {
-      type: [
-        {
-          type: String,
-          evaluations: { from: Number, to: Number },
-          price: Number,
-        },
-      ],
-    },
+    customPlanTiers: [CustomPlanTierSchema],
     offerVirtualConsultation: { type: Boolean },
     virtualConsultationType: { type: String },
     virtualConsultationDuration: { type: Number },
@@ -82,8 +98,11 @@ const AthleteEvaluationPricingSchema =
     },
   });
 
-const AthleteEvaluationPricing =
-  mongoose.models.AthleteEvaluationPricing ||
-  mongoose.model("AthleteEvaluationPricing", AthleteEvaluationPricingSchema);
+const AthleteEvaluationPricingPlan =
+  mongoose.models.AthleteEvaluationPricingPlan ||
+  mongoose.model(
+    "AthleteEvaluationPricingPlan",
+    AthleteEvaluationPricingPlanSchema
+  );
 
-export default AthleteEvaluationPricing;
+export default AthleteEvaluationPricingPlan;

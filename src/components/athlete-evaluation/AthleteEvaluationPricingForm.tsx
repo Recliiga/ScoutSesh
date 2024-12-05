@@ -13,9 +13,13 @@ import {
 } from "../ui/select";
 import { Input } from "../ui/input";
 import {
+  AEPricingPlanType,
   CustomPlanType,
   StandardPlanType,
-} from "@/db/models/AthleteEvaluationPricing";
+} from "@/db/models/AthleteEvaluationPricingPlan";
+import { createPricingPlan } from "@/actions/AEPricingPlanActions";
+import LoadingIndicator from "../LoadingIndicator";
+import Error from "../AuthError";
 
 export default function AthleteEvaluationPricingForm() {
   const [offerCustomPlan, setOfferCustomPlan] = useState(false);
@@ -43,6 +47,8 @@ export default function AthleteEvaluationPricingForm() {
   });
   const [firstEvaluationDays, setFirstEvaluationDays] = useState(7);
   const [virtualConsultationRate, setVirtualConsultationRate] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const selectedTopicsCount =
@@ -50,31 +56,31 @@ export default function AthleteEvaluationPricingForm() {
     setVirtualConsultationDuration(selectedTopicsCount >= 3 ? 45 : 30);
   }, [discussionTopics]);
 
-  const handleStandardPlanPriceChange = (index: number, value: number) => {
+  function handleStandardPlanPriceChange(index: number, value: number) {
     const updatedPlans = [...standardPlans];
     updatedPlans[index].price = value;
     setStandardPlans(updatedPlans);
-  };
+  }
 
-  const handleCustomPlanEvaluationsChange = (
+  function handleCustomPlanEvaluationsChange(
     index: number,
     value: { from: number; to: number }
-  ) => {
+  ) {
     const updatedTiers = [...customPlanTiers];
     updatedTiers[index].evaluations = value;
     setCustomPlanTiers(updatedTiers);
-  };
+  }
 
-  const handleCustomPlanPriceChange = (index: number, value: number) => {
+  function handleCustomPlanPriceChange(index: number, value: number) {
     const updatedTiers = [...customPlanTiers];
     updatedTiers[index].price = value;
     setCustomPlanTiers(updatedTiers);
-  };
+  }
 
-  const handleCustomPlanTypeChange = (
+  function handleCustomPlanTypeChange(
     index: number,
     value: "single" | "range"
-  ) => {
+  ) {
     const updatedTiers = [...customPlanTiers];
 
     if (value === "single")
@@ -85,43 +91,42 @@ export default function AthleteEvaluationPricingForm() {
     updatedTiers[index].type = value;
 
     setCustomPlanTiers(updatedTiers);
-  };
+  }
 
-  const addCustomPlanTier = () => {
+  function addCustomPlanTier() {
     setCustomPlanTiers([
       ...customPlanTiers,
       { type: "single", evaluations: { from: 0, to: 0 }, price: 0 },
     ]);
-  };
+  }
 
-  const removeCustomPlanTier = (index: number) => {
+  function removeCustomPlanTier(index: number) {
     const updatedTiers = customPlanTiers.filter((_, i) => i !== index);
     setCustomPlanTiers(updatedTiers);
-  };
+  }
 
-  const handleDiscussionTopicChange = (
-    topic: keyof typeof discussionTopics
-  ) => {
+  function handleDiscussionTopicChange(topic: keyof typeof discussionTopics) {
     setDiscussionTopics((prev) => ({ ...prev, [topic]: !prev[topic] }));
-  };
+  }
 
-  const handleVirtualConsultationRateChange = (
+  function handleVirtualConsultationRateChange(
     e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  ) {
     const newValue = parseFloat(e.target.value);
     setVirtualConsultationRate(Math.round(newValue));
-  };
+  }
 
-  const handleVirtualConsultationRateStep = (step: number) => {
+  function handleVirtualConsultationRateStep(step: number) {
     setVirtualConsultationRate((prevRate) =>
       Math.max(0, Math.round(prevRate + step))
     );
-  };
+  }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Here you would typically send this data to your backend
-    const data = {
+    setError(null);
+
+    const pricingPlanData = {
       offerCustomPlan,
       standardPlans,
       customPlanTiers: offerCustomPlan ? customPlanTiers : undefined,
@@ -138,8 +143,12 @@ export default function AthleteEvaluationPricingForm() {
       discussionTopics: offerVirtualConsultation ? discussionTopics : undefined,
       firstEvaluationDays,
     };
-    console.log(data);
-  };
+
+    setLoading(true);
+    const data = await createPricingPlan(pricingPlanData as AEPricingPlanType);
+    if (data?.error) setError(data?.error);
+    setLoading(false);
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -166,12 +175,13 @@ export default function AthleteEvaluationPricingForm() {
               </span>
               <Input
                 type="number"
-                value={plan.price}
+                value={plan.price > 0 ? plan.price : ""}
                 onChange={(e) =>
                   handleStandardPlanPriceChange(index, Number(e.target.value))
                 }
                 placeholder="Price per Session"
                 className="pl-6 pr-24"
+                required
               />
               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 /evaluation
@@ -185,6 +195,7 @@ export default function AthleteEvaluationPricingForm() {
           </div>
         ))}
       </div>
+
       <div className="flex items-center space-x-2">
         <Switch
           id="offerCustomPlan"
@@ -228,24 +239,26 @@ export default function AthleteEvaluationPricingForm() {
                   value={tier.evaluations.from > 0 ? tier.evaluations.from : ""}
                   onChange={(e) => {
                     if (
+                      customPlanTiers[index - 1] &&
                       Number(e.target.value) <=
-                      customPlanTiers[index - 1].evaluations.to
+                        customPlanTiers[index - 1].evaluations.to
                     )
                       return;
 
-                    if (Number(e.target.value) <= tier.evaluations.to) {
+                    if (Number(e.target.value) < tier.evaluations.to) {
                       handleCustomPlanEvaluationsChange(index, {
                         ...customPlanTiers[index].evaluations,
                         from: Number(e.target.value),
                       });
                     } else {
                       handleCustomPlanEvaluationsChange(index, {
-                        to: Number(e.target.value),
+                        to: Number(e.target.value) + 1,
                         from: Number(e.target.value),
                       });
                     }
                   }}
                   placeholder="Number of Sessions"
+                  required
                 />
                 {tier.type === "range" && (
                   <>
@@ -261,6 +274,7 @@ export default function AthleteEvaluationPricingForm() {
                           });
                       }}
                       placeholder="Number of Sessions"
+                      required
                     />
                   </>
                 )}
@@ -386,11 +400,16 @@ export default function AthleteEvaluationPricingForm() {
                 <Input
                   id="virtualConsultationDuration"
                   type="number"
-                  value={virtualConsultationDuration}
+                  value={
+                    virtualConsultationDuration > 0
+                      ? virtualConsultationDuration
+                      : ""
+                  }
                   onChange={(e) =>
                     setVirtualConsultationDuration(Number(e.target.value))
                   }
                   className="pr-12"
+                  required
                 />
                 <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                   min
@@ -409,7 +428,9 @@ export default function AthleteEvaluationPricingForm() {
                   <Input
                     id="virtualConsultationRate"
                     type="number"
-                    value={virtualConsultationRate}
+                    value={
+                      virtualConsultationRate > 0 ? virtualConsultationRate : ""
+                    }
                     onChange={handleVirtualConsultationRateChange}
                     onKeyDown={(e) => {
                       if (e.key === "ArrowUp") {
@@ -423,6 +444,7 @@ export default function AthleteEvaluationPricingForm() {
                     min={0}
                     step={1}
                     className="pl-6 pr-3"
+                    required
                   />
                 </div>
                 <span className="text-gray-500">/consultation</span>
@@ -445,23 +467,33 @@ export default function AthleteEvaluationPricingForm() {
               <Input
                 id="firstEvaluationDays"
                 type="number"
-                value={firstEvaluationDays}
+                value={firstEvaluationDays > 0 ? firstEvaluationDays : ""}
                 onChange={(e) => setFirstEvaluationDays(Number(e.target.value))}
                 min={1}
                 className="pr-12"
+                required
               />
               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 days
               </span>
             </div>
           </div>
+
+          {error && <Error error={error} />}
         </div>
       </div>
       <Button
+        disabled={loading}
         type="submit"
-        className="w-full bg-green-600 hover:bg-green-700 text-white mt-6"
+        className="w-full bg-green-600 hover:bg-green-700 text-white mt-4"
       >
-        Save Athlete Evaluation Pricing Plans
+        {loading ? (
+          <>
+            <LoadingIndicator /> Saving...
+          </>
+        ) : (
+          "Save Athlete Evaluation Pricing Plans"
+        )}
       </Button>
     </form>
   );
