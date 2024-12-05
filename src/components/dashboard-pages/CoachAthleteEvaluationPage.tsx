@@ -171,14 +171,14 @@ export default function CoachAthleteEvaluationPage() {
             icon={<ClipboardIcon className="w-8 h-8 text-green-600" />}
             action="Manage Pricing"
             href="/dashboard/athlete-evaluation/pricing"
-            />
+          />
           <EvaluationCard
             title="Evaluation Template"
             description="Modify the current evaluation template or create a new one."
             icon={<FileEditIcon className="w-8 h-8 text-green-600" />}
-            action="Edit Template"
+            action="View Templates"
             href="#"
-            />
+          />
           <EvaluationCard
             title="All Evaluations"
             description="View and manage all athlete evaluations, including past records and current statuses. Access detailed reports and track evaluation history."
