@@ -1,5 +1,5 @@
 import React from "react";
-import EvaluationCard from "../dashboard/EvaluationCard";
+import EvaluationCard from "../athlete-evaluation/EvaluationCard";
 import { ClipboardList, FileText } from "lucide-react";
 import NotificationSign from "../dashboard/NotificationSign";
 

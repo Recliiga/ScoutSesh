@@ -1,19 +1,19 @@
 "use client";
 import React from "react";
-import { Button } from "../ui/button";
+import Link from "next/link";
 
 export default function EvaluationCard({
   title,
   description,
   icon,
   action,
-  onClick,
+  href,
 }: {
   title: string;
   description: string;
   icon: React.JSX.Element;
   action: string;
-  onClick?: () => void;
+  href: string;
 }) {
   return (
     <div className="flex flex-col bg-white shadow-lg p-6 rounded-lg h-full">
@@ -24,12 +24,12 @@ export default function EvaluationCard({
         <h3 className="ml-2 font-semibold text-xl leading-6">{title}</h3>
       </div>
       <p className="flex-grow mb-4 text-gray-600">{description}</p>
-      <Button
-        onClick={onClick}
-        className="bg-green-600 hover:bg-green-700 text-white self-start"
+      <Link
+        href={href}
+        className="bg-green-600 hover:bg-green-700 text-white self-start px-4 py-2 rounded-md text-sm font-medium duration-200"
       >
         {action}
-      </Button>
+      </Link>
     </div>
   );
 }
