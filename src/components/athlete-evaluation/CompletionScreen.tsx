@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function CompletionScreen() {
   return (
-    <div className="flex flex-col items-center justify-center p-4 bg-green-50">
+    <div className="flex flex-col items-center justify-center p-4 bg-green-50 flex-1">
       <Card className="w-full max-w-lg text-center p-4 sm:p-6">
         <CardHeader className="p-0">
           <div className="mb-4 text-sm text-muted-foreground">

@@ -505,8 +505,9 @@ export default function AthleteEvaluationTemplateForm() {
   return (
     <main
       className={`flex-1 ${
-        currentScreen !== "completion" &&
-        "max-w-7xl w-[90%] mx-auto py-4 sm:py-6"
+        currentScreen !== "completion"
+          ? "max-w-7xl w-[90%] mx-auto py-4 sm:py-6"
+          : ""
       } flex`}
     >
       {currentScreen === "athlete-evaluation-overview" && (
