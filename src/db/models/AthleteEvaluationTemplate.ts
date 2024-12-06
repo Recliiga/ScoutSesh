@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { UserType } from "./User";
 
 export type OverviewDetailsType = {
   title: string;
@@ -18,6 +19,7 @@ export type AthleteEvaluationTemplateType = {
   sportSpecificSkillAssessments: string[];
   selectedSport: string;
   coachFeedback: CoachFeedbackType;
+  user:UserType;
 };
 
 const AthleteEvaluationTemplateSchema =
@@ -46,6 +48,11 @@ const AthleteEvaluationTemplateSchema =
             placeholder: { type: String },
           },
         ],
+      },
+      user: {
+        type: mongoose.SchemaTypes.ObjectId,
+        required: true,
+        ref: "User",
       },
     },
     { timestamps: true }

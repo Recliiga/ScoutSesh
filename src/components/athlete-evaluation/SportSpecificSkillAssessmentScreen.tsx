@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import SkillSlider from "./SkillSlider";
 import React, { useState } from "react";
-import { SkillType } from "./CreateAthleteEvaluationTemplateForm";
+import { SkillType } from "./AthleteEvaluationTemplateForm";
 
 const sportOptions = [
   { value: "volleyball", label: "Volleyball" },

@@ -2,7 +2,7 @@ import { PlusCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { SkillType } from "./CreateAthleteEvaluationTemplateForm";
+import { SkillType } from "./AthleteEvaluationTemplateForm";
 import SkillSlider from "./SkillSlider";
 import { useState } from "react";
 

@@ -3,7 +3,7 @@ import BackButton from "@/components/dashboard/BackButton";
 import Link from "next/link";
 import { getSessionFromHeaders } from "@/services/authServices";
 import { notFound } from "next/navigation";
-import AETemplateList from "@/components/athlete-evaluation/AETemplateList";
+import AthleteEvaluationTemplateList from "@/components/athlete-evaluation/AthleteEvaluationTemplateList";
 import { PlusIcon } from "lucide-react";
 
 const templates = [
@@ -47,7 +47,7 @@ export default async function AthleteEvaluationTemplates() {
         </Link>
       </div>
 
-      <AETemplateList templates={templates} />
+      <AthleteEvaluationTemplateList templates={templates} />
       <div className="mt-8 flex justify-end">
         <BackButton />
       </div>

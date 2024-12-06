@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import SkillSlider from "./SkillSlider";
-import { SkillType } from "./CreateAthleteEvaluationTemplateForm";
+import { SkillType } from "./AthleteEvaluationTemplateForm";
 import { PlusCircle } from "lucide-react";
 
 type PropsType = {

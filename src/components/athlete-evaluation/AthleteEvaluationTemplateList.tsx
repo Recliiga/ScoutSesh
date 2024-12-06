@@ -21,7 +21,9 @@ type PropsType = {
   }[];
 };
 
-export default function AETemplateList({ templates }: PropsType) {
+export default function AthleteEvaluationTemplateList({
+  templates,
+}: PropsType) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredTemplates = templates.filter((template) =>

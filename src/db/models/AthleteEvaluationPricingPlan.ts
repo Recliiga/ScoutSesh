@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { UserType } from "./User";
 
 export type StandardPlanType = {
   name: "Monthly" | "Quarterly" | "Semi Annual" | "Yearly";
@@ -47,6 +48,7 @@ interface BaseAEPricingPlanType extends mongoose.Document {
   _id: string;
   standardPlans: StandardPlanType[];
   firstEvaluationDays: number;
+  user: UserType;
 }
 
 export type AEPricingPlanType = BaseAEPricingPlanType &
@@ -96,6 +98,11 @@ const AthleteEvaluationPricingPlanSchema =
         goalSetting: { type: Boolean },
         dailyJournal: { type: Boolean },
         other: { type: Boolean },
+      },
+      user: {
+        type: mongoose.SchemaTypes.ObjectId,
+        required: true,
+        ref: "User",
       },
     },
     { timestamps: true }

@@ -9,6 +9,7 @@ import PlayerFeedbackScreen from "./PlayerFeedbackScreen";
 import SaveTemplateScreen from "./SaveTemplateScreen";
 import CompletionScreen from "./CompletionScreen";
 import { AthleteEvaluationTemplateType } from "@/db/models/AthleteEvaluationTemplate";
+import { UserType } from "@/db/models/User";
 
 const defaultPhysicalSkills = [
   "Endurance",
@@ -358,9 +359,10 @@ const initialEvaluationTemplateData: AthleteEvaluationTemplateType = {
       },
     ],
   },
+  user: { firstName: "", lastName: "" } as UserType,
 };
 
-export default function CreateAthleteEvaluationTemplateForm() {
+export default function AthleteEvaluationTemplateForm() {
   const [currentScreen, setCurrentScreen] = useState(
     "athlete-evaluation-overview"
   );
@@ -410,6 +412,7 @@ export default function CreateAthleteEvaluationTemplateForm() {
     ),
     selectedSport,
     coachFeedback,
+    user: { firstName: "", lastName: "" } as UserType,
   };
 
   function handleSportChange(e: React.ChangeEvent<HTMLSelectElement>) {
