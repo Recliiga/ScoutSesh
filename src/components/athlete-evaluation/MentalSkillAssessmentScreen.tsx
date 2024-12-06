@@ -140,15 +140,16 @@ export default function MentalSkillAssessmentScreen({
         <Button
           variant="outline"
           onClick={() => setCurrentScreen("physical-skill-assessment")}
+          className="px-2 sm:px-4"
         >
           Back
         </Button>
         <Button
           disabled={cannotSubmit}
-          className="bg-green-600 text-white"
+          className="bg-green-600 text-white px-2 sm:px-4"
           onClick={() => setCurrentScreen("sport-specific-skill-assessment")}
         >
-          Next: Specific Skill Assessment
+          Next: Sport Specific Skill Assessment
         </Button>
       </div>
     </div>

@@ -176,7 +176,7 @@ export default function PlayerFeedbackScreen({
           </Card>
         </div>
       </div>
-      <div className="flex justify-between w-full max-w-4xl mt-8">
+      <div className="flex justify-between w-full max-w-4xl mt-8 gap-4">
         <Button
           variant="outline"
           onClick={() => setCurrentScreen("sport-specific-skill-assessment")}

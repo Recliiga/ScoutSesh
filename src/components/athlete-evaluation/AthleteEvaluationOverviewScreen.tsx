@@ -172,14 +172,8 @@ export default function AthleteEvaluationOverviewScreen({
       </div>
       <div className="flex justify-between w-full max-w-4xl mt-8">
         <Button
-          variant="outline"
-          onClick={() => setCurrentScreen("athlete-evaluation-overview")}
-        >
-          Back
-        </Button>
-        <Button
           disabled={cannotSubmit}
-          className="bg-green-600 text-white"
+          className="bg-green-600 text-white ml-auto"
           onClick={() => setCurrentScreen("physical-skill-assessment")}
         >
           Next: Physical Skill Assessment

@@ -500,7 +500,12 @@ export default function CreateAthleteEvaluationTemplateForm() {
   }
 
   return (
-    <main className="flex-1 max-w-7xl w-[90%] mx-auto py-4 sm:py-6 flex">
+    <main
+      className={`flex-1 ${
+        currentScreen !== "completion" &&
+        "max-w-7xl w-[90%] mx-auto py-4 sm:py-6"
+      } flex`}
+    >
       {currentScreen === "athlete-evaluation-overview" && (
         <AthleteEvaluationOverviewScreen
           addQuestion={addQuestion}
@@ -546,7 +551,7 @@ export default function CreateAthleteEvaluationTemplateForm() {
       )}
       {currentScreen === "save-template" && (
         <SaveTemplateScreen
-          evaluationData={evaluationTemplateData}
+          templateData={evaluationTemplateData}
           setCurrentScreen={setCurrentScreen}
         />
       )}

@@ -1,37 +1,42 @@
 import { CheckCircleIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
+import Link from "next/link";
 
 export default function CompletionScreen() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-green-50">
-      <Card className="w-full max-w-lg text-center">
-        <CardHeader>
+    <div className="flex flex-col items-center justify-center p-4 bg-green-50">
+      <Card className="w-full max-w-lg text-center p-4 sm:p-6">
+        <CardHeader className="p-0">
           <div className="mb-4 text-sm text-muted-foreground">
             7/7 Athlete Evaluation
           </div>
           <CheckCircleIcon className="w-16 h-16 mx-auto text-green-500" />
           <CardTitle className="text-2xl font-bold text-green-700">
-            Athlete Evaluation Complete!
+            Template Created Successfully!
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-lg text-gray-700 mb-4">
-            You have successfully submitted your self-evaluation.
+        <CardContent className="p-0">
+          <p className="text-gray-700 mb-4">
+            You have successfully created an evaluation template.
           </p>
-          <p className="text-md text-gray-600 mb-6">
-            You can review your evaluation or return to the main dashboard to
-            track your progress.
+          <p className="text-md text-gray-600 mb-6 text-sm">
+            You can view your saved templates or return to the Evaluation
+            dashboard to manage your evaluations.
           </p>
-          <div className="flex-center">
-            <Button
-              className="bg-green-600 text-white hover:bg-green-700"
-              onClick={() => {
-                console.log("Navigating to main dashboard");
-              }}
+          <div className="flex-center gap-2 sm:gap-4 flex-wrap">
+            <Link
+              href={"/dashboard/athlete-evaluation/templates"}
+              className="border hover:bg-accent-gray-100 px-3 sm:px-4 py-2 rounded-md text-sm font-medium duration-200"
             >
-              Go to Dashboard
-            </Button>
+              <span className="hidde sm:inline">Manage </span>
+              Templates
+            </Link>
+            <Link
+              href={"/dashboard/athlete-evaluation"}
+              className="bg-green-600 text-white px-3 sm:px-4 py-2 rounded-md text-sm font-medium duration-200 hover:bg-green-700"
+            >
+              Dashboard
+            </Link>
           </div>
         </CardContent>
       </Card>

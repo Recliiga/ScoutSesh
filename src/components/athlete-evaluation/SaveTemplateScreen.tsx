@@ -4,21 +4,32 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { AthleteEvaluationTemplateType } from "@/db/models/AthleteEvaluationTemplate";
+import { createTemplate } from "@/actions/AETemplateActions";
+import Error from "../AuthError";
+import LoadingIndicator from "../LoadingIndicator";
 
 export default function SaveTemplateScreen({
-  evaluationData,
+  templateData,
   setCurrentScreen,
 }: {
-  evaluationData: AthleteEvaluationTemplateType;
+  templateData: AthleteEvaluationTemplateType;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const [templateName, setTemplateName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const currentDate = new Date().toDateString();
 
-  const handleSaveTemplate = () => {
-    console.log("Template data:", evaluationData);
-    // setCurrentScreen("completion");
-  };
+  async function handleSaveTemplate() {
+    setError(null);
+    setLoading(true);
+    const { error } = await createTemplate(templateData);
+    if (!error) {
+      setCurrentScreen("completion");
+    }
+    setError(error);
+    setLoading(false);
+  }
 
   return (
     <div className="flex flex-col items-center justify-center flex-1">
@@ -53,6 +64,7 @@ export default function SaveTemplateScreen({
                   {currentDate}
                 </p>
               </div>
+              {error && <Error error={error} />}
             </CardContent>
           </Card>
         </div>
@@ -67,11 +79,17 @@ export default function SaveTemplateScreen({
         <Button
           className="bg-green-600 text-white"
           onClick={handleSaveTemplate}
-          disabled={!templateName.trim()}
+          disabled={!templateName.trim() || loading}
         >
-          {templateName.trim()
-            ? `Save Template as: ${templateName}`
-            : "Save Template"}
+          {loading ? (
+            <>
+              <LoadingIndicator /> Saving...
+            </>
+          ) : templateName.trim() ? (
+            `Save Template as: ${templateName}`
+          ) : (
+            "Save Template"
+          )}
         </Button>
       </div>
     </div>

@@ -164,7 +164,7 @@ export default function SportSpecificSkillAssessmentScreen({
           )}
         </div>
       </div>
-      <div className="flex justify-between pt-4 border-t">
+      <div className="flex justify-between pt-4 border-t gap-4">
         <Button
           variant="outline"
           onClick={() => setCurrentScreen("mental-skill-assessment")}
