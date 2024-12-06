@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { AthleteEvaluationTemplateType } from "./CreateAthleteEvaluationTemplateForm";
 import { Card, CardContent } from "../ui/card";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { AthleteEvaluationTemplateType } from "@/db/models/AthleteEvaluationTemplate";
 
 export default function SaveTemplateScreen({
   evaluationData,

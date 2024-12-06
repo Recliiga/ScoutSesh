@@ -8,6 +8,7 @@ import SportSpecificSkillAssessmentScreen from "./SportSpecificSkillAssessmentSc
 import PlayerFeedbackScreen from "./PlayerFeedbackScreen";
 import SaveTemplateScreen from "./SaveTemplateScreen";
 import CompletionScreen from "./CompletionScreen";
+import { AthleteEvaluationTemplateType } from "@/db/models/AthleteEvaluationTemplate";
 
 const defaultPhysicalSkills = [
   "Endurance",
@@ -312,26 +313,6 @@ export type SkillType = {
   checked: boolean;
   currentLevel: number;
   name: string;
-};
-
-export type OverviewDetailsType = {
-  title: string;
-  description: string;
-  questions: {
-    label: string;
-    placeholder: string;
-  }[];
-};
-
-export type CoachFeedbackType = OverviewDetailsType;
-
-export type AthleteEvaluationTemplateType = {
-  overviewDetails: OverviewDetailsType;
-  physicalSkillAssessments: string[];
-  mentalSkillAssessments: string[];
-  sportSpecificSkillAssessments: string[];
-  selectedSport: string;
-  coachFeedback: CoachFeedbackType;
 };
 
 const initialEvaluationTemplateData: AthleteEvaluationTemplateType = {

@@ -1,9 +1,5 @@
 import { PlusCircle, TrashIcon } from "lucide-react";
 import { Button } from "../ui/button";
-import {
-  AthleteEvaluationTemplateType,
-  CoachFeedbackType,
-} from "./CreateAthleteEvaluationTemplateForm";
 import { Card, CardContent } from "../ui/card";
 import { Label } from "@radix-ui/react-label";
 import { Textarea } from "../ui/textarea";
@@ -11,6 +7,10 @@ import { Input } from "../ui/input";
 import { useState } from "react";
 import EditButton from "./EditButton";
 import EditQuestionButton from "./EditQuestionButton";
+import {
+  AthleteEvaluationTemplateType,
+  CoachFeedbackType,
+} from "@/db/models/AthleteEvaluationTemplate";
 
 type PropsType = {
   coachFeedback: CoachFeedbackType;

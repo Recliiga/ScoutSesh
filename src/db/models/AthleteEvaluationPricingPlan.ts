@@ -81,22 +81,25 @@ const CustomPlanTierSchema = new mongoose.Schema<CustomPlanType>({
   },
 });
 const AthleteEvaluationPricingPlanSchema =
-  new mongoose.Schema<AEPricingPlanType>({
-    standardPlans: [StandardPlanSchema],
-    firstEvaluationDays: { type: Number, required: true },
-    offerCustomPlan: { type: Boolean, required: true },
-    customPlanTiers: [CustomPlanTierSchema],
-    offerVirtualConsultation: { type: Boolean },
-    virtualConsultationType: { type: String },
-    virtualConsultationDuration: { type: Number },
-    virtualConsultationRate: { type: Number },
-    discussionTopics: {
-      athleteEvaluation: { type: Boolean },
-      goalSetting: { type: Boolean },
-      dailyJournal: { type: Boolean },
-      other: { type: Boolean },
+  new mongoose.Schema<AEPricingPlanType>(
+    {
+      standardPlans: [StandardPlanSchema],
+      firstEvaluationDays: { type: Number, required: true },
+      offerCustomPlan: { type: Boolean, required: true },
+      customPlanTiers: [CustomPlanTierSchema],
+      offerVirtualConsultation: { type: Boolean },
+      virtualConsultationType: { type: String },
+      virtualConsultationDuration: { type: Number },
+      virtualConsultationRate: { type: Number },
+      discussionTopics: {
+        athleteEvaluation: { type: Boolean },
+        goalSetting: { type: Boolean },
+        dailyJournal: { type: Boolean },
+        other: { type: Boolean },
+      },
     },
-  });
+    { timestamps: true }
+  );
 
 const AthleteEvaluationPricingPlan =
   mongoose.models.AthleteEvaluationPricingPlan ||

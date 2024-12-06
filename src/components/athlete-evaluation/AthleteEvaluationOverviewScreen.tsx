@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PlusCircle, TrashIcon } from "lucide-react";
-import {
-  AthleteEvaluationTemplateType,
-  OverviewDetailsType,
-} from "./CreateAthleteEvaluationTemplateForm";
 import { Input } from "../ui/input";
 import EditButton from "./EditButton";
 import EditQuestionButton from "./EditQuestionButton";
+import {
+  AthleteEvaluationTemplateType,
+  OverviewDetailsType,
+} from "@/db/models/AthleteEvaluationTemplate";
 
 type PropsType = {
   overviewDetails: OverviewDetailsType;
