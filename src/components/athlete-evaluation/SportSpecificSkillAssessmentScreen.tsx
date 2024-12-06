@@ -115,7 +115,7 @@ export default function SportSpecificSkillAssessmentScreen({
                 Evaluate the athlete&apos;s sport-specific skills
               </p>
               <div className="relative mb-4 w-full overflow-x-auto pb-4">
-                <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-[repeat(auto-fill,_minmax(210px,_1fr))] lg:grid-cols-4">
                   {sportSpecificSkillAssessments
                     .filter((skill) => skill.checked)
                     .map((skill, index) => (

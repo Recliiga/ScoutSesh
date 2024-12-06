@@ -36,11 +36,16 @@ export async function updateTemplate(
     if (authError !== null) return { error: "User unauthenticated" };
 
     await connectDB();
-    const templateToUpdate = await AthleteEvaluationTemplate.findOne({
-      _id: templateId,
-      user: userId,
-    });
-    if (!templateToUpdate) throw new Error("User unauthorized");
+
+    // Check if authenticated user is the owner of the template
+    const templateToDelete: AthleteEvaluationTemplateType | null =
+      await AthleteEvaluationTemplate.findById(templateId).populate({
+        path: "user",
+        select: "_id",
+      });
+    if (!templateToDelete) throw new Error("Invalid template ID");
+    if (templateToDelete.user._id.toString() !== userId)
+      throw new Error("User unauthorized");
 
     const updatedTemplate = await AthleteEvaluationTemplate.findByIdAndUpdate(
       templateId,
@@ -50,5 +55,32 @@ export async function updateTemplate(
     return { error: null };
   } catch {
     return { error: "Error: Unable to update template" };
+  }
+}
+
+export async function deleteTemplate(templateId: string) {
+  try {
+    const cookieStore = await cookies();
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) return { error: "User unauthenticated" };
+
+    await connectDB();
+
+    // Check if authenticated user is the owner of the template
+    const templateToDelete: AthleteEvaluationTemplateType | null =
+      await AthleteEvaluationTemplate.findById(templateId).populate({
+        path: "user",
+        select: "_id",
+      });
+    if (!templateToDelete) throw new Error("Invalid template ID");
+    if (templateToDelete.user._id.toString() !== userId)
+      throw new Error("User unauthorized");
+
+    const deletedTemplate =
+      await AthleteEvaluationTemplate.findByIdAndDelete(templateId);
+    if (!deletedTemplate) throw new Error();
+    return { error: null };
+  } catch {
+    return { error: "Error: Unable to delete template" };
   }
 }

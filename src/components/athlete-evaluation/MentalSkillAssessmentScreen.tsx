@@ -71,7 +71,7 @@ export default function MentalSkillAssessmentScreen({
             <p className="mb-4 text-gray-600">
               Select the mental skills you wish to evaluate
             </p>
-            <div className="mb-4 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] lg:grid-cols-4">
+            <div className="mb-4 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-[repeat(auto-fill,_minmax(210px,_1fr))] lg:grid-cols-4">
               {mentalSkillAssessments.map((skill, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <input
@@ -123,7 +123,7 @@ export default function MentalSkillAssessmentScreen({
           </div>
 
           <div className="relative mb-4 w-full overflow-x-auto pb-4">
-            <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-[repeat(auto-fill,_minmax(210px,_1fr))] lg:grid-cols-4">
               {mentalSkillAssessments
                 .filter((skill) => skill.checked)
                 .map((assessment, index) => (

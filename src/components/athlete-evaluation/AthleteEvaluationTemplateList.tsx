@@ -14,6 +14,8 @@ import {
 import { SearchIcon } from "lucide-react";
 import { AthleteEvaluationTemplateType } from "@/db/models/AthleteEvaluationTemplate";
 import Link from "next/link";
+import ModalContainer from "../ModalContainer";
+import DeleteAETemplateModal from "./DeleteAETemplateModal";
 
 type PropsType = {
   templates: AthleteEvaluationTemplateType[];
@@ -23,10 +25,20 @@ export default function AthleteEvaluationTemplateList({
   templates,
 }: PropsType) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [templateToDelete, setTemplateToDelete] =
+    useState<AthleteEvaluationTemplateType | null>(null);
 
-  const filteredTemplates = templates.filter((template) =>
+  const [evaluationTemplates, setEvaluationTemplates] = useState(templates);
+
+  const filteredTemplates = evaluationTemplates.filter((template) =>
     template.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  function removeTemplateFromList(templateId: string) {
+    setEvaluationTemplates((prev) =>
+      prev.filter((template) => template._id !== templateId),
+    );
+  }
 
   return (
     <>
@@ -71,7 +83,11 @@ export default function AthleteEvaluationTemplateList({
                     >
                       Edit
                     </Link>
-                    <Button variant="outline" size="sm">
+                    <Button
+                      onClick={() => setTemplateToDelete(template)}
+                      variant="outline"
+                      size="sm"
+                    >
                       Delete
                     </Button>
                   </TableCell>
@@ -92,6 +108,17 @@ export default function AthleteEvaluationTemplateList({
           one now to simplify and enhance your evaluation workflow!
         </p>
       )}
+      <ModalContainer
+        open={!!templateToDelete}
+        closeModal={() => setTemplateToDelete(null)}
+      >
+        <DeleteAETemplateModal
+          removeTemplateFromList={removeTemplateFromList}
+          template={templateToDelete}
+          open={!!templateToDelete}
+          closeModal={() => setTemplateToDelete(null)}
+        />
+      </ModalContainer>
     </>
   );
 }
