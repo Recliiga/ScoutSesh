@@ -317,6 +317,8 @@ export type SkillType = {
 };
 
 const initialEvaluationTemplateData: AthleteEvaluationTemplateType = {
+  _id: "",
+  name: "",
   overviewDetails: {
     title: "Athlete Performance Evaluation",
     description:
@@ -360,14 +362,19 @@ const initialEvaluationTemplateData: AthleteEvaluationTemplateType = {
     ],
   },
   user: { firstName: "", lastName: "" } as UserType,
+  createdAt: "",
+  updatedAt: "",
 };
 
 export default function AthleteEvaluationTemplateForm() {
+  const [templateName, setTemplateName] = useState(
+    initialEvaluationTemplateData.name,
+  );
   const [currentScreen, setCurrentScreen] = useState(
-    "athlete-evaluation-overview"
+    "athlete-evaluation-overview",
   );
   const [overviewDetails, setOverviewDetails] = useState(
-    initialEvaluationTemplateData.overviewDetails
+    initialEvaluationTemplateData.overviewDetails,
   );
   const [physicalSkillAssessments, setPhysicalSkillAssessments] = useState<
     SkillType[]
@@ -376,14 +383,14 @@ export default function AthleteEvaluationTemplateForm() {
       currentLevel: 5,
       name: skill,
       checked: true,
-    }))
+    })),
   );
   const [mentalSkillAssessments, setMentalSkillAssessments] = useState(
     initialEvaluationTemplateData.mentalSkillAssessments.map((skill) => ({
       currentLevel: 5,
       name: skill,
       checked: true,
-    }))
+    })),
   );
   const [sportSpecificSkillAssessments, setSportSpecificSkillAssessments] =
     useState(
@@ -392,27 +399,32 @@ export default function AthleteEvaluationTemplateForm() {
           currentLevel: 5,
           name: skill,
           checked: true,
-        })
-      )
+        }),
+      ),
     );
   const [selectedSport, setSelectedSport] = useState(
-    initialEvaluationTemplateData.selectedSport
+    initialEvaluationTemplateData.selectedSport,
   );
   const [coachFeedback, setCoachFeedback] = useState(
-    initialEvaluationTemplateData.coachFeedback
+    initialEvaluationTemplateData.coachFeedback,
   );
+
   const evaluationTemplateData: AthleteEvaluationTemplateType = {
+    _id: "",
+    name: templateName,
     overviewDetails,
     physicalSkillAssessments: physicalSkillAssessments.map(
-      (skill) => skill.name
+      (skill) => skill.name,
     ),
     mentalSkillAssessments: mentalSkillAssessments.map((skill) => skill.name),
     sportSpecificSkillAssessments: sportSpecificSkillAssessments.map(
-      (skill) => skill.name
+      (skill) => skill.name,
     ),
     selectedSport,
     coachFeedback,
     user: { firstName: "", lastName: "" } as UserType,
+    createdAt: "",
+    updatedAt: "",
   };
 
   function handleSportChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -423,13 +435,13 @@ export default function AthleteEvaluationTemplateForm() {
         currentLevel: 5,
         name: skill,
         checked: true,
-      }))
+      })),
     );
   }
 
   function updateOverviewDetails(
     field: "title" | "description",
-    value: string
+    value: string,
   ) {
     setOverviewDetails((prev) => ({ ...prev, [field]: value }));
   }
@@ -437,12 +449,12 @@ export default function AthleteEvaluationTemplateForm() {
   function updateOverviewDetailsQuestion(
     field: "label" | "placeholder",
     value: string,
-    index: number
+    index: number,
   ) {
     setOverviewDetails((prev) => ({
       ...prev,
       questions: prev.questions.map((question, i) =>
-        i === index ? { ...question, [field]: value } : question
+        i === index ? { ...question, [field]: value } : question,
       ),
     }));
   }
@@ -454,12 +466,12 @@ export default function AthleteEvaluationTemplateForm() {
   function updateCoachFeedbackQuestion(
     field: "label" | "placeholder",
     value: string,
-    index: number
+    index: number,
   ) {
     setCoachFeedback((prev) => ({
       ...prev,
       questions: prev.questions.map((question, i) =>
-        i === index ? { ...question, [field]: value } : question
+        i === index ? { ...question, [field]: value } : question,
       ),
     }));
   }
@@ -487,7 +499,7 @@ export default function AthleteEvaluationTemplateForm() {
 
   function removeQuestion(
     section: keyof AthleteEvaluationTemplateType,
-    index: number
+    index: number,
   ) {
     switch (section) {
       case "overviewDetails":
@@ -506,7 +518,7 @@ export default function AthleteEvaluationTemplateForm() {
     <main
       className={`flex-1 ${
         currentScreen !== "completion"
-          ? "max-w-7xl w-[90%] mx-auto py-4 sm:py-6"
+          ? "mx-auto w-[90%] max-w-7xl py-4 sm:py-6"
           : ""
       } flex`}
     >
@@ -555,6 +567,8 @@ export default function AthleteEvaluationTemplateForm() {
       )}
       {currentScreen === "save-template" && (
         <SaveTemplateScreen
+          templateName={templateName}
+          setTemplateName={setTemplateName}
           templateData={evaluationTemplateData}
           setCurrentScreen={setCurrentScreen}
         />

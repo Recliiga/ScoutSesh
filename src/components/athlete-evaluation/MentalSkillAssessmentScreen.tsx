@@ -37,8 +37,10 @@ export default function MentalSkillAssessmentScreen({
   function toggleSkill(skillName: string) {
     setMentalSkillAssessments((prev) =>
       prev.map((skill) =>
-        skill.name === skillName ? { ...skill, checked: !skill.checked } : skill
-      )
+        skill.name === skillName
+          ? { ...skill, checked: !skill.checked }
+          : skill,
+      ),
     );
   }
 
@@ -47,8 +49,8 @@ export default function MentalSkillAssessmentScreen({
       prev.map((skill) =>
         skill.name === skillName
           ? { ...skill, currentLevel: Number(value) }
-          : skill
-      )
+          : skill,
+      ),
     );
   }
 
@@ -60,16 +62,16 @@ export default function MentalSkillAssessmentScreen({
             3/7 Athlete Evaluation
           </div>
           <h1 className="text-3xl font-bold">Assess Your Mental Skills</h1>
-          <p className="text-gray-600 mb-4">
+          <p className="mb-4 text-gray-600">
             Rate your current level for each mental skill:
           </p>
 
           <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-2">Mental Skills</h2>
-            <p className="text-gray-600 mb-4">
+            <h2 className="mb-2 text-2xl font-bold">Mental Skills</h2>
+            <p className="mb-4 text-gray-600">
               Select the mental skills you wish to evaluate
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] lg:grid-cols-4 gap-x-4 gap-y-2 mb-4">
+            <div className="mb-4 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] lg:grid-cols-4">
               {mentalSkillAssessments.map((skill, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <input
@@ -87,7 +89,7 @@ export default function MentalSkillAssessmentScreen({
               ))}
             </div>
             {isAddingSkill ? (
-              <div className="flex items-center space-x-2 mt-4">
+              <div className="mt-4 flex items-center space-x-2">
                 <Input
                   type="text"
                   placeholder="Enter new skill name"
@@ -113,14 +115,14 @@ export default function MentalSkillAssessmentScreen({
                 onClick={() => setIsAddingSkill(true)}
                 className="mt-4 flex items-center gap-2"
               >
-                <PlusCircle className="w-4 h-4" />
+                <PlusCircle className="h-4 w-4" />
                 Add More Mental Skills
               </Button>
             )}
           </div>
 
-          <div className="relative w-full overflow-x-auto pb-4 mb-4">
-            <div className="grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] lg:grid-cols-4 gap-x-4 gap-y-6">
+          <div className="relative mb-4 w-full overflow-x-auto pb-4">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] lg:grid-cols-4">
               {mentalSkillAssessments
                 .filter((skill) => skill.checked)
                 .map((assessment, index) => (
@@ -136,7 +138,7 @@ export default function MentalSkillAssessmentScreen({
           </div>
         </div>
       </div>
-      <div className="flex justify-between pt-4 border-t gap-2">
+      <div className="flex justify-between gap-2 border-t pt-4">
         <Button
           variant="outline"
           onClick={() => setCurrentScreen("physical-skill-assessment")}
@@ -146,10 +148,12 @@ export default function MentalSkillAssessmentScreen({
         </Button>
         <Button
           disabled={cannotSubmit}
-          className="bg-green-600 text-white px-2 sm:px-4"
+          className="gap-1 bg-green-600 px-2 text-white sm:px-4"
           onClick={() => setCurrentScreen("sport-specific-skill-assessment")}
         >
-          Next: Sport Specific Skill Assessment
+          Next: Sport
+          <span className="hidden min-[400px]:inline"> Specific</span> Skill
+          Assessment
         </Button>
       </div>
     </div>

@@ -7,7 +7,7 @@ import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
 
 export async function createTemplate(
-  templateData: AthleteEvaluationTemplateType
+  templateData: AthleteEvaluationTemplateType,
 ) {
   try {
     const cookieStore = await cookies();
@@ -15,7 +15,11 @@ export async function createTemplate(
     if (authError !== null) return { error: "User unauthenticated" };
 
     await connectDB();
-    await AthleteEvaluationTemplate.create({ ...templateData, user: userId });
+    await AthleteEvaluationTemplate.create({
+      ...templateData,
+      _id: undefined,
+      user: userId,
+    });
     return { error: null };
   } catch {
     return { error: "Error: Unable to create template" };

@@ -12,13 +12,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { SearchIcon } from "lucide-react";
+import { AthleteEvaluationTemplateType } from "@/db/models/AthleteEvaluationTemplate";
+import Link from "next/link";
 
 type PropsType = {
-  templates: {
-    id: number;
-    fileName: string;
-    lastModified: string;
-  }[];
+  templates: AthleteEvaluationTemplateType[];
 };
 
 export default function AthleteEvaluationTemplateList({
@@ -27,59 +25,70 @@ export default function AthleteEvaluationTemplateList({
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredTemplates = templates.filter((template) =>
-    template.fileName.toLowerCase().includes(searchQuery.toLowerCase())
+    template.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
     <>
-      <div className="mb-6">
+      <div>
         <div className="relative">
-          <SearchIcon className="absolute w-5 h-5 left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <SearchIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
           <Input
             type="search"
             placeholder="Search templates..."
-            className="pl-10 pr-4 py-2 w-full"
+            className="w-full py-2 pl-10 pr-4"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[50%]">File Name</TableHead>
-              <TableHead className="w-[30%]">Last Modified</TableHead>
-              <TableHead className="w-[20%]">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredTemplates.map((template) => (
-              <TableRow key={template.id}>
-                <TableCell className="font-medium">
-                  {template.fileName}
-                </TableCell>
-                <TableCell>
-                  {new Date(template.lastModified).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </TableCell>
-                <TableCell className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" className="mr-2">
-                    Edit
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    Delete
-                  </Button>
-                </TableCell>
+      {templates.length > 0 ? (
+        <div className="overflow-hidden rounded-lg bg-white shadow">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[50%]">File Name</TableHead>
+                <TableHead className="w-[30%]">Last Modified</TableHead>
+                <TableHead className="w-[20%]">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {filteredTemplates.map((template) => (
+                <TableRow key={template._id}>
+                  <TableCell className="font-medium">{template.name}</TableCell>
+                  <TableCell>
+                    {new Date(template.updatedAt).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </TableCell>
+                  <TableCell className="flex flex-wrap gap-2">
+                    <Button variant="outline" size="sm" className="mr-2">
+                      Edit
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
+        <p className="p-4 text-sm text-accent-gray-300">
+          You currently do not have any Evaluation Templates.{" "}
+          <Link
+            href={"/dashboard/athlete-evaluation/templates/new"}
+            className="text-green-600 hover:underline"
+          >
+            Create
+          </Link>{" "}
+          one now to simplify and enhance your evaluation workflow!
+        </p>
+      )}
     </>
   );
 }

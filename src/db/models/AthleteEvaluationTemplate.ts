@@ -13,18 +13,26 @@ export type OverviewDetailsType = {
 export type CoachFeedbackType = OverviewDetailsType;
 
 export type AthleteEvaluationTemplateType = {
+  _id: string;
+  name: string;
   overviewDetails: OverviewDetailsType;
   physicalSkillAssessments: string[];
   mentalSkillAssessments: string[];
   sportSpecificSkillAssessments: string[];
   selectedSport: string;
   coachFeedback: CoachFeedbackType;
-  user:UserType;
+  user: UserType;
+  createdAt: string;
+  updatedAt: string;
 };
 
 const AthleteEvaluationTemplateSchema =
   new mongoose.Schema<AthleteEvaluationTemplateType>(
     {
+      name: {
+        type: String,
+        required: [true, "Please provide a name for your template"],
+      },
       overviewDetails: {
         title: { type: String },
         description: { type: String },

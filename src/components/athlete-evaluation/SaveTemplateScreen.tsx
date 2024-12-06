@@ -10,12 +10,15 @@ import LoadingIndicator from "../LoadingIndicator";
 
 export default function SaveTemplateScreen({
   templateData,
+  templateName,
+  setTemplateName,
   setCurrentScreen,
 }: {
   templateData: AthleteEvaluationTemplateType;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
+  templateName: string;
+  setTemplateName: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const [templateName, setTemplateName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const currentDate = new Date().toDateString();
@@ -32,8 +35,8 @@ export default function SaveTemplateScreen({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center flex-1">
-      <div className="flex w-full max-w-4xl flex-col md:flex-row gap-4 md:gap-8">
+    <div className="flex flex-1 flex-col items-center justify-center">
+      <div className="flex w-full max-w-4xl flex-col gap-4 md:flex-row md:gap-8">
         <div className="flex-1">
           <div className="mb-4 text-sm text-muted-foreground">
             6/7 Athlete Evaluation
@@ -56,7 +59,7 @@ export default function SaveTemplateScreen({
                   placeholder="Enter a name for your template"
                 />
               </div>
-              <div className="space-y-2 mt-4">
+              <div className="mt-4 space-y-2">
                 <Label htmlFor="template-date" className="font-semibold">
                   Date
                 </Label>
@@ -69,7 +72,7 @@ export default function SaveTemplateScreen({
           </Card>
         </div>
       </div>
-      <div className="flex justify-between w-full max-w-4xl mt-8">
+      <div className="mt-8 flex w-full max-w-4xl justify-between">
         <Button
           variant="outline"
           onClick={() => setCurrentScreen("player-feedback")}
