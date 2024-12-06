@@ -1,31 +1,10 @@
 import React from "react";
-import BackButton from "@/components/dashboard/BackButton";
 import Link from "next/link";
 import { getSessionFromHeaders } from "@/services/authServices";
 import { notFound } from "next/navigation";
 import AthleteEvaluationTemplateList from "@/components/athlete-evaluation/AthleteEvaluationTemplateList";
 import { PlusIcon } from "lucide-react";
 import { fetchCoachAETemplates } from "@/services/AETemplateServices";
-
-// const templates = [
-//   {
-//     id: 1,
-//     fileName: "Standard Hockey Evaluation",
-//     lastModified: "2024-10-15",
-//   },
-//   {
-//     id: 2,
-//     fileName: "Goalie Specific Evaluation",
-//     lastModified: "2024-09-28",
-//   },
-//   { id: 3, fileName: "Youth Player Assessment", lastModified: "2024-08-05" },
-//   { id: 4, fileName: "Pro Scouting Template", lastModified: "2024-07-12" },
-//   {
-//     id: 5,
-//     fileName: "Skill Development Tracker",
-//     lastModified: "2024-06-20",
-//   },
-// ];
 
 export default async function AthleteEvaluationTemplates() {
   const user = await getSessionFromHeaders();
@@ -53,7 +32,12 @@ export default async function AthleteEvaluationTemplates() {
 
       <AthleteEvaluationTemplateList templates={templates} />
       <div className="mt-auto flex justify-end">
-        <BackButton />
+        <Link
+          href={"/dashboard/athlete-evaluation"}
+          className="flex items-center rounded-md border px-4 py-2 text-sm font-medium duration-200 hover:bg-accent-gray-100"
+        >
+          Back
+        </Link>
       </div>
     </main>
   );
