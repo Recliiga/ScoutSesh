@@ -366,51 +366,79 @@ const initialEvaluationTemplateData: AthleteEvaluationTemplateType = {
   updatedAt: "",
 };
 
-export default function AthleteEvaluationTemplateForm() {
+export default function AthleteEvaluationTemplateForm({
+  template,
+}: {
+  template?: AthleteEvaluationTemplateType;
+}) {
   const [templateName, setTemplateName] = useState(
-    initialEvaluationTemplateData.name,
+    template ? template.name : initialEvaluationTemplateData.name,
   );
   const [currentScreen, setCurrentScreen] = useState(
     "athlete-evaluation-overview",
   );
   const [overviewDetails, setOverviewDetails] = useState(
-    initialEvaluationTemplateData.overviewDetails,
+    template
+      ? template.overviewDetails
+      : initialEvaluationTemplateData.overviewDetails,
   );
   const [physicalSkillAssessments, setPhysicalSkillAssessments] = useState<
     SkillType[]
   >(
-    initialEvaluationTemplateData.physicalSkillAssessments.map((skill) => ({
-      currentLevel: 5,
-      name: skill,
-      checked: true,
-    })),
-  );
-  const [mentalSkillAssessments, setMentalSkillAssessments] = useState(
-    initialEvaluationTemplateData.mentalSkillAssessments.map((skill) => ({
-      currentLevel: 5,
-      name: skill,
-      checked: true,
-    })),
-  );
-  const [sportSpecificSkillAssessments, setSportSpecificSkillAssessments] =
-    useState(
-      initialEvaluationTemplateData.sportSpecificSkillAssessments.map(
-        (skill) => ({
+    template
+      ? template.physicalSkillAssessments.map((skill) => ({
           currentLevel: 5,
           name: skill,
           checked: true,
-        }),
-      ),
+        }))
+      : initialEvaluationTemplateData.physicalSkillAssessments.map((skill) => ({
+          currentLevel: 5,
+          name: skill,
+          checked: true,
+        })),
+  );
+  const [mentalSkillAssessments, setMentalSkillAssessments] = useState(
+    template
+      ? template.mentalSkillAssessments.map((skill) => ({
+          currentLevel: 5,
+          name: skill,
+          checked: true,
+        }))
+      : initialEvaluationTemplateData.mentalSkillAssessments.map((skill) => ({
+          currentLevel: 5,
+          name: skill,
+          checked: true,
+        })),
+  );
+  const [sportSpecificSkillAssessments, setSportSpecificSkillAssessments] =
+    useState(
+      template
+        ? template.sportSpecificSkillAssessments.map((skill) => ({
+            currentLevel: 5,
+            name: skill,
+            checked: true,
+          }))
+        : initialEvaluationTemplateData.sportSpecificSkillAssessments.map(
+            (skill) => ({
+              currentLevel: 5,
+              name: skill,
+              checked: true,
+            }),
+          ),
     );
   const [selectedSport, setSelectedSport] = useState(
-    initialEvaluationTemplateData.selectedSport,
+    template
+      ? template.selectedSport
+      : initialEvaluationTemplateData.selectedSport,
   );
   const [coachFeedback, setCoachFeedback] = useState(
-    initialEvaluationTemplateData.coachFeedback,
+    template
+      ? template.coachFeedback
+      : initialEvaluationTemplateData.coachFeedback,
   );
 
   const evaluationTemplateData: AthleteEvaluationTemplateType = {
-    _id: "",
+    _id: template ? template._id : "",
     name: templateName,
     overviewDetails,
     physicalSkillAssessments: physicalSkillAssessments.map(
@@ -422,7 +450,9 @@ export default function AthleteEvaluationTemplateForm() {
     ),
     selectedSport,
     coachFeedback,
-    user: { firstName: "", lastName: "" } as UserType,
+    user: template
+      ? template.user
+      : ({ firstName: "", lastName: "" } as UserType),
     createdAt: "",
     updatedAt: "",
   };
@@ -563,17 +593,21 @@ export default function AthleteEvaluationTemplateForm() {
           coachFeedback={coachFeedback}
           removeQuestion={removeQuestion}
           setCurrentScreen={setCurrentScreen}
+          isEdit={!!template}
         />
       )}
       {currentScreen === "save-template" && (
         <SaveTemplateScreen
+          isEditing={!!template}
           templateName={templateName}
           setTemplateName={setTemplateName}
           templateData={evaluationTemplateData}
           setCurrentScreen={setCurrentScreen}
         />
       )}
-      {currentScreen === "completion" && <CompletionScreen />}
+      {currentScreen === "completion" && (
+        <CompletionScreen isEditing={!!template} />
+      )}
     </main>
   );
 }

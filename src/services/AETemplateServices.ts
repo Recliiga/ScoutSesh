@@ -17,3 +17,26 @@ export async function fetchCoachAETemplates(coachId: string) {
     };
   }
 }
+
+export async function fetchCoachAETemplate(
+  coachId: string,
+  templateId: string,
+) {
+  try {
+    await connectDB();
+    const template: AthleteEvaluationTemplateType | null = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluationTemplate.findOne({
+          user: coachId,
+          _id: templateId,
+        }),
+      ),
+    );
+    return { template, error: null };
+  } catch (error) {
+    return {
+      template: null,
+      error: (error as Error).message,
+    };
+  }
+}

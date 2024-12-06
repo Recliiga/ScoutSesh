@@ -4,7 +4,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { AthleteEvaluationTemplateType } from "@/db/models/AthleteEvaluationTemplate";
-import { createTemplate } from "@/actions/AETemplateActions";
+import { createTemplate, updateTemplate } from "@/actions/AETemplateActions";
 import Error from "../AuthError";
 import LoadingIndicator from "../LoadingIndicator";
 
@@ -13,11 +13,13 @@ export default function SaveTemplateScreen({
   templateName,
   setTemplateName,
   setCurrentScreen,
+  isEditing,
 }: {
   templateData: AthleteEvaluationTemplateType;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
   templateName: string;
   setTemplateName: React.Dispatch<React.SetStateAction<string>>;
+  isEditing: boolean;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +28,9 @@ export default function SaveTemplateScreen({
   async function handleSaveTemplate() {
     setError(null);
     setLoading(true);
-    const { error } = await createTemplate(templateData);
+    const { error } = isEditing
+      ? await updateTemplate(templateData._id, templateData)
+      : await createTemplate(templateData);
     if (!error) {
       setCurrentScreen("completion");
     }
@@ -41,10 +45,12 @@ export default function SaveTemplateScreen({
           <div className="mb-4 text-sm text-muted-foreground">
             6/7 Athlete Evaluation
           </div>
-          <h1 className="mb-4 text-3xl font-bold">Save Evaluation Template</h1>
+          <h1 className="mb-4 text-3xl font-bold">
+            {isEditing ? "Update" : "Save"} Evaluation Template
+          </h1>
           <p className="text-gray-600">
-            Name and save your evaluation template. This template can be used
-            for future evaluations.
+            Name and {isEditing ? "update" : "save"} your evaluation template.
+            This template can be used for future evaluations.
           </p>
         </div>
         <div className="flex-1">
@@ -53,6 +59,7 @@ export default function SaveTemplateScreen({
               <div className="space-y-2">
                 <Label htmlFor="template-name">Template Name</Label>
                 <Input
+                  name="template-name"
                   id="template-name"
                   value={templateName}
                   onChange={(e) => setTemplateName(e.target.value)}
@@ -89,9 +96,9 @@ export default function SaveTemplateScreen({
               <LoadingIndicator /> Saving...
             </>
           ) : templateName.trim() ? (
-            `Save Template as: ${templateName}`
+            `${isEditing ? "Update" : "Save"} Template as: ${templateName}`
           ) : (
-            "Save Template"
+            `${isEditing ? "Update" : "Save"} Template`
           )}
         </Button>
       </div>

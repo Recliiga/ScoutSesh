@@ -1,6 +1,11 @@
-import CreateAthleteEvaluationTemplateForm from "@/components/athlete-evaluation/AthleteEvaluationTemplateForm";
+import AthleteEvaluationTemplateForm from "@/components/athlete-evaluation/AthleteEvaluationTemplateForm";
+import { getSessionFromHeaders } from "@/services/authServices";
+import { notFound } from "next/navigation";
 import React from "react";
 
-export default function CreateAthleteEvaluationTemplatePage() {
-  return <CreateAthleteEvaluationTemplateForm />;
+export default async function CreateAthleteEvaluationTemplatePage() {
+  const user = await getSessionFromHeaders();
+  if (user.role !== "Head Coach") notFound();
+
+  return <AthleteEvaluationTemplateForm />;
 }

@@ -25,3 +25,30 @@ export async function createTemplate(
     return { error: "Error: Unable to create template" };
   }
 }
+
+export async function updateTemplate(
+  templateId: string,
+  templateData: AthleteEvaluationTemplateType,
+) {
+  try {
+    const cookieStore = await cookies();
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) return { error: "User unauthenticated" };
+
+    await connectDB();
+    const templateToUpdate = await AthleteEvaluationTemplate.findOne({
+      _id: templateId,
+      user: userId,
+    });
+    if (!templateToUpdate) throw new Error("User unauthorized");
+
+    const updatedTemplate = await AthleteEvaluationTemplate.findByIdAndUpdate(
+      templateId,
+      templateData,
+    );
+    if (!updatedTemplate) throw new Error();
+    return { error: null };
+  } catch {
+    return { error: "Error: Unable to update template" };
+  }
+}

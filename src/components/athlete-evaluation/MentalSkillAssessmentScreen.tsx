@@ -91,6 +91,7 @@ export default function MentalSkillAssessmentScreen({
             {isAddingSkill ? (
               <div className="mt-4 flex items-center space-x-2">
                 <Input
+                  name="newSkillName"
                   type="text"
                   placeholder="Enter new skill name"
                   value={newSkillName}

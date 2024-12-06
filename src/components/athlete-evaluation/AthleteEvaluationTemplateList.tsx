@@ -65,9 +65,12 @@ export default function AthleteEvaluationTemplateList({
                     })}
                   </TableCell>
                   <TableCell className="flex flex-wrap gap-2">
-                    <Button variant="outline" size="sm" className="mr-2">
+                    <Link
+                      href={`/dashboard/athlete-evaluation/templates/edit/${template._id}`}
+                      className="mr-2 rounded-md border px-3 py-1.5 text-xs font-medium duration-200 hover:bg-accent-gray-100"
+                    >
                       Edit
-                    </Button>
+                    </Link>
                     <Button variant="outline" size="sm">
                       Delete
                     </Button>

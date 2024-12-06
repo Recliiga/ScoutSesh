@@ -46,7 +46,7 @@ const AthleteEvaluationTemplateSchema =
       physicalSkillAssessments: [{ type: String }],
       mentalSkillAssessments: [{ type: String }],
       sportSpecificSkillAssessments: [{ type: String }],
-      selectedSport: [{ type: String }],
+      selectedSport: { type: String },
       coachFeedback: {
         title: { type: String },
         description: { type: String },
@@ -63,7 +63,7 @@ const AthleteEvaluationTemplateSchema =
         ref: "User",
       },
     },
-    { timestamps: true }
+    { timestamps: true },
   );
 
 const AthleteEvaluationTemplate =

@@ -58,21 +58,23 @@ export default function SportSpecificSkillAssessmentScreen({
   function toggleSkill(skillName: string) {
     setSportSpecificSkillAssessments((prev) =>
       prev.map((skill) =>
-        skill.name === skillName ? { ...skill, checked: !skill.checked } : skill
-      )
+        skill.name === skillName
+          ? { ...skill, checked: !skill.checked }
+          : skill,
+      ),
     );
   }
 
   function updateSportSpecificSkillAssessment(
     skillName: string,
-    value: string
+    value: string,
   ) {
     setSportSpecificSkillAssessments((prev) =>
       prev.map((skill) =>
         skill.name === skillName
           ? { ...skill, currentLevel: Number(value) }
-          : skill
-      )
+          : skill,
+      ),
     );
   }
 
@@ -86,14 +88,14 @@ export default function SportSpecificSkillAssessmentScreen({
           <h1 className="text-3xl font-bold">
             Assess Your Sport Specific Skills
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="mb-4 text-gray-600">
             Rate your current level for each sport-specific skill:
           </p>
 
           <div>
-            <h2 className="text-2xl font-bold mb-2">Select Sport</h2>
+            <h2 className="mb-2 text-2xl font-bold">Select Sport</h2>
             <select
-              className="border rounded-md text-sm p-2"
+              className="rounded-md border p-2 text-sm"
               value={selectedSport}
               onChange={handleSportChange}
             >
@@ -108,12 +110,12 @@ export default function SportSpecificSkillAssessmentScreen({
 
           {selectedSport && (
             <div className="mb-6">
-              <h2 className="text-2xl font-bold mb-2">Sport Specific Skills</h2>
-              <p className="text-gray-600 mb-4">
+              <h2 className="mb-2 text-2xl font-bold">Sport Specific Skills</h2>
+              <p className="mb-4 text-gray-600">
                 Evaluate the athlete&apos;s sport-specific skills
               </p>
-              <div className="relative w-full overflow-x-auto pb-4 mb-4">
-                <div className="grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] lg:grid-cols-4 gap-x-4 gap-y-6">
+              <div className="relative mb-4 w-full overflow-x-auto pb-4">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] lg:grid-cols-4">
                   {sportSpecificSkillAssessments
                     .filter((skill) => skill.checked)
                     .map((skill, index) => (
@@ -130,8 +132,9 @@ export default function SportSpecificSkillAssessmentScreen({
                 </div>
               </div>
               {isAddingSkill ? (
-                <div className="flex items-center space-x-2 mt-4">
+                <div className="mt-4 flex items-center space-x-2">
                   <Input
+                    name="newSkillName"
                     type="text"
                     placeholder="Enter new skill name"
                     value={newSkillName}
@@ -156,7 +159,7 @@ export default function SportSpecificSkillAssessmentScreen({
                   onClick={() => setIsAddingSkill(true)}
                   className="mt-4 flex items-center gap-2"
                 >
-                  <PlusCircle className="w-4 h-4" />
+                  <PlusCircle className="h-4 w-4" />
                   Add Custom Skill
                 </Button>
               )}
@@ -164,7 +167,7 @@ export default function SportSpecificSkillAssessmentScreen({
           )}
         </div>
       </div>
-      <div className="flex justify-between pt-4 border-t gap-4">
+      <div className="flex justify-between gap-4 border-t pt-4">
         <Button
           variant="outline"
           onClick={() => setCurrentScreen("mental-skill-assessment")}

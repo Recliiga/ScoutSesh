@@ -15,13 +15,13 @@ type PropsType = {
   overviewDetails: OverviewDetailsType;
   removeQuestion(
     section: keyof AthleteEvaluationTemplateType,
-    index: number
+    index: number,
   ): void;
   updateOverviewDetails(field: "title" | "description", value: string): void;
   updateOverviewDetailsQuestion(
     field: "label" | "placeholder",
     value: string,
-    index: number
+    index: number,
   ): void;
   addQuestion(section: keyof AthleteEvaluationTemplateType): void;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
@@ -50,23 +50,24 @@ export default function AthleteEvaluationOverviewScreen({
     overviewDetails.description.trim() === "" ||
     overviewDetails.questions.some(
       (question) =>
-        question.label.trim() === "" || question.placeholder.trim() === ""
+        question.label.trim() === "" || question.placeholder.trim() === "",
     );
 
   return (
-    <div className="flex flex-col items-center justify-center w-full text-sm">
-      <div className="flex flex-col gap-4 md:gap-8 md:flex-row w-full max-w-4xl">
+    <div className="flex w-full flex-col items-center justify-center text-sm">
+      <div className="flex w-full max-w-4xl flex-col gap-4 md:flex-row md:gap-8">
         <div className="flex-1">
           <div className="mb-4 text-sm text-muted-foreground">
             1/7 Athlete Evaluation
           </div>
           <div
-            className={`flex items-start gap-2 justify-between ${
+            className={`flex items-start justify-between gap-2 ${
               isEditing.title ? "mb-4" : ""
             }`}
           >
             {isEditing.title ? (
               <Input
+                name="title"
                 className="font-bold"
                 value={overviewDetails.title}
                 onChange={(e) => updateOverviewDetails("title", e.target.value)}
@@ -80,9 +81,10 @@ export default function AthleteEvaluationOverviewScreen({
               field="title"
             />
           </div>
-          <div className="flex items-start gap-2 justify-between">
+          <div className="flex items-start justify-between gap-2">
             {isEditing.description ? (
               <Textarea
+                name="description"
                 className="text-sm"
                 rows={5}
                 value={overviewDetails.description}
@@ -103,17 +105,18 @@ export default function AthleteEvaluationOverviewScreen({
         <div className="flex-1">
           {overviewDetails.questions.map((question, index) => (
             <div key={index} className="mb-4">
-              <div className="flex items-center gap-2 justify-between">
+              <div className="flex items-center justify-between gap-2">
                 {editingQuestion === `question-${index}` ? (
                   <Input
-                    className="font-medium text-sm"
+                    name={`question-${index}`}
+                    className="text-sm font-medium"
                     placeholder="Enter your question"
                     value={overviewDetails.questions[index].label}
                     onChange={(e) =>
                       updateOverviewDetailsQuestion(
                         "label",
                         e.target.value,
-                        index
+                        index,
                       )
                     }
                   />
@@ -143,14 +146,15 @@ export default function AthleteEvaluationOverviewScreen({
                 </div>
               </div>
               <Textarea
-                className="w-full mt-2 text-sm"
+                name={`placeholder-${index}`}
+                className="mt-2 w-full text-sm"
                 placeholder="Enter placeholder"
                 value={question.placeholder}
                 onChange={(e) =>
                   updateOverviewDetailsQuestion(
                     "placeholder",
                     e.target.value,
-                    index
+                    index,
                   )
                 }
               />
@@ -160,20 +164,20 @@ export default function AthleteEvaluationOverviewScreen({
             onClick={() => {
               addQuestion("overviewDetails");
               setEditingQuestion(
-                `question-${overviewDetails.questions.length}`
+                `question-${overviewDetails.questions.length}`,
               );
             }}
             className="mt-4 flex items-center gap-2"
           >
-            <PlusCircle className="w-4 h-4" />
+            <PlusCircle className="h-4 w-4" />
             Add Question
           </Button>
         </div>
       </div>
-      <div className="flex justify-between w-full max-w-4xl mt-8">
+      <div className="mt-8 flex w-full max-w-4xl justify-between">
         <Button
           disabled={cannotSubmit}
-          className="bg-green-600 text-white ml-auto"
+          className="ml-auto bg-green-600 text-white"
           onClick={() => setCurrentScreen("physical-skill-assessment")}
         >
           Next: Physical Skill Assessment
