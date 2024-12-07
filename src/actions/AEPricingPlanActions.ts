@@ -27,3 +27,33 @@ export async function createPricingPlan(pricingPlanData: AEPricingPlanType) {
     if (redirectUrl) redirect(redirectUrl);
   }
 }
+
+export async function updatePricingPlan(
+  pricingPlanId: string,
+  pricingPlanData: AEPricingPlanType,
+) {
+  let redirectUrl;
+  try {
+    const cookieStore = await cookies();
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) return { error: "User unauthenticated" };
+
+    if (String(pricingPlanData.user) !== userId)
+      return { error: "User unauthorized" };
+
+    await connectDB();
+    const updatedPricingPlan =
+      await AthleteEvaluationPricingPlan.findByIdAndUpdate(
+        pricingPlanId,
+        pricingPlanData,
+      );
+    if (!updatedPricingPlan) return { error: "Unable to update pricing plan" };
+
+    redirectUrl = "/dashboard/athlete-evaluation";
+  } catch (err) {
+    console.log((err as Error).message);
+    return { error: "An unexpected error occured" };
+  } finally {
+    if (redirectUrl) redirect(redirectUrl);
+  }
+}

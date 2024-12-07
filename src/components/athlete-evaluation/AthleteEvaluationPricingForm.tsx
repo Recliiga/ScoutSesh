@@ -18,36 +18,62 @@ import {
   CustomPlanType,
   StandardPlanType,
 } from "@/db/models/AthleteEvaluationPricingPlan";
-import { createPricingPlan } from "@/actions/AEPricingPlanActions";
+import {
+  createPricingPlan,
+  updatePricingPlan,
+} from "@/actions/AEPricingPlanActions";
 import LoadingIndicator from "../LoadingIndicator";
 import Error from "../AuthError";
 
-export default function AthleteEvaluationPricingForm() {
-  const [offerCustomPlan, setOfferCustomPlan] = useState(false);
-  const [standardPlans, setStandardPlans] = useState<StandardPlanType[]>([
-    { name: "Monthly", evaluations: 12, price: 70 },
-    { name: "Quarterly", evaluations: 4, price: 80 },
-    { name: "Semi Annual", evaluations: 2, price: 90 },
-    { name: "Yearly", evaluations: 1, price: 110 },
-  ]);
-  const [customPlanTiers, setCustomPlanTiers] = useState<CustomPlanType[]>([
-    { evaluations: { from: 1, to: 1 }, price: 0, type: "single" },
-  ]);
-  const [offerVirtualConsultation, setOfferVirtualConsultation] =
-    useState(false);
+const initialStandardPlans = [
+  { _id: "", name: "Monthly", evaluations: 12, price: 70 },
+  { _id: "", name: "Quarterly", evaluations: 4, price: 80 },
+  { _id: "", name: "Semi Annual", evaluations: 2, price: 90 },
+  { _id: "", name: "Yearly", evaluations: 1, price: 110 },
+] as StandardPlanType[];
+
+const initialCustomPlanTiers = [
+  { _id: "", evaluations: { from: 1, to: 1 }, price: 0, type: "single" },
+] as CustomPlanType[];
+
+const initialDiscussionTopics = {
+  athleteEvaluation: false,
+  goalSetting: false,
+  dailyJournal: false,
+  other: false,
+};
+
+export default function AthleteEvaluationPricingForm({
+  pricingPlan,
+}: {
+  pricingPlan: AEPricingPlanType;
+}) {
+  const [offerCustomPlan, setOfferCustomPlan] = useState(
+    pricingPlan.offerCustomPlan || false,
+  );
+  const [standardPlans, setStandardPlans] = useState<StandardPlanType[]>(
+    pricingPlan.standardPlans || initialStandardPlans,
+  );
+  const [customPlanTiers, setCustomPlanTiers] = useState<CustomPlanType[]>(
+    pricingPlan.customPlanTiers || initialCustomPlanTiers,
+  );
+  const [offerVirtualConsultation, setOfferVirtualConsultation] = useState(
+    pricingPlan.offerVirtualConsultation || false,
+  );
   const [virtualConsultationType, setVirtualConsultationType] = useState<
     "addon" | "included"
-  >("included");
+  >(pricingPlan.virtualConsultationType || "included");
   const [virtualConsultationDuration, setVirtualConsultationDuration] =
-    useState(30);
-  const [discussionTopics, setDiscussionTopics] = useState({
-    athleteEvaluation: false,
-    goalSetting: false,
-    dailyJournal: false,
-    other: false,
-  });
-  const [firstEvaluationDays, setFirstEvaluationDays] = useState(7);
-  const [virtualConsultationRate, setVirtualConsultationRate] = useState(0);
+    useState(pricingPlan.virtualConsultationDuration || 30);
+  const [discussionTopics, setDiscussionTopics] = useState(
+    pricingPlan.discussionTopics || initialDiscussionTopics,
+  );
+  const [firstEvaluationDays, setFirstEvaluationDays] = useState(
+    pricingPlan.firstEvaluationDays || 7,
+  );
+  const [virtualConsultationRate, setVirtualConsultationRate] = useState(
+    pricingPlan.virtualConsultationRate || 0,
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,7 +91,7 @@ export default function AthleteEvaluationPricingForm() {
 
   function handleCustomPlanEvaluationsChange(
     index: number,
-    value: { from: number; to: number }
+    value: { from: number; to: number },
   ) {
     const updatedTiers = [...customPlanTiers];
     updatedTiers[index].evaluations = value;
@@ -80,7 +106,7 @@ export default function AthleteEvaluationPricingForm() {
 
   function handleCustomPlanTypeChange(
     index: number,
-    value: "single" | "range"
+    value: "single" | "range",
   ) {
     const updatedTiers = [...customPlanTiers];
 
@@ -97,7 +123,12 @@ export default function AthleteEvaluationPricingForm() {
   function addCustomPlanTier() {
     setCustomPlanTiers([
       ...customPlanTiers,
-      { type: "single", evaluations: { from: 0, to: 0 }, price: 0 },
+      {
+        _id: "",
+        type: "single",
+        evaluations: { from: 0, to: 0 },
+        price: 0,
+      } as CustomPlanType,
     ]);
   }
 
@@ -111,7 +142,7 @@ export default function AthleteEvaluationPricingForm() {
   }
 
   function handleVirtualConsultationRateChange(
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) {
     const newValue = parseFloat(e.target.value);
     setVirtualConsultationRate(Math.round(newValue));
@@ -119,7 +150,7 @@ export default function AthleteEvaluationPricingForm() {
 
   function handleVirtualConsultationRateStep(step: number) {
     setVirtualConsultationRate((prevRate) =>
-      Math.max(0, Math.round(prevRate + step))
+      Math.max(0, Math.round(prevRate + step)),
     );
   }
 
@@ -151,11 +182,43 @@ export default function AthleteEvaluationPricingForm() {
     setLoading(false);
   }
 
+  async function handleUpdate(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+
+    const pricingPlanData = {
+      ...pricingPlan,
+      offerCustomPlan,
+      standardPlans,
+      customPlanTiers: offerCustomPlan ? customPlanTiers : undefined,
+      offerVirtualConsultation,
+      virtualConsultationType: offerVirtualConsultation
+        ? virtualConsultationType
+        : undefined,
+      virtualConsultationDuration: offerVirtualConsultation
+        ? virtualConsultationDuration
+        : undefined,
+      virtualConsultationRate: offerVirtualConsultation
+        ? virtualConsultationRate
+        : undefined,
+      discussionTopics: offerVirtualConsultation ? discussionTopics : undefined,
+      firstEvaluationDays,
+    };
+
+    setLoading(true);
+    const data = await updatePricingPlan(pricingPlan._id, pricingPlanData as AEPricingPlanType);
+    if (data?.error) setError(data?.error);
+    setLoading(false);
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={pricingPlan ? handleUpdate : handleSubmit}
+      className="space-y-6"
+    >
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Standard Plans</h3>
-        <div className="grid grid-cols-4 gap-4 mb-2">
+        <div className="mb-2 grid grid-cols-4 gap-4">
           <Label>Plan Type</Label>
           <Label>Sessions</Label>
           <Label>Rate</Label>
@@ -171,7 +234,7 @@ export default function AthleteEvaluationPricingForm() {
               className="bg-gray-100"
             />
             <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500">
                 $
               </span>
               <Input
@@ -184,12 +247,12 @@ export default function AthleteEvaluationPricingForm() {
                 className="pl-6 pr-24"
                 required
               />
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500">
                 /evaluation
               </span>
             </div>
             <div className="flex items-center">
-              <span className="text-gray-700 font-medium">
+              <span className="font-medium text-gray-700">
                 ${plan.evaluations * plan.price}
               </span>
             </div>
@@ -208,7 +271,7 @@ export default function AthleteEvaluationPricingForm() {
       {offerCustomPlan && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Custom Plan Tiers</h3>
-          <div className="grid grid-cols-4 gap-4 mb-2">
+          <div className="mb-2 grid grid-cols-4 gap-4">
             <Label>Type</Label>
             <Label>Sessions</Label>
             <Label>Rate</Label>
@@ -221,7 +284,7 @@ export default function AthleteEvaluationPricingForm() {
                 onValueChange={(value) =>
                   handleCustomPlanTypeChange(
                     index,
-                    value as CustomPlanType["type"]
+                    value as CustomPlanType["type"],
                   )
                 }
               >
@@ -234,7 +297,7 @@ export default function AthleteEvaluationPricingForm() {
                 </SelectContent>
               </Select>
 
-              <div className="flex gap-2 items-center">
+              <div className="flex items-center gap-2">
                 <Input
                   type="number"
                   value={tier.evaluations.from > 0 ? tier.evaluations.from : ""}
@@ -282,7 +345,7 @@ export default function AthleteEvaluationPricingForm() {
               </div>
 
               <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500">
                   $
                 </span>
                 <Input
@@ -295,12 +358,12 @@ export default function AthleteEvaluationPricingForm() {
                   className="pl-6 pr-24"
                   required
                 />
-                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500">
                   /evaluation
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-700 font-medium">
+                <span className="font-medium text-gray-700">
                   ${tier.evaluations.from * tier.price}{" "}
                   {tier.type === "range" &&
                     `- $${tier.evaluations.to * tier.price}`}
@@ -325,7 +388,7 @@ export default function AthleteEvaluationPricingForm() {
                 onClick={addCustomPlanTier}
                 className="w-full"
               >
-                <PlusCircle className="h-4 w-4 mr-2" />
+                <PlusCircle className="mr-2 h-4 w-4" />
                 Add Custom Plan Tier
               </Button>
             </div>
@@ -365,15 +428,15 @@ export default function AthleteEvaluationPricingForm() {
                 <Label htmlFor="addon">Add-on purchase</Label>
               </div>
             </RadioGroup>
-            <div className="border rounded-md p-3">
-              <Label className="text-base font-medium mb-2 block">
+            <div className="rounded-md border p-3">
+              <Label className="mb-2 block text-base font-medium">
                 Discussion Topics
               </Label>
               <div className="space-y-2">
                 {Object.entries(discussionTopics).map(([key, value]) => (
                   <div
                     key={key}
-                    className="flex items-center justify-between bg-gray-50 p-2 rounded-md"
+                    className="flex items-center justify-between rounded-md bg-gray-50 p-2"
                   >
                     <Label htmlFor={key} className="flex-grow">
                       {key
@@ -385,7 +448,7 @@ export default function AthleteEvaluationPricingForm() {
                       checked={value}
                       onCheckedChange={() =>
                         handleDiscussionTopicChange(
-                          key as keyof typeof discussionTopics
+                          key as keyof typeof discussionTopics,
                         )
                       }
                     />
@@ -412,7 +475,7 @@ export default function AthleteEvaluationPricingForm() {
                   className="pr-12"
                   required
                 />
-                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500">
                   min
                 </span>
               </div>
@@ -423,7 +486,7 @@ export default function AthleteEvaluationPricingForm() {
               </Label>
               <div className="flex items-center space-x-2">
                 <div className="relative flex-grow">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500">
                     $
                   </span>
                   <Input
@@ -474,7 +537,7 @@ export default function AthleteEvaluationPricingForm() {
                 className="pr-12"
                 required
               />
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500">
                 days
               </span>
             </div>
@@ -486,7 +549,7 @@ export default function AthleteEvaluationPricingForm() {
       <Button
         disabled={loading}
         type="submit"
-        className="w-full bg-green-600 hover:bg-green-700 text-white mt-4"
+        className="mt-4 w-full bg-green-600 text-white hover:bg-green-700"
       >
         {loading ? (
           <>
