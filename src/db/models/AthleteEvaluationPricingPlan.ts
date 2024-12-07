@@ -2,16 +2,18 @@ import mongoose from "mongoose";
 import { UserType } from "./User";
 
 export type StandardPlanType = {
+  _id: string;
   name: "Monthly" | "Quarterly" | "Semi Annual" | "Yearly";
   evaluations: number;
   price: number;
-};
+} & mongoose.Document;
 
 export type CustomPlanType = {
+  _id: string;
   type: "single" | "range";
   evaluations: { from: number; to: number };
   price: number;
-};
+} & mongoose.Document;
 
 type AECustomPlanType =
   | {
@@ -105,14 +107,14 @@ const AthleteEvaluationPricingPlanSchema =
         ref: "User",
       },
     },
-    { timestamps: true }
+    { timestamps: true },
   );
 
 const AthleteEvaluationPricingPlan =
   mongoose.models.AthleteEvaluationPricingPlan ||
   mongoose.model(
     "AthleteEvaluationPricingPlan",
-    AthleteEvaluationPricingPlanSchema
+    AthleteEvaluationPricingPlanSchema,
   );
 
 export default AthleteEvaluationPricingPlan;

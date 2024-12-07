@@ -1,12 +1,7 @@
 "use client";
+import useClickOutside from "@/hooks/useClickOutside";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import React, {
-  useContext,
-  useState,
-  createContext,
-  useEffect,
-  useRef,
-} from "react";
+import React, { useContext, useState, createContext } from "react";
 
 type SelectContextType = {
   showOptions: boolean;
@@ -22,27 +17,15 @@ export default function Select({
   onChange,
   className,
   children,
+  disabled = false,
 }: {
   className?: string;
   placeholder?: string;
   value?: string;
   onChange(value: string): void;
   children?: React.ReactNode;
+  disabled?: boolean;
 }) {
-  const selectRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    function handleClickOutside(ev: MouseEvent) {
-      if (selectRef.current && !selectRef.current.contains(ev.target as Node)) {
-        console.log("Clicked");
-        closeDropdown();
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const [showOptions, setShowOptions] = useState(false);
   const [childComponent, setChildComponent] = useState<React.ReactNode | null>(
     null,
@@ -52,7 +35,10 @@ export default function Select({
     setShowOptions(false);
   }
 
+  const [selectRef] = useClickOutside(closeDropdown);
+
   function handleChange(value: string, child: React.ReactNode) {
+    if (disabled) return;
     onChange(value);
     setChildComponent(child);
     closeDropdown();
@@ -64,8 +50,11 @@ export default function Select({
     >
       <div className="relative text-sm" ref={selectRef}>
         <div
-          onClick={() => setShowOptions((prev) => !prev)}
-          className={`line-clamp-1 w-full cursor-pointer rounded-md border px-3 py-2 pr-8 duration-200 hover:bg-accent-gray-100 ${className}`}
+          onClick={() => {
+            if (disabled) return;
+            setShowOptions((prev) => !prev);
+          }}
+          className={`line-clamp-1 w-full cursor-pointer rounded-md border px-3 py-2 pr-8 duration-200 hover:bg-accent-gray-100 ${disabled ? "cursor-[default] bg-accent-gray-100" : ""} ${className}`}
         >
           {childComponent || placeholder || "Select"}
         </div>
