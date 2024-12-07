@@ -80,7 +80,7 @@ function Content({
 
   return (
     <div
-      className={`absolute left-0 top-[calc(100%_+_4px)] z-10 w-full rounded-md border bg-white p-1 shadow ${showOptions ? "visible" : "invisible"} ${className}`}
+      className={`absolute left-0 top-[calc(100%_+_4px)] z-10 w-full rounded-md border bg-white p-1 shadow duration-200 ${showOptions ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0"} ${className}`}
     >
       {children}
     </div>

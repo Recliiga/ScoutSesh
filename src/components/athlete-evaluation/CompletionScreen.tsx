@@ -8,7 +8,7 @@ export default function CompletionScreen({
   isEditing: boolean;
 }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-green-50 p-4">
+    <div className="flex flex-1 flex-col items-center justify-center bg-green-50 py-4">
       <Card className="w-full max-w-lg p-4 text-center sm:p-6">
         <CardHeader className="m-0">
           <div className="mb-4 text-sm text-muted-foreground">

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function AthleteEvaluationNotificationSign() {
   const message = "Athlete Evaluation awaiting your action";
-  const href = "#";
+  const href = "/dashboard/athlete-evaluation/self-evaluation";
   const actionText = "Complete Athlete Evaluation";
 
   return (
