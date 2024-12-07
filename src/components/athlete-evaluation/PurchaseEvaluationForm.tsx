@@ -36,16 +36,8 @@ export default function PurchaseEvaluationForm({
   const [selectedProgramId, setSelectedProgramId] = useState<string>();
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const virtualConsultationDuration = 30;
-  const virtualConsultationRate = 0;
   const [addVirtualConsultation, setAddVirtualConsultation] = useState(false);
-  const [virtualConsultationsCount, setVirtualConsultationsCount] = useState(0);
-  const [discussionTopics, setDiscussionTopics] = useState({
-    athleteEvaluation: true,
-    goalSetting: true,
-    dailyJournal: true,
-    other: true,
-  });
+  const [virtualConsultationsCount, setVirtualConsultationsCount] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -84,7 +76,26 @@ export default function PurchaseEvaluationForm({
         ? selectedPlanType.price
         : 0;
 
-  const totalPrice = selectedPlanPrice * selectedPlanEvaluations;
+  const discussionTopics = selectedProgram?.plan.discussionTopics || {
+    athleteEvaluation: true,
+    goalSetting: true,
+    dailyJournal: true,
+    other: true,
+  };
+  const virtualConsultationDuration = selectedProgram?.plan
+    .offerVirtualConsultation
+    ? selectedProgram.plan.virtualConsultationDuration
+    : 30;
+  const virtualConsultationRate = selectedProgram?.plan.offerVirtualConsultation
+    ? selectedProgram.plan.virtualConsultationRate
+    : 0;
+
+  const virtualConsultationPrice = addVirtualConsultation
+    ? virtualConsultationRate * virtualConsultationsCount
+    : 0;
+
+  const totalPrice =
+    selectedPlanPrice * selectedPlanEvaluations + virtualConsultationPrice;
 
   function handlePlanTypeChange(value: PlanType) {
     setPlanType(value);
@@ -94,13 +105,13 @@ export default function PurchaseEvaluationForm({
       setSubscriptions(1);
     }
 
-    setVirtualConsultationsCount(0);
+    setVirtualConsultationsCount(1);
   }
 
   const handleCustomSubscriptionsChange = (value: number) => {
     setSubscriptions(value);
     setSelectedDates([]);
-    setVirtualConsultationsCount(0);
+    setVirtualConsultationsCount(1);
   };
 
   function handleDateSelect(dates: Date[] | undefined) {
@@ -118,15 +129,6 @@ export default function PurchaseEvaluationForm({
       setCalendarOpen(false);
     }
   }
-
-  const handleVirtualConsultationsCountChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const value = parseInt(e.target.value);
-    if (!isNaN(value) && value >= 0 && value <= selectedPlanEvaluations) {
-      setVirtualConsultationsCount(value);
-    }
-  };
 
   const cannotSubmit = !selectedProgram || !selectedPlanType;
   const firstEvaluationDate = [...selectedDates].sort(
@@ -388,16 +390,19 @@ export default function PurchaseEvaluationForm({
                           <Input
                             id="virtualConsultationsCount"
                             type="number"
-                            min={0}
+                            min={1}
                             max={selectedPlanEvaluations}
                             value={virtualConsultationsCount}
-                            onChange={handleVirtualConsultationsCountChange}
+                            onChange={(e) =>
+                              setVirtualConsultationsCount(
+                                Number(e.target.value),
+                              )
+                            }
                             className="w-full"
                           />
                           <p className="text-sm text-gray-600">
                             Total for Virtual Consultations: $
-                            {virtualConsultationRate *
-                              virtualConsultationsCount}
+                            {virtualConsultationPrice}
                           </p>
                         </div>
                       )}
