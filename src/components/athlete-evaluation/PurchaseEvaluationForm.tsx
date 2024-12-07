@@ -207,7 +207,9 @@ export default function PurchaseEvaluationForm({
         discussionTopics: addVirtualConsultation
           ? selectedProgram.plan.discussionTopics
           : undefined,
-        virtualConsultationDuration,
+        virtualConsultationDuration: addVirtualConsultation
+          ? virtualConsultationDuration
+          : undefined,
         totalPrice,
       };
       console.log(evaluationPurchaseData);
