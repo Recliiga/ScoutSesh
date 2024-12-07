@@ -57,11 +57,12 @@ export default function CoachDailyJournalPage({
   const sortedAndFilteredAthletes: DailyJournalAthleteType[] = useMemo(() => {
     return athletesWithJournals
       .filter(
-        (athlete) =>
+        (athlete, index, self) =>
           athlete.name
             .toLowerCase()
             .includes(searchTerm.trim().toLowerCase()) &&
-          athlete.scoutSeshStreak > 0
+          athlete.scoutSeshStreak > 0 &&
+          index === self.findIndex((ath) => ath._id === athlete._id)
       )
       .sort((a, b) => b.scoutSeshStreak - a.scoutSeshStreak);
   }, [athletesWithJournals, searchTerm]);

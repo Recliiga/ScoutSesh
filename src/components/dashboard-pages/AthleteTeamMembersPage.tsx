@@ -42,7 +42,7 @@ export default function AthleteTeamMembersPage({
                 Riverside Basketball Club
               </h2>
               <div className="top-4 right-4 bg-green-100 px-4 py-2 rounded-full w-fit font-bold text-2xl text-green-800 whitespace-nowrap">
-                {teamMembers.length + coaches.length} Team Members 🏅
+                {organizationMembers.length} Team Members 🏅
               </div>
               <div className="gap-4 grid grid-cols-2 min-[540px]:grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 mt-8">
                 {coaches.map((coach) => (

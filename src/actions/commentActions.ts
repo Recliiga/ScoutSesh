@@ -1,12 +1,12 @@
 "use server";
 import connectDB from "@/db/connectDB";
 import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 import GoalComment, { GoalCommentType } from "@/db/models/GoalComment";
 import { revalidatePath } from "next/cache";
 import DailyJournalComment, {
   DailyJournalCommentType,
 } from "@/db/models/DailyJournalCommen";
+import { getUserIdFromCookies } from "@/lib/utils";
 
 export async function postGoalComment(
   text: string,
@@ -16,14 +16,8 @@ export async function postGoalComment(
   const cookieStore = await cookies();
 
   try {
-    // Get token from cookie
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("Invalid token");
-
-    // Verify token and get userId
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("Invalid token");
-    const userId = payload.userId;
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) throw new Error(authError);
 
     // connect to MongoDB and create new Comment
     await connectDB();
@@ -56,14 +50,8 @@ export async function postDailyJournalComment(
   const cookieStore = await cookies();
 
   try {
-    // Get token from cookie
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("Invalid token");
-
-    // Verify token and get userId
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("Invalid token");
-    const userId = payload.userId;
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) throw new Error(authError);
 
     // connect to MongoDB and create new Comment
     await connectDB();

@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
 import DashboardCard from "../dashboard/DashboardCard";
@@ -9,6 +8,7 @@ import { OrganizationType } from "@/db/models/Organization";
 import { calculateStreak, getFullname } from "@/lib/utils";
 import { DailyJournalType } from "@/db/models/DailyJournal";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function AthleteDashboard({
   user,
@@ -71,14 +71,19 @@ export default function AthleteDashboard({
                     {demoAthlete.nextSessionEndTime}
                   </p>
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="relative bg-accent-gray-100 rounded-full w-16 h-16 overflow-hidden">
-                      <Image
+                    <Avatar className="w-16 h-16">
+                      <AvatarImage
                         src={organization.user.profilePicture}
-                        alt={`Coach ${getFullname(organization.user)}`}
-                        fill
-                        className="w-full h-full object-cover"
+                        alt={getFullname(organization.user)}
+                        className="object-cover"
                       />
-                    </div>
+                      <AvatarFallback>
+                        {getFullname(organization.user)
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <p className="font-semibold">
                         Coach {getFullname(organization.user)}

@@ -23,6 +23,16 @@ export default function ModalContainer({
     };
   }, [open]);
 
+  useEffect(() => {
+    function handleKeyPress(ev: KeyboardEvent) {
+      if (ev.code === "Escape") {
+        closeModal();
+      }
+    }
+    document.addEventListener("keydown", handleKeyPress);
+    return () => document.removeEventListener("keydown", handleKeyPress);
+  }, [closeModal]);
+
   return (
     <div
       onClick={closeModal}

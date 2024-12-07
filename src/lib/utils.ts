@@ -1,4 +1,3 @@
-// import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
 import { StatusType } from "@/components/goal-setting/GoalSettingNotificationSign";
 import { GoalDataSchemaType } from "@/db/models/Goal";
 import { UserType } from "@/db/models/User";
@@ -7,6 +6,7 @@ import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adap
 import { twMerge } from "tailwind-merge";
 import jwt from "jsonwebtoken";
 import { DailyJournalType } from "@/db/models/DailyJournal";
+import { RepeatFrequencyType } from "@/db/models/GroupClass";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -186,6 +186,58 @@ export async function uploadImage(
   }
 }
 
+export async function uploadImageClient(
+  image: string
+): Promise<{ url: string; error: null } | { url: null; error: string }> {
+  try {
+    if (image.startsWith("http")) return { url: image, error: null };
+
+    const formData = new FormData();
+    formData.set("image", image);
+    const res = await fetch(`/api/upload-image`, {
+      method: "POST",
+      body: JSON.stringify({ image }),
+      headers: { "Content-Type": "application/json" },
+    });
+    const { url, error } = await res.json();
+
+    return { url, error };
+  } catch (error) {
+    return { url: null, error: (error as Error).message };
+  }
+}
+
+export async function uploadVideosClient(
+  videos: { title: string; duration: number; url: string }[]
+): Promise<
+  | {
+      uploadedVideos: { title: string; duration: number; url: string }[];
+      error: null;
+    }
+  | { uploadedVideos: null; error: string }
+> {
+  try {
+    const uploadedVideos = await Promise.all(
+      videos.map(async (video) => {
+        if (video.url.startsWith("http")) return video;
+        const formData = new FormData();
+        formData.set("video", video.url);
+        const res = await fetch(`/api/upload-video`, {
+          method: "POST",
+          body: formData,
+        });
+        const { url, error } = await res.json();
+        if (error) throw new Error(error);
+
+        return { ...video, url };
+      })
+    );
+    return { uploadedVideos, error: null };
+  } catch (error) {
+    return { uploadedVideos: null, error: (error as Error).message };
+  }
+}
+
 export function getUserIdFromCookies(cookieStore: ReadonlyRequestCookies) {
   try {
     // Get token from cookies
@@ -227,4 +279,55 @@ export function calculateStreak(journalEntries: DailyJournalType[]) {
   }
 
   return streak;
+}
+
+export function getDatesBetween(
+  startDate: Date,
+  endDate: Date,
+  frequency: RepeatFrequencyType
+) {
+  const dates = [];
+  const currentDate = new Date(startDate);
+
+  const intervalDays: Record<RepeatFrequencyType, number> = {
+    daily: 1,
+    weekly: 7,
+    "bi-weekly": 14,
+    monthly: 1,
+    yearly: 1,
+  };
+
+  while (currentDate <= new Date(endDate)) {
+    dates.push(new Date(currentDate));
+    if (
+      frequency === "daily" ||
+      frequency === "weekly" ||
+      frequency === "bi-weekly"
+    )
+      currentDate.setDate(currentDate.getDate() + intervalDays[frequency]);
+    if (frequency === "monthly")
+      currentDate.setMonth(currentDate.getMonth() + intervalDays[frequency]);
+    if (frequency === "yearly")
+      currentDate.setFullYear(
+        currentDate.getFullYear() + intervalDays[frequency]
+      );
+  }
+
+  return dates;
+}
+
+export function getCourseTimeString(courseTime: {
+  hours: string;
+  mins: string;
+}) {
+  let hours = Number(courseTime.hours);
+  const mins = courseTime.mins;
+  let suffix = "AM";
+
+  if (hours > 12) {
+    hours -= 12;
+    suffix = "PM";
+  }
+
+  return `${hours}:${mins} ${suffix}`;
 }

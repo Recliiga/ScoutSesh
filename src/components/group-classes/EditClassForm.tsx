@@ -27,7 +27,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { format } from "date-fns";
-import { createClass } from "@/actions/groupClassActions";
+import { updateClass } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
 import Image from "next/image";
 import placeholderThumbnail from "@/assets/placeholder-thumbnail.png";
@@ -39,51 +39,69 @@ import {
 } from "@/lib/utils";
 import LoadingIndicator from "../LoadingIndicator";
 import { nanoid } from "nanoid";
-import { RepeatFrequencyType } from "@/db/models/GroupClass";
+import { GroupClassType, RepeatFrequencyType } from "@/db/models/GroupClass";
 import Error from "../AuthError";
 import BackButton from "../dashboard/BackButton";
 
-export default function CreateClassForm({
+export default function EditClassForm({
+  course,
   assistantCoaches,
 }: {
+  course: GroupClassType;
   assistantCoaches: UserType[];
 }) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [courseType, setCourseType] = useState<"live" | "video" | undefined>();
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
-  const [startTime, setStartTime] = useState<{ hours: string; mins: string }>({
-    hours: "10",
-    mins: "00",
-  });
-  const [duration, setDuration] = useState("");
-  const [customDuration, setCustomDuration] = useState("");
-  const [isRecurring, setIsRecurring] = useState(false);
-  const [repeatFrequency, setRepeatFrequency] = useState<RepeatFrequencyType>();
+  const [title, setTitle] = useState(course.title || "");
+  const [description, setDescription] = useState(course.description || "");
+  const [startDate, setStartDate] = useState<Date | undefined>(
+    course.startDate
+  );
+  const [endDate, setEndDate] = useState<Date | undefined>(course.endDate);
+  const [startTime, setStartTime] = useState<{ hours: string; mins: string }>(
+    course.startTime || {
+      hours: "10",
+      mins: "00",
+    }
+  );
+  const [duration, setDuration] = useState(course.duration.toString() || "");
+  const [customDuration, setCustomDuration] = useState(
+    course.customDuration.toString() || ""
+  );
+  const [isRecurring, setIsRecurring] = useState(course.isRecurring || false);
+  const [repeatFrequency, setRepeatFrequency] = useState<
+    RepeatFrequencyType | undefined
+  >(course.repeatFrequency);
   const [loading, setLoading] = useState({ status: false, message: "" });
   const [error, setError] = useState("");
   const [videoError, setVideoError] = useState("");
   const [thumbnailError, setThumbnailError] = useState("");
   const [coaches, setCoaches] = useState<string[]>(
-    assistantCoaches
-      .filter((user) => user.role === "Head Coach")
-      .map((user) => user._id)
+    course.coaches.map((coach) => coach._id) ||
+      assistantCoaches
+        .filter((user) => user.role === "Head Coach")
+        .map((user) => user._id)
   );
-  const [thumbnail, setThumbnail] = useState("");
+  const [thumbnail, setThumbnail] = useState(course.thumbnail || "");
   const [videoLessons, setVideoLessons] = useState<
     { _id: string; title: string; url: string; duration: number }[]
-  >([]);
-  const [skillLevels, setSkillLevels] = useState<string[]>([]);
-  const [totalSpots, setTotalSpots] = useState("");
-  const [price, setPrice] = useState("");
+  >(course.videos || []);
+  const [skillLevels, setSkillLevels] = useState<string[]>(
+    course.skillLevels || []
+  );
+  const [totalSpots, setTotalSpots] = useState(
+    course.totalSpots.toString() || ""
+  );
+  const [price, setPrice] = useState(course.price.toString() || "");
+
+  const courseType = course.courseType;
 
   async function handleChangeThumbnail(e: React.ChangeEvent<HTMLInputElement>) {
     if (!(e.target.files && e.target.files.length)) {
       return;
     }
+
     const imageFile = e.target.files[0];
-    if (imageFile.size > 4194304) {
+
+    if (imageFile.size > 5242880) {
       setThumbnailError(
         "File too large: Please select an image less than 4mb in size"
       );
@@ -98,7 +116,6 @@ export default function CreateClassForm({
     e: React.ChangeEvent<HTMLInputElement>,
     id: string
   ) {
-    setVideoError("");
     if (!(e.target.files && e.target.files.length)) {
       return;
     }
@@ -182,23 +199,13 @@ export default function CreateClassForm({
     }
   }
 
-  function clearLiveClassFields() {
-    setStartDate(undefined);
-    setEndDate(undefined);
-    setStartTime({ hours: "10", mins: "00" });
-    setDuration("");
-    setCustomDuration("");
-    setRepeatFrequency(undefined);
-    setTotalSpots("");
-    setIsRecurring(false);
-  }
-
   const formFieldVacant =
     !Boolean(title.trim()) ||
     !Boolean(description.trim()) ||
     !Boolean(skillLevels.length) ||
     !Boolean(courseType?.trim()) ||
     !Boolean(price.trim());
+
   const videoFieldVacant = !Boolean(
     videoLessons.length &&
       videoLessons.some((vid) => vid.url.trim() && vid.title.trim())
@@ -227,6 +234,7 @@ export default function CreateClassForm({
     if (cannotSubmit) return;
 
     const classData = {
+      user: course.user,
       title,
       description,
       thumbnail,
@@ -250,9 +258,11 @@ export default function CreateClassForm({
     };
 
     // Upload thumbnail
-    setLoading({ message: "Uploading Thumbnail", status: true });
-    if (!classData.thumbnail)
+    setLoading({ message: "Uploading Thumbnail...", status: true });
+    if (!classData.thumbnail) {
       setError("Please select an image for the thumbnail");
+      return;
+    }
 
     const { url, error: uploadThumbnailError } = await uploadImageClient(
       classData.thumbnail
@@ -264,9 +274,11 @@ export default function CreateClassForm({
     classData.thumbnail = url;
 
     // Upload videos
-    setLoading({ message: "Uploading Videos", status: true });
-    if (!classData.thumbnail)
+    setLoading({ message: "Uploading Videos...", status: true });
+    if (courseType === "video" && videoFieldVacant) {
       setError("Please select an image for the thumbnail");
+      return;
+    }
 
     const { uploadedVideos, error: uploadVideoError } =
       await uploadVideosClient(classData.videos);
@@ -278,7 +290,7 @@ export default function CreateClassForm({
     classData.videos = uploadedVideos;
 
     setLoading({ message: "", status: true });
-    const data = await createClass(classData);
+    const data = await updateClass(course._id, classData);
     if (data?.error) setError(data.error);
 
     setLoading({ message: "", status: false });
@@ -287,7 +299,7 @@ export default function CreateClassForm({
   return (
     <div className="max-w-3xl w-[90%] mx-auto py-4">
       <div className="flex gap-4 items-center mb-4 justify-between">
-        <h1 className="text-2xl font-bold">Create Class</h1>
+        <h1 className="text-2xl font-bold">Edit Class</h1>
         <BackButton />
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -320,7 +332,6 @@ export default function CreateClassForm({
             onChange={handleChangeThumbnail}
             type="file"
             accept="image/*"
-            required
             className="text-sm"
           />
           {thumbnailError && <Error error={thumbnailError} />}
@@ -413,29 +424,6 @@ export default function CreateClassForm({
               Advanced
             </Label>
           </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label>Course Type</Label>
-          <RadioGroup
-            name="courseType"
-            value={courseType}
-            onValueChange={(value: "live" | "video") => {
-              if (value === "live") setVideoLessons([]);
-              if (value === "video") clearLiveClassFields();
-              setCourseType(value);
-            }}
-            className="flex space-x-4 mt-2"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="live" id="live-course" />
-              <Label htmlFor="live-course">Live Class</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="video" id="video-course" />
-              <Label htmlFor="video-course">Video Course</Label>
-            </div>
-          </RadioGroup>
         </div>
 
         {courseType === "live" && (
@@ -678,7 +666,6 @@ export default function CreateClassForm({
                     onChange={(e) => handleChangeVideo(e, videoLesson._id)}
                     type="file"
                     accept="video/*"
-                    required
                     className="text-sm hidden"
                   />
                   <div className="flex gap-4">
@@ -751,10 +738,10 @@ export default function CreateClassForm({
         >
           {loading.status ? (
             <>
-              <LoadingIndicator /> {loading.message || "Creating"}...
+              <LoadingIndicator /> {loading.message || "Updating"}...
             </>
           ) : (
-            "Create Class"
+            "Update Class"
           )}
         </Button>
       </form>

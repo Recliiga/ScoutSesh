@@ -11,7 +11,7 @@ export async function generateInvitationCode(code: string) {
       return { invitationCode: null, error: "User is not Head Coach" };
 
     const exp = new Date();
-    exp.setDate(exp.getDate() + 1);
+    exp.setDate(exp.getDate() + 7);
 
     const invitationData = {
       code,

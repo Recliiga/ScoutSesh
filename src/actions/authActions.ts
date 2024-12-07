@@ -43,7 +43,7 @@ export async function login(formData: FormData) {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!);
     cookieStore.set("token", token, {
       httpOnly: true,
-      maxAge: 60 * 60 * 24,
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return { error: null };
@@ -91,7 +91,7 @@ export async function signup(formData: FormData) {
     const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET!);
     cookieStore.set("token", token, {
       httpOnly: true,
-      maxAge: 60 * 60 * 24,
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return { error: null };
