@@ -49,20 +49,20 @@ export default function GoalSettingNotificationSign({
   }
 
   return (
-    <div className="border-green-600 mb-8 p-4 border rounded-lg">
-      <div className="flex items-center space-x-2 mb-2">
-        <AlertCircle className="w-6 h-6 text-green-600" />
-        <h2 className="font-semibold text-green-600 text-xl">
+    <div className="mb-8 rounded-lg border border-green-600 p-4">
+      <div className="mb-2 flex items-center space-x-2">
+        <AlertCircle className="h-6 w-6 text-green-600" />
+        <h2 className="text-xl font-semibold text-green-600">
           Goal Setting Update
         </h2>
       </div>
-      <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-4 sm:gap-6 md:gap-8">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6 md:gap-8">
         <p
-          className="text-base text-gray-800 sm:text-lg"
+          className="text-sm text-gray-800 sm:text-base"
           dangerouslySetInnerHTML={{ __html: message }}
         ></p>
-        <Button className="border-green-600 bg-white hover:bg-green-600 px-0 py-0 border text-green-600 hover:text-white transition-colors">
-          <Link href={href} className="flex-center px-4 py-2 w-full h-full">
+        <Button className="border border-green-600 bg-white px-0 py-0 text-green-600 transition-colors hover:bg-green-600 hover:text-white">
+          <Link href={href} className="flex-center h-full w-full px-4 py-2">
             {actionText}
           </Link>
         </Button>
