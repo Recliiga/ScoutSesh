@@ -15,6 +15,7 @@ import { OrganizationType } from "@/db/models/Organization";
 import DatePicker from "../DatePicker";
 import Error from "../AuthError";
 import LoadingIndicator from "../LoadingIndicator";
+import { purchaseEvaluation } from "@/actions/AEOrderActions";
 
 type PlanType =
   | "Monthly"
@@ -178,11 +179,11 @@ export default function PurchaseEvaluationForm({
     }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    if (selectedProgram) {
+    if (selectedProgram && pricingPlan) {
       if (
         planType === "custom" &&
         selectedDates.length !== selectedPlanEvaluations
@@ -198,21 +199,25 @@ export default function PurchaseEvaluationForm({
         setError("Please select your first evaluation date.");
         return;
       }
-      const evaluationPurchaseData = {
-        plan: planType,
-        evaluations: selectedPlanEvaluations,
-        pricingPlan,
-        evaluationDates,
-        addVirtualConsultation,
-        discussionTopics: addVirtualConsultation
-          ? selectedProgram.plan.discussionTopics
-          : undefined,
-        virtualConsultationDuration: addVirtualConsultation
-          ? virtualConsultationDuration
-          : undefined,
-        totalPrice,
-      };
-      console.log(evaluationPurchaseData);
+
+      if (planType) {
+        const evaluationPurchaseData = {
+          plan: planType,
+          evaluations: selectedPlanEvaluations,
+          pricingPlan: selectedProgram.plan,
+          evaluationDates,
+          addVirtualConsultation,
+          discussionTopics: addVirtualConsultation
+            ? selectedProgram.plan.discussionTopics
+            : undefined,
+          virtualConsultationDuration: addVirtualConsultation
+            ? virtualConsultationDuration
+            : undefined,
+          totalPrice,
+        };
+        const data = await purchaseEvaluation(evaluationPurchaseData);
+        if (data?.error) setError(data.error);
+      }
     }
     setLoading(false);
   }

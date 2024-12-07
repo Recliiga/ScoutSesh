@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 import { AEPricingPlanType } from "./AthleteEvaluationPricingPlan";
+import { UserType } from "./User";
 
-type AthleteEvaluationOrderType = {
+export type AthleteEvaluationOrderType = {
   _id: string;
   plan: "Monthly" | "Quarterly" | "Semi Annual" | "Yearly" | "custom";
   evaluations: number;
-  pricingPlan?: AEPricingPlanType;
+  pricingPlan: AEPricingPlanType;
   evaluationDates: Date[];
   addVirtualConsultation: boolean;
   discussionTopics?: {
@@ -16,6 +17,7 @@ type AthleteEvaluationOrderType = {
   };
   virtualConsultationDuration?: number;
   totalPrice: number;
+  user: UserType;
 };
 
 const AthleteEvaluationOrderSchema =
@@ -50,6 +52,11 @@ const AthleteEvaluationOrderSchema =
         type: Number,
       },
       totalPrice: { type: Number, required: [true, "Invalid price"] },
+      user: {
+        type: mongoose.SchemaTypes.ObjectId,
+        required: [true, "Please provide a valid user ID"],
+        ref: "User",
+      },
     },
     { timestamps: true },
   );
