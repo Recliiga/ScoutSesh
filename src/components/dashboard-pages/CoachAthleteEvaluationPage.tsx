@@ -7,7 +7,7 @@ import {
   UsersIcon,
   UserPlusIcon,
 } from "lucide-react";
-import EvaluationCard from "@/components/dashboard/EvaluationCard";
+import EvaluationCard from "@/components/athlete-evaluation/EvaluationCard";
 
 const allAthletesNeedingEvaluation = [
   {
@@ -170,18 +170,21 @@ export default function CoachAthleteEvaluationPage() {
             description="Customize and manage your pricing structure for athlete evaluations. Optimize your rates to reflect your expertise and market demand."
             icon={<ClipboardIcon className="w-8 h-8 text-green-600" />}
             action="Manage Pricing"
+            href="/dashboard/athlete-evaluation/pricing"
           />
           <EvaluationCard
             title="Evaluation Template"
             description="Modify the current evaluation template or create a new one."
             icon={<FileEditIcon className="w-8 h-8 text-green-600" />}
-            action="Edit Template"
+            action="View Templates"
+            href="/dashboard/athlete-evaluation/templates"
           />
           <EvaluationCard
             title="All Evaluations"
             description="View and manage all athlete evaluations, including past records and current statuses. Access detailed reports and track evaluation history."
             icon={<UsersIcon className="w-8 h-8 text-green-600" />}
             action="View Evaluations"
+            href="#"
           />
         </div>
       </div>
