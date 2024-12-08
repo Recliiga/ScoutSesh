@@ -7,7 +7,7 @@ import EvaluationSportSpecificSkillAssessmentScreen from "./EvaluationSportSpeci
 import EvaluationMentalSkillAssessmentScreen from "./EvaluationMentalSkillAssessmentScreen";
 import EvaluationPhysicalSkillAssessmentScreen from "./EvaluationPhysicalSkillAssessmentScreen";
 import EvaluationOverviewScreen from "./EvaluationOverviewScreen";
-import { AthleteEvaluationDataType } from "@/db/models/AthleteEvaluation";
+import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 import { AthleteEvaluationTemplateType } from "@/db/models/AthleteEvaluationTemplate";
 
 const physicalSkills = [
@@ -118,19 +118,18 @@ type AssessmentType =
   | "mentalSkillAssessments"
   | "sportSpecificSkillAssessments";
 
-export type UpdateEvaluationDataParams<
-  T extends keyof AthleteEvaluationDataType,
-> = [
-  section: T,
-  value: T extends AssessmentType
-    ? number
-    : T extends "overviewDetails" | "coachFeedback"
-      ? string
-      : AthleteEvaluationDataType[T],
-  index: T extends AssessmentType | "overviewDetails" | "coachFeedback"
-    ? number
-    : null,
-];
+export type UpdateEvaluationDataParams<T extends keyof AthleteEvaluationType> =
+  [
+    section: T,
+    value: T extends AssessmentType
+      ? number
+      : T extends "overviewDetails" | "coachFeedback"
+        ? string
+        : AthleteEvaluationType[T],
+    index: T extends AssessmentType | "overviewDetails" | "coachFeedback"
+      ? number
+      : null,
+  ];
 
 export default function SelfEvaluationForm({
   template,
@@ -138,7 +137,7 @@ export default function SelfEvaluationForm({
   template?: AthleteEvaluationTemplateType;
 }) {
   const evaluationTemplate = template || defaultEvaluationTemplate;
-  const initialEvaluationData: AthleteEvaluationDataType = {
+  const initialEvaluationData = {
     ...evaluationTemplate,
     overviewDetails: {
       ...evaluationTemplate.overviewDetails,
@@ -171,101 +170,127 @@ export default function SelfEvaluationForm({
       })),
     nextEvaluationDate: "",
     nextEvaluationTime: "10:00",
-  };
+  } as AthleteEvaluationType;
 
   const [evaluationId, setEvaluationId] = useState("");
   const [currentScreen, setCurrentScreen] = useState("evaluation-overview");
   const [evaluationData, setEvaluationData] = useState(initialEvaluationData);
 
-  function updateEvaluationData<T extends keyof AthleteEvaluationDataType>(
+  function updateEvaluationData<T extends keyof AthleteEvaluationType>(
     ...params: UpdateEvaluationDataParams<T>
   ) {
     const [section, value, index] = params;
     switch (section) {
       case "selectedSport":
-        setEvaluationData((prev) => ({
-          ...prev,
-          selectedSport: value as string,
-        }));
+        setEvaluationData(
+          (prev) =>
+            ({
+              ...prev,
+              selectedSport: value as string,
+            }) as AthleteEvaluationType,
+        );
         break;
 
       case "nextEvaluationDate":
-        setEvaluationData((prev) => ({
-          ...prev,
-          nextEvaluationDate: value as string,
-        }));
+        setEvaluationData(
+          (prev) =>
+            ({
+              ...prev,
+              nextEvaluationDate: value as string,
+            }) as AthleteEvaluationType,
+        );
         break;
 
       case "nextEvaluationTime":
-        setEvaluationData((prev) => ({
-          ...prev,
-          nextEvaluationTime: value as string,
-        }));
+        setEvaluationData(
+          (prev) =>
+            ({
+              ...prev,
+              nextEvaluationTime: value as string,
+            }) as AthleteEvaluationType,
+        );
         break;
 
       case "overviewDetails":
-        setEvaluationData((prev) => ({
-          ...prev,
-          overviewDetails: {
-            ...prev.overviewDetails,
-            questions: prev.overviewDetails.questions.map((question, i) => ({
-              ...question,
-              response: i === index ? (value as string) : question.response,
-            })),
-          },
-        }));
+        setEvaluationData(
+          (prev) =>
+            ({
+              ...prev,
+              overviewDetails: {
+                ...prev.overviewDetails,
+                questions: prev.overviewDetails.questions.map(
+                  (question, i) => ({
+                    ...question,
+                    response:
+                      i === index ? (value as string) : question.response,
+                  }),
+                ),
+              },
+            }) as AthleteEvaluationType,
+        );
         break;
 
       case "coachFeedback":
-        setEvaluationData((prev) => ({
-          ...prev,
-          coachFeedback: {
-            ...prev.coachFeedback,
-            questions: prev.coachFeedback.questions.map((question, i) => ({
-              ...question,
-              response: i === index ? (value as string) : question.response,
-            })),
-          },
-        }));
+        setEvaluationData(
+          (prev) =>
+            ({
+              ...prev,
+              coachFeedback: {
+                ...prev.coachFeedback,
+                questions: prev.coachFeedback.questions.map((question, i) => ({
+                  ...question,
+                  response: i === index ? (value as string) : question.response,
+                })),
+              },
+            }) as AthleteEvaluationType,
+        );
         break;
 
       case "physicalSkillAssessments":
-        setEvaluationData((prev) => ({
-          ...prev,
-          physicalSkillAssessments: prev.physicalSkillAssessments.map(
-            (assessment, i) => ({
-              ...assessment,
-              currentLevel:
-                i === index ? (value as number) : assessment.currentLevel,
-            }),
-          ),
-        }));
+        setEvaluationData(
+          (prev) =>
+            ({
+              ...prev,
+              physicalSkillAssessments: prev.physicalSkillAssessments.map(
+                (assessment, i) => ({
+                  ...assessment,
+                  currentLevel:
+                    i === index ? (value as number) : assessment.currentLevel,
+                }),
+              ),
+            }) as AthleteEvaluationType,
+        );
         break;
 
       case "mentalSkillAssessments":
-        setEvaluationData((prev) => ({
-          ...prev,
-          mentalSkillAssessments: prev.mentalSkillAssessments.map(
-            (assessment, i) => ({
-              ...assessment,
-              currentLevel:
-                i === index ? (value as number) : assessment.currentLevel,
-            }),
-          ),
-        }));
+        setEvaluationData(
+          (prev) =>
+            ({
+              ...prev,
+              mentalSkillAssessments: prev.mentalSkillAssessments.map(
+                (assessment, i) => ({
+                  ...assessment,
+                  currentLevel:
+                    i === index ? (value as number) : assessment.currentLevel,
+                }),
+              ),
+            }) as AthleteEvaluationType,
+        );
         break;
 
       case "sportSpecificSkillAssessments":
-        setEvaluationData((prev) => ({
-          ...prev,
-          sportSpecificSkillAssessments: prev.sportSpecificSkillAssessments.map(
-            (assessment, i) => ({
-              ...assessment,
-              currentLevel:
-                i === index ? (value as number) : assessment.currentLevel,
-            }),
-          ),
-        }));
+        setEvaluationData(
+          (prev) =>
+            ({
+              ...prev,
+              sportSpecificSkillAssessments:
+                prev.sportSpecificSkillAssessments.map((assessment, i) => ({
+                  ...assessment,
+                  currentLevel:
+                    i === index ? (value as number) : assessment.currentLevel,
+                })),
+            }) as AthleteEvaluationType,
+        );
         break;
 
       default:

@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircleIcon } from "lucide-react";
-import { Button } from "../ui/button";
 import Link from "next/link";
 
 export default function EvaluationCompletionScreen({

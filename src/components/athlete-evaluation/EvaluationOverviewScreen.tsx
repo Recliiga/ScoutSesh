@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { AthleteEvaluationDataType } from "@/db/models/AthleteEvaluation";
+import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 import { UpdateEvaluationDataParams } from "./SelfEvaluationForm";
 
 export default function EvaluationOverviewScreen({
@@ -9,8 +9,8 @@ export default function EvaluationOverviewScreen({
   updateEvaluationData,
   setCurrentScreen,
 }: {
-  evaluationData: AthleteEvaluationDataType;
-  updateEvaluationData<T extends keyof AthleteEvaluationDataType>(
+  evaluationData: AthleteEvaluationType;
+  updateEvaluationData<T extends keyof AthleteEvaluationType>(
     ...params: UpdateEvaluationDataParams<T>
   ): void;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;

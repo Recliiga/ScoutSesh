@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { AthleteEvaluationDataType } from "@/db/models/AthleteEvaluation";
+import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 import { UpdateEvaluationDataParams } from "./SelfEvaluationForm";
 import DatePicker from "../DatePicker";
 import { isBefore } from "date-fns";
@@ -15,8 +15,8 @@ export default function EvaluationPlayerFeedbackScreen({
   setCurrentScreen,
   setEvaluationId,
 }: {
-  evaluationData: AthleteEvaluationDataType;
-  updateEvaluationData<T extends keyof AthleteEvaluationDataType>(
+  evaluationData: AthleteEvaluationType;
+  updateEvaluationData<T extends keyof AthleteEvaluationType>(
     ...params: UpdateEvaluationDataParams<T>
   ): void;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;

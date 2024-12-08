@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import SelfEvaluationSkillSlider from "./SelfEvaluationSkillSlider";
-import { AthleteEvaluationDataType } from "@/db/models/AthleteEvaluation";
+import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 import { UpdateEvaluationDataParams } from "./SelfEvaluationForm";
 
 export default function EvaluationPhysicalSkillAssessmentScreen({
@@ -8,8 +8,8 @@ export default function EvaluationPhysicalSkillAssessmentScreen({
   updateEvaluationData,
   setCurrentScreen,
 }: {
-  evaluationData: AthleteEvaluationDataType;
-  updateEvaluationData<T extends keyof AthleteEvaluationDataType>(
+  evaluationData: AthleteEvaluationType;
+  updateEvaluationData<T extends keyof AthleteEvaluationType>(
     ...params: UpdateEvaluationDataParams<T>
   ): void;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
