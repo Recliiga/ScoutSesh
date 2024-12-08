@@ -17,7 +17,7 @@ export default function SelfEvaluationSkillSlider({
       <CardContent className="px-3 pb-2 pt-3">
         <div className="space-y-3">
           <input
-            className="w-full accent-accent-black"
+            className="w-full rounded-md accent-accent-black ring-accent-gray-200 ring-offset-2 focus-visible:ring"
             type="range"
             min={1}
             max={10}

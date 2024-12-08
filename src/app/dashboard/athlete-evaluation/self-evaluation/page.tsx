@@ -7,5 +7,5 @@ export default async function SelfEvaluationPage() {
   const user = await getSessionFromHeaders();
   if (user.role !== "Athlete") notFound();
 
-  return <SelfEvaluationForm />;
+  return <SelfEvaluationForm primarySport={user.primarySport} />;
 }

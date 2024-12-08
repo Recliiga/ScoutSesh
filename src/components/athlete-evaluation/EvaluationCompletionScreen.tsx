@@ -9,7 +9,7 @@ export default function EvaluationCompletionScreen({
 }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center bg-green-50 py-4">
-      <Card className="w-full max-w-lg text-center">
+      <Card className="w-[90%] max-w-lg text-center">
         <CardHeader>
           <div className="mb-4 text-sm text-muted-foreground">
             6/6 Athlete Evaluation

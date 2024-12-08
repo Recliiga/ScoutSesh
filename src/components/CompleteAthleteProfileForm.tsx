@@ -1,16 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { CalendarIcon, MapPinIcon } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn, resizeImage } from "@/lib/utils";
@@ -19,6 +14,8 @@ import { completeProfile } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
 import Error from "./AuthError";
 import useFormEntries from "@/hooks/useFormEntries";
+import Select from "./Select";
+import useClickOutside from "@/hooks/useClickOutside";
 
 interface ProfileProps {
   firstName: string;
@@ -27,6 +24,24 @@ interface ProfileProps {
   userId: string;
   role: string;
 }
+
+const sportList = [
+  "volleyball",
+  "basketball",
+  "soccer",
+  "tennis",
+  "swimming",
+  "golf",
+  "baseball",
+  "football",
+  "hockey",
+  "rugby",
+  "cricket",
+  "track_and_field",
+  "gymnastics",
+  "boxing",
+  "martial_arts",
+];
 
 export default function CompleteAthleteProfileForm({
   firstName,
@@ -37,8 +52,10 @@ export default function CompleteAthleteProfileForm({
 }: ProfileProps) {
   const router = useRouter();
 
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>();
+  const [calendarRef] = useClickOutside(() => setCalendarOpen(false));
 
   const { formEntries, updateField } = useFormEntries({
     userId,
@@ -62,7 +79,7 @@ export default function CompleteAthleteProfileForm({
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
   const cannotSubmit = Object.values(formEntries).some(
-    (value) => value.toString().trim() === ""
+    (value) => value.toString().trim() === "",
   );
 
   async function handleChangeImage(event: React.ChangeEvent<HTMLInputElement>) {
@@ -97,11 +114,11 @@ export default function CompleteAthleteProfileForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex flex-col items-center gap-4 mb-6">
+      <div className="mb-6 flex flex-col items-center gap-4">
         <Label htmlFor="profilePicture" className="text-center">
           Profile Photo
         </Label>
-        <div className="relative bg-gray-100 rounded-full w-32 h-32 overflow-hidden">
+        <div className="relative h-32 w-32 overflow-hidden rounded-full bg-gray-100">
           {formEntries.profilePicture ? (
             <Image
               src={formEntries.profilePicture}
@@ -110,9 +127,9 @@ export default function CompleteAthleteProfileForm({
               objectFit="cover"
             />
           ) : (
-            <div className="flex justify-center items-center w-full h-full text-gray-400">
+            <div className="flex h-full w-full items-center justify-center text-gray-400">
               <svg
-                className="w-16 h-16"
+                className="h-16 w-16"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -146,7 +163,7 @@ export default function CompleteAthleteProfileForm({
         />
       </div>
       <div className="space-y-4">
-        <div className="gap-4 grid grid-cols-2">
+        <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="firstName">First name</Label>
             <Input
@@ -186,7 +203,7 @@ export default function CompleteAthleteProfileForm({
             <select
               id="role"
               name="role"
-              className="border-gray-300 bg-white py-2 pr-10 pl-3 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full text-sm leading-5 appearance-none focus:outline-none"
+              className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               value={formEntries.role}
               onChange={(e) => updateField("role", e.target.value)}
               required
@@ -200,42 +217,44 @@ export default function CompleteAthleteProfileForm({
                 </>
               )}
             </select>
-            <div className="right-0 absolute inset-y-0 flex items-center px-2 text-gray-700 pointer-events-none">
-              <ArrowRight className="w-4 h-4" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <ArrowRight className="h-4 w-4" />
             </div>
           </div>
         </div>
         <div className="flex flex-col gap-2">
           <Label>Date of Birth</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !formEntries.DOB && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 w-4 h-4" />
-                {formEntries.DOB ? (
-                  format(formEntries.DOB, "PPP")
-                ) : (
-                  <span>Pick a date</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-0 w-auto" align="start">
+          <div className="relative" ref={calendarRef}>
+            <Button
+              onClick={() => setCalendarOpen((prev) => !prev)}
+              type="button"
+              variant={"outline"}
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !formEntries.DOB && "text-muted-foreground",
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {formEntries.DOB ? (
+                format(formEntries.DOB, "PPP")
+              ) : (
+                <span>Pick a date</span>
+              )}
+            </Button>
+            <div
+              className={`absolute bottom-[calc(100%+4px)] left-0 rounded-md border bg-white shadow ${calendarOpen ? "visible scale-100 opacity-100" : "invisible scale-95 opacity-0"}}`}
+            >
               <div className="flex justify-between p-3">
                 <select
                   value={formEntries.selectedYear}
                   onChange={(e) =>
                     updateField("selectedYear", parseInt(e.target.value))
                   }
-                  className="px-2 py-1 border rounded"
+                  className="rounded border px-2 py-1"
                 >
                   {Array.from(
                     { length: 100 },
-                    (_, i) => new Date().getFullYear() - i
+                    (_, i) => new Date().getFullYear() - i,
                   ).map((year) => (
                     <option key={year} value={year}>
                       {year}
@@ -247,7 +266,7 @@ export default function CompleteAthleteProfileForm({
                   onChange={(e) =>
                     updateField("selectedMonth", Number(e.target.value))
                   }
-                  className="px-2 py-1 border rounded"
+                  className="rounded border px-2 py-1"
                 >
                   {Array.from({ length: 12 }, (_, i) => i).map((month) => (
                     <option key={month} value={month}>
@@ -259,9 +278,11 @@ export default function CompleteAthleteProfileForm({
               <Calendar
                 mode="single"
                 selected={new Date(formEntries.DOB)}
-                onSelect={(value) =>
-                  value && updateField("DOB", value.toString())
-                }
+                onSelect={(value) => {
+                  if (!value) return;
+                  updateField("DOB", value.toString());
+                  setCalendarOpen(false);
+                }}
                 month={
                   new Date(formEntries.selectedYear, formEntries.selectedMonth)
                 }
@@ -271,13 +292,13 @@ export default function CompleteAthleteProfileForm({
                 }}
                 initialFocus
               />
-            </PopoverContent>
-          </Popover>
+            </div>
+          </div>
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="location">Location</Label>
           <div className="relative">
-            <MapPinIcon className="top-1/2 left-3 absolute w-5 h-5 text-gray-400 transform -translate-y-1/2" />
+            <MapPinIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
             <Input
               id="location"
               name="location"
@@ -291,14 +312,19 @@ export default function CompleteAthleteProfileForm({
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="primarySport">Primary Sport</Label>
-          <Input
-            id="primarySport"
-            name="primarySport"
+          <Select
             value={formEntries.primarySport}
-            onChange={(e) => updateField("primarySport", e.target.value)}
+            onChange={(value) => updateField("primarySport", value)}
             placeholder="e.g., Basketball, Soccer, Tennis"
-            required
-          />
+          >
+            <Select.Content>
+              {sportList.map((sport) => (
+                <Select.Option value={sport} key={sport}>
+                  {sport}
+                </Select.Option>
+              ))}
+            </Select.Content>
+          </Select>
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="experience">Years of Experience</Label>
@@ -320,17 +346,17 @@ export default function CompleteAthleteProfileForm({
             name="bio"
             value={formEntries.bio}
             onChange={(e) => updateField("bio", e.target.value)}
-            className="border-gray-300 bg-white px-3 py-2 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full min-h-[100px] text-sm leading-5 appearance-none focus:outline-none"
+            className="min-h-[100px] w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             placeholder="Tell us a bit about yourself..."
           />
           {error && <Error error={error} />}
         </div>
         <Button
-          className="bg-[#14a800] hover:bg-[#14a800]/90 w-full text-white"
+          className="w-full bg-[#14a800] text-white hover:bg-[#14a800]/90"
           type="submit"
           disabled={loading || cannotSubmit}
         >
-          {loading && <Loader2 className="mr-2 w-4 h-4 animate-spin" />}
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {loading ? "Saving..." : "Complete Profile"}
         </Button>
       </div>

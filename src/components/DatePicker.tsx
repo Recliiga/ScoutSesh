@@ -33,7 +33,7 @@ export default function DatePicker({
           }
           toggleCalendar();
         }}
-        className={`rounded-md border px-4 py-2 text-sm font-medium duration-200 hover:bg-accent-gray-100 ${pickerClassName} ${pickerDisabled ? "cursor-[default] bg-accent-gray-100" : ""}`}
+        className={`rounded-md border px-4 py-2 text-sm font-medium ring-accent-black duration-200 hover:bg-accent-gray-100 focus-visible:ring-1 ${pickerClassName} ${pickerDisabled ? "cursor-[default] bg-accent-gray-100" : ""}`}
       >
         {children || "Select Date"}
       </button>

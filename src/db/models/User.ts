@@ -1,6 +1,23 @@
 import mongoose from "mongoose";
 import { OrganizationType } from "./Organization";
 
+export type PrimarySportType =
+  | "volleyball"
+  | "basketball"
+  | "soccer"
+  | "tennis"
+  | "swimming"
+  | "golf"
+  | "baseball"
+  | "football"
+  | "hockey"
+  | "rugby"
+  | "cricket"
+  | "track_and_field"
+  | "gymnastics"
+  | "boxing"
+  | "martial_arts";
+
 export interface UserType extends mongoose.Document {
   _id: string;
   firstName: string;
@@ -11,7 +28,7 @@ export interface UserType extends mongoose.Document {
   role: "Athlete" | "Assistant Coach" | "Head Coach";
   DOB: Date;
   location: string;
-  primarySport: string;
+  primarySport: PrimarySportType;
   experience: number;
   bio: string;
   organization?: OrganizationType;
@@ -46,7 +63,7 @@ const UserSchema: mongoose.Schema = new mongoose.Schema(
     bio: { type: String },
     organization: { type: mongoose.SchemaTypes.ObjectId, ref: "Organization" },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const User =

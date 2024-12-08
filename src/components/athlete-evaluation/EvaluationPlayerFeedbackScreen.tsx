@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -7,7 +8,9 @@ import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 import { UpdateEvaluationDataParams } from "./SelfEvaluationForm";
 import DatePicker from "../DatePicker";
 import { isBefore } from "date-fns";
-import { useState } from "react";
+import { createEvaluation } from "@/actions/AthleteEvaluationActions";
+import Error from "../AuthError";
+import LoadingIndicator from "../LoadingIndicator";
 
 export default function EvaluationPlayerFeedbackScreen({
   evaluationData,
@@ -23,6 +26,8 @@ export default function EvaluationPlayerFeedbackScreen({
   setEvaluationId: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const cannotSubmit =
     evaluationData.coachFeedback.questions.some(
@@ -37,10 +42,17 @@ export default function EvaluationPlayerFeedbackScreen({
     setCalendarOpen(false);
   }
 
-  function handleSubmitEvaluation() {
+  async function handleSubmitEvaluation() {
     if (cannotSubmit) return;
-    setEvaluationId("asfd");
-    setCurrentScreen("completion");
+    setLoading(true);
+    const { newEvaluation, error } = await createEvaluation(evaluationData);
+    if (newEvaluation) {
+      setEvaluationId(newEvaluation._id);
+      setLoading(false);
+      setCurrentScreen("completion");
+    } else {
+      setError(error);
+    }
   }
 
   return (
@@ -60,14 +72,11 @@ export default function EvaluationPlayerFeedbackScreen({
             <CardContent className="space-y-4 p-4 sm:p-6">
               {evaluationData.coachFeedback.questions.map((question, index) => (
                 <div key={index} className="flex flex-col gap-2">
-                  <Label
-                    htmlFor={`feedback-${index}`}
-                    className="text-base font-semibold"
-                  >
+                  <Label className="text-sm font-medium">
                     {question.label}
                   </Label>
                   <Textarea
-                    id={`feedback-${index}`}
+                    className="w-full"
                     placeholder={question.placeholder}
                     value={question.response}
                     onChange={(e) =>
@@ -118,6 +127,7 @@ export default function EvaluationPlayerFeedbackScreen({
               />
             </div>
           </div>
+          {error && <Error error={error} />}
         </div>
       </div>
       <div className="mt-8 flex w-full max-w-4xl justify-between">
@@ -128,11 +138,18 @@ export default function EvaluationPlayerFeedbackScreen({
           Back
         </Button>
         <Button
-          disabled={cannotSubmit}
+          disabled={loading || cannotSubmit}
           className="bg-green-600 text-white"
           onClick={handleSubmitEvaluation}
         >
-          Submit Athlete Evaluation
+          {loading ? (
+            <>
+              <LoadingIndicator />
+              Submitting...
+            </>
+          ) : (
+            "Submit Athlete Evaluation"
+          )}
         </Button>
       </div>
     </div>

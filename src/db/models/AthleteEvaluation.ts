@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { UserType } from "./User";
+import { AthleteEvaluationTemplateType } from "./AthleteEvaluationTemplate";
 
 type AthleteEvaluationQuestionType = {
   label: string;
@@ -19,7 +20,6 @@ export type SkillAssessmentType = { skill: string; currentLevel: number };
 
 export type AthleteEvaluationType = mongoose.Document & {
   _id: string;
-  name: string;
   overviewDetails: EvaluationOverviewDetailsType;
   physicalSkillAssessments: SkillAssessmentType[];
   mentalSkillAssessments: SkillAssessmentType[];
@@ -29,6 +29,7 @@ export type AthleteEvaluationType = mongoose.Document & {
   user: UserType;
   nextEvaluationDate: string;
   nextEvaluationTime: string;
+  template?: AthleteEvaluationTemplateType;
   createdAt: string;
   updatedAt: string;
 };
@@ -56,10 +57,6 @@ const SkillAssessmentSchema = new mongoose.Schema<SkillAssessmentType>({
 
 const AthleteEvaluationSchema = new mongoose.Schema<AthleteEvaluationType>(
   {
-    name: {
-      type: String,
-      required: [true, "Please provide a name for the Evaluation"],
-    },
     overviewDetails: {
       title: {
         type: String,
@@ -95,6 +92,11 @@ const AthleteEvaluationSchema = new mongoose.Schema<AthleteEvaluationType>(
     user: {
       type: mongoose.SchemaTypes.ObjectId,
       required: [true, "Invalid user ID"],
+      ref: "User",
+    },
+    template: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "AthleteEvaluationTemplate",
     },
     nextEvaluationDate: {
       type: String,
