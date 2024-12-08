@@ -15,7 +15,7 @@ import { OrganizationType } from "@/db/models/Organization";
 import DatePicker from "../DatePicker";
 import Error from "../AuthError";
 import LoadingIndicator from "../LoadingIndicator";
-import { purchaseEvaluation } from "@/actions/AEOrderActions";
+import { purchaseEvaluation } from "@/actions/AthleteEvaluationActions";
 
 type PlanType =
   | "Monthly"

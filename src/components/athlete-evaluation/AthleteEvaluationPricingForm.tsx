@@ -21,7 +21,7 @@ import {
 import {
   createPricingPlan,
   updatePricingPlan,
-} from "@/actions/AEPricingPlanActions";
+} from "@/actions/AthleteEvaluationActions";
 import LoadingIndicator from "../LoadingIndicator";
 import Error from "../AuthError";
 
@@ -206,7 +206,10 @@ export default function AthleteEvaluationPricingForm({
     };
 
     setLoading(true);
-    const data = await updatePricingPlan(pricingPlan._id, pricingPlanData as AEPricingPlanType);
+    const data = await updatePricingPlan(
+      pricingPlan._id,
+      pricingPlanData as AEPricingPlanType,
+    );
     if (data?.error) setError(data?.error);
     setLoading(false);
   }

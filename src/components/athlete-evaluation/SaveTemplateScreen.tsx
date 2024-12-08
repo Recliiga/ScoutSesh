@@ -4,7 +4,10 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { AthleteEvaluationTemplateType } from "@/db/models/AthleteEvaluationTemplate";
-import { createTemplate, updateTemplate } from "@/actions/AETemplateActions";
+import {
+  createTemplate,
+  updateTemplate,
+} from "@/actions/AthleteEvaluationActions";
 import Error from "../AuthError";
 import LoadingIndicator from "../LoadingIndicator";
 
