@@ -1,22 +1,24 @@
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 import { UpdateEvaluationDataParams } from "./EvaluationForm";
-import DatePicker from "../DatePicker";
-import { isBefore } from "date-fns";
-import { createEvaluation } from "@/actions/AthleteEvaluationActions";
+// import DatePicker from "../DatePicker";
+// import { isBefore } from "date-fns";
+import { createCoachEvaluation } from "@/actions/AthleteEvaluationActions";
 import Error from "../AuthError";
 import LoadingIndicator from "../LoadingIndicator";
+import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
 
 export default function EvaluationPlayerFeedbackScreen({
   evaluationData,
   updateEvaluationData,
   setCurrentScreen,
   setEvaluationId,
+  order,
 }: {
   evaluationData: AthleteEvaluationType;
   updateEvaluationData<T extends keyof AthleteEvaluationType>(
@@ -24,28 +26,34 @@ export default function EvaluationPlayerFeedbackScreen({
   ): void;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
   setEvaluationId: React.Dispatch<React.SetStateAction<string>>;
+  order: AthleteEvaluationOrderType;
 }) {
-  const [calendarOpen, setCalendarOpen] = useState(false);
+  // const [calendarOpen, setCalendarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const cannotSubmit =
-    evaluationData.coachFeedback.questions.some(
-      (question) => question.response.trim() === "",
-    ) ||
-    evaluationData.nextEvaluationTime.trim() === "" ||
-    evaluationData.nextEvaluationDate.trim() === "";
+  const cannotSubmit = evaluationData.coachFeedback.questions.some(
+    (question) => question.response.trim() === "",
+  );
+  // evaluationData.nextEvaluationTime.trim() === "" ||
+  // evaluationData.nextEvaluationDate.trim() === "";
 
-  function handleDateSelect(value: Date | undefined) {
-    if (!value) return;
-    updateEvaluationData("nextEvaluationDate", value.toDateString(), null);
-    setCalendarOpen(false);
-  }
+  // function handleDateSelect(value: Date | undefined) {
+  //   if (!value) return;
+  //   updateEvaluationData("nextEvaluationDate", value.toDateString(), null);
+  //   setCalendarOpen(false);
+  // }
 
   async function handleSubmitEvaluation() {
     if (cannotSubmit) return;
     setLoading(true);
-    const { newEvaluation, error } = await createEvaluation(evaluationData);
+    // console.log({ evaluationData, order });
+    // setLoading(false);
+    // return;
+    const { newEvaluation, error } = await createCoachEvaluation(
+      order,
+      evaluationData,
+    );
     if (newEvaluation) {
       setEvaluationId(newEvaluation._id);
       setLoading(false);
@@ -91,7 +99,7 @@ export default function EvaluationPlayerFeedbackScreen({
               ))}
             </CardContent>
           </Card>
-          <div className="rounded-md border-l-4 border-primary bg-primary/10 p-4">
+          {/* <div className="rounded-md border-l-4 border-primary bg-primary/10 p-4">
             <Label
               htmlFor="next-evaluation-date-time"
               className="text-lg font-semibold text-primary"
@@ -126,7 +134,7 @@ export default function EvaluationPlayerFeedbackScreen({
                 }
               />
             </div>
-          </div>
+          </div> */}
           {error && <Error error={error} />}
         </div>
       </div>

@@ -20,7 +20,7 @@ export default function EvaluationOverviewScreen({
     ...params: UpdateEvaluationDataParams<T>
   ): void;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
-  coachTemplates: AthleteEvaluationTemplateType[];
+  coachTemplates?: AthleteEvaluationTemplateType[];
   templateId: string;
   handleSelectTemplate(templateId: string): void;
 }) {
@@ -30,8 +30,6 @@ export default function EvaluationOverviewScreen({
       )
     : true;
 
-  console.log({ templateId });
-  console.log({ evaluationData });
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center text-sm">
       {evaluationData ? (
@@ -76,11 +74,12 @@ export default function EvaluationOverviewScreen({
             onChange={handleSelectTemplate}
           >
             <Select.Content>
-              {coachTemplates.map((template) => (
-                <Select.Option key={template._id} value={template._id}>
-                  {template.name}
-                </Select.Option>
-              ))}
+              {coachTemplates &&
+                coachTemplates.map((template) => (
+                  <Select.Option key={template._id} value={template._id}>
+                    {template.name}
+                  </Select.Option>
+                ))}
             </Select.Content>
           </Select>
         </div>

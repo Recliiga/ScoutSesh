@@ -28,8 +28,8 @@ export type AthleteEvaluationType = mongoose.Document & {
   coachFeedback: EvaluationCoachFeedbackType;
   coach: UserType;
   athlete: UserType;
-  nextEvaluationDate: string;
-  nextEvaluationTime: string;
+  // nextEvaluationDate: string;
+  // nextEvaluationTime: string;
   template: AthleteEvaluationTemplateType;
   createdAt: string;
   updatedAt: string;
@@ -105,14 +105,14 @@ const AthleteEvaluationSchema = new mongoose.Schema<AthleteEvaluationType>(
       required: [true, "Please provide a valid template ID"],
       ref: "AthleteEvaluationTemplate",
     },
-    nextEvaluationDate: {
-      type: String,
-      required: [true, "Please provide the next evaluation date"],
-    },
-    nextEvaluationTime: {
-      type: String,
-      required: [true, "Please provide the next evaluation time"],
-    },
+    // nextEvaluationDate: {
+    //   type: String,
+    //   required: [true, "Please provide the next evaluation date"],
+    // },
+    // nextEvaluationTime: {
+    //   type: String,
+    //   required: [true, "Please provide the next evaluation time"],
+    // },
   },
   { timestamps: true },
 );

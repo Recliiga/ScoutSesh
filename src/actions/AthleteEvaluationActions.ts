@@ -16,7 +16,8 @@ import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function createEvaluation(
+export async function createCoachEvaluation(
+  order: AthleteEvaluationOrderType,
   evaluationData: Partial<AthleteEvaluationType>,
 ) {
   try {
@@ -25,6 +26,22 @@ export async function createEvaluation(
     if (authError !== null) return { error: "User unauthenticated" };
 
     await connectDB();
+
+    const nextDateIndex = order.evaluationDates.findIndex(
+      (date) => !date.dateCoachEvaluated,
+    );
+    const evaluationDates = order.evaluationDates.map((date, index) =>
+      index === nextDateIndex
+        ? { ...date, dateCoachEvaluated: new Date().toDateString() }
+        : date,
+    );
+
+    await AthleteEvaluationOrder.findByIdAndUpdate(order._id, {
+      ...order,
+      template: evaluationData.template,
+      evaluationDates,
+    });
+
     const newEvaluation = JSON.parse(
       JSON.stringify(
         await AthleteEvaluation.create({

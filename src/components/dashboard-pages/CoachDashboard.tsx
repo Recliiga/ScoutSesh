@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { UserType } from "@/db/models/User";
 import { fetchTeamMembers } from "@/services/userServices";
+import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
+import Link from "next/link";
 
 const attendingPlayers = [
   { name: "Alex", photo: "/placeholder-profile-picture.png" },
@@ -38,37 +40,43 @@ const coach = {
   nextSessionEndTime: "3:30 PM",
 };
 
-export default async function CoachDashboard({ user }: { user: UserType }) {
+export default async function CoachDashboard({
+  user,
+  orders,
+}: {
+  user: UserType;
+  orders: AthleteEvaluationOrderType[];
+}) {
   const { teamMembers, error } = await fetchTeamMembers(user.organization!._id);
 
   if (error !== null) throw new Error(error);
 
   return (
     <main className="flex-grow">
-      <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
-        <div className="flex sm:flex-row flex-col justify-between items-center gap-2 mb-6">
-          <h1 className="font-bold text-3xl text-black sm:text-4xl">
+      <div className="mx-auto w-[90%] max-w-6xl py-6 sm:py-8">
+        <div className="mb-6 flex flex-col items-center justify-between gap-2 sm:flex-row">
+          <h1 className="text-3xl font-bold text-black sm:text-4xl">
             Welcome, {user.firstName}!
           </h1>
-          <div className="bg-green-100 px-4 py-2 rounded-full font-semibold text-green-800 text-lg">
+          <div className="rounded-full bg-green-100 px-4 py-2 text-lg font-semibold text-green-800">
             {teamMembers.length} Team Member{teamMembers.length > 1 ? "s" : ""}{" "}
             🏅
           </div>
         </div>
-        <div className="bg-white shadow-lg mb-12 p-4 sm:p-6 rounded-lg">
-          <div className="flex md:flex-row flex-col items-start gap-y-6 md:gap-x-4 md:gap-y-0">
-            <div className="w-full md:w-1/2">
-              <h2 className="mb-4 font-semibold text-xl">
+        <div className="mb-12 rounded-lg bg-white p-4 shadow-lg sm:p-6">
+          <div className="flex flex-col gap-y-6 md:flex-row md:gap-x-4 md:gap-y-0">
+            <div className="w-full flex-1 md:w-1/2">
+              <h2 className="mb-4 text-xl font-semibold">
                 Your Next Coaching Session
               </h2>
               <p className="mb-2 text-lg">{coach.upcomingSession}</p>
-              <p className="mb-4 text-gray-600 text-md">
+              <p className="text-md mb-4 text-gray-600">
                 {coach.nextSessionDate}, {coach.nextSessionStartTime} -{" "}
                 {coach.nextSessionEndTime}
               </p>
-              <h3 className="mb-2 font-semibold text-lg">Attending Athletes</h3>
+              <h3 className="mb-2 text-lg font-semibold">Attending Athletes</h3>
               <div className="w-full">
-                <div className="gap-1 grid grid-cols-5">
+                <div className="grid grid-cols-5 gap-1">
                   {attendingPlayers.map((player, index) => (
                     <Image
                       key={index}
@@ -83,17 +91,22 @@ export default async function CoachDashboard({ user }: { user: UserType }) {
                 </div>
               </div>
             </div>
-            <div className="w-full md:w-1/2">
-              <UpcomingEvaluations />
+            <div className="flex w-full flex-1 md:w-1/2">
+              <UpcomingEvaluations orders={orders} />
             </div>
           </div>
-          <div className="flex sm:flex-row flex-col justify-between gap-4 mt-4">
+          <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row">
             <Button variant="outline">All Group Classes</Button>
-            <Button variant="outline">See All Evaluations</Button>
+            <Link
+              href={"/dashboard/athlete-evaluation"}
+              className="rounded-md border px-4 py-2 text-sm font-medium duration-200 hover:bg-accent-gray-100"
+            >
+              See All Evaluations
+            </Link>
           </div>
         </div>
-        <h2 className="mb-6 font-bold text-2xl">Your Coaching Dashboard</h2>
-        <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
+        <h2 className="mb-6 text-2xl font-bold">Your Coaching Dashboard</h2>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <DashboardCard
             title="Athlete Evaluation"
             description="Review and update your latest athlete performance assessments. Track progress and identify areas for improvement."

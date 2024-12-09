@@ -218,7 +218,11 @@ export default function PurchaseEvaluationForm({
         evaluations: selectedPlanEvaluations,
         pricingPlan: selectedProgram.plan,
         pricingPlanId: selectedProgram.plan._id,
-        evaluationDates,
+        evaluationDates: evaluationDates.map((date) => ({
+          date,
+          dateCoachEvaluated: undefined,
+          dateAthleteEvaluated: undefined,
+        })),
         addVirtualConsultation,
         discussionTopics:
           addVirtualConsultation &&
@@ -408,11 +412,11 @@ export default function PurchaseEvaluationForm({
                     : "Select first evaluation date"}
               </DatePicker>
               {selectedDates.length > 0 && (
-                <div className="mt-2">
+                <div className="mt-4 flex flex-col gap-2">
                   <p className="text-sm font-medium text-gray-700">
                     Evaluation Dates:
                   </p>
-                  <ul className="list-inside list-disc">
+                  <ul className="grid list-inside list-disc grid-cols-[repeat(auto-fit,_minmax(180px,_1fr))] gap-2 lg:grid-cols-4">
                     {evaluationDates.map((date, index) => (
                       <li key={index} className="text-sm text-gray-600">
                         {format(date, "MMMM d, yyyy")}

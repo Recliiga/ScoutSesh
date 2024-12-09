@@ -9,18 +9,30 @@ import {
   AthleteEvaluationTemplateType,
 } from "./AthleteEvaluationTemplate";
 
+type AthleteEvaluationDateType = {
+  date: Date;
+  dateCoachEvaluated?: Date;
+  dateAthleteEvaluated?: Date;
+};
+
 export type AthleteEvaluationOrderType = {
   _id: string;
   plan: "Monthly" | "Quarterly" | "Semi Annual" | "Yearly" | "custom";
   evaluations: number;
   pricingPlanId: string;
   pricingPlan: AEPricingPlanType;
-  evaluationDates: Date[];
+  evaluationDates: AthleteEvaluationDateType[];
   template?: AthleteEvaluationTemplateType;
   totalPrice: number;
   athlete: UserType;
   coach: UserType;
 };
+
+const EvaluationDateSchema = new mongoose.Schema<AthleteEvaluationDateType>({
+  date: { type: Date, required: true },
+  dateCoachEvaluated: { type: Date },
+  dateAthleteEvaluated: { type: Date },
+});
 
 const AthleteEvaluationOrderSchema =
   new mongoose.Schema<AthleteEvaluationOrderType>(
@@ -46,7 +58,7 @@ const AthleteEvaluationOrderSchema =
         required: [true, "Please provide a valid pricing plan"],
       },
       evaluationDates: {
-        type: [Date],
+        type: [EvaluationDateSchema],
         required: [true, "Please select the evaluation date"],
       },
       totalPrice: { type: Number, required: [true, "Invalid price"] },

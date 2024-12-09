@@ -34,17 +34,20 @@ export default function EvaluationForm({
   coachTemplates,
 }: {
   order: AthleteEvaluationOrderType;
-  coachTemplates: AthleteEvaluationTemplateType[];
+  coachTemplates?: AthleteEvaluationTemplateType[];
 }) {
   const { template: orderTemplate } = order;
   const [templateId, setTemplateId] = useState(orderTemplate?._id || "");
 
-  const template = coachTemplates.find((temp) => temp._id === templateId);
+  const template =
+    orderTemplate || coachTemplates?.find((temp) => temp._id === templateId);
 
   function getEvaluationDataFromTemplate(
     template: AthleteEvaluationTemplateType,
   ) {
     return {
+      athlete: order.athlete,
+      coach: order.coach,
       template: template,
       selectedSport: template.selectedSport,
       overviewDetails: {
@@ -77,8 +80,8 @@ export default function EvaluationForm({
           currentLevel: 5,
         }),
       ),
-      nextEvaluationDate: "",
-      nextEvaluationTime: "10:00",
+      // nextEvaluationDate: "",
+      // nextEvaluationTime: "10:00",
     } as AthleteEvaluationType;
   }
 
@@ -92,7 +95,9 @@ export default function EvaluationForm({
 
   function handleSelectTemplate(tempId: string) {
     setTemplateId(tempId);
-    const selectedTemplate = coachTemplates.find((temp) => temp._id === tempId);
+    const selectedTemplate = coachTemplates?.find(
+      (temp) => temp._id === tempId,
+    );
 
     if (!selectedTemplate) return;
     setEvaluationData(getEvaluationDataFromTemplate(selectedTemplate));
@@ -111,19 +116,19 @@ export default function EvaluationForm({
         } as AthleteEvaluationType);
         break;
 
-      case "nextEvaluationDate":
-        setEvaluationData({
-          ...evaluationData,
-          nextEvaluationDate: value as string,
-        } as AthleteEvaluationType);
-        break;
+      // case "nextEvaluationDate":
+      //   setEvaluationData({
+      //     ...evaluationData,
+      //     nextEvaluationDate: value as string,
+      //   } as AthleteEvaluationType);
+      //   break;
 
-      case "nextEvaluationTime":
-        setEvaluationData({
-          ...evaluationData,
-          nextEvaluationTime: value as string,
-        } as AthleteEvaluationType);
-        break;
+      // case "nextEvaluationTime":
+      //   setEvaluationData({
+      //     ...evaluationData,
+      //     nextEvaluationTime: value as string,
+      //   } as AthleteEvaluationType);
+      //   break;
 
       case "overviewDetails":
         setEvaluationData({
@@ -243,6 +248,7 @@ export default function EvaluationForm({
           )}
           {currentScreen === "player-feedback" && (
             <EvaluationPlayerFeedbackScreen
+              order={order}
               evaluationData={evaluationData}
               updateEvaluationData={updateEvaluationData}
               setCurrentScreen={setCurrentScreen}
