@@ -5,13 +5,6 @@ import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { MinusCircle, PlusCircle } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
 import { Input } from "../ui/input";
 import {
   AEPricingPlanType,
@@ -24,6 +17,8 @@ import {
 } from "@/actions/AthleteEvaluationActions";
 import LoadingIndicator from "../LoadingIndicator";
 import Error from "../AuthError";
+import Select from "../Select";
+import BackButton from "../dashboard/BackButton";
 
 const initialStandardPlans = [
   { _id: "", name: "Monthly", evaluations: 12, price: 70 },
@@ -46,33 +41,45 @@ const initialDiscussionTopics = {
 export default function AthleteEvaluationPricingForm({
   pricingPlan,
 }: {
-  pricingPlan: AEPricingPlanType;
+  pricingPlan: AEPricingPlanType | null;
 }) {
   const [offerCustomPlan, setOfferCustomPlan] = useState(
-    pricingPlan.offerCustomPlan || false,
+    pricingPlan?.offerCustomPlan || false,
   );
   const [standardPlans, setStandardPlans] = useState<StandardPlanType[]>(
-    pricingPlan.standardPlans || initialStandardPlans,
+    pricingPlan?.standardPlans || initialStandardPlans,
   );
   const [customPlanTiers, setCustomPlanTiers] = useState<CustomPlanType[]>(
-    pricingPlan.customPlanTiers || initialCustomPlanTiers,
+    (pricingPlan?.offerCustomPlan && pricingPlan.customPlanTiers) ||
+      initialCustomPlanTiers,
   );
   const [offerVirtualConsultation, setOfferVirtualConsultation] = useState(
-    pricingPlan.offerVirtualConsultation || false,
+    pricingPlan?.offerVirtualConsultation || false,
   );
   const [virtualConsultationType, setVirtualConsultationType] = useState<
     "addon" | "included"
-  >(pricingPlan.virtualConsultationType || "included");
+  >(
+    (pricingPlan?.offerVirtualConsultation &&
+      pricingPlan.virtualConsultationType) ||
+      "included",
+  );
   const [virtualConsultationDuration, setVirtualConsultationDuration] =
-    useState(pricingPlan.virtualConsultationDuration || 30);
+    useState(
+      (pricingPlan?.offerVirtualConsultation &&
+        pricingPlan.virtualConsultationDuration) ||
+        30,
+    );
   const [discussionTopics, setDiscussionTopics] = useState(
-    pricingPlan.discussionTopics || initialDiscussionTopics,
+    (pricingPlan?.offerVirtualConsultation && pricingPlan.discussionTopics) ||
+      initialDiscussionTopics,
   );
   const [firstEvaluationDays, setFirstEvaluationDays] = useState(
-    pricingPlan.firstEvaluationDays || 7,
+    pricingPlan?.firstEvaluationDays || 7,
   );
   const [virtualConsultationRate, setVirtualConsultationRate] = useState(
-    pricingPlan.virtualConsultationRate || 0,
+    (pricingPlan?.offerVirtualConsultation &&
+      pricingPlan.virtualConsultationRate) ||
+      0,
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -121,12 +128,16 @@ export default function AthleteEvaluationPricingForm({
   }
 
   function addCustomPlanTier() {
+    const from = customPlanTiers.at(-1)?.evaluations.to || 0;
     setCustomPlanTiers([
       ...customPlanTiers,
       {
         _id: "",
         type: "single",
-        evaluations: { from: 0, to: 0 },
+        evaluations: {
+          from,
+          to: from + 1,
+        },
         price: 0,
       } as CustomPlanType,
     ]);
@@ -159,38 +170,10 @@ export default function AthleteEvaluationPricingForm({
     setError(null);
 
     const pricingPlanData = {
-      offerCustomPlan,
-      standardPlans,
-      customPlanTiers: offerCustomPlan ? customPlanTiers : undefined,
-      offerVirtualConsultation,
-      virtualConsultationType: offerVirtualConsultation
-        ? virtualConsultationType
-        : undefined,
-      virtualConsultationDuration: offerVirtualConsultation
-        ? virtualConsultationDuration
-        : undefined,
-      virtualConsultationRate: offerVirtualConsultation
-        ? virtualConsultationRate
-        : undefined,
-      discussionTopics: offerVirtualConsultation ? discussionTopics : undefined,
-      firstEvaluationDays,
-    };
-
-    setLoading(true);
-    const data = await createPricingPlan(pricingPlanData as AEPricingPlanType);
-    if (data?.error) setError(data?.error);
-    setLoading(false);
-  }
-
-  async function handleUpdate(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-
-    const pricingPlanData = {
       ...pricingPlan,
       offerCustomPlan,
-      standardPlans,
       customPlanTiers: offerCustomPlan ? customPlanTiers : undefined,
+      standardPlans,
       offerVirtualConsultation,
       virtualConsultationType: offerVirtualConsultation
         ? virtualConsultationType
@@ -203,22 +186,22 @@ export default function AthleteEvaluationPricingForm({
         : undefined,
       discussionTopics: offerVirtualConsultation ? discussionTopics : undefined,
       firstEvaluationDays,
-    };
+    } as AEPricingPlanType;
 
     setLoading(true);
-    const data = await updatePricingPlan(
-      pricingPlan._id,
-      pricingPlanData as AEPricingPlanType,
-    );
+    const data = pricingPlan
+      ? await updatePricingPlan(pricingPlan._id, pricingPlanData)
+      : await createPricingPlan(pricingPlanData);
     if (data?.error) setError(data?.error);
     setLoading(false);
   }
 
+  const cannotSubmit =
+    offerVirtualConsultation &&
+    !Object.values(discussionTopics).some((value) => value);
+
   return (
-    <form
-      onSubmit={pricingPlan ? handleUpdate : handleSubmit}
-      className="space-y-6"
-    >
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Standard Plans</h3>
         <div className="mb-2 grid grid-cols-4 gap-4">
@@ -283,21 +266,19 @@ export default function AthleteEvaluationPricingForm({
           {customPlanTiers.map((tier, index) => (
             <div key={index} className="grid grid-cols-4 gap-4">
               <Select
-                value={tier.type}
-                onValueChange={(value) =>
+                onChange={(value) =>
                   handleCustomPlanTypeChange(
                     index,
                     value as CustomPlanType["type"],
                   )
                 }
+                value={tier.type}
+                defaultChild={tier.type[0].toUpperCase() + tier.type.slice(1)}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="single">Single</SelectItem>
-                  <SelectItem value="range">Range</SelectItem>
-                </SelectContent>
+                <Select.Content>
+                  <Select.Option value={"single"}>Single</Select.Option>
+                  <Select.Option value={"range"}>Range</Select.Option>
+                </Select.Content>
               </Select>
 
               <div className="flex items-center gap-2">
@@ -357,6 +338,7 @@ export default function AthleteEvaluationPricingForm({
                   onChange={(e) =>
                     handleCustomPlanPriceChange(index, Number(e.target.value))
                   }
+                  min={0}
                   placeholder="Price per Session"
                   className="pl-6 pr-24"
                   required
@@ -549,19 +531,22 @@ export default function AthleteEvaluationPricingForm({
           {error && <Error error={error} />}
         </div>
       </div>
-      <Button
-        disabled={loading}
-        type="submit"
-        className="mt-4 w-full bg-green-600 text-white hover:bg-green-700"
-      >
-        {loading ? (
-          <>
-            <LoadingIndicator /> Saving...
-          </>
-        ) : (
-          "Save Athlete Evaluation Pricing Plans"
-        )}
-      </Button>
+      <div className="mt-4 flex gap-4">
+        <BackButton />
+        <Button
+          disabled={cannotSubmit || loading}
+          type="submit"
+          className="w-full bg-green-600 text-white hover:bg-green-700"
+        >
+          {loading ? (
+            <>
+              <LoadingIndicator /> Saving...
+            </>
+          ) : (
+            "Save Athlete Evaluation Pricing Plans"
+          )}
+        </Button>
+      </div>
     </form>
   );
 }

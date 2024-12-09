@@ -15,19 +15,31 @@ export type CustomPlanType = {
   price: number;
 } & mongoose.Document;
 
+// type AECustomPlanType =
+//   | {
+//       offerCustomPlan: true;
+//       customPlanTiers: CustomPlanType[];
+//     }
+//   | {
+//       offerCustomPlan: false;
+//       customPlanTiers: undefined;
+//     };
+
 type AECustomPlanType =
   | {
-      offerCustomPlan: true;
-      customPlanTiers: CustomPlanType[];
+      offerCustomPlan: false;
     }
   | {
-      offerCustomPlan: false;
-      customPlanTiers: undefined;
+      offerCustomPlan: boolean;
+      customPlanTiers: CustomPlanType[];
     };
 
 type AEVirtualConsultationType =
   | {
-      offerVirtualConsultation: true;
+      offerVirtualConsultation: false;
+    }
+  | {
+      offerVirtualConsultation: boolean;
       virtualConsultationType: "addon" | "included";
       virtualConsultationDuration: number;
       virtualConsultationRate: number;
@@ -37,13 +49,6 @@ type AEVirtualConsultationType =
         dailyJournal: boolean;
         other: boolean;
       };
-    }
-  | {
-      offerVirtualConsultation: false;
-      virtualConsultationType: undefined;
-      virtualConsultationDuration: undefined;
-      virtualConsultationRate: undefined;
-      discussionTopics: undefined;
     };
 
 interface BaseAEPricingPlanType extends mongoose.Document {
@@ -84,7 +89,8 @@ const CustomPlanTierSchema = new mongoose.Schema<CustomPlanType>({
     type: Number,
   },
 });
-const AthleteEvaluationPricingPlanSchema =
+
+export const AthleteEvaluationPricingPlanSchema =
   new mongoose.Schema<AEPricingPlanType>(
     {
       standardPlans: [StandardPlanSchema],

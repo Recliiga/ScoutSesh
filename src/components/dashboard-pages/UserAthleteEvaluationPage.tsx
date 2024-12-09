@@ -28,7 +28,7 @@ export default function UserAthleteEvaluationPage() {
             description="Access your past evaluation reports, track your progress over time, and review coach feedback."
             icon={<FileText className="h-6 w-6 text-green-600" />}
             action="View Records"
-            href="#"
+            href="/dashboard/athlete-evaluation/records"
           />
         </div>
       </div>

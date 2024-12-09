@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import SelfEvaluationSkillSlider from "./SelfEvaluationSkillSlider";
+import EvaluationSkillSlider from "./EvaluationSkillSlider";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
-import { UpdateEvaluationDataParams } from "./SelfEvaluationForm";
+import { UpdateEvaluationDataParams } from "./EvaluationForm";
 
 export default function EvaluationSportSpecificSkillAssessmentScreen({
   evaluationData,
@@ -28,7 +28,7 @@ export default function EvaluationSportSpecificSkillAssessmentScreen({
           <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-[repeat(auto-fill,_minmax(210px,_1fr))] lg:grid-cols-4">
             {evaluationData.sportSpecificSkillAssessments.map(
               (assessment, index) => (
-                <SelfEvaluationSkillSlider
+                <EvaluationSkillSlider
                   key={index}
                   skill={assessment.skill}
                   currentLevel={assessment.currentLevel}

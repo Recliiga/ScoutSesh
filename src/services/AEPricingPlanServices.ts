@@ -3,18 +3,18 @@ import AthleteEvaluationPricingPlan, {
   AEPricingPlanType,
 } from "@/db/models/AthleteEvaluationPricingPlan";
 
-export async function fetchPricingPlanByCoach(coachId: string) {
+export async function fetchCoachPricingPlan(coachId: string) {
   try {
     await connectDB();
-    const pricingPlans: AEPricingPlanType[] = JSON.parse(
+    const pricingPlan: AEPricingPlanType = JSON.parse(
       JSON.stringify(
-        await AthleteEvaluationPricingPlan.find({ user: coachId }),
+        await AthleteEvaluationPricingPlan.findOne({ user: coachId }),
       ),
     );
-    return { pricingPlans, error: null };
+    return { pricingPlan, error: null };
   } catch (error) {
     return {
-      pricingPlans: null,
+      pricingPlan: null,
       error: (error as Error).message,
     };
   }

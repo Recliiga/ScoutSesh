@@ -26,7 +26,7 @@ export type AthleteEvaluationTemplateType = {
   updatedAt: string;
 };
 
-const AthleteEvaluationTemplateSchema =
+export const AthleteEvaluationTemplateSchema =
   new mongoose.Schema<AthleteEvaluationTemplateType>(
     {
       name: {

@@ -130,6 +130,17 @@ export async function createPricingPlan(pricingPlanData: AEPricingPlanType) {
     await connectDB();
     await AthleteEvaluationPricingPlan.create({
       ...pricingPlanData,
+      _id: undefined,
+      standardPlans: pricingPlanData.standardPlans.map((plan) => ({
+        ...plan,
+        _id: undefined,
+      })),
+      customPlanTiers: pricingPlanData.offerCustomPlan
+        ? pricingPlanData.customPlanTiers.map((plan) => ({
+            ...plan,
+            _id: undefined,
+          }))
+        : undefined,
       user: userId,
     });
     redirectUrl = "/dashboard/athlete-evaluation";
@@ -173,6 +184,7 @@ export async function updatePricingPlan(
 
 export async function purchaseEvaluation(
   evaluationPurchaseData: Partial<AthleteEvaluationOrderType>,
+  coachId: string,
 ) {
   let redirectUrl;
   try {
@@ -183,9 +195,10 @@ export async function purchaseEvaluation(
     await connectDB();
     await AthleteEvaluationOrder.create({
       ...evaluationPurchaseData,
-      pricingPlan: evaluationPurchaseData.pricingPlan!._id,
-      user: userId,
+      coach: coachId,
+      athlete: userId,
     });
+
     redirectUrl = "/dashboard/athlete-evaluation";
   } catch (err) {
     console.log((err as Error).message);

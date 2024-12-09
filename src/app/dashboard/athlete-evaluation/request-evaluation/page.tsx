@@ -1,5 +1,5 @@
 import PurchaseEvaluationForm from "@/components/athlete-evaluation/PurchaseEvaluationForm";
-import { fetchPricingPlanByCoach } from "@/services/AEPricingPlanServices";
+import { fetchCoachPricingPlan } from "@/services/AEPricingPlanServices";
 import { getSessionFromHeaders } from "@/services/authServices";
 import { notFound } from "next/navigation";
 import React from "react";
@@ -10,20 +10,22 @@ export default async function RequestEvaluationPage() {
 
   if (!user.organization)
     return (
-      <div className="flex-center flex-1">
+      <div className="flex-center flex-1 text-accent-gray-300">
         You are not connected to an organization
       </div>
     );
 
-  const { pricingPlans, error } = await fetchPricingPlanByCoach(
+  const { pricingPlan, error } = await fetchCoachPricingPlan(
     String(user.organization.user),
   );
   if (error !== null) throw new Error(error);
 
-  const clubs = pricingPlans.map((plan) => ({
-    plan,
-    organization: user.organization!,
-  }));
+  const clubs = [
+    {
+      plan: pricingPlan,
+      organization: user.organization!,
+    },
+  ];
 
   return <PurchaseEvaluationForm programs={clubs} />;
 }

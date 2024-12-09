@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
-import { UpdateEvaluationDataParams } from "./SelfEvaluationForm";
+import { UpdateEvaluationDataParams } from "./EvaluationForm";
 import DatePicker from "../DatePicker";
 import { isBefore } from "date-fns";
 import { createEvaluation } from "@/actions/AthleteEvaluationActions";

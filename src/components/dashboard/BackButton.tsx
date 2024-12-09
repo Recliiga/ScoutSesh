@@ -10,7 +10,7 @@ export default function BackButton({
 }) {
   const router = useRouter();
   return (
-    <Button variant="outline" onClick={() => router.back()}>
+    <Button variant="outline" type="button" onClick={() => router.back()}>
       {actionText}
     </Button>
   );

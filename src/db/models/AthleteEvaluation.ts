@@ -26,10 +26,11 @@ export type AthleteEvaluationType = mongoose.Document & {
   sportSpecificSkillAssessments: SkillAssessmentType[];
   selectedSport: string;
   coachFeedback: EvaluationCoachFeedbackType;
-  user: UserType;
+  coach: UserType;
+  athlete: UserType;
   nextEvaluationDate: string;
   nextEvaluationTime: string;
-  template?: AthleteEvaluationTemplateType;
+  template: AthleteEvaluationTemplateType;
   createdAt: string;
   updatedAt: string;
 };
@@ -89,13 +90,19 @@ const AthleteEvaluationSchema = new mongoose.Schema<AthleteEvaluationType>(
       },
       questions: [AthleteEvaluationQuestionSchema],
     },
-    user: {
+    coach: {
       type: mongoose.SchemaTypes.ObjectId,
-      required: [true, "Invalid user ID"],
+      required: [true, "Invalid coach ID"],
+      ref: "User",
+    },
+    athlete: {
+      type: mongoose.SchemaTypes.ObjectId,
+      required: [true, "Invalid athlete ID"],
       ref: "User",
     },
     template: {
       type: mongoose.SchemaTypes.ObjectId,
+      required: [true, "Please provide a valid template ID"],
       ref: "AthleteEvaluationTemplate",
     },
     nextEvaluationDate: {

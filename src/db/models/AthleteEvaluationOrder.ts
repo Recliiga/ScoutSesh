@@ -1,23 +1,25 @@
 import mongoose from "mongoose";
-import { AEPricingPlanType } from "./AthleteEvaluationPricingPlan";
+import {
+  AEPricingPlanType,
+  AthleteEvaluationPricingPlanSchema,
+} from "./AthleteEvaluationPricingPlan";
 import { UserType } from "./User";
+import {
+  AthleteEvaluationTemplateSchema,
+  AthleteEvaluationTemplateType,
+} from "./AthleteEvaluationTemplate";
 
 export type AthleteEvaluationOrderType = {
   _id: string;
   plan: "Monthly" | "Quarterly" | "Semi Annual" | "Yearly" | "custom";
   evaluations: number;
+  pricingPlanId: string;
   pricingPlan: AEPricingPlanType;
   evaluationDates: Date[];
-  addVirtualConsultation: boolean;
-  discussionTopics?: {
-    athleteEvaluation: boolean;
-    goalSetting: boolean;
-    dailyJournal: boolean;
-    other: boolean;
-  };
-  virtualConsultationDuration?: number;
+  template?: AthleteEvaluationTemplateType;
   totalPrice: number;
-  user: UserType;
+  athlete: UserType;
+  coach: UserType;
 };
 
 const AthleteEvaluationOrderSchema =
@@ -32,29 +34,30 @@ const AthleteEvaluationOrderSchema =
         type: Number,
         required: [true, "Please provide the number of evaluations"],
       },
-      pricingPlan: {
-        type: mongoose.SchemaTypes.ObjectId,
+      pricingPlanId: {
+        type: String,
         required: [true, "Please provide a valid pricing plan ID"],
-        ref: "AthleteEvaluationPricingPlan",
+      },
+      template: {
+        type: AthleteEvaluationTemplateSchema,
+      },
+      pricingPlan: {
+        type: AthleteEvaluationPricingPlanSchema,
+        required: [true, "Please provide a valid pricing plan"],
       },
       evaluationDates: {
         type: [Date],
         required: [true, "Please select the evaluation date"],
       },
-      addVirtualConsultation: { type: Boolean, required: true },
-      discussionTopics: {
-        athleteEvaluation: { type: Boolean },
-        goalSetting: { type: Boolean },
-        dailyJournal: { type: Boolean },
-        other: { type: Boolean },
-      },
-      virtualConsultationDuration: {
-        type: Number,
-      },
       totalPrice: { type: Number, required: [true, "Invalid price"] },
-      user: {
+      athlete: {
         type: mongoose.SchemaTypes.ObjectId,
-        required: [true, "Please provide a valid user ID"],
+        required: [true, "Please provide a valid athlete ID"],
+        ref: "User",
+      },
+      coach: {
+        type: mongoose.SchemaTypes.ObjectId,
+        required: [true, "Please provide a valid coach ID"],
         ref: "User",
       },
     },

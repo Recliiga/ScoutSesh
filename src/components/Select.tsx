@@ -18,6 +18,7 @@ export default function Select({
   className,
   children,
   disabled = false,
+  defaultChild,
 }: {
   className?: string;
   placeholder?: string;
@@ -25,10 +26,11 @@ export default function Select({
   onChange(value: string): void;
   children?: React.ReactNode;
   disabled?: boolean;
+  defaultChild?: React.ReactNode;
 }) {
   const [showOptions, setShowOptions] = useState(false);
   const [childComponent, setChildComponent] = useState<React.ReactNode | null>(
-    null,
+    defaultChild || null,
   );
 
   function closeDropdown() {
@@ -44,17 +46,26 @@ export default function Select({
     closeDropdown();
   }
 
+  function toggleShowOptions() {
+    if (disabled) return;
+    setShowOptions((prev) => !prev);
+  }
+
   return (
     <SelectContext.Provider
       value={{ value, handleChange, showOptions: showOptions, closeDropdown }}
     >
       <div className="relative text-sm" ref={selectRef}>
         <div
-          onClick={() => {
-            if (disabled) return;
-            setShowOptions((prev) => !prev);
+          tabIndex={0}
+          onClick={toggleShowOptions}
+          className={`line-clamp-1 w-full cursor-pointer rounded-md border px-3 py-2 pr-8 ring-accent-black duration-200 hover:bg-accent-gray-100 focus-visible:ring-1 ${disabled ? "cursor-[default] bg-accent-gray-100" : ""} ${className}`}
+          onKeyDown={(e) => {
+            if (e.code === "Enter" || e.code === "Space") {
+              e.preventDefault();
+              toggleShowOptions();
+            }
           }}
-          className={`line-clamp-1 w-full cursor-pointer rounded-md border px-3 py-2 pr-8 duration-200 hover:bg-accent-gray-100 ${disabled ? "cursor-[default] bg-accent-gray-100" : ""} ${className}`}
         >
           {childComponent || placeholder || "Select"}
         </div>

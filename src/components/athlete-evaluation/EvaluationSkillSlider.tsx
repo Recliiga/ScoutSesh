@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function SelfEvaluationSkillSlider({
+export default function EvaluationSkillSlider({
   skill,
   currentLevel,
   onCurrentLevelChange,
