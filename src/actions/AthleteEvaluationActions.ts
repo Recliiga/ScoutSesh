@@ -16,7 +16,7 @@ import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function createCoachEvaluation(
+export async function createCoachAthleteEvaluation(
   order: AthleteEvaluationOrderType,
   evaluationData: Partial<AthleteEvaluationType>,
 ) {
@@ -24,6 +24,8 @@ export async function createCoachEvaluation(
     const cookieStore = await cookies();
     const { userId, error: authError } = getUserIdFromCookies(cookieStore);
     if (authError !== null) return { error: "User unauthenticated" };
+
+    if (String(order.coach) !== userId) throw new Error("Unauthorized");
 
     await connectDB();
 
@@ -46,8 +48,52 @@ export async function createCoachEvaluation(
       JSON.stringify(
         await AthleteEvaluation.create({
           ...evaluationData,
-          user: userId,
           order: order._id,
+        }),
+      ),
+    );
+
+    return { newEvaluation, error: null };
+  } catch (err) {
+    console.log((err as Error).message);
+    return { newEvaluation: null, error: "An unexpected error occured" };
+  }
+}
+
+export async function createSelfEvaluation(
+  order: AthleteEvaluationOrderType,
+  evaluationData: Partial<AthleteEvaluationType>,
+) {
+  try {
+    const cookieStore = await cookies();
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) return { error: "User unauthenticated" };
+
+    if (order.athlete._id !== userId) throw new Error("Unauthorized");
+
+    await connectDB();
+
+    const nextDateIndex = order.evaluationDates.findIndex(
+      (date) => !date.dateAthleteEvaluated,
+    );
+    const evaluationDates = order.evaluationDates.map((date, index) =>
+      index === nextDateIndex
+        ? { ...date, dateAthleteEvaluated: new Date().toDateString() }
+        : date,
+    );
+
+    await AthleteEvaluationOrder.findByIdAndUpdate(order._id, {
+      ...order,
+      template: evaluationData.template,
+      evaluationDates,
+    });
+
+    const newEvaluation = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluation.create({
+          ...evaluationData,
+          order: order._id,
+          isSelfEvaluation: true,
         }),
       ),
     );

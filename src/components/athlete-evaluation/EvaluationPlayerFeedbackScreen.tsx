@@ -5,7 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 import { UpdateEvaluationDataParams } from "./EvaluationForm";
-import { createCoachEvaluation } from "@/actions/AthleteEvaluationActions";
+import {
+  createSelfEvaluation,
+  createCoachAthleteEvaluation,
+} from "@/actions/AthleteEvaluationActions";
 import Error from "../AuthError";
 import LoadingIndicator from "../LoadingIndicator";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
@@ -39,10 +42,9 @@ export default function EvaluationPlayerFeedbackScreen({
   async function handleSubmitEvaluation() {
     if (cannotSubmit) return;
     setLoading(true);
-    const { newEvaluation, error } = await createCoachEvaluation(
-      order,
-      evaluationData,
-    );
+    const { newEvaluation, error } = isSelfEvaluation
+      ? await createSelfEvaluation(order, evaluationData)
+      : await createCoachAthleteEvaluation(order, evaluationData);
     if (newEvaluation) {
       setEvaluationId(newEvaluation._id);
       setLoading(false);
@@ -70,8 +72,8 @@ export default function EvaluationPlayerFeedbackScreen({
           </h1>
           <p className="text-base">
             {isSelfEvaluation
-              ? evaluationData.overviewDetails.description
-              : evaluationData.overviewDetails.description.replaceAll(
+              ? evaluationData.coachFeedback.description
+              : evaluationData.coachFeedback.description.replaceAll(
                   "your",
                   formattedAthleteName,
                 )}

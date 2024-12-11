@@ -6,7 +6,7 @@ import UserAthleteEvaluationPage from "@/components/dashboard-pages/UserAthleteE
 import {
   fetchAthleteEvaluationOrders,
   fetchCoachEvaluationOrders,
-  fetchEvaluationsByCoach,
+  fetchCoachEvaluations,
 } from "@/services/AthleteEvaluationServices";
 import { fetchCoachPricingPlan } from "@/services/AEPricingPlanServices";
 
@@ -21,8 +21,9 @@ export default async function AthleteEvaluationPage() {
       await fetchCoachPricingPlan(user._id);
     if (pricingPlanError !== null) throw new Error(pricingPlanError);
 
-    const { evaluations, error: evaluationError } =
-      await fetchEvaluationsByCoach(user._id);
+    const { evaluations, error: evaluationError } = await fetchCoachEvaluations(
+      user._id,
+    );
     if (evaluationError !== null) throw new Error(evaluationError);
 
     return (

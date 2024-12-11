@@ -33,8 +33,8 @@ export default function EvaluationSportSpecificSkillAssessmentScreen({
             4/6 Athlete Evaluation
           </div>
           <h1 className="text-3xl font-bold">
-            Assess {isSelfEvaluation ? "Your" : formattedAthleteName} Volleyball
-            Skills
+            Assess {isSelfEvaluation ? "Your" : formattedAthleteName}{" "}
+            {evaluationData.selectedSport} Skills
           </h1>
           <p className="mb-4 text-lg">
             Rate {isSelfEvaluation ? "your" : formattedAthleteName} current

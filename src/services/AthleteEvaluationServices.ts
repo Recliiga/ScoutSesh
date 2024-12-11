@@ -6,16 +6,18 @@ import AthleteEvaluationOrder, {
   AthleteEvaluationOrderType,
 } from "@/db/models/AthleteEvaluationOrder";
 
-export async function fetchEvaluationsByAthlete(userId: string) {
+export async function fetchAthleteEvaluations(athleteId: string) {
   try {
     await connectDB();
     const evaluations: AthleteEvaluationType[] = JSON.parse(
       JSON.stringify(
-        await AthleteEvaluation.find({ user: userId }).populate({
-          path: "template",
-          select: "user",
-          populate: { path: "user", select: "firstName lastName" },
-        }),
+        await AthleteEvaluation.find({ athlete: athleteId })
+          .populate({
+            path: "template",
+            select: "user name",
+            populate: { path: "user", select: "firstName lastName" },
+          })
+          .populate({ path: "coach", select: "firstName, lastName" }),
       ),
     );
     return { evaluations, error: null };
@@ -25,16 +27,18 @@ export async function fetchEvaluationsByAthlete(userId: string) {
   }
 }
 
-export async function fetchEvaluationsByCoach(coachId: string) {
+export async function fetchCoachEvaluations(coachId: string) {
   try {
     await connectDB();
     const evaluations: AthleteEvaluationType[] = JSON.parse(
       JSON.stringify(
-        await AthleteEvaluation.find({ coach: coachId }).populate({
-          path: "template",
-          select: "user",
-          populate: { path: "user", select: "firstName lastName" },
-        }),
+        await AthleteEvaluation.find({ coach: coachId })
+          .populate({
+            path: "template",
+            select: "user",
+            populate: { path: "user", select: "firstName lastName" },
+          })
+          .populate({ path: "coach", select: "firstName, lastName" }),
       ),
     );
     return { evaluations, error: null };
@@ -121,5 +125,83 @@ export async function fetchEvaluationOrder(evaluationOrderId: string) {
   } catch (err) {
     const error = err as Error;
     return { order: null, error: error.message };
+  }
+}
+
+export async function fetchEvaluationResults(evaluationId: string) {
+  try {
+    await connectDB();
+    const firstEvaluation: AthleteEvaluationType | null = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluation.findById(evaluationId)
+          .populate({
+            path: "athlete",
+            select: "firstName lastName profilePicture",
+          })
+          .populate({
+            path: "coach",
+            select: "firstName lastName profilePicture",
+          }),
+      ),
+    );
+    if (!firstEvaluation) throw new Error("Invalid Evaluation ID");
+
+    let coachEvaluation: AthleteEvaluationType | null = null;
+    let selfEvaluation: AthleteEvaluationType | null = null;
+
+    if (firstEvaluation.isSelfEvaluation) {
+      selfEvaluation = firstEvaluation;
+
+      const secondEvaluation: AthleteEvaluationType | null = JSON.parse(
+        JSON.stringify(
+          await AthleteEvaluation.findOne({
+            order: firstEvaluation.order,
+            dueDate: firstEvaluation.dueDate,
+            isSelfEvaluation: false,
+          })
+            .populate({
+              path: "athlete",
+              select: "firstName lastName profilePicture",
+            })
+            .populate({
+              path: "coach",
+              select: "firstName lastName profilePicture",
+            }),
+        ),
+      );
+      if (!secondEvaluation) throw new Error("No coach evaluation");
+      coachEvaluation = secondEvaluation;
+    } else {
+      coachEvaluation = firstEvaluation;
+
+      const secondEvaluation: AthleteEvaluationType | null = JSON.parse(
+        JSON.stringify(
+          await AthleteEvaluation.findOne({
+            order: firstEvaluation.order,
+            dueDate: firstEvaluation.dueDate,
+            isSelfEvaluation: true,
+          })
+            .populate({
+              path: "athlete",
+              select: "firstName lastName profilePicture",
+            })
+            .populate({
+              path: "coach",
+              select: "firstName lastName profilePicture",
+            }),
+        ),
+      );
+      selfEvaluation = secondEvaluation;
+    }
+
+    const evaluationResults = {
+      athlete: selfEvaluation,
+      coach: coachEvaluation,
+    };
+
+    return { evaluationResults, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { evaluationResults: null, error: error.message };
   }
 }

@@ -6,39 +6,6 @@ import BackButton from "@/components/dashboard/BackButton";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 import { formatDate, getFullname } from "@/lib/utils";
 
-// const evaluationRecords = [
-//   {
-//     _id: 1,
-//     date: "October 15, 2024",
-//     type: "Athlete Evaluation",
-//     coachName: "Coach Davis",
-//   },
-//   {
-//     _id: 2,
-//     date: "September 1, 2024",
-//     type: "Athlete Evaluation",
-//     coachName: "Coach Davis",
-//   },
-//   {
-//     _id: 3,
-//     date: "July 20, 2024",
-//     type: "Athlete Evaluation",
-//     coachName: "Coach Davis",
-//   },
-//   {
-//     _id: 4,
-//     date: "June 5, 2024",
-//     type: "Athlete Evaluation",
-//     coachName: "Coach Davis",
-//   },
-//   {
-//     _id: 5,
-//     date: "April 30, 2024",
-//     type: "Athlete Evaluation",
-//     coachName: "Coach Davis",
-//   },
-// ];
-
 export default function AthleteEvaluationRecordsPage({
   evaluationRecords,
 }: {
@@ -61,13 +28,18 @@ export default function AthleteEvaluationRecordsPage({
                 >
                   <div>
                     <p className="font-medium text-gray-800">
-                      {evaluation.template.name}
+                      {evaluation.isSelfEvaluation
+                        ? "Self Evaluation"
+                        : "Coach Evaluation"}
                     </p>
                     <p className="text-sm text-gray-600">
                       {formatDate(evaluation.createdAt)}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {getFullname(evaluation.template.user)}
+                      Coach:
+                      <span className="font-semibold">
+                        {getFullname(evaluation.template.user)}
+                      </span>
                     </p>
                   </div>
                   <Link

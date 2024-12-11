@@ -74,7 +74,7 @@ export default function EvaluationForm({
       },
       coachFeedback: {
         ...template.coachFeedback,
-        questions: template.overviewDetails.questions.map((question) => ({
+        questions: template.coachFeedback.questions.map((question) => ({
           ...question,
           response: "",
         })),

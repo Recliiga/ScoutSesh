@@ -8,7 +8,6 @@ import React from "react";
 export default async function CreateGoalPage() {
   const { goalData, error } = await fetchAthleteLatestGoalData();
   if (error !== null) notFound();
-  // const goalData = null;
 
   const status = await getWeeklyReflectionStatus(goalData);
 

@@ -32,6 +32,7 @@ export type AthleteEvaluationType = mongoose.Document & {
   template: AthleteEvaluationTemplateType;
   order: AthleteEvaluationOrderType;
   dueDate: Date;
+  isSelfEvaluation: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -114,6 +115,10 @@ const AthleteEvaluationSchema = new mongoose.Schema<AthleteEvaluationType>(
     dueDate: {
       type: Date,
       required: [true, "Please provide the order due date"],
+    },
+    isSelfEvaluation: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },

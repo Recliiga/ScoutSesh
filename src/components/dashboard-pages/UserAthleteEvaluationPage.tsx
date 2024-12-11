@@ -20,6 +20,7 @@ export default async function UserAthleteEvaluationPage({
     .sort(
       (a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime(),
     );
+
   const awaitingOrderId =
     awaitingEvaluationOrders.length > 0
       ? awaitingEvaluationOrders[0]._id

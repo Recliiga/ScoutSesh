@@ -15,16 +15,6 @@ export type CustomPlanType = {
   price: number;
 } & mongoose.Document;
 
-// type AECustomPlanType =
-//   | {
-//       offerCustomPlan: true;
-//       customPlanTiers: CustomPlanType[];
-//     }
-//   | {
-//       offerCustomPlan: false;
-//       customPlanTiers: undefined;
-//     };
-
 type AECustomPlanType =
   | {
       offerCustomPlan: false;
@@ -75,7 +65,7 @@ const StandardPlanSchema = new mongoose.Schema<StandardPlanType>({
 const CustomPlanTierSchema = new mongoose.Schema<CustomPlanType>({
   type: {
     type: String,
-    enum: ["single", "range"], // Only allow "single" or "range"
+    enum: ["single", "range"], 
   },
   evaluations: {
     from: {
