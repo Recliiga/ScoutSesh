@@ -47,6 +47,7 @@ export async function createCoachEvaluation(
         await AthleteEvaluation.create({
           ...evaluationData,
           user: userId,
+          order: order._id,
         }),
       ),
     );

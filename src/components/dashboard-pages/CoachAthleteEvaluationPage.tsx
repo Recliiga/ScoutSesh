@@ -9,78 +9,35 @@ import {
 } from "lucide-react";
 import EvaluationCard from "@/components/athlete-evaluation/EvaluationCard";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
-import { getFullname } from "@/lib/utils";
+import { formatDate, getFullname, getNextEvaluationDueDate } from "@/lib/utils";
 import Link from "next/link";
+import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 
-// const allAthletesNeedingEvaluation = [
-//   {
-//     _id: 1,
-//     name: "John Doe",
-//     lastEvaluation: "September 23, 2024",
-//     completeBy: "October 23, 2024",
-//     plan: "Monthly",
-//     photo: "/placeholder-profile-picture.png",
-//   },
-//   {
-//     _id: 2,
-//     name: "Jane Smith",
-//     lastEvaluation: "July 25, 2024",
-//     completeBy: "October 25, 2024",
-//     plan: "Quarterly",
-//     photo: "/placeholder-profile-picture.png",
-//   },
-//   {
-//     _id: 3,
-//     name: "Mike Johnson",
-//     lastEvaluation: "March 28, 2024",
-//     completeBy: "October 28, 2024",
-//     plan: "Semi Annual",
-//     photo: "/placeholder-profile-picture.png",
-//   },
-//   {
-//     _id: 4,
-//     name: "Emily Brown",
-//     lastEvaluation: "November 5, 2023",
-//     completeBy: "November 5, 2024",
-//     plan: "Yearly",
-//     photo: "/placeholder-profile-picture.png",
-//   },
-//   {
-//     _id: 5,
-//     name: "Alex Lee",
-//     lastEvaluation: "September 21, 2024",
-//     completeBy: "February 15, 2025",
-//     plan: "Custom",
-//     photo: "/placeholder-profile-picture.png",
-//   },
-//   {
-//     _id: 6,
-//     name: "Sarah Johnson",
-//     lastEvaluation: "October 1, 2024",
-//     completeBy: "March 1, 2025",
-//     plan: "Semi Annual",
-//     photo: "/placeholder-profile-picture.png",
-//   },
-//   {
-//     _id: 7,
-//     name: "Tom Wilson",
-//     lastEvaluation: "October 15, 2024",
-//     completeBy: "April 15, 2025",
-//     plan: "Quarterly",
-//     photo: "/placeholder-profile-picture.png",
-//   },
-// ];
-
-// const sortedAthletes = [...allAthletesNeedingEvaluation].sort(
-//   (a, b) => new Date(a.completeBy).getTime() - new Date(b.completeBy).getTime(),
-// );
+type PropsType = {
+  orders: AthleteEvaluationOrderType[];
+  hasPricingPlan: boolean;
+  coachEvaluations: AthleteEvaluationType[];
+};
 
 export default function CoachAthleteEvaluationPage({
   orders,
-}: {
-  orders: AthleteEvaluationOrderType[];
-}) {
+  hasPricingPlan,
+  coachEvaluations,
+}: PropsType) {
   const sortedOrders = orders;
+
+  function getLastEvaluationDate(order: AthleteEvaluationOrderType) {
+    return coachEvaluations.find(
+      (evaluation) => String(evaluation.order) === order._id,
+    )?.createdAt;
+  }
+
+  function canEvaluate(order: AthleteEvaluationOrderType) {
+    return !order.evaluationDates.some(
+      (date) => date.dateCoachEvaluated && !date.dateAthleteEvaluated,
+    );
+  }
+
   return (
     <main className="flex-grow">
       <div className="mx-auto w-[90%] max-w-6xl py-6 sm:py-8">
@@ -120,6 +77,7 @@ export default function CoachAthleteEvaluationPage({
                                 src={order.athlete.profilePicture}
                                 alt={getFullname(order.athlete)}
                                 fill
+                                sizes="128px"
                               />
                             </div>
                             <div className="ml-4">
@@ -136,31 +94,58 @@ export default function CoachAthleteEvaluationPage({
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="text-sm text-gray-900">
-                            {/* {order.lastEvaluation} */}
+                            {getLastEvaluationDate(order)
+                              ? formatDate(getLastEvaluationDate(order)!)
+                              : "N/A"}
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="text-sm text-gray-900">
-                            {/* {order.completeBy} */}
+                            {getNextEvaluationDueDate(order)}
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="flex space-x-2">
-                            <Link
-                              href={`/dashboard/athlete-evaluation/evaluate/${order._id}`}
-                              className="flex items-center rounded-md border border-green-600 bg-white px-4 py-2 text-xs font-medium text-green-600 hover:bg-green-600 hover:text-white"
-                            >
-                              <ClipboardIcon className="mr-2 h-4 w-4" />
-                              Evaluate
-                            </Link>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white"
-                            >
-                              <UserPlusIcon className="mr-2 h-4 w-4" />
-                              Assign to
-                            </Button>
+                            {canEvaluate(order) ? (
+                              <>
+                                <Link
+                                  href={`/dashboard/athlete-evaluation/evaluate/${order._id}`}
+                                  className={`flex items-center rounded-md border border-green-600 bg-white px-4 py-2 text-xs font-medium text-green-600 hover:bg-green-600 hover:text-white`}
+                                >
+                                  <ClipboardIcon className="mr-2 h-4 w-4" />
+                                  Evaluate
+                                </Link>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white"
+                                >
+                                  <UserPlusIcon className="mr-2 h-4 w-4" />
+                                  Assign to
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  disabled
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white"
+                                >
+                                  <ClipboardIcon className="mr-2 h-4 w-4" />
+                                  Evaluate
+                                </Button>
+                                <Button
+                                  disabled
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white"
+                                >
+                                  <UserPlusIcon className="mr-2 h-4 w-4" />
+                                  Assign to
+                                </Button>
+                              </>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -176,12 +161,16 @@ export default function CoachAthleteEvaluationPage({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <EvaluationCard
             title="Evaluation Pricing"
-            description="Customize and manage your pricing structure for athlete evaluations. Optimize your rates to reflect your expertise and market demand."
+            description={
+              hasPricingPlan
+                ? "Customize and manage your pricing structure for athlete evaluations. Optimize your rates to reflect your expertise and market demand."
+                : "You haven't configured your pricing plan yet. Create one now to optimize your athlete evaluations."
+            }
             icon={<ClipboardIcon className="h-8 w-8 text-green-600" />}
-            action="Manage Pricing"
+            action={hasPricingPlan ? "Manage Pricing" : "Create Pricing Plan"}
             href="/dashboard/athlete-evaluation/pricing"
           />
           <EvaluationCard

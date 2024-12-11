@@ -4,14 +4,7 @@ import { Button } from "../ui/button";
 import { MessageSquare } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { DailyJournalAthleteType } from "../dashboard-pages/CoachDailyJournalPage";
-
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-};
+import { formatDate } from "@/lib/utils";
 
 export default function DailyJournalInactiveAthletesTable({
   athletes,
@@ -19,31 +12,31 @@ export default function DailyJournalInactiveAthletesTable({
   athletes: (DailyJournalAthleteType & { daysSinceLastUpdate: number })[];
 }) {
   return (
-    <table className="divide-y divide-gray-200 min-w-full">
-      <thead className="top-0 sticky bg-gray-50">
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="sticky top-0 bg-gray-50">
         <tr>
-          <th className="px-6 py-3 font-medium text-gray-500 text-left text-xs uppercase tracking-wider">
+          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
             Athlete
           </th>
-          <th className="px-6 py-3 font-medium text-gray-500 text-left text-xs uppercase tracking-wider">
+          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
             Last Entry Date
           </th>
-          <th className="px-6 py-3 font-medium text-center text-gray-500 text-xs uppercase tracking-wider">
+          <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
             <span className="whitespace-nowrap">Days Since</span>{" "}
             <span className="whitespace-nowrap">Last Update</span>
           </th>
-          <th className="px-6 py-3 font-medium text-gray-500 text-left text-xs uppercase tracking-wider">
+          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
             Action
           </th>
         </tr>
       </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
+      <tbody className="divide-y divide-gray-200 bg-white">
         {athletes.map((athlete) => (
           <tr key={athlete._id}>
-            <td className="px-6 py-4 whitespace-nowrap">
+            <td className="whitespace-nowrap px-6 py-4">
               <div className="flex items-center">
-                <div className="flex-shrink-0 w-10 h-10">
-                  <Avatar className="w-10 h-10">
+                <div className="h-10 w-10 flex-shrink-0">
+                  <Avatar className="h-10 w-10">
                     <AvatarImage
                       src={athlete.profilePicture}
                       alt={athlete.name}
@@ -58,26 +51,26 @@ export default function DailyJournalInactiveAthletesTable({
                   </Avatar>
                 </div>
                 <div className="ml-4">
-                  <div className="font-medium text-gray-900 text-sm">
+                  <div className="text-sm font-medium text-gray-900">
                     {athlete.name}
                   </div>
                 </div>
               </div>
             </td>
-            <td className="px-6 py-4 whitespace-nowrap">
-              <div className="text-gray-900 text-sm">
-                {formatDate(new Date(athlete.lastUpdate))}
+            <td className="whitespace-nowrap px-6 py-4">
+              <div className="text-sm text-gray-900">
+                {formatDate(athlete.lastUpdate)}
               </div>
             </td>
-            <td className="px-6 py-4 text-center whitespace-nowrap">
-              <div className="text-gray-900 text-sm">
+            <td className="whitespace-nowrap px-6 py-4 text-center">
+              <div className="text-sm text-gray-900">
                 {athlete.daysSinceLastUpdate}
               </div>
             </td>
-            <td className="px-6 py-4 whitespace-nowrap">
+            <td className="whitespace-nowrap px-6 py-4">
               <div className="flex space-x-2">
                 <Link
-                  className="border-green-600 bg-white hover:bg-green-600 px-3 py-1.5 border rounded-md text-green-600 text-xs hover:text-white duration-300"
+                  className="rounded-md border border-green-600 bg-white px-3 py-1.5 text-xs text-green-600 duration-300 hover:bg-green-600 hover:text-white"
                   href={`/dashboard/daily-journal/entries/${athlete._id}`}
                 >
                   View Entries
@@ -85,9 +78,9 @@ export default function DailyJournalInactiveAthletesTable({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-green-600 bg-white hover:bg-green-600 text-green-600 hover:text-white"
+                  className="border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white"
                 >
-                  <MessageSquare className="mr-2 w-4 h-4" />
+                  <MessageSquare className="mr-2 h-4 w-4" />
                   Message
                 </Button>
               </div>

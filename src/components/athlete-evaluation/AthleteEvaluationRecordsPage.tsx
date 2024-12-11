@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/dashboard/BackButton";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
-import { getFullname } from "@/lib/utils";
+import { formatDate, getFullname } from "@/lib/utils";
 
 // const evaluationRecords = [
 //   {
@@ -39,59 +39,56 @@ import { getFullname } from "@/lib/utils";
 //   },
 // ];
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
 export default function AthleteEvaluationRecordsPage({
   evaluationRecords,
 }: {
   evaluationRecords: AthleteEvaluationType[];
 }) {
   return (
-    <main className="mx-auto w-[90%] max-w-4xl flex-1 py-6">
+    <main className="mx-auto flex w-[90%] max-w-4xl flex-1 flex-col py-6">
       <h1 className="mb-6 text-3xl font-bold">Evaluation Records</h1>
-      <Card>
+      <Card className="flex-1">
         <CardHeader>
           <CardTitle>Past Evaluations</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {evaluationRecords.map((evaluation) => (
-              <div
-                key={evaluation._id}
-                className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 duration-200 hover:scale-[1.02]"
-              >
-                <div>
-                  <p className="font-medium text-gray-800">
-                    {evaluation.template.name}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {formatDate(evaluation.createdAt)}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {getFullname(evaluation.template.user)}
-                  </p>
-                </div>
-                <Link
-                  href={`/dashboard/athlete-evaluation/evaluations/${evaluation._id}`}
-                  passHref
+            {evaluationRecords.length > 0 ? (
+              evaluationRecords.map((evaluation) => (
+                <div
+                  key={evaluation._id}
+                  className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 duration-200 hover:scale-[1.02]"
                 >
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
+                  <div>
+                    <p className="font-medium text-gray-800">
+                      {evaluation.template.name}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {formatDate(evaluation.createdAt)}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {getFullname(evaluation.template.user)}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/dashboard/athlete-evaluation/evaluations/${evaluation._id}`}
+                    passHref
                   >
-                    View
-                  </Button>
-                </Link>
-              </div>
-            ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
+                    >
+                      View
+                    </Button>
+                  </Link>
+                </div>
+              ))
+            ) : (
+              <p className="text-accent-gray-300">
+                You do not have any past evaluation records
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>

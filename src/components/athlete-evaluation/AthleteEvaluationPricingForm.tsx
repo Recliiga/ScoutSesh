@@ -264,7 +264,7 @@ export default function AthleteEvaluationPricingForm({
             <Label>Plan Total</Label>
           </div>
           {customPlanTiers.map((tier, index) => (
-            <div key={index} className="grid grid-cols-4 gap-4">
+            <div key={index} className="grid grid-cols-4 items-center gap-4">
               <Select
                 onChange={(value) =>
                   handleCustomPlanTypeChange(
@@ -340,10 +340,10 @@ export default function AthleteEvaluationPricingForm({
                   }
                   min={0}
                   placeholder="Price per Session"
-                  className="pl-6 pr-24"
+                  className="pl-6 lg:pr-24"
                   required
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500">
+                <span className="absolute right-3 top-1/2 hidden -translate-y-1/2 transform text-gray-500 lg:inline">
                   /evaluation
                 </span>
               </div>

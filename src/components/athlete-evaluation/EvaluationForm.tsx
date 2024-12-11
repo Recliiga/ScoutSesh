@@ -29,6 +29,19 @@ export type UpdateEvaluationDataParams<T extends keyof AthleteEvaluationType> =
       : null,
   ];
 
+function getNextEvaluationDueDate(
+  order: AthleteEvaluationOrderType,
+  isSelfEvaluation: boolean,
+) {
+  const evaluationDateIndex = order.evaluationDates.findIndex(
+    (evaluationDate) =>
+      isSelfEvaluation
+        ? !evaluationDate.dateAthleteEvaluated
+        : !evaluationDate.dateCoachEvaluated,
+  );
+  return new Date(order.evaluationDates[evaluationDateIndex].date);
+}
+
 export default function EvaluationForm({
   order,
   coachTemplates,
@@ -41,6 +54,8 @@ export default function EvaluationForm({
 
   const template =
     orderTemplate || coachTemplates?.find((temp) => temp._id === templateId);
+
+  const isSelfEvaluation = !Boolean(coachTemplates);
 
   function getEvaluationDataFromTemplate(
     template: AthleteEvaluationTemplateType,
@@ -80,8 +95,7 @@ export default function EvaluationForm({
           currentLevel: 5,
         }),
       ),
-      // nextEvaluationDate: "",
-      // nextEvaluationTime: "10:00",
+      dueDate: getNextEvaluationDueDate(order, isSelfEvaluation),
     } as AthleteEvaluationType;
   }
 
@@ -115,20 +129,6 @@ export default function EvaluationForm({
           selectedSport: value as string,
         } as AthleteEvaluationType);
         break;
-
-      // case "nextEvaluationDate":
-      //   setEvaluationData({
-      //     ...evaluationData,
-      //     nextEvaluationDate: value as string,
-      //   } as AthleteEvaluationType);
-      //   break;
-
-      // case "nextEvaluationTime":
-      //   setEvaluationData({
-      //     ...evaluationData,
-      //     nextEvaluationTime: value as string,
-      //   } as AthleteEvaluationType);
-      //   break;
 
       case "overviewDetails":
         setEvaluationData({
@@ -221,6 +221,8 @@ export default function EvaluationForm({
           coachTemplates={coachTemplates}
           updateEvaluationData={updateEvaluationData}
           setCurrentScreen={setCurrentScreen}
+          isSelfEvaluation={isSelfEvaluation}
+          athleteFirstName={order.athlete.firstName}
         />
       )}
       {evaluationData ? (
@@ -230,6 +232,8 @@ export default function EvaluationForm({
               evaluationData={evaluationData}
               updateEvaluationData={updateEvaluationData}
               setCurrentScreen={setCurrentScreen}
+              isSelfEvaluation={isSelfEvaluation}
+              athleteFirstName={order.athlete.firstName}
             />
           )}
           {currentScreen === "mental-skill-assessment" && (
@@ -237,6 +241,8 @@ export default function EvaluationForm({
               evaluationData={evaluationData}
               updateEvaluationData={updateEvaluationData}
               setCurrentScreen={setCurrentScreen}
+              isSelfEvaluation={isSelfEvaluation}
+              athleteFirstName={order.athlete.firstName}
             />
           )}
           {currentScreen === "sport-specific-skill-assessment" && (
@@ -244,6 +250,8 @@ export default function EvaluationForm({
               evaluationData={evaluationData}
               updateEvaluationData={updateEvaluationData}
               setCurrentScreen={setCurrentScreen}
+              isSelfEvaluation={isSelfEvaluation}
+              athleteFirstName={order.athlete.firstName}
             />
           )}
           {currentScreen === "player-feedback" && (
@@ -253,6 +261,8 @@ export default function EvaluationForm({
               updateEvaluationData={updateEvaluationData}
               setCurrentScreen={setCurrentScreen}
               setEvaluationId={setEvaluationId}
+              isSelfEvaluation={isSelfEvaluation}
+              athleteFirstName={order.athlete.firstName}
             />
           )}
           {currentScreen === "completion" && (

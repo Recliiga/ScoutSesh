@@ -3,17 +3,28 @@ import EvaluationSkillSlider from "./EvaluationSkillSlider";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 import { UpdateEvaluationDataParams } from "./EvaluationForm";
 
-export default function EvaluationSportSpecificSkillAssessmentScreen({
-  evaluationData,
-  updateEvaluationData,
-  setCurrentScreen,
-}: {
+type PropsType = {
   evaluationData: AthleteEvaluationType;
   updateEvaluationData<T extends keyof AthleteEvaluationType>(
     ...params: UpdateEvaluationDataParams<T>
   ): void;
   setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
-}) {
+  isSelfEvaluation: boolean;
+  athleteFirstName: string;
+};
+
+export default function EvaluationSportSpecificSkillAssessmentScreen({
+  evaluationData,
+  updateEvaluationData,
+  setCurrentScreen,
+  isSelfEvaluation,
+  athleteFirstName,
+}: PropsType) {
+  const formattedAthleteName =
+    athleteFirstName.at(-1)?.toLowerCase() === "s"
+      ? `${athleteFirstName}'`
+      : `${athleteFirstName}'s`;
+
   return (
     <div className="flex-1 flex-col gap-8">
       <div className="flex">
@@ -21,9 +32,13 @@ export default function EvaluationSportSpecificSkillAssessmentScreen({
           <div className="mb-4 text-sm text-muted-foreground">
             4/6 Athlete Evaluation
           </div>
-          <h1 className="text-3xl font-bold">Assess Your Volleyball Skills</h1>
+          <h1 className="text-3xl font-bold">
+            Assess {isSelfEvaluation ? "Your" : formattedAthleteName} Volleyball
+            Skills
+          </h1>
           <p className="mb-4 text-lg">
-            Rate your current level for each sport-specific skill:
+            Rate {isSelfEvaluation ? "your" : formattedAthleteName} current
+            level for each sport-specific skill:
           </p>
           <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-[repeat(auto-fill,_minmax(210px,_1fr))] lg:grid-cols-4">
             {evaluationData.sportSpecificSkillAssessments.map(

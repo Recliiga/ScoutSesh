@@ -2,16 +2,14 @@ import { ClipboardIcon, UserPlusIcon } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
-import { getFullname } from "@/lib/utils";
+import { formatDate, getFullname } from "@/lib/utils";
 import Link from "next/link";
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+function getNextEvaluationDueDate(order: AthleteEvaluationOrderType) {
+  const orderIndex = order.evaluationDates.findIndex(
+    (evaluationDate) => !evaluationDate.dateCoachEvaluated,
+  );
+  return new Date(order.evaluationDates[orderIndex].date).toDateString();
 }
 
 export default function UpcomingEvaluations({
@@ -19,20 +17,8 @@ export default function UpcomingEvaluations({
 }: {
   orders: AthleteEvaluationOrderType[];
 }) {
-  // Filter players with evaluations due within the next 7 days
-  // const sevenDaysFromNow = new Date();
-  // sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
-
-  // const filteredPlayers = allPlayersNeedingEvaluation.filter(
-  //   (player) => new Date(player.completeBy) <= sevenDaysFromNow,
-  // );
   const filteredOrders = orders;
 
-  // Sort filtered players by completion date
-  // const sortedPlayers = filteredOrders.sort(
-  //   (a, b) =>
-  //     new Date(a.completeBy).getTime() - new Date(b.completeBy).getTime(),
-  // );
   const sortedOrders = filteredOrders;
 
   return (
@@ -77,8 +63,7 @@ export default function UpcomingEvaluations({
                     </td>
                     <td className="whitespace-nowrap px-2 py-2">
                       <div className="text-sm text-gray-900">
-                        {/* {order.completeBy} */}
-                        {/* {formatDate(new Date().toDateString())} */}
+                        {formatDate(getNextEvaluationDueDate(order))}
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-2 py-2">

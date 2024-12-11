@@ -3,9 +3,15 @@ import { AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 
-export default function AthleteEvaluationNotificationSign() {
-  const message = "Athlete Evaluation awaiting your action";
-  const href = "/dashboard/athlete-evaluation/self-evaluation";
+export default function AthleteEvaluationNotificationSign({
+  awaitingOrderId,
+}: {
+  awaitingOrderId: string | null;
+}) {
+  const message = awaitingOrderId
+    ? "Athlete Evaluation awaiting your action"
+    : "You do not have any pending evaluations";
+  const href = `/dashboard/athlete-evaluation/evaluate/${awaitingOrderId}`;
   const actionText = "Complete Athlete Evaluation";
 
   return (
@@ -17,12 +23,18 @@ export default function AthleteEvaluationNotificationSign() {
         </h2>
       </div>
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6 md:gap-8">
-        <p className="text-sm text-gray-800 sm:text-base">{message}</p>
-        <Button className="border border-green-600 bg-white px-0 py-0 text-green-600 transition-colors hover:bg-green-600 hover:text-white">
-          <Link href={href} className="flex-center h-full w-full px-4 py-2">
-            {actionText}
-          </Link>
-        </Button>
+        <p
+          className={`text-sm sm:text-base ${awaitingOrderId ? "text-gray-800" : "text-accent-gray-300"}`}
+        >
+          {message}
+        </p>
+        {awaitingOrderId && (
+          <Button className="border border-green-600 bg-white px-0 py-0 text-green-600 transition-colors hover:bg-green-600 hover:text-white">
+            <Link href={href} className="flex-center h-full w-full px-4 py-2">
+              {actionText}
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   );

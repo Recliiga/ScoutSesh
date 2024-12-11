@@ -7,14 +7,7 @@ import BackButton from "../dashboard/BackButton";
 import Select from "../Select";
 import { AthleteEvaluationTemplateType } from "@/db/models/AthleteEvaluationTemplate";
 
-export default function EvaluationOverviewScreen({
-  evaluationData,
-  updateEvaluationData,
-  setCurrentScreen,
-  coachTemplates,
-  templateId,
-  handleSelectTemplate,
-}: {
+type PropsType = {
   evaluationData: AthleteEvaluationType | null;
   updateEvaluationData<T extends keyof AthleteEvaluationType>(
     ...params: UpdateEvaluationDataParams<T>
@@ -23,12 +16,30 @@ export default function EvaluationOverviewScreen({
   coachTemplates?: AthleteEvaluationTemplateType[];
   templateId: string;
   handleSelectTemplate(templateId: string): void;
-}) {
+  isSelfEvaluation: boolean;
+  athleteFirstName: string;
+};
+
+export default function EvaluationOverviewScreen({
+  evaluationData,
+  updateEvaluationData,
+  setCurrentScreen,
+  coachTemplates,
+  templateId,
+  handleSelectTemplate,
+  isSelfEvaluation,
+  athleteFirstName,
+}: PropsType) {
   const cannotSubmit = evaluationData
     ? evaluationData.overviewDetails.questions.some(
         (question) => question.response.trim() === "",
       )
     : true;
+
+  const formattedAthleteName =
+    athleteFirstName.at(-1)?.toLowerCase() === "s"
+      ? `${athleteFirstName}'`
+      : `${athleteFirstName}'s`;
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col items-center justify-center text-sm">
@@ -42,7 +53,12 @@ export default function EvaluationOverviewScreen({
               {evaluationData.overviewDetails.title}
             </h1>
             <p className="text-base">
-              {evaluationData.overviewDetails.description}
+              {isSelfEvaluation
+                ? evaluationData.overviewDetails.description
+                : evaluationData.overviewDetails.description.replaceAll(
+                    "your",
+                    formattedAthleteName,
+                  )}
             </p>
           </div>
           <div className="flex flex-1 flex-col gap-4">

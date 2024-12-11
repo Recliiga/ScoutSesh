@@ -25,6 +25,47 @@ export async function fetchEvaluationsByAthlete(userId: string) {
   }
 }
 
+export async function fetchEvaluationsByCoach(coachId: string) {
+  try {
+    await connectDB();
+    const evaluations: AthleteEvaluationType[] = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluation.find({ coach: coachId }).populate({
+          path: "template",
+          select: "user",
+          populate: { path: "user", select: "firstName lastName" },
+        }),
+      ),
+    );
+    return { evaluations, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { evaluations: null, error: error.message };
+  }
+}
+
+export async function fetchAthleteEvaluationOrders(athleteId: string) {
+  try {
+    await connectDB();
+    const orders: AthleteEvaluationOrderType[] = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluationOrder.find({ athlete: athleteId })
+          .populate({
+            path: "athlete",
+            select: "firstName lastName profilePicture",
+          })
+          .sort({
+            createdAt: -1,
+          }),
+      ),
+    );
+    return { orders, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { orders: null, error: error.message };
+  }
+}
+
 export async function fetchCoachEvaluationOrders(coachId: string) {
   try {
     await connectDB();
@@ -69,7 +110,12 @@ export async function fetchEvaluationOrder(evaluationOrderId: string) {
   try {
     await connectDB();
     const order: AthleteEvaluationOrderType | null = JSON.parse(
-      JSON.stringify(await AthleteEvaluationOrder.findById(evaluationOrderId)),
+      JSON.stringify(
+        await AthleteEvaluationOrder.findById(evaluationOrderId).populate({
+          path: "athlete",
+          select: "firstName lastName",
+        }),
+      ),
     );
     return { order, error: null };
   } catch (err) {

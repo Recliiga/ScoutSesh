@@ -2,8 +2,29 @@ import React from "react";
 import EvaluationCard from "../athlete-evaluation/EvaluationCard";
 import { ClipboardList, FileText } from "lucide-react";
 import AthleteEvaluationNotificationSign from "../athlete-evaluation/AthleteEvaluationNotificationSign";
+import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
+import { getNextEvaluationDueDate } from "@/lib/utils";
 
-export default function UserAthleteEvaluationPage() {
+export default async function UserAthleteEvaluationPage({
+  orders,
+}: {
+  orders: AthleteEvaluationOrderType[];
+}) {
+  const awaitingEvaluationOrders = orders
+    .filter((order) =>
+      order.evaluationDates.some(
+        (date) => date.dateCoachEvaluated && !date.dateAthleteEvaluated,
+      ),
+    )
+    .map((order) => ({ ...order, dueDate: getNextEvaluationDueDate(order) }))
+    .sort(
+      (a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime(),
+    );
+  const awaitingOrderId =
+    awaitingEvaluationOrders.length > 0
+      ? awaitingEvaluationOrders[0]._id
+      : null;
+
   return (
     <main className="flex-1">
       <div className="mx-auto w-[90%] max-w-6xl py-6 sm:py-8">
@@ -14,7 +35,7 @@ export default function UserAthleteEvaluationPage() {
           Track your progress, receive feedback from coaches, and improve your
           performance through regular evaluations.
         </p>
-        <AthleteEvaluationNotificationSign />
+        <AthleteEvaluationNotificationSign awaitingOrderId={awaitingOrderId} />
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <EvaluationCard
             title="Request an Evaluation"

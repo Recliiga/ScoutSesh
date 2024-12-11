@@ -13,10 +13,10 @@ export default async function DashboardPage() {
   if (journalError !== null) throw new Error(journalError);
 
   if (user.role === "Head Coach") {
-    const {orders, error} = await fetchCoachEvaluationOrders(user._id)
+    const { orders, error } = await fetchCoachEvaluationOrders(user._id);
     if (error !== null) throw new Error(error);
 
-    return <CoachDashboard user={user} orders={orders}/>;
+    return <CoachDashboard user={user} orders={orders} />;
   }
 
   const { organization, error } = await fetchOrganization(

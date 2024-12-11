@@ -20,12 +20,14 @@ export default async function RequestEvaluationPage() {
   );
   if (error !== null) throw new Error(error);
 
-  const clubs = [
-    {
-      plan: pricingPlan,
-      organization: user.organization!,
-    },
-  ];
+  const clubs = pricingPlan
+    ? [
+        {
+          plan: pricingPlan,
+          organization: user.organization!,
+        },
+      ]
+    : [];
 
   return <PurchaseEvaluationForm programs={clubs} />;
 }

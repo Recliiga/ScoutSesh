@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { UserType } from "./User";
 import { AthleteEvaluationTemplateType } from "./AthleteEvaluationTemplate";
+import { AthleteEvaluationOrderType } from "./AthleteEvaluationOrder";
 
 type AthleteEvaluationQuestionType = {
   label: string;
@@ -28,9 +29,9 @@ export type AthleteEvaluationType = mongoose.Document & {
   coachFeedback: EvaluationCoachFeedbackType;
   coach: UserType;
   athlete: UserType;
-  // nextEvaluationDate: string;
-  // nextEvaluationTime: string;
   template: AthleteEvaluationTemplateType;
+  order: AthleteEvaluationOrderType;
+  dueDate: Date;
   createdAt: string;
   updatedAt: string;
 };
@@ -105,14 +106,15 @@ const AthleteEvaluationSchema = new mongoose.Schema<AthleteEvaluationType>(
       required: [true, "Please provide a valid template ID"],
       ref: "AthleteEvaluationTemplate",
     },
-    // nextEvaluationDate: {
-    //   type: String,
-    //   required: [true, "Please provide the next evaluation date"],
-    // },
-    // nextEvaluationTime: {
-    //   type: String,
-    //   required: [true, "Please provide the next evaluation time"],
-    // },
+    order: {
+      type: mongoose.SchemaTypes.ObjectId,
+      required: [true, "Please provide a valid order ID"],
+      ref: "AthleteEvaluationOrder",
+    },
+    dueDate: {
+      type: Date,
+      required: [true, "Please provide the order due date"],
+    },
   },
   { timestamps: true },
 );
