@@ -69,6 +69,7 @@ export default function AssignEvaluationModal({
         `Assigning athlete John Smith (ID: 123) to coach ${selectedCoach.name}`,
       );
       setAssigned(true);
+      closeModal();
     }
   };
 
