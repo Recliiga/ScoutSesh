@@ -146,6 +146,20 @@ export async function fetchEvaluationResults(evaluationId: string) {
     );
     if (!firstEvaluation) throw new Error("Invalid Evaluation ID");
 
+    const order: AthleteEvaluationOrderType | null = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluationOrder.findById(firstEvaluation.order),
+      ),
+    );
+    const nextDueDateIndex = order?.evaluationDates.findIndex(
+      (date) => date.date === firstEvaluation.dueDate,
+    );
+
+    const nextDueDate =
+      nextDueDateIndex !== undefined
+        ? order?.evaluationDates[nextDueDateIndex + 1].date
+        : undefined;
+
     let coachEvaluation: AthleteEvaluationType | null = null;
     let selfEvaluation: AthleteEvaluationType | null = null;
 
@@ -170,6 +184,7 @@ export async function fetchEvaluationResults(evaluationId: string) {
         ),
       );
       if (!secondEvaluation) throw new Error("No coach evaluation");
+
       coachEvaluation = secondEvaluation;
     } else {
       coachEvaluation = firstEvaluation;
@@ -197,6 +212,7 @@ export async function fetchEvaluationResults(evaluationId: string) {
     const evaluationResults = {
       athlete: selfEvaluation,
       coach: coachEvaluation,
+      nextEvaluationDate: nextDueDate,
     };
 
     return { evaluationResults, error: null };

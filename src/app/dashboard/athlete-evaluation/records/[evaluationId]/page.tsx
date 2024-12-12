@@ -11,9 +11,7 @@ export default async function EvaluationResultsPage({
   const { evaluationId } = await params;
   const { evaluationResults, error } =
     await fetchEvaluationResults(evaluationId);
-  if (error !== null) throw new Error(error);
-
-  if (!evaluationResults.coach) notFound();
+  if (error !== null) notFound();
 
   return <EvaluationResults evaluationResults={evaluationResults} />;
 }

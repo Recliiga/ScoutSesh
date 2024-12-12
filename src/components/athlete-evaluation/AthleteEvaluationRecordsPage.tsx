@@ -43,7 +43,7 @@ export default function AthleteEvaluationRecordsPage({
                     </p>
                   </div>
                   <Link
-                    href={`/dashboard/athlete-evaluation/evaluations/${evaluation._id}`}
+                    href={`/dashboard/athlete-evaluation/records/${evaluation._id}`}
                     passHref
                   >
                     <Button
