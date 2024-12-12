@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 import { DailyJournalType } from "@/db/models/DailyJournal";
 import { RepeatFrequencyType } from "@/db/models/GroupClass";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
+import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -349,4 +350,13 @@ export function getNextEvaluationDueDate(order: AthleteEvaluationOrderType) {
   return new Date(
     order.evaluationDates[evaluationDateIndex].date,
   ).toDateString();
+}
+
+export function getLastEvaluationDate(
+  order: AthleteEvaluationOrderType,
+  evaluations: AthleteEvaluationType[],
+) {
+  return evaluations.find(
+    (evaluation) => String(evaluation.order) === order._id,
+  )?.createdAt;
 }

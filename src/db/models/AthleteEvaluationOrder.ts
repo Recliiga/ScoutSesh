@@ -26,6 +26,8 @@ export type AthleteEvaluationOrderType = {
   totalPrice: number;
   athlete: UserType;
   coach: UserType;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 const EvaluationDateSchema = new mongoose.Schema<AthleteEvaluationDateType>({
