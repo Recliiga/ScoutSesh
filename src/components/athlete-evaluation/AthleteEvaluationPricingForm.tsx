@@ -196,9 +196,32 @@ export default function AthleteEvaluationPricingForm({
     setLoading(false);
   }
 
+  const customPlanError = customPlanTiers.some((tier, index) => {
+    if (tier.type === "range") {
+      if (index === 0 && tier.evaluations.from <= 0) {
+        return true;
+      }
+
+      if (tier.evaluations.to <= tier.evaluations.from) {
+        return true;
+      }
+    }
+    if (Number(tier.price) <= 0) {
+      return true;
+    }
+    if (
+      index > 0 &&
+      tier.evaluations.from <= customPlanTiers[index - 1].evaluations.to
+    ) {
+      return true;
+    }
+    return false;
+  });
+
   const cannotSubmit =
-    offerVirtualConsultation &&
-    !Object.values(discussionTopics).some((value) => value);
+    (offerVirtualConsultation &&
+      !Object.values(discussionTopics).some((value) => value)) ||
+    customPlanError;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -255,7 +278,7 @@ export default function AthleteEvaluationPricingForm({
         <Label htmlFor="offerCustomPlan">Offer Custom Plan</Label>
       </div>
       {offerCustomPlan && (
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           <h3 className="text-lg font-semibold">Custom Plan Tiers</h3>
           <div className="mb-2 grid grid-cols-4 gap-4">
             <Label>Type</Label>
@@ -264,104 +287,118 @@ export default function AthleteEvaluationPricingForm({
             <Label>Plan Total</Label>
           </div>
           {customPlanTiers.map((tier, index) => (
-            <div key={index} className="grid grid-cols-4 items-center gap-4">
-              <Select
-                onChange={(value) =>
-                  handleCustomPlanTypeChange(
-                    index,
-                    value as CustomPlanType["type"],
-                  )
-                }
-                value={tier.type}
-                defaultChild={tier.type[0].toUpperCase() + tier.type.slice(1)}
-              >
-                <Select.Content>
-                  <Select.Option value={"single"}>Single</Select.Option>
-                  <Select.Option value={"range"}>Range</Select.Option>
-                </Select.Content>
-              </Select>
-
-              <div className="flex items-center gap-2">
-                <Input
-                  type="number"
-                  value={tier.evaluations.from > 0 ? tier.evaluations.from : ""}
-                  onChange={(e) => {
-                    if (
-                      customPlanTiers[index - 1] &&
-                      Number(e.target.value) <=
-                        customPlanTiers[index - 1].evaluations.to
+            <div key={index} className="flex flex-col gap-1">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Select
+                  onChange={(value) =>
+                    handleCustomPlanTypeChange(
+                      index,
+                      value as CustomPlanType["type"],
                     )
-                      return;
+                  }
+                  value={tier.type}
+                  defaultChild={tier.type[0].toUpperCase() + tier.type.slice(1)}
+                >
+                  <Select.Content>
+                    <Select.Option value={"single"}>Single</Select.Option>
+                    <Select.Option value={"range"}>Range</Select.Option>
+                  </Select.Content>
+                </Select>
 
-                    if (Number(e.target.value) < tier.evaluations.to) {
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    min={1}
+                    value={
+                      tier.evaluations.from > 0 ? tier.evaluations.from : ""
+                    }
+                    onChange={(e) => {
                       handleCustomPlanEvaluationsChange(index, {
                         ...customPlanTiers[index].evaluations,
                         from: Number(e.target.value),
                       });
-                    } else {
-                      handleCustomPlanEvaluationsChange(index, {
-                        to: Number(e.target.value) + 1,
-                        from: Number(e.target.value),
-                      });
-                    }
-                  }}
-                  placeholder="Number of Sessions"
-                  required
-                />
-                {tier.type === "range" && (
-                  <>
-                    -
-                    <Input
-                      type="number"
-                      value={tier.evaluations.to > 0 ? tier.evaluations.to : ""}
-                      onChange={(e) => {
-                        if (Number(e.target.value) > tier.evaluations.from)
+                    }}
+                    placeholder="Number of Sessions"
+                    required
+                  />
+                  {tier.type === "range" && (
+                    <>
+                      -
+                      <Input
+                        type="number"
+                        value={
+                          tier.evaluations.to > 0 ? tier.evaluations.to : ""
+                        }
+                        onChange={(e) => {
                           handleCustomPlanEvaluationsChange(index, {
                             ...customPlanTiers[index].evaluations,
                             to: Number(e.target.value),
                           });
-                      }}
-                      placeholder="Number of Sessions"
-                      required
-                    />
-                  </>
-                )}
-              </div>
+                        }}
+                        placeholder="Number of Sessions"
+                        required
+                      />
+                    </>
+                  )}
+                </div>
 
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500">
-                  $
-                </span>
-                <Input
-                  type="number"
-                  value={tier.price > 0 ? tier.price : ""}
-                  onChange={(e) =>
-                    handleCustomPlanPriceChange(index, Number(e.target.value))
-                  }
-                  min={0}
-                  placeholder="Price per Session"
-                  className="pl-6 lg:pr-24"
-                  required
-                />
-                <span className="absolute right-3 top-1/2 hidden -translate-y-1/2 transform text-gray-500 lg:inline">
-                  /evaluation
-                </span>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500">
+                    $
+                  </span>
+                  <Input
+                    type="number"
+                    value={tier.price > 0 ? tier.price : ""}
+                    onChange={(e) =>
+                      handleCustomPlanPriceChange(index, Number(e.target.value))
+                    }
+                    min={0}
+                    placeholder="Price per Session"
+                    className="pl-6 lg:pr-24"
+                    required
+                  />
+                  <span className="absolute right-3 top-1/2 hidden -translate-y-1/2 transform text-gray-500 lg:inline">
+                    /evaluation
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">
+                    ${tier.evaluations.from * tier.price}{" "}
+                    {tier.type === "range" &&
+                      `- $${tier.evaluations.to * tier.price}`}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => removeCustomPlanTier(index)}
+                    className="ml-2"
+                  >
+                    <MinusCircle className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-700">
-                  ${tier.evaluations.from * tier.price}{" "}
-                  {tier.type === "range" &&
-                    `- $${tier.evaluations.to * tier.price}`}
-                </span>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => removeCustomPlanTier(index)}
-                  className="ml-2"
-                >
-                  <MinusCircle className="h-4 w-4" />
-                </Button>
+              <div className="flex flex-col gap-1">
+                {index > 0 &&
+                tier.evaluations.from <=
+                  customPlanTiers[index - 1].evaluations.to ? (
+                  <Error error="Please enter a number higher than the previous plan" />
+                ) : null}
+
+                {tier.type === "range" &&
+                index === 0 &&
+                tier.evaluations.from <= 0 ? (
+                  <Error error="Please enter a valid 'from' range" />
+                ) : null}
+
+                {tier.type === "range" &&
+                tier.evaluations.to <= tier.evaluations.from ? (
+                  <Error error="Please enter a valid range" />
+                ) : null}
+
+                {Number(tier.price) <= 0 ? (
+                  <Error error="Please enter a valid price" />
+                ) : null}
               </div>
             </div>
           ))}
