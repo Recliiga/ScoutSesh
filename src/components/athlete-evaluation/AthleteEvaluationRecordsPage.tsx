@@ -36,7 +36,7 @@ export default function AthleteEvaluationRecordsPage({
                       {formatDate(evaluation.createdAt)}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Coach:
+                      Coach:{" "}
                       <span className="font-semibold">
                         {getFullname(evaluation.template.user)}
                       </span>

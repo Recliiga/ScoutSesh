@@ -38,6 +38,7 @@ export default function EvaluationResults({
               <AvatarImage
                 src={evaluationResults.coach.athlete.profilePicture}
                 alt={getFullname(evaluationResults.coach.athlete)}
+                className="object-cover"
               />
               <AvatarFallback>
                 {getFullname(evaluationResults.coach.athlete)
@@ -167,7 +168,7 @@ export default function EvaluationResults({
             {evaluationResults.coach.mentalSkillAssessments.map(
               (coachSkill, index) => {
                 const athleteSkill =
-                  evaluationResults.athlete?.physicalSkillAssessments[index];
+                  evaluationResults.athlete?.mentalSkillAssessments[index];
                 const scoreDifference = athleteSkill
                   ? coachSkill.currentLevel - athleteSkill.currentLevel
                   : "N/A";
