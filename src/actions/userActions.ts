@@ -3,8 +3,10 @@ import connectDB from "@/db/connectDB";
 import User from "@/db/models/User";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function joinTeam(organizationId: string) {
+  let redirectUrl;
   try {
     const cookieStore = await cookies();
     const { userId, error } = getUserIdFromCookies(cookieStore);
@@ -16,8 +18,10 @@ export async function joinTeam(organizationId: string) {
     });
     if (!updatedUser) throw new Error("An error occured while joining team");
 
-    return { error: null };
+    redirectUrl = "/dashboard";
   } catch (err) {
     return { error: (err as Error).message };
+  } finally {
+    if (redirectUrl) redirect(redirectUrl);
   }
 }

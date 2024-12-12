@@ -320,7 +320,7 @@ export default function CompleteAthleteProfileForm({
             <Select.Content>
               {sportList.map((sport) => (
                 <Select.Option value={sport} key={sport}>
-                  {sport}
+                  {sport[0].toUpperCase() + sport.slice(1)}
                 </Select.Option>
               ))}
             </Select.Content>

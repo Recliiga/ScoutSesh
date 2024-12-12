@@ -45,11 +45,11 @@ export default function LoginForm() {
     <form onSubmit={handleLogin}>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <label className="font-medium text-sm" htmlFor="email">
+          <label className="text-sm font-medium" htmlFor="email">
             Email
           </label>
           <input
-            className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
+            className="rounded-md border px-3 py-2 text-sm ring-accent-gray-200 ring-offset-2 focus-visible:ring-2"
             id="email"
             name="email"
             value={email}
@@ -60,11 +60,11 @@ export default function LoginForm() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label className="font-medium text-sm" htmlFor="password">
+          <label className="text-sm font-medium" htmlFor="password">
             Password
           </label>
           <input
-            className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
+            className="rounded-md border px-3 py-2 text-sm ring-accent-gray-200 ring-offset-2 focus-visible:ring-2"
             id="password"
             name="password"
             value={password}
@@ -76,7 +76,7 @@ export default function LoginForm() {
         </div>
         {error && <Error error={error} />}
         <button
-          className="flex-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"
+          className="flex-center w-full rounded-md bg-accent-green-100 px-4 py-2 text-sm font-medium text-white ring-accent-black hover:bg-accent-green-100/90 focus-visible:ring-1 disabled:cursor-not-allowed disabled:bg-accent-green-100/50"
           type="submit"
           disabled={loading || !canSubmit}
         >

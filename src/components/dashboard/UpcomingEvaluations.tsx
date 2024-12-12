@@ -90,7 +90,7 @@ export default function UpcomingEvaluations({
               </tbody>
             </table>
           ) : (
-            <p className="px-4 text-accent-gray-300">
+            <p className="px-4 pb-4 text-accent-gray-300">
               You do not currently have any athletes awaiting Evaluations
             </p>
           )}

@@ -248,7 +248,7 @@ export default function PurchaseEvaluationForm({
     <main className="mx-auto w-[90%] max-w-4xl flex-1 py-8">
       <Card className="p-4 sm:p-6">
         <CardHeader className="p-0">
-          <CardTitle className="text-center text-2xl font-bold">
+          <CardTitle className="mb-4 text-center text-2xl font-bold">
             Purchase an Evaluation
           </CardTitle>
         </CardHeader>
@@ -270,13 +270,14 @@ export default function PurchaseEvaluationForm({
                       value={program.plan._id}
                     >
                       <div className="flex items-center">
-                        <Image
-                          src={program.organization.logo}
-                          alt={program.organization.name}
-                          width={24}
-                          height={24}
-                          className="mr-2 rounded-full object-cover"
-                        />
+                        <div className="relative mr-2 flex h-6 w-6 items-center overflow-hidden rounded-full">
+                          <Image
+                            src={program.organization.logo}
+                            alt={program.organization.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
                         {program.organization.name}
                       </div>
                     </Select.Option>

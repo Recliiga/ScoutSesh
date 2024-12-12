@@ -25,11 +25,11 @@ export default async function GoalSettingResults({
 
   return (
     <main className="flex-1">
-      <div className="flex flex-col justify-center items-center p-4 w-full min-h-screen">
+      <div className="flex min-h-screen w-full flex-col items-center justify-center p-4">
         <div className="w-full max-w-4xl">
-          <h2 className="mb-2 font-semibold text-2xl">Goal Setting Results</h2>
-          <h1 className="mb-2 font-bold text-3xl">{goalData.name}</h1>
-          <div className="mb-6 text-muted-foreground text-sm">
+          <h2 className="mb-2 text-2xl font-semibold">Goal Setting Results</h2>
+          <h1 className="mb-2 text-3xl font-bold">{goalData.name}</h1>
+          <div className="mb-6 text-sm text-muted-foreground">
             {new Date(goalData.createdAt).toDateString()}
           </div>
           <Card className="mb-8">
@@ -38,21 +38,19 @@ export default async function GoalSettingResults({
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-4">
-                <Avatar className="w-16 h-16">
+                <Avatar className="h-16 w-16">
                   <AvatarImage
                     src={goalData.user.profilePicture}
                     alt={goalDataUserName}
                     className="object-cover"
                   />
                   <AvatarFallback>
-                    {goalDataUserName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
+                    {goalData.user.firstName[0]}
+                    {goalData.user.lastName[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h2 className="font-semibold text-xl">{goalDataUserName}</h2>
+                  <h2 className="text-xl font-semibold">{goalDataUserName}</h2>
                   <p className="text-muted-foreground">{goalData.user.role}</p>
                 </div>
               </div>
@@ -65,26 +63,26 @@ export default async function GoalSettingResults({
             <CardContent>
               <div className="space-y-6">
                 <div>
-                  <h3 className="mb-2 font-semibold text-lg">
+                  <h3 className="mb-2 text-lg font-semibold">
                     What is your Aspiration?
                   </h3>
-                  <p className="bg-primary/10 p-2 rounded">
+                  <p className="rounded bg-primary/10 p-2">
                     {goalData.details.aspiration}
                   </p>
                 </div>
                 <div>
-                  <h3 className="mb-2 font-semibold text-lg">
+                  <h3 className="mb-2 text-lg font-semibold">
                     What are your Strengths?
                   </h3>
-                  <p className="bg-primary/10 p-2 rounded">
+                  <p className="rounded bg-primary/10 p-2">
                     {goalData.details.strengths}
                   </p>
                 </div>
                 <div>
-                  <h3 className="mb-2 font-semibold text-lg">
+                  <h3 className="mb-2 text-lg font-semibold">
                     What are your Weaknesses?
                   </h3>
-                  <p className="bg-primary/10 p-2 rounded">
+                  <p className="rounded bg-primary/10 p-2">
                     {goalData.details.weaknesses}
                   </p>
                 </div>
@@ -108,19 +106,19 @@ export default async function GoalSettingResults({
                       <div className="space-y-4">
                         <div>
                           <h4 className="mb-1 font-medium">Goal:</h4>
-                          <p className="bg-white p-2 rounded">{goal.goal}</p>
+                          <p className="rounded bg-white p-2">{goal.goal}</p>
                         </div>
                         <div>
                           <h4 className="mb-1 font-medium">
                             What will I need to do to achieve this?
                           </h4>
-                          <p className="bg-white p-2 rounded">{goal.actions}</p>
+                          <p className="rounded bg-white p-2">{goal.actions}</p>
                         </div>
                         <div>
                           <h4 className="mb-1 font-medium">
                             Where will I be doing it?
                           </h4>
-                          <p className="bg-white p-2 rounded">
+                          <p className="rounded bg-white p-2">
                             {goal.location}
                           </p>
                         </div>
@@ -128,7 +126,7 @@ export default async function GoalSettingResults({
                           <h4 className="mb-1 font-medium">
                             How regularly will I do it?
                           </h4>
-                          <p className="bg-white p-2 rounded">
+                          <p className="rounded bg-white p-2">
                             {goal.frequency}
                           </p>
                         </div>
@@ -138,7 +136,7 @@ export default async function GoalSettingResults({
                             this goal?
                           </h4>
                           <ConfidenceMeter score={goal.confidence} />
-                          <p className="mt-1 text-gray-600 text-sm">
+                          <p className="mt-1 text-sm text-gray-600">
                             {goal.confidence}/10
                           </p>
                         </div>
@@ -158,7 +156,7 @@ export default async function GoalSettingResults({
                 Your goals have been successfully submitted. Here&apos;s what
                 you should do next:
               </p>
-              <ul className="space-y-2 pl-5 list-disc">
+              <ul className="list-disc space-y-2 pl-5">
                 <li>Update your progress in your daily journal</li>
                 <li>
                   Review and refine your goals regularly with the Weekly
@@ -170,7 +168,7 @@ export default async function GoalSettingResults({
               </ul>
             </CardContent>
           </Card>
-          <div className="flex justify-between mt-8 w-full">
+          <div className="mt-8 flex w-full justify-between">
             {user._id === goalData.user._id ? (
               <Button variant="outline" className="px-0 py-0">
                 <Link

@@ -51,7 +51,7 @@ export default function DailyJournalResults({
     const { newComment, error } = await postDailyJournalComment(
       text,
       journalData._id,
-      activeSection
+      activeSection,
     );
 
     if (error === null) {
@@ -101,9 +101,9 @@ export default function DailyJournalResults({
   return (
     <>
       <ScrollArea className="flex-1">
-        <div className="mx-auto py-6 w-[90%] max-w-6xl">
-          <h2 className="mb-2 font-semibold text-2xl">Daily Journal Results</h2>
-          <div className="mb-6 text-muted-foreground text-sm">
+        <div className="mx-auto w-[90%] max-w-6xl py-6">
+          <h2 className="mb-2 text-2xl font-semibold">Daily Journal Results</h2>
+          <div className="mb-6 text-sm text-muted-foreground">
             {new Date(journalData.createdAt).toDateString()}
           </div>
 
@@ -113,21 +113,19 @@ export default function DailyJournalResults({
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-4">
-                <Avatar className="w-16 h-16">
+                <Avatar className="h-16 w-16">
                   <AvatarImage
                     src={journalData.user.profilePicture}
                     alt={journalDataUserName}
                     className="object-cover"
                   />
                   <AvatarFallback>
-                    {journalDataUserName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
+                    {journalData.user.firstName[0]}
+                    {journalData.user.lastName[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h2 className="font-semibold text-xl">
+                  <h2 className="text-xl font-semibold">
                     {journalDataUserName}
                   </h2>
                   <p className="text-muted-foreground">Player</p>
@@ -144,7 +142,7 @@ export default function DailyJournalResults({
               <div className="space-y-6">
                 {dailyJournalSections.map((section, index) => (
                   <div key={index}>
-                    <h3 className="mb-2 font-semibold text-lg">
+                    <h3 className="mb-2 text-lg font-semibold">
                       {section.title}
                     </h3>
                     <Popover>
@@ -159,14 +157,14 @@ export default function DailyJournalResults({
                         </div>
                       </PopoverTrigger>
                       <PopoverContent className="w-80">
-                        <div className="flex justify-between items-center mb-2">
+                        <div className="mb-2 flex items-center justify-between">
                           <h4 className="font-semibold">Comments</h4>
                           <button
                             onClick={closePopover}
                             className="text-gray-500 hover:text-gray-700"
                             aria-label="Close comments"
                           >
-                            <XIcon className="w-4 h-4" />
+                            <XIcon className="h-4 w-4" />
                           </button>
                         </div>
                         <DailyJournalCommentableText
@@ -182,10 +180,10 @@ export default function DailyJournalResults({
               </div>
             </CardContent>
           </Card>
-          <div className="flex justify-end mt-8 mb-4 w-full">
+          <div className="mb-4 mt-8 flex w-full justify-end">
             <Link
               href={"/dashboard/daily-journal"}
-              className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md text-sm text-white duration-300"
+              className="rounded-md bg-green-500 px-4 py-2 text-sm text-white duration-300 hover:bg-green-600"
             >
               Go to Home Page
             </Link>
