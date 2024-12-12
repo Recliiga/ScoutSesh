@@ -11,6 +11,18 @@ export default function AthleteEvaluationRecordsPage({
 }: {
   evaluationRecords: AthleteEvaluationType[];
 }) {
+  const filteredRecords: AthleteEvaluationType[] = [];
+  evaluationRecords.forEach((record) => {
+    if (
+      filteredRecords.some(
+        (rec) =>
+          rec.order._id === record.order._id && rec.dueDate === record.dueDate,
+      )
+    )
+      return;
+    filteredRecords.push(record);
+  });
+
   return (
     <main className="mx-auto flex w-[90%] max-w-4xl flex-1 flex-col py-6">
       <h1 className="mb-6 text-3xl font-bold">Evaluation Records</h1>
@@ -20,17 +32,15 @@ export default function AthleteEvaluationRecordsPage({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {evaluationRecords.length > 0 ? (
-              evaluationRecords.map((evaluation) => (
+            {filteredRecords.length > 0 ? (
+              filteredRecords.map((evaluation) => (
                 <div
                   key={evaluation._id}
                   className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 duration-200 hover:scale-[1.02]"
                 >
                   <div>
                     <p className="font-medium text-gray-800">
-                      {evaluation.isSelfEvaluation
-                        ? "Self Evaluation"
-                        : "Coach Evaluation"}
+                      Athlete Evaluation
                     </p>
                     <p className="text-sm text-gray-600">
                       {formatDate(evaluation.createdAt)}

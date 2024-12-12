@@ -22,7 +22,7 @@ export default function UpcomingEvaluations({
   const sortedOrders = filteredOrders;
 
   return (
-    <section className="flex w-full flex-1 flex-col rounded-lg bg-white shadow-[0_0_6px_4px_#eee]">
+    <section className="flex w-full flex-1 flex-col overflow-hidden rounded-lg bg-white shadow-[0_0_6px_4px_#eee]">
       <h2 className="p-4 text-xl font-semibold">Upcoming Evaluations</h2>
       <div className="flex-1 overflow-hidden">
         <div className="max-h-[280px] overflow-y-auto">

@@ -1,7 +1,6 @@
 import React from "react";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import UpcomingEvaluations from "@/components/dashboard/UpcomingEvaluations";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { UserType } from "@/db/models/User";
 import { fetchTeamMembers } from "@/services/userServices";
@@ -96,9 +95,14 @@ export default async function CoachDashboard({
             </div>
           </div>
           <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row">
-            <Button variant="outline">All Group Classes</Button>
             <Link
-              href={"/dashboard/athlete-evaluation"}
+              href={"/dashboard/group-classes"}
+              className="rounded-md border px-4 py-2 text-sm font-medium duration-200 hover:bg-accent-gray-100"
+            >
+              All Group Classes
+            </Link>
+            <Link
+              href={"/dashboard/athlete-evaluation/records"}
               className="rounded-md border px-4 py-2 text-sm font-medium duration-200 hover:bg-accent-gray-100"
             >
               See All Evaluations
