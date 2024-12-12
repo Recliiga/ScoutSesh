@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SearchIcon } from "lucide-react";
@@ -6,6 +7,7 @@ import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 import UpcomingEvaluationsTable from "./UpcomingEvaluationsTable";
 import SubscriptionsTable from "./SubscriptionsTable";
+import { getFullname } from "@/lib/utils";
 
 export default function CoachAllEvaluationsPage({
   orders,
@@ -14,21 +16,74 @@ export default function CoachAllEvaluationsPage({
   orders: AthleteEvaluationOrderType[];
   coachEvaluations: AthleteEvaluationType[];
 }) {
-  const activeOrders = orders.filter((order) =>
-    order.evaluationDates.some((date) => !date.dateAthleteEvaluated),
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const activeOrders = useMemo(
+    () =>
+      orders.filter((order) =>
+        order.evaluationDates.some((date) => !date.dateAthleteEvaluated),
+      ),
+    [orders],
   );
 
-  const inactiveOrders = orders.filter(
-    (order) =>
-      !order.evaluationDates.some((date) => !date.dateAthleteEvaluated),
+  const filteredActiveOrders = useMemo(
+    () =>
+      activeOrders.filter((order) =>
+        getFullname(order.athlete)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()),
+      ),
+    [activeOrders, searchQuery],
   );
+
+  const inactiveOrders = useMemo(
+    () =>
+      orders.filter(
+        (order) =>
+          !order.evaluationDates.some((date) => !date.dateAthleteEvaluated) &&
+          getFullname(order.athlete)
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()),
+      ),
+    [orders, searchQuery],
+  );
+
+  const filteredInactiveOrders = useMemo(
+    () =>
+      inactiveOrders.filter((order) =>
+        getFullname(order.athlete)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()),
+      ),
+    [inactiveOrders, searchQuery],
+  );
+
+  const filteredOrders = useMemo(
+    () =>
+      orders.filter((order) =>
+        getFullname(order.athlete)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()),
+      ),
+    [orders, searchQuery],
+  );
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+  }
 
   return (
     <main className="mx-auto w-[90%] max-w-7xl flex-1 py-8">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-semibold">All Evaluations</h1>
-        <div className="flex items-center space-x-2">
-          <Input type="text" placeholder="Search player..." className="w-64" />
+        <form className="flex items-center space-x-2" onSubmit={handleSearch}>
+          <Input
+            type="text"
+            placeholder="Search player..."
+            className="w-64"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
           <Button
             variant="outline"
             size="icon"
@@ -37,7 +92,7 @@ export default function CoachAllEvaluationsPage({
             <SearchIcon className="h-4 w-4" />
             <span className="sr-only">Search</span>
           </Button>
-        </div>
+        </form>
       </div>
 
       <div className="mb-8 rounded-lg bg-white p-6 shadow-lg">
@@ -47,7 +102,7 @@ export default function CoachAllEvaluationsPage({
             {orders.length > 0 ? (
               <UpcomingEvaluationsTable
                 coachEvaluations={coachEvaluations}
-                orders={orders}
+                orders={filteredOrders}
               />
             ) : (
               <p className="text-accent-gray-300">
@@ -64,7 +119,7 @@ export default function CoachAllEvaluationsPage({
           <div className="max-h-[400px] overflow-y-auto">
             {activeOrders.length > 0 ? (
               <SubscriptionsTable
-                orders={activeOrders}
+                orders={filteredActiveOrders}
                 coachEvaluations={coachEvaluations}
               />
             ) : (
@@ -82,7 +137,7 @@ export default function CoachAllEvaluationsPage({
           <div className="max-h-[400px] overflow-y-auto">
             {inactiveOrders.length > 0 ? (
               <SubscriptionsTable
-                orders={inactiveOrders}
+                orders={filteredInactiveOrders}
                 coachEvaluations={coachEvaluations}
                 showLastEvaluationDate
               />
