@@ -12,6 +12,7 @@ import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
 import { formatDate, getFullname, getNextEvaluationDueDate } from "@/lib/utils";
 import Link from "next/link";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
+import AssignToButton from "../athlete-evaluation/AssignToButton";
 
 type PropsType = {
   orders: AthleteEvaluationOrderType[];
@@ -114,14 +115,7 @@ export default function CoachAthleteEvaluationPage({
                                 <ClipboardIcon className="mr-2 h-4 w-4" />
                                 Evaluate
                               </Link>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white"
-                              >
-                                <UserPlusIcon className="mr-2 h-4 w-4" />
-                                Assign to
-                              </Button>
+                              <AssignToButton orderId={order._id} />
                             </>
                           ) : (
                             <>

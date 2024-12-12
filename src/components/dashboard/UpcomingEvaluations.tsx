@@ -1,9 +1,9 @@
-import { ClipboardIcon, UserPlusIcon } from "lucide-react";
+import { ClipboardIcon } from "lucide-react";
 import Image from "next/image";
-import { Button } from "../ui/button";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
 import { formatDate, getFullname } from "@/lib/utils";
 import Link from "next/link";
+import AssignToButton from "../athlete-evaluation/AssignToButton";
 
 function getNextEvaluationDueDate(order: AthleteEvaluationOrderType) {
   const orderIndex = order.evaluationDates.findIndex(
@@ -52,6 +52,7 @@ export default function UpcomingEvaluations({
                             src={order.athlete.profilePicture}
                             alt={getFullname(order.athlete)}
                             fill
+                            sizes="64px"
                           />
                         </div>
                         <div className="ml-2">
@@ -75,14 +76,10 @@ export default function UpcomingEvaluations({
                           <ClipboardIcon className="mr-2 h-4 w-4" />
                           Evaluate
                         </Link>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-xs hover:bg-green-800 hover:text-white"
-                        >
-                          <UserPlusIcon className="mr-1 h-3 w-3" />
-                          Assign
-                        </Button>
+                        <AssignToButton
+                          orderId={order._id}
+                          className="border-accent-gray-200 text-xs text-accent-black hover:bg-green-800 hover:text-white"
+                        />
                       </div>
                     </td>
                   </tr>
