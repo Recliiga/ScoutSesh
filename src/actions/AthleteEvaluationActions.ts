@@ -14,7 +14,7 @@ import AthleteEvaluationTemplate, {
 } from "@/db/models/AthleteEvaluationTemplate";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 
 export async function createCoachAthleteEvaluation(
   order: AthleteEvaluationOrderType,
@@ -212,7 +212,7 @@ export async function createPricingPlan(pricingPlanData: AEPricingPlanType) {
     console.log((err as Error).message);
     return { error: "An unexpected error occured" };
   } finally {
-    if (redirectUrl) redirect(redirectUrl);
+    if (redirectUrl) redirect(redirectUrl, RedirectType.replace);
   }
 }
 
@@ -242,7 +242,7 @@ export async function updatePricingPlan(
     console.log((err as Error).message);
     return { error: "An unexpected error occured" };
   } finally {
-    if (redirectUrl) redirect(redirectUrl);
+    if (redirectUrl) redirect(redirectUrl, RedirectType.replace);
   }
 }
 
@@ -268,6 +268,6 @@ export async function purchaseEvaluation(
     console.log((err as Error).message);
     return { error: "Something went wrong. Unable to complete purchase" };
   } finally {
-    if (redirectUrl) redirect(redirectUrl);
+    if (redirectUrl) redirect(redirectUrl, RedirectType.replace);
   }
 }

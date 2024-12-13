@@ -5,13 +5,13 @@ import {
   getNextEvaluationDueDate,
 } from "@/lib/utils";
 import { ClipboardIcon, UserPlusIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import AssignToButton from "./AssignToButton";
 import { Button } from "../ui/button";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function UpcomingEvaluationsTable({
   orders,
@@ -52,15 +52,17 @@ export default function UpcomingEvaluationsTable({
           <tr key={order._id}>
             <td className="whitespace-nowrap px-6 py-4">
               <div className="flex items-center">
-                <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden">
-                  <Image
-                    className="h-full w-full rounded-full object-cover"
+                <Avatar className="h-10 w-10">
+                  <AvatarImage
                     src={order.athlete.profilePicture}
                     alt={getFullname(order.athlete)}
-                    fill
-                    sizes="128px"
+                    className="object-cover"
                   />
-                </div>
+                  <AvatarFallback>
+                    {order.athlete.firstName[0]}
+                    {order.athlete.lastName[0]}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="ml-4">
                   <div className="text-sm font-medium text-gray-900">
                     {getFullname(order.athlete)}

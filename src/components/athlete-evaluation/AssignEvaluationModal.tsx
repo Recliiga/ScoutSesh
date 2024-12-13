@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import ModalContainer from "../ModalContainer";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import LoadingIndicator from "../LoadingIndicator";
 
 type CoachType = {
   _id: number;
-  name: string;
+  firstName: string;
+  lastName: string;
   role: string;
   profilePicture: string;
 };
@@ -13,37 +15,43 @@ type CoachType = {
 const coaches: CoachType[] = [
   {
     _id: 1,
-    name: "John Doe",
+    firstName: "John",
+    lastName: "Doe",
     role: "Head Coach",
     profilePicture: "/placeholder-profile-picture.png",
   },
   {
     _id: 2,
-    name: "Jane Smith",
+    firstName: "Jane",
+    lastName: "Smith",
     role: "Assistant Coach",
     profilePicture: "/placeholder-profile-picture.png",
   },
   {
     _id: 3,
-    name: "Mike Johnson",
+    firstName: "Mike",
+    lastName: "Johnson",
     role: "Assistant Coach",
     profilePicture: "/placeholder-profile-picture.png",
   },
   {
     _id: 4,
-    name: "Sarah Brown",
+    firstName: "Sarah",
+    lastName: "Brown",
     role: "Assistant Coach",
     profilePicture: "/placeholder-profile-picture.png",
   },
   {
     _id: 5,
-    name: "David Lee",
+    firstName: "David",
+    lastName: "Lee",
     role: "Assistant Coach",
     profilePicture: "/placeholder-profile-picture.png",
   },
   {
     _id: 6,
-    name: "Emily Chen",
+    firstName: "Emily",
+    lastName: "Chen",
     role: "Assistant Coach",
     profilePicture: "/placeholder-profile-picture.png",
   },
@@ -58,18 +66,20 @@ export default function AssignEvaluationModal({
   closeModal(): void;
   orderId: string;
 }) {
-  const [selectedCoach, setSelectedCoach] = React.useState<CoachType | null>(
-    null,
-  );
-  const [assigned, setAssigned] = React.useState(false);
+  const [selectedCoach, setSelectedCoach] = useState<CoachType | null>(null);
+  const [assigned, setAssigned] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleAssign = () => {
     if (selectedCoach) {
+      setLoading(true);
       console.log(
-        `Assigning athlete John Smith (ID: 123) to coach ${selectedCoach.name}`,
+        `Assigning Evaluation Order with ID ${orderId} to coach ${selectedCoach.firstName}`,
       );
-      setAssigned(true);
-      closeModal();
+      setTimeout(() => {
+        setLoading(false);
+        setAssigned(true);
+      }, 2000);
     }
   };
 
@@ -102,13 +112,15 @@ export default function AssignEvaluationModal({
               <div className="relative mr-4 h-12 w-12 overflow-hidden rounded-full">
                 <Image
                   src={coach.profilePicture}
-                  alt={`${coach.name}'s profile`}
+                  alt={`${coach.firstName}'s profile`}
                   fill
                   className="object-cover"
                 />
               </div>
               <div>
-                <h3 className="font-semibold">{coach.name}</h3>
+                <h3 className="font-semibold">
+                  {coach.firstName + " " + coach.lastName}
+                </h3>
                 <p className="text-sm text-gray-600">{coach.role}</p>
               </div>
             </div>
@@ -116,16 +128,25 @@ export default function AssignEvaluationModal({
         </div>
         <div className="mt-8 flex justify-end space-x-4">
           <Button variant="outline" onClick={closeModal}>
-            Cancel
+            {assigned ? "Close" : "Cancel"}
           </Button>
           <Button
             className="bg-green-600 text-white hover:bg-green-700"
             onClick={handleAssign}
-            disabled={!selectedCoach || assigned}
+            disabled={loading || !selectedCoach || assigned}
           >
-            {assigned
-              ? "Assigned"
-              : `Assign to Coach ${selectedCoach ? selectedCoach.name : ""}`}
+            {!loading ? (
+              assigned ? (
+                "Assigned"
+              ) : (
+                `Assign to Coach ${selectedCoach ? selectedCoach.firstName : ""}`
+              )
+            ) : (
+              <>
+                <LoadingIndicator />
+                Assigning...
+              </>
+            )}
           </Button>
         </div>
       </div>

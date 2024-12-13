@@ -31,12 +31,14 @@ export default function EvaluationCompletionScreen({
           <div className="flex justify-center space-x-4">
             <Link
               href={`/dashboard/athlete-evaluation/records/${evaluationId}`}
+              replace
               className="rounded-md border px-3 py-2 text-sm font-medium duration-200 hover:bg-accent-gray-100 sm:px-4"
             >
               Review Assessment
             </Link>
             <Link
               href={"/dashboard/athlete-evaluation"}
+              replace
               className="rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white duration-200 hover:bg-green-700 sm:px-4"
             >
               Go to Dashboard

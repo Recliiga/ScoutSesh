@@ -40,7 +40,7 @@ export default function CoachAllEvaluationsPage({
     () =>
       orders.filter(
         (order) =>
-          !order.evaluationDates.some((date) => !date.dateAthleteEvaluated) &&
+          !order.evaluationDates.some((date) => !date.dateCoachEvaluated) &&
           getFullname(order.athlete)
             .toLowerCase()
             .includes(searchQuery.toLowerCase()),

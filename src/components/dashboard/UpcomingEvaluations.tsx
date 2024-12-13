@@ -1,9 +1,9 @@
 import { ClipboardIcon } from "lucide-react";
-import Image from "next/image";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
 import { formatDate, getFullname } from "@/lib/utils";
 import Link from "next/link";
 import AssignToButton from "../athlete-evaluation/AssignToButton";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 function getNextEvaluationDueDate(order: AthleteEvaluationOrderType) {
   const orderIndex = order.evaluationDates.findIndex(
@@ -46,15 +46,17 @@ export default function UpcomingEvaluations({
                   <tr key={order._id}>
                     <td className="w-full whitespace-nowrap px-2 py-2">
                       <div className="flex items-center">
-                        <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden">
-                          <Image
-                            className="h-full w-full rounded-full object-cover"
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
                             src={order.athlete.profilePicture}
                             alt={getFullname(order.athlete)}
-                            fill
-                            sizes="64px"
+                            className="object-cover"
                           />
-                        </div>
+                          <AvatarFallback>
+                            {order.athlete.firstName[0]}
+                            {order.athlete.lastName[0]}
+                          </AvatarFallback>
+                        </Avatar>
                         <div className="ml-2">
                           <div className="line-clamp-1 text-sm font-medium text-gray-900">
                             {getFullname(order.athlete)}

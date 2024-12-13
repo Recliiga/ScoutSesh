@@ -8,7 +8,7 @@ import GroupClass, {
 import { getUserIdFromCookies } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 
 type ClassDataVideoType = {
   title: string;
@@ -48,13 +48,13 @@ export async function createClass(classData: ClassDataType) {
   } catch (error) {
     return { error: (error as Error).message };
   } finally {
-    if (redirectUrl) redirect(redirectUrl);
+    if (redirectUrl) redirect(redirectUrl, RedirectType.replace);
   }
 }
 
 export async function updateClass(
   groupClassId: string,
-  classData: ClassDataType & { user: { _id: string } }
+  classData: ClassDataType & { user: { _id: string } },
 ) {
   let redirectUrl;
   try {
@@ -74,7 +74,7 @@ export async function updateClass(
   } catch (error) {
     return { error: (error as Error).message };
   } finally {
-    if (redirectUrl) redirect(redirectUrl);
+    if (redirectUrl) redirect(redirectUrl, RedirectType.replace);
   }
 }
 
@@ -88,11 +88,11 @@ export async function deleteClass(groupClass: GroupClassType) {
 
     await connectDB();
     const deletedGroupClass = await GroupClass.findByIdAndDelete(
-      groupClass._id
+      groupClass._id,
     );
     if (!deletedGroupClass) throw new Error("An error occured deleting course");
     revalidatePath("/dashboard/group-classes/courses");
-    return { error:null};
+    return { error: null };
   } catch (error) {
     return { error: (error as Error).message };
   } finally {

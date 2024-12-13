@@ -4,6 +4,7 @@ import Image from "next/image";
 import React from "react";
 import { Button } from "../ui/button";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
+import Link from "next/link";
 
 export default function SubscriptionsTable({
   orders,
@@ -15,9 +16,8 @@ export default function SubscriptionsTable({
   showLastEvaluationDate?: boolean;
 }) {
   function getCompletedDates(order: AthleteEvaluationOrderType) {
-    return order.evaluationDates.filter(
-      (date) => date.dateAthleteEvaluated && date.dateCoachEvaluated,
-    ).length;
+    return order.evaluationDates.filter((date) => date.dateCoachEvaluated)
+      .length;
   }
 
   return (
@@ -95,14 +95,23 @@ export default function SubscriptionsTable({
                 </td>
               ) : null}
               <td className="whitespace-nowrap px-6 py-4">
-                <Button
-                  disabled={getCompletedDates(order) <= 0}
-                  variant="outline"
-                  size="sm"
-                  className="hover:bg-green-600 hover:text-white"
-                >
-                  View Evaluations
-                </Button>
+                {getCompletedDates(order) > 0 ? (
+                  <Link
+                    href={`/dashboard/athlete-evaluation/records/orders/${order._id}`}
+                    className="rounded-md border px-3 py-2 text-xs font-medium duration-200 hover:bg-green-600 hover:text-white"
+                  >
+                    View Evaluations
+                  </Link>
+                ) : (
+                  <Button
+                    disabled={getCompletedDates(order) <= 0}
+                    variant="outline"
+                    size="sm"
+                    className="hover:bg-green-600 hover:text-white"
+                  >
+                    View Evaluations
+                  </Button>
+                )}
               </td>
             </tr>
           );

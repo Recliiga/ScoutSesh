@@ -12,11 +12,11 @@ export default function AthleteEvaluationRecordsPage({
   evaluationRecords: AthleteEvaluationType[];
 }) {
   const filteredRecords: AthleteEvaluationType[] = [];
+
   evaluationRecords.forEach((record) => {
     if (
       filteredRecords.some(
-        (rec) =>
-          rec.order._id === record.order._id && rec.dueDate === record.dueDate,
+        (rec) => rec.order === record.order && rec.dueDate === record.dueDate,
       )
     )
       return;

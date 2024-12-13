@@ -48,6 +48,30 @@ export async function fetchCoachEvaluations(coachId: string) {
   }
 }
 
+export async function fetchEvaluationsByOrderId(
+  orderId: string,
+  coachId: string,
+) {
+  try {
+    await connectDB();
+    const evaluations: AthleteEvaluationType[] = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluation.find({ order: orderId, coach: coachId })
+          .populate({
+            path: "template",
+            select: "user",
+            populate: { path: "user", select: "firstName lastName" },
+          })
+          .populate({ path: "coach", select: "firstName, lastName" }),
+      ),
+    );
+    return { evaluations, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { evaluations: null, error: error.message };
+  }
+}
+
 export async function fetchAthleteEvaluationOrders(athleteId: string) {
   try {
     await connectDB();
