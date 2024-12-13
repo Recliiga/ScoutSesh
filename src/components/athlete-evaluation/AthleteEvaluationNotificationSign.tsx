@@ -5,12 +5,16 @@ import Link from "next/link";
 
 export default function AthleteEvaluationNotificationSign({
   awaitingOrderId,
+  hasActiveOrders,
 }: {
   awaitingOrderId: string | null;
+  hasActiveOrders: boolean;
 }) {
   const message = awaitingOrderId
     ? "Athlete Evaluation awaiting your action"
-    : "You do not have any pending evaluations";
+    : hasActiveOrders
+      ? "Please wait while your Athlete Evaluation is being completed by the Coach"
+      : "You do not have any pending evaluations";
   const href = `/dashboard/athlete-evaluation/evaluate/${awaitingOrderId}`;
   const actionText = "Complete Athlete Evaluation";
 

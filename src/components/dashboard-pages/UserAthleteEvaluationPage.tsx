@@ -21,6 +21,10 @@ export default async function UserAthleteEvaluationPage({
       (a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime(),
     );
 
+  const activeOrders = orders.filter((order) =>
+    order.evaluationDates.some((date) => !date.dateAthleteEvaluated),
+  );
+
   const awaitingOrderId =
     awaitingEvaluationOrders.length > 0
       ? awaitingEvaluationOrders[0]._id
@@ -36,7 +40,10 @@ export default async function UserAthleteEvaluationPage({
           Track your progress, receive feedback from coaches, and improve your
           performance through regular evaluations.
         </p>
-        <AthleteEvaluationNotificationSign awaitingOrderId={awaitingOrderId} />
+        <AthleteEvaluationNotificationSign
+          awaitingOrderId={awaitingOrderId}
+          hasActiveOrders={activeOrders.length > 0}
+        />
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <EvaluationCard
             title="Request an Evaluation"

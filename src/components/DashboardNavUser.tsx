@@ -97,15 +97,16 @@ export default function DashboardNavUser({
                   <>
                     <Button
                       variant="ghost"
+                      onClick={() => setUserMenu(false)}
                       className="w-full justify-start px-2 text-left sm:px-4"
                       asChild
                     >
-                      <Link href="">
+                      <Link href="/dashboard/profile">
                         <UserIcon className="h-4 w-4 sm:mr-2" />
                         View/Edit Profile
                       </Link>
                     </Button>
-                    {user.role === "Head Coach" && (
+                    {user.role === "Head Coach" ? (
                       <Button
                         onClick={() => {
                           setUserMenu(false);
@@ -115,28 +116,30 @@ export default function DashboardNavUser({
                         className="w-full justify-start px-2 text-left sm:px-4"
                         asChild
                       >
-                        <Link href="">
+                        <Link href="#">
                           <UserPlusIcon className="h-4 w-4 sm:mr-2" />
                           Invite Team Members
                         </Link>
                       </Button>
-                    )}
+                    ) : null}
                     <Button
                       variant="ghost"
+                      onClick={() => setUserMenu(false)}
                       className="w-full justify-start px-2 text-left sm:px-4"
                       asChild
                     >
-                      <Link href="">
+                      <Link href="#">
                         <CreditCardIcon className="h-4 w-4 sm:mr-2" />
                         Billings & Payments
                       </Link>
                     </Button>
                     <Button
                       variant="ghost"
+                      onClick={() => setUserMenu(false)}
                       className="w-full justify-start px-2 text-left sm:px-4"
                       asChild
                     >
-                      <Link href="">
+                      <Link href="#">
                         <LockIcon className="h-4 w-4 sm:mr-2" />
                         Password & Security
                       </Link>

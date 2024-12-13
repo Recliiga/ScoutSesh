@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { MapPinIcon } from "lucide-react";
-import { resizeImage } from "@/lib/utils";
+import { resizeImage, uploadImageClient } from "@/lib/utils";
 import Image from "next/image";
 import { createOrganization } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -45,7 +45,7 @@ export default function OrganizationRegistrationForm({
 
   const { formEntries, updateField } = useFormEntries({
     userId,
-    profilePicture: "",
+    logo: "",
     organizationType: "",
     organizationName: "",
     memberCount: "",
@@ -69,7 +69,7 @@ export default function OrganizationRegistrationForm({
     const resizedImageUrl = await resizeImage(file);
     if (!resizedImageUrl) return;
 
-    updateField("profilePicture", resizedImageUrl);
+    updateField("logo", resizedImageUrl);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -77,13 +77,28 @@ export default function OrganizationRegistrationForm({
     if (cannotSubmit) return;
     setLoading(true);
 
-    const formData = new FormData();
-    for (const k in formEntries) {
-      const key = k as keyof typeof formEntries;
-      formData.append(key, formEntries[key]);
-    }
+    const organizationData = {
+      name: formEntries.organizationName,
+      logo: formEntries.logo,
+      type: formEntries.organizationType,
+      memberCount: formEntries.memberCount,
+      location: formEntries.location,
+      primarySport: formEntries.primarySport,
+      yearFounded: formEntries.yearFounded,
+      bio: formEntries.bio,
+    };
 
-    const { error } = await createOrganization(formData);
+    // Upload organization profile picture
+    const { url, error: uploadError } = await uploadImageClient(
+      formEntries.logo,
+    );
+    if (uploadError !== null) {
+      setError("An error occured uploading organization logo");
+      return;
+    }
+    organizationData.logo = url;
+
+    const { error } = await createOrganization(organizationData);
     setError(error);
     if (!error) {
       router.replace(redirectUrl);
@@ -94,13 +109,13 @@ export default function OrganizationRegistrationForm({
   return (
     <form onSubmit={handleSubmit}>
       <div className="mb-6 flex flex-col items-center gap-4">
-        <Label htmlFor="profilePicture" className="text-center">
+        <Label htmlFor="logo" className="text-center">
           Organization Profile Photo
         </Label>
         <div className="relative h-32 w-32 overflow-hidden rounded-full bg-gray-100">
-          {formEntries.profilePicture ? (
+          {formEntries.logo ? (
             <Image
-              src={formEntries.profilePicture}
+              src={formEntries.logo}
               alt="Profile"
               layout="fill"
               objectFit="cover"
@@ -133,7 +148,7 @@ export default function OrganizationRegistrationForm({
         </Button>
         <input
           type="file"
-          id="profilePicture"
+          id="logo"
           ref={fileInputRef}
           onChange={handleImageChange}
           accept="image/*"

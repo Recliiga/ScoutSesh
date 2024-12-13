@@ -8,7 +8,7 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { CalendarIcon, MapPinIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { cn, resizeImage } from "@/lib/utils";
+import { cn, resizeImage, uploadImageClient } from "@/lib/utils";
 import Image from "next/image";
 import { completeProfile } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -98,12 +98,29 @@ export default function CompleteAthleteProfileForm({
 
     setLoading(true);
 
-    const formData = new FormData();
-    Object.entries(formEntries).forEach(([key, value]) => {
-      formData.set(key, value.toString());
-    });
+    const userData = {
+      firstName: formEntries.firstName,
+      lastName: formEntries.lastName,
+      role: formEntries.role,
+      DOB: formEntries.DOB,
+      profilePicture: formEntries.profilePicture,
+      location: formEntries.location,
+      primarySport: formEntries.primarySport,
+      experience: formEntries.experience,
+      bio: formEntries.bio,
+    };
 
-    const { error } = await completeProfile(formData);
+    // Upload organization profile picture
+    const { url, error: uploadError } = await uploadImageClient(
+      formEntries.profilePicture,
+    );
+    if (uploadError !== null) {
+      setError("An error occured uploading profile picture");
+      return;
+    }
+    userData.profilePicture = url;
+
+    const { error } = await completeProfile(userData);
     if (!error) {
       router.replace(redirectUrl);
     }
