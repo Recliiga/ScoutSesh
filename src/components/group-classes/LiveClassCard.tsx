@@ -64,15 +64,15 @@ export default function LiveClassCard({
   const startTime = new Date();
   startTime.setHours(
     Number(liveClass.startTime.hours),
-    Number(liveClass.startTime.mins)
+    Number(liveClass.startTime.mins),
   );
   const endTime = new Date();
   endTime.setHours(
     Number(liveClass.startTime.hours),
-    Number(liveClass.startTime.mins)
+    Number(liveClass.startTime.mins),
   );
   endTime.setMinutes(
-    startTime.getMinutes() + (liveClass.duration || liveClass.customDuration)
+    startTime.getMinutes() + (liveClass.duration || liveClass.customDuration),
   );
 
   const startDate = new Date(liveClass.startDate);
@@ -116,7 +116,7 @@ export default function LiveClassCard({
   async function handlePurchaseCourse(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const data = await purchaseCourse(liveClass._id);
+    const data = await purchaseCourse(liveClass._id, liveClass.price);
     if (data?.error) {
       console.log(data?.error);
     }
@@ -125,16 +125,16 @@ export default function LiveClassCard({
 
   return (
     <>
-      <div className="flex flex-col gap-4 md:flex-row border rounded-lg p-3 sm:p-4">
+      <div className="flex flex-col gap-4 rounded-lg border p-3 sm:p-4 md:flex-row">
         <div
-          className={`relative overflow-hidden rounded-md md:w-[33%] md:min-w-[250px] aspect-video bg-zinc-300 ${
+          className={`relative aspect-video overflow-hidden rounded-md bg-zinc-300 md:w-[33%] md:min-w-[250px] ${
             imageLoaded ? "" : "animate-pulse"
           }`}
         >
           <Image
             src={liveClass.thumbnail}
             alt={liveClass.title + " thumbnail"}
-            className={`w-full h-full object-cover duration-200 ${
+            className={`h-full w-full object-cover duration-200 ${
               imageLoaded ? "opacity-100" : "opacity-0"
             }`}
             onLoad={() => setImageLoaded(true)}
@@ -142,23 +142,23 @@ export default function LiveClassCard({
             sizes="(max-width: 768px) 720px, 320px"
           />
         </div>
-        <div className=" flex flex-col justify-between flex-1">
+        <div className="flex flex-1 flex-col justify-between">
           <div className="space-y-2">
-            <div className="flex justify-between flex-col md:flex-row items-start gap-2">
+            <div className="flex flex-col items-start justify-between gap-2 md:flex-row">
               <h2 className="text-xl font-bold">{liveClass.title}</h2>
               <Badge
                 variant="secondary"
-                className="bg-red-500 text-white hover:bg-red-500 px-2 whitespace-nowrap"
+                className="whitespace-nowrap bg-red-500 px-2 text-white hover:bg-red-500"
               >
                 Live Class
               </Badge>
             </div>
-            <p className="text-sm text-muted-foreground line-clamp-2">
+            <p className="line-clamp-2 text-sm text-muted-foreground">
               {liveClass.description}
             </p>
             {!forAthlete && students.length > 0 && (
               <div className="flex items-start text-sm text-muted-foreground">
-                <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+                <PersonIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
                 <span className="line-clamp-1">
                   {students
                     .slice(0, 3)
@@ -169,7 +169,7 @@ export default function LiveClassCard({
             )}
             {forAthlete && liveClass.coaches.length > 0 && (
               <div className="flex items-start text-sm text-muted-foreground">
-                <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+                <PersonIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
                 <span className="line-clamp-1">
                   {liveClass.coaches
                     .slice(0, 3)
@@ -179,13 +179,13 @@ export default function LiveClassCard({
               </div>
             )}
             <div className="flex items-start text-sm text-muted-foreground">
-              <TicketIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+              <TicketIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
               <span>
                 {
                   getDatesBetween(
                     liveClass.startDate,
                     liveClass.endDate,
-                    liveClass.repeatFrequency
+                    liveClass.repeatFrequency,
                   ).length
                 }{" "}
                 Lessons •{" "}
@@ -198,7 +198,7 @@ export default function LiveClassCard({
             </div>
             {liveClass.isRecurring && (
               <div className="flex items-start text-sm text-muted-foreground">
-                <CalendarIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+                <CalendarIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
                 <span>
                   Every {getDay(liveClass.createdAt)} at {formatTime(startTime)}
                   -{formatTime(endTime)} from {formatDate(startDate)} to{" "}
@@ -215,7 +215,7 @@ export default function LiveClassCard({
                 {remainingSpots} Spots Remaining
               </div>
               {!forAthlete && (
-                <div className="flex items-center space-x-2 mt-1">
+                <div className="mt-1 flex items-center space-x-2">
                   <span className="text-sm text-muted-foreground">
                     {students.length} enrolled
                   </span>
@@ -223,7 +223,7 @@ export default function LiveClassCard({
                     {students.slice(0, 3).map((student) => (
                       <Avatar
                         key={student._id}
-                        className="w-8 h-8 border-2 border-white rounded-full"
+                        className="h-8 w-8 rounded-full border-2 border-white"
                       >
                         <AvatarImage
                           src={student.profilePicture}
@@ -241,13 +241,13 @@ export default function LiveClassCard({
               )}
             </div>
           </div>
-          <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center justify-between mt-4 gap-2">
+          <div className="mt-4 flex flex-col justify-between gap-2 min-[360px]:flex-row min-[360px]:items-center">
             <span className="text-xl font-bold">${liveClass.price}</span>
             {forAthlete ? (
               isPurchased ? (
                 <Link
                   href={`/dashboard/group-classes/live-classes/${liveClass._id}`}
-                  className="bg-green-500 flex items-center gap-0 hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
+                  className="flex items-center gap-0 whitespace-nowrap rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white duration-200 hover:bg-green-600"
                 >
                   <TvMinimalPlay className="mr-2 h-4 w-4" />
                   Join Now
@@ -257,7 +257,7 @@ export default function LiveClassCard({
                   <Button
                     disabled={loading}
                     type="submit"
-                    className="bg-green-500 hover:bg-green-600 duration-200 text-white"
+                    className="bg-green-500 text-white duration-200 hover:bg-green-600"
                   >
                     {loading ? "Processing..." : "Buy Now"}
                   </Button>
@@ -267,7 +267,7 @@ export default function LiveClassCard({
               <div className="flex items-center gap-4 max-[360px]:w-full">
                 <Link
                   href={`/dashboard/group-classes/courses/${liveClass._id}/edit`}
-                  className="bg-green-500 hover:bg-green-600 duration-200 flex-1 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
+                  className="flex-1 whitespace-nowrap rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white duration-200 hover:bg-green-600"
                 >
                   Edit Course
                 </Link>

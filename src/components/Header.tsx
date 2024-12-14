@@ -47,16 +47,18 @@ export default function Header({
     pathname.includes("/complete-profile") ||
     pathname.includes("/create-organization");
 
+  if (pathname.startsWith("/admin")) return null;
+
   if (user && pathname.startsWith("/dashboard"))
     return <DashboardHeader user={user} invitationCode={invitationCode} />;
 
   return (
     <>
-      <header className="flex items-center gap-4 sm:gap-6 px-4 py-3 sm:py-4 border-b">
-        <div className="flex items-center gap-4 sm:gap-6 mr-auto">
+      <header className="flex items-center gap-4 border-b px-4 py-3 sm:gap-6 sm:py-4">
+        <div className="mr-auto flex items-center gap-4 sm:gap-6">
           <button
             onClick={toggleMobileNav}
-            className="min-[870px]:hidden hover:bg-accent-gray-100 p-1 border rounded-md duration-200"
+            className="rounded-md border p-1 duration-200 hover:bg-accent-gray-100 min-[870px]:hidden"
           >
             <svg
               height={24}
@@ -139,16 +141,16 @@ export default function Header({
           </button>
           <Link
             href="/"
-            className="font-bold text-green-600 text-xl sm:text-2xl"
+            className="text-xl font-bold text-green-600 sm:text-2xl"
           >
             ScoutSesh.
           </Link>
-          <nav className="min-[870px]:flex gap-6 hidden">
+          <nav className="hidden gap-6 min-[870px]:flex">
             {navLinks.map((navLink) => (
               <Link
                 key={navLink.title}
                 href={navLink.href}
-                className={`font-medium text-sm hover:text-green-600 whitespace-nowrap transition-colors ${
+                className={`whitespace-nowrap text-sm font-medium transition-colors hover:text-green-600 ${
                   pathname === navLink.href ? "text-green-600" : ""
                 }`}
               >
@@ -176,7 +178,7 @@ export default function Header({
             </Button>
             <Button
               href={"/signup"}
-              className="min-[400px]:block hidden"
+              className="hidden min-[400px]:block"
               margin="none"
             >
               Sign Up

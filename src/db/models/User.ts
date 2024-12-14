@@ -32,6 +32,8 @@ export interface UserType extends mongoose.Document {
   experience: number;
   bio: string;
   organization?: OrganizationType;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const UserSchema: mongoose.Schema = new mongoose.Schema(
