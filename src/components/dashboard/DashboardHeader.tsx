@@ -5,9 +5,9 @@ import React, { useEffect, useState } from "react";
 import ModalContainer from "../ModalContainer";
 import DashboardMobileNav from "./DashboardMobileNav";
 import { usePathname } from "next/navigation";
-import { BellIcon } from "lucide-react";
 import DashboardNavUser from "../DashboardNavUser";
 import { InvitationCodeType } from "@/db/models/InvitationCode";
+import DashboardNotificationIcon from "../DashboardNotificationIcon";
 
 const navLinks = [
   { title: "Goal Setting", href: "/dashboard/goal-setting" },
@@ -150,7 +150,7 @@ export default function DashboardHeader({
           </nav>
         </div>
         <div className="flex items-center space-x-4">
-          <BellIcon className="h-6 w-6 cursor-pointer text-muted-foreground hover:text-green-600" />
+          <DashboardNotificationIcon />
           <DashboardNavUser user={user} invitationCode={invitationCode} />
         </div>
       </header>
