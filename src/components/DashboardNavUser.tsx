@@ -101,7 +101,7 @@ export default function DashboardNavUser({
                       className="w-full justify-start px-2 text-left sm:px-4"
                       asChild
                     >
-                      <Link href="/dashboard/profile">
+                      <Link href={`/dashboard/profile/${user._id}`}>
                         <UserIcon className="h-4 w-4 sm:mr-2" />
                         View/Edit Profile
                       </Link>
@@ -113,13 +113,13 @@ export default function DashboardNavUser({
                           setOpenModal("addTeamMember");
                         }}
                         variant="ghost"
-                        className="w-full justify-start px-2 text-left sm:px-4"
+                        className="w-full cursor-pointer justify-start px-2 text-left sm:px-4"
                         asChild
                       >
-                        <Link href="#">
+                        <div className="flex gap-2">
                           <UserPlusIcon className="h-4 w-4 sm:mr-2" />
                           Invite Team Members
-                        </Link>
+                        </div>
                       </Button>
                     ) : null}
                     <Button

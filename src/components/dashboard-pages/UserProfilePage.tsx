@@ -21,7 +21,13 @@ import { updateUser } from "@/actions/userActions";
 import LoadingIndicator from "../LoadingIndicator";
 import Error from "../AuthError";
 
-export default function CoachProfilePage({ user }: { user: UserType }) {
+export default function UserProfilePage({
+  user,
+  isOwnProfile,
+}: {
+  user: UserType;
+  isOwnProfile: boolean;
+}) {
   const [userData, setUserData] = useState<UserType>(user);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +44,7 @@ export default function CoachProfilePage({ user }: { user: UserType }) {
   });
 
   async function handleUpdateUser() {
+    if (!isOwnProfile) return;
     setError(null);
     setLoading(true);
     let newProfilePicture;
@@ -162,24 +169,26 @@ export default function CoachProfilePage({ user }: { user: UserType }) {
                 <p className="mt-1 font-semibold text-[#14a800]">
                   {userData.role}
                 </p>
-                <div className="mt-2">
-                  <Button
-                    variant="outline"
-                    className="flex items-center space-x-2 border-gray-200 bg-white text-gray-800 hover:bg-gray-50"
-                  >
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage
-                        src={user.organization?.logo}
-                        alt={user.organization?.name}
-                        className="object-cover"
-                      />
-                      <AvatarFallback>
-                        {user.organization?.name[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>{user.organization?.name}</span>
-                  </Button>
-                </div>
+                {user.organization && user.organization._id ? (
+                  <div className="mt-2">
+                    <Button
+                      variant="outline"
+                      className="flex items-center space-x-2 border-gray-200 bg-white text-gray-800 hover:bg-gray-50"
+                    >
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage
+                          src={user.organization.logo}
+                          alt={user.organization.name}
+                          className="object-cover"
+                        />
+                        <AvatarFallback>
+                          {user.organization.name[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span>{user.organization.name}</span>
+                    </Button>
+                  </div>
+                ) : null}
               </div>
               <div className="flex items-center space-x-2">
                 <Button className="bg-[#14a800] px-6 py-2 text-base text-white hover:bg-[#14a800]/90 sm:text-lg">
@@ -195,15 +204,17 @@ export default function CoachProfilePage({ user }: { user: UserType }) {
                   }
                   className={`order-[#14a800] text-[#14a800] hover:text-white ${isEditing ? "bg-[#14a800] hover:bg-[#14a800]/90" : "bg-white hover:bg-[#14a800]"}`}
                 >
-                  {isEditing ? (
-                    loading ? (
-                      <LoadingIndicator />
+                  {isOwnProfile ? (
+                    isEditing ? (
+                      loading ? (
+                        <LoadingIndicator />
+                      ) : (
+                        <CheckCircle className="h-4 w-4 text-white" />
+                      )
                     ) : (
-                      <CheckCircle className="h-4 w-4 text-white" />
+                      <PenIcon className="h-4 w-4" />
                     )
-                  ) : (
-                    <PenIcon className="h-4 w-4" />
-                  )}
+                  ) : null}
                   <span className="sr-only">Edit profile</span>
                 </Button>
               </div>
