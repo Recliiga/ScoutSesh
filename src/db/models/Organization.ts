@@ -10,7 +10,7 @@ export interface OrganizationType extends mongoose.Document {
   location: string;
   primarySport: string;
   yearFounded: number;
-  bio: number;
+  bio: string;
   user: UserType;
 }
 
@@ -57,7 +57,7 @@ const OrganizationSchema = new mongoose.Schema(
       required: [true, "Please write something about your organization"],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Organization =
