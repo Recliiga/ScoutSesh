@@ -201,7 +201,7 @@ export default function OrganizationProfile({
                     {organizationData.user.lastName}
                   </p>
                   <Link
-                    href={`/dashboard/profile/${organizationData._id}`}
+                    href={`/dashboard/profile/${organizationData.user._id}`}
                     passHref
                   >
                     <Button
@@ -265,17 +265,17 @@ export default function OrganizationProfile({
                   <MessageSquareIcon className="mr-2 h-5 w-5" />
                   Message
                 </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  disabled={isEditing && loading}
-                  onClick={() =>
-                    isEditing ? handleUpdateUser() : setIsEditing(true)
-                  }
-                  className={`order-[#14a800] text-[#14a800] hover:text-white ${isEditing ? "bg-[#14a800] hover:bg-[#14a800]/90" : "bg-white hover:bg-[#14a800]"}`}
-                >
-                  {isOrganizationHeadCoach ? (
-                    isEditing ? (
+                {isOrganizationHeadCoach ? (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    disabled={isEditing && loading}
+                    onClick={() =>
+                      isEditing ? handleUpdateUser() : setIsEditing(true)
+                    }
+                    className={`order-[#14a800] text-[#14a800] hover:text-white ${isEditing ? "bg-[#14a800] hover:bg-[#14a800]/90" : "bg-white hover:bg-[#14a800]"}`}
+                  >
+                    {isEditing ? (
                       loading ? (
                         <LoadingIndicator />
                       ) : (
@@ -283,10 +283,10 @@ export default function OrganizationProfile({
                       )
                     ) : (
                       <PenIcon className="h-4 w-4" />
-                    )
-                  ) : null}
-                  <span className="sr-only">Edit profile</span>
-                </Button>
+                    )}
+                    <span className="sr-only">Edit profile</span>
+                  </Button>
+                ) : null}
               </div>
             </div>
           </CardHeader>

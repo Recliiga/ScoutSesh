@@ -2,18 +2,21 @@ import { BellIcon } from "lucide-react";
 import React, { useRef, useState } from "react";
 import useClickOutside from "@/hooks/useClickOutside";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { getFullname } from "@/lib/utils";
+import { getNotificationMessage } from "@/lib/utils";
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
+import { Button } from "./ui/button";
 
-type NotificationType = {
+export type NotificationType = {
   _id: number;
-  type: "goal" | "evaluation" | "team" | "session";
+  type: "goal" | "evaluation" | "team" | "class";
   time: string;
   read: boolean;
   fromUser: UserType;
   toUser: UserType;
   link: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 const notifications: NotificationType[] = [
@@ -33,6 +36,8 @@ const notifications: NotificationType[] = [
       profilePicture: "/placeholder-profile-picture.png",
     } as UserType,
     link: "/dashboard/team-members",
+    createdAt: new Date("2022-12-23"),
+    updatedAt: new Date("2022-12-23"),
   },
   {
     _id: 2,
@@ -50,6 +55,8 @@ const notifications: NotificationType[] = [
       profilePicture: "/placeholder-profile-picture.png",
     } as UserType,
     link: "/dashboard/athlete-evaluation",
+    createdAt: new Date("2022-12-23"),
+    updatedAt: new Date("2022-12-23"),
   },
   {
     _id: 3,
@@ -67,10 +74,12 @@ const notifications: NotificationType[] = [
       profilePicture: "/placeholder-profile-picture.png",
     } as UserType,
     link: "/dashboard/goal-setting",
+    createdAt: new Date("2022-12-23"),
+    updatedAt: new Date("2022-12-23"),
   },
   {
     _id: 5,
-    type: "session",
+    type: "class",
     time: "1d ago",
     read: true,
     fromUser: {
@@ -84,6 +93,8 @@ const notifications: NotificationType[] = [
       profilePicture: "/placeholder-profile-picture.png",
     } as UserType,
     link: "/dashboard/goal-setting",
+    createdAt: new Date("2022-12-23"),
+    updatedAt: new Date("2022-12-23"),
   },
 ];
 
@@ -92,25 +103,6 @@ export default function DashboardNotificationIcon() {
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
 
   const [notficationIconRef] = useClickOutside(() => setDropdownIsOpen(false));
-
-  function getNotificationMessage(notification: NotificationType) {
-    switch (notification.type) {
-      case "goal":
-        return `${getFullname(notification.fromUser)} achieved their goal`;
-
-      case "evaluation":
-        return `Evaluation due for ${getFullname(notification.fromUser)}`;
-
-      case "team":
-        return `${getFullname(notification.fromUser)} joined your team`;
-
-      case "session":
-        return `Upcoming session: Goal Setting`;
-
-      default:
-        break;
-    }
-  }
 
   const hasUnreadNotifications = notifications.some(
     (notif) => notif.read === false,
@@ -136,7 +128,7 @@ export default function DashboardNotificationIcon() {
             "absolute -right-10 top-[calc(100%_+_.5rem)] z-10 max-w-80 overflow-hidden rounded-lg border bg-white"
           }
         >
-          <div className="border-b p-2 sm:p-4">
+          <div className="border-b px-4 py-2 sm:py-4">
             <h4 className="text-lg font-semibold">Notifications</h4>
           </div>
           <div>
@@ -144,7 +136,7 @@ export default function DashboardNotificationIcon() {
               <Link
                 href={notification.link}
                 key={notification._id}
-                className={`block px-4 py-2 hover:bg-muted sm:py-3 ${notification.read ? "opacity-60" : ""}`}
+                className={`block px-4 py-2 duration-200 hover:bg-muted sm:py-3 ${notification.read ? "opacity-60" : ""}`}
               >
                 <div className="flex items-start space-x-4 overflow-hidden">
                   <Avatar>
@@ -167,10 +159,17 @@ export default function DashboardNotificationIcon() {
               </Link>
             ))}
           </div>
-          <div className="border-t p-2 sm:p-4">
+          <div className="flex flex-wrap items-center gap-2 border-t p-2 sm:p-4">
+            <Button
+              variant={"outline"}
+              className="flex-1 hover:border-green-600 hover:bg-green-600 hover:text-white"
+            >
+              Mark as read
+            </Button>
+
             <Link
               href={"/dashboard/notifications"}
-              className="block w-full rounded-md border px-4 py-2 text-center text-sm font-medium text-primary duration-200 hover:bg-primary/90 hover:text-primary-foreground"
+              className="block h-9 flex-1 rounded-md border px-4 py-2 text-center text-sm font-medium text-primary duration-200 hover:bg-primary/90 hover:text-primary-foreground"
             >
               See All
             </Link>

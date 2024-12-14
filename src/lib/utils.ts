@@ -9,6 +9,7 @@ import { DailyJournalType } from "@/db/models/DailyJournal";
 import { RepeatFrequencyType } from "@/db/models/GroupClass";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
+import { NotificationType } from "@/components/DashboardNotificationIcon";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -359,4 +360,23 @@ export function getLastEvaluationDate(
   return evaluations.find(
     (evaluation) => String(evaluation.order) === order._id,
   )?.createdAt;
+}
+
+export function getNotificationMessage(notification: NotificationType) {
+  switch (notification.type) {
+    case "goal":
+      return `${getFullname(notification.fromUser)} achieved their goal`;
+
+    case "evaluation":
+      return `Evaluation due for ${getFullname(notification.fromUser)}`;
+
+    case "team":
+      return `${getFullname(notification.fromUser)} joined your team`;
+
+    case "class":
+      return `${getFullname(notification.fromUser)} enrolled in a class`;
+
+    default:
+      break;
+  }
 }

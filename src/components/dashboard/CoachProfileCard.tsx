@@ -32,7 +32,10 @@ export default function CoachProfileCard({ coach }: { coach: UserType }) {
               size="sm"
               className="h-8 px-0 py-0 text-xs"
             >
-              <Link href="#" className="h-full w-full px-4 py-2">
+              <Link
+                href={`/dashboard/profile/${coach._id}`}
+                className="h-full w-full px-4 py-2"
+              >
                 View Profile
               </Link>
             </Button>

@@ -212,17 +212,17 @@ export default function UserProfilePage({
                   <MessageSquareIcon className="mr-2 h-5 w-5" />
                   Message
                 </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  disabled={isEditing && loading}
-                  onClick={() =>
-                    isEditing ? handleUpdateUser() : setIsEditing(true)
-                  }
-                  className={`order-[#14a800] text-[#14a800] hover:text-white ${isEditing ? "bg-[#14a800] hover:bg-[#14a800]/90" : "bg-white hover:bg-[#14a800]"}`}
-                >
-                  {isOwnProfile ? (
-                    isEditing ? (
+                {isOwnProfile ? (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    disabled={isEditing && loading}
+                    onClick={() =>
+                      isEditing ? handleUpdateUser() : setIsEditing(true)
+                    }
+                    className={`order-[#14a800] text-[#14a800] hover:text-white ${isEditing ? "bg-[#14a800] hover:bg-[#14a800]/90" : "bg-white hover:bg-[#14a800]"}`}
+                  >
+                    {isEditing ? (
                       loading ? (
                         <LoadingIndicator />
                       ) : (
@@ -230,10 +230,10 @@ export default function UserProfilePage({
                       )
                     ) : (
                       <PenIcon className="h-4 w-4" />
-                    )
-                  ) : null}
-                  <span className="sr-only">Edit profile</span>
-                </Button>
+                    )}
+                    <span className="sr-only">Edit profile</span>
+                  </Button>
+                ) : null}
               </div>
             </div>
           </CardHeader>

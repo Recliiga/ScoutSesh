@@ -48,7 +48,10 @@ export default function UserProfileCard({
             size="sm"
             className="h-8 flex-1 px-0 py-0 text-xs"
           >
-            <Link href="#" className="h-full w-full px-4 py-2">
+            <Link
+              href={`/dashboard/profile/${member._id}`}
+              className="h-full w-full px-4 py-2"
+            >
               View Profile
             </Link>
           </Button>
