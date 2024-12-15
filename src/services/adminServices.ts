@@ -1,4 +1,7 @@
 import connectDB from "@/db/connectDB";
+import AthleteEvaluationOrder, {
+  AthleteEvaluationOrderType,
+} from "@/db/models/AthleteEvaluationOrder";
 import GroupClass, { GroupClassType } from "@/db/models/GroupClass";
 import Order, { OrderType } from "@/db/models/Order";
 import Organization, { OrganizationType } from "@/db/models/Organization";
@@ -54,7 +57,22 @@ export async function fetchAdminData() {
       ),
     );
 
-    const adminData = { users, organizations, groupClasses, classOrders };
+    const evaluationOrders: AthleteEvaluationOrderType[] = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluationOrder.find().populate({
+          path: "athlete coach",
+          select: "firstName lastName profilePicture",
+        }),
+      ),
+    );
+
+    const adminData = {
+      users,
+      organizations,
+      groupClasses,
+      classOrders,
+      evaluationOrders,
+    };
     return { adminData, error: null };
   } catch (error) {
     return { adminData: null, error: (error as Error).message };

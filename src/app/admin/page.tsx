@@ -92,7 +92,7 @@ const mockData = {
       sport: "Track",
       evaluator: "Sarah Thompson",
       date: "2024-03-11",
-      status: "Pending",
+      status: "In progress",
       score: null,
     },
     {

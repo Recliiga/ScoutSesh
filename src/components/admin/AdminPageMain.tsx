@@ -18,7 +18,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { LineChart } from "recharts";
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import StatCard from "@/components/admin/StatCard";
 import { OrganizationType } from "@/db/models/Organization";
 import { UserType } from "@/db/models/User";
@@ -28,7 +36,8 @@ import { ScrollArea } from "../ui/scroll-area";
 import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
 import { GroupClassType } from "@/db/models/GroupClass";
 import { OrderType } from "@/db/models/Order";
-import { Badge } from "@/components/ui/badge";
+import StatusBadge from "./StatusBadge";
+import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
 
 type MockDataType = {
   users: {
@@ -88,11 +97,12 @@ type AdminDataType = {
   organizations: OrganizationType[];
   groupClasses: GroupClassType[];
   classOrders: OrderType[];
+  evaluationOrders: AthleteEvaluationOrderType[];
 };
 
 type SortOptionsType = {
-  column: "enrolled" | "revenue" | "score";
-  direction: "desc" | "asc" | "evaluations";
+  column: "enrolled" | "revenue" | "date";
+  direction: "desc" | "asc";
 };
 
 const initialSortOptions: SortOptionsType = {
@@ -111,8 +121,9 @@ export default function AdminPageMain({
   const [selectedChartType, setSelectedChartType] = useState("monthly");
   const [searchQuery, setSearchQuery] = useState("");
   const [classSearchQuery, setClassSearchQuery] = useState("");
+  const [evaluationSearchQuery, setEvaluationSearchQuery] = useState("");
   const [evaluationSortOptions, setEvaluationSortOptions] =
-    useState<SortOptionsType>({ column: "score", direction: "desc" });
+    useState<SortOptionsType>({ column: "date", direction: "desc" });
   const [courseSortOptions, setCourseSortOptions] =
     useState<SortOptionsType>(initialSortOptions);
   const [liveClassSortOptions, setLiveClassSortOptions] =
@@ -161,7 +172,7 @@ export default function AdminPageMain({
     });
 
   function handleSort(
-    column: "enrolled" | "revenue" | "score",
+    column: "enrolled" | "revenue" | "date",
     table: "courses" | "liveClasses" | "evaluations",
   ) {
     if (table === "courses") {
@@ -183,25 +194,16 @@ export default function AdminPageMain({
         setLiveClassSortOptions({ column, direction: "desc" });
       }
     } else if (table === "evaluations") {
-      if (column === liveClassSortOptions.column) {
+      if (column === evaluationSortOptions.column) {
         setEvaluationSortOptions((prev) => ({
           column,
           direction: prev.direction === "asc" ? "desc" : "asc",
         }));
       } else {
-        setEvaluationSortOptions({ column, direction: "desc" });
+        return;
       }
     }
   }
-
-  const sortedEvaluations = [...mockData.evaluations].sort((a, b) => {
-    if (evaluationSortOptions.column === "score") {
-      return evaluationSortOptions.direction === "asc"
-        ? Number(a.score) - Number(b.score)
-        : Number(b.score) - Number(a.score);
-    }
-    return 0;
-  });
 
   function getNumberOfTeamMembers(organization: OrganizationType) {
     return adminData.users.filter(
@@ -257,6 +259,58 @@ export default function AdminPageMain({
       }
       return 0;
     });
+
+  const filteredEvaluations = adminData.evaluationOrders.filter(
+    (evaluationOrder) => {
+      const matchCoach = getFullname(evaluationOrder.coach)
+        .toLowerCase()
+        .includes(evaluationSearchQuery.toLowerCase());
+      const matchAthlete = getFullname(evaluationOrder.athlete)
+        .toLowerCase()
+        .includes(evaluationSearchQuery.toLowerCase());
+      const matchSport = evaluationOrder.template
+        ? evaluationOrder.template.selectedSport
+            .toLowerCase()
+            .includes(evaluationSearchQuery.toLowerCase())
+        : false;
+
+      return matchCoach || matchAthlete || matchSport;
+    },
+  );
+
+  const sortedEvaluations = filteredEvaluations.sort((a, b) => {
+    if (evaluationSortOptions.column === "date") {
+      return evaluationSortOptions.direction === "asc"
+        ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+    return 0;
+  });
+
+  function getEvaluationStatus(evaluationOrder: AthleteEvaluationOrderType): {
+    variant: "default" | "success" | "warning";
+    text: "Completed" | "In progress" | "Scheduled";
+  } {
+    if (
+      evaluationOrder.evaluationDates.some(
+        (date) => date.dateCoachEvaluated || !date.dateAthleteEvaluated,
+      )
+    )
+      return { variant: "warning", text: "In progress" };
+    if (
+      !evaluationOrder.evaluationDates.some((date) => date.dateAthleteEvaluated)
+    )
+      return { variant: "success", text: "Completed" };
+
+    return { variant: "default", text: "Scheduled" };
+  }
+
+  function formatEvaluationDate(date: Date) {
+    const evaluationDate = new Date(date);
+    const monthOfBirth = evaluationDate.getMonth() + 1;
+    const dayOfBirth = evaluationDate.getDate();
+    return `${evaluationDate.getFullYear()}-${monthOfBirth < 10 ? "0" : ""}${monthOfBirth}-${dayOfBirth < 10 ? "0" : ""}${dayOfBirth}`;
+  }
 
   return (
     <main className="mx-auto w-[90%] max-w-7xl flex-1 space-y-6 py-6">
@@ -599,13 +653,17 @@ export default function AdminPageMain({
                       ? mockData.financials.monthlyData
                       : mockData.financials.quarterlyData
                   }
-                  // index="name"
-                  // categories={["revenue"]}
-                  // colors={["blue"]}
-                  // valueFormatter={(value) => `$${value.toLocaleString()}`}
-                  // yAxisWidth={80}
-                  className="h-[400px]"
-                />
+                  height={400}
+                  // className="h-[400px]"
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="pv" stroke="#8884d8" />
+                  <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+                </LineChart>
               </div>
             </CardContent>
           </Card>
@@ -785,8 +843,8 @@ export default function AdminPageMain({
             <h2 className="text-2xl font-semibold">Athlete Evaluations</h2>
             <Input
               placeholder="Search evaluations..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={evaluationSearchQuery}
+              onChange={(e) => setEvaluationSearchQuery(e.target.value)}
               className="max-w-sm"
             />
           </div>
@@ -803,15 +861,13 @@ export default function AdminPageMain({
                         <TableHead className="w-[200px]">Athlete</TableHead>
                         <TableHead className="w-[150px]">Sport</TableHead>
                         <TableHead className="w-[150px]">Evaluator</TableHead>
-                        <TableHead className="w-[100px]">Date</TableHead>
-                        <TableHead className="w-[100px]">Status</TableHead>
                         <TableHead
-                          className="w-[100px] cursor-pointer text-right"
-                          onClick={() => handleSort("score", "evaluations")}
+                          className="w-[100px] cursor-pointer"
+                          onClick={() => handleSort("date", "evaluations")}
                         >
-                          <div className="flex items-center justify-end">
-                            Score
-                            {evaluationSortOptions.column === "score" ? (
+                          <div className="flex items-center">
+                            Date
+                            {evaluationSortOptions.column === "date" ? (
                               evaluationSortOptions.direction === "asc" ? (
                                 <ChevronUp className="ml-1" />
                               ) : (
@@ -822,36 +878,28 @@ export default function AdminPageMain({
                             )}
                           </div>
                         </TableHead>
+                        <TableHead className="w-[100px]">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {sortedEvaluations.map((evaluation) => (
-                        <TableRow key={evaluation.id}>
+                        <TableRow key={evaluation._id}>
                           <TableCell className="font-medium">
-                            {evaluation.athleteName}
+                            {getFullname(evaluation.athlete)}
                           </TableCell>
-                          <TableCell>{evaluation.sport}</TableCell>
-                          <TableCell>{evaluation.evaluator}</TableCell>
-                          <TableCell>{evaluation.date}</TableCell>
                           <TableCell>
-                            <Badge
-                              variant={
-                                evaluation.status === "Completed"
-                                  ? "outline"
-                                  : evaluation.status === "In Progress"
-                                    ? "warning"
-                                    : evaluation.status === "Pending"
-                                      ? "secondary"
-                                      : "default"
-                              }
-                            >
-                              {evaluation.status}
-                            </Badge>
+                            {evaluation.template?.selectedSport || "N/A"}
                           </TableCell>
-                          <TableCell className="text-right">
-                            {evaluation.score !== null
-                              ? evaluation.score
-                              : "N/A"}
+                          <TableCell>{getFullname(evaluation.coach)}</TableCell>
+                          <TableCell>
+                            {formatEvaluationDate(evaluation.createdAt)}
+                          </TableCell>
+                          <TableCell>
+                            <StatusBadge
+                              variant={getEvaluationStatus(evaluation).variant}
+                            >
+                              {getEvaluationStatus(evaluation).text}
+                            </StatusBadge>
                           </TableCell>
                         </TableRow>
                       ))}
