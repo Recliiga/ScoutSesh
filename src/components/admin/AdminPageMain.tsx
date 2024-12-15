@@ -35,10 +35,8 @@ import Link from "next/link";
 import { ScrollArea } from "../ui/scroll-area";
 import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
 import { GroupClassType } from "@/db/models/GroupClass";
-import Order, { OrderType } from "@/db/models/Order";
-import StatusBadge from "./StatusBadge";
+import { OrderType } from "@/db/models/Order";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
-import { Button } from "../ui/button";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 
 type MockDataType = {
@@ -311,31 +309,6 @@ export default function AdminPageMain({
         (evalOrder) => evalOrder.coach.organization?._id === organizationId,
       )
       .reduce((acc, curr) => acc + curr.totalPrice, 0);
-  }
-
-  function getEvaluationStatus(evaluationOrder: AthleteEvaluationOrderType): {
-    variant: "default" | "success" | "warning";
-    text: "Completed" | "In progress" | "Scheduled";
-  } {
-    if (
-      evaluationOrder.evaluationDates.some(
-        (date) => date.dateCoachEvaluated || !date.dateAthleteEvaluated,
-      )
-    )
-      return { variant: "warning", text: "In progress" };
-    if (
-      !evaluationOrder.evaluationDates.some((date) => date.dateAthleteEvaluated)
-    )
-      return { variant: "success", text: "Completed" };
-
-    return { variant: "default", text: "Scheduled" };
-  }
-
-  function formatEvaluationDate(date: Date) {
-    const evaluationDate = new Date(date);
-    const monthOfBirth = evaluationDate.getMonth() + 1;
-    const dayOfBirth = evaluationDate.getDate();
-    return `${evaluationDate.getFullYear()}-${monthOfBirth < 10 ? "0" : ""}${monthOfBirth}-${dayOfBirth < 10 ? "0" : ""}${dayOfBirth}`;
   }
 
   return (

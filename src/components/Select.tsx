@@ -16,11 +16,13 @@ export default function Select({
   value,
   onChange,
   className,
+  containerClassName,
   children,
   disabled = false,
   defaultChild,
 }: {
   className?: string;
+  containerClassName?: string;
   placeholder?: string;
   value?: string;
   onChange(value: string): void;
@@ -55,7 +57,7 @@ export default function Select({
     <SelectContext.Provider
       value={{ value, handleChange, showOptions: showOptions, closeDropdown }}
     >
-      <div className="relative text-sm" ref={selectRef}>
+      <div className={`relative text-sm ${containerClassName}`} ref={selectRef}>
         <div
           tabIndex={0}
           onClick={toggleShowOptions}

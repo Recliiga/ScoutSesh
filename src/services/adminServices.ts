@@ -95,3 +95,25 @@ export async function fetchAdminData() {
     return { adminData: null, error: (error as Error).message };
   }
 }
+
+export async function fetchEvaluationsByOrganization(organizationId: string) {
+  try {
+    await connectDB();
+    const allEvaluationOrders: AthleteEvaluationOrderType[] = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluationOrder.find().populate({
+          path: "athlete coach",
+          select: "firstName lastName profilePicture",
+          populate: { path: "organization", select: "name logo" },
+        }),
+      ),
+    );
+
+    const evaluations = allEvaluationOrders.filter(
+      (order) => order.coach.organization?._id === organizationId,
+    );
+    return { evaluations, error: null };
+  } catch (error) {
+    return { evaluations: null, error: (error as Error).message };
+  }
+}

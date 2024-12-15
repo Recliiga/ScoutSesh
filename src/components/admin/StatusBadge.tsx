@@ -15,7 +15,7 @@ export default function StatusBadge({
         : "bg-zinc-700";
   return (
     <div
-      className={`w-fit rounded-full px-2 py-0.5 text-xs text-white ${varaintClassName}`}
+      className={`w-fit whitespace-nowrap rounded-full px-2 py-0.5 text-xs text-white ${varaintClassName}`}
     >
       {children}
     </div>
