@@ -94,6 +94,7 @@ export default function OrganizationRegistrationForm({
     );
     if (uploadError !== null) {
       setError("An error occured uploading organization logo");
+      setLoading(false);
       return;
     }
     organizationData.logo = url;

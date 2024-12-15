@@ -458,8 +458,7 @@ export default function AdminPageMain({
                           </TableCell>
                           <TableCell>
                             <Link
-                              target="_blank"
-                              href={`/dashboard/organization/${org._id}`}
+                              href={`/admin/organization-details/${org._id}`}
                               className="rounded-md border bg-white px-3 py-1.5 text-xs font-medium duration-200 hover:bg-accent-gray-100"
                             >
                               View

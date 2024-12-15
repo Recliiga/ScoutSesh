@@ -116,6 +116,7 @@ export default function CompleteAthleteProfileForm({
     );
     if (uploadError !== null) {
       setError("An error occured uploading profile picture");
+      setLoading(false);
       return;
     }
     userData.profilePicture = url;

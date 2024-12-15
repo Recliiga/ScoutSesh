@@ -32,6 +32,7 @@ export interface UserType extends mongoose.Document {
   experience: number;
   bio: string;
   organization?: OrganizationType;
+  status: "Active" | "Suspended" | "Banned";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -63,6 +64,7 @@ const UserSchema: mongoose.Schema = new mongoose.Schema(
     primarySport: { type: String },
     experience: { type: Number },
     bio: { type: String },
+    status: { type: String, default: "Active" },
     organization: { type: mongoose.SchemaTypes.ObjectId, ref: "Organization" },
   },
   { timestamps: true },
