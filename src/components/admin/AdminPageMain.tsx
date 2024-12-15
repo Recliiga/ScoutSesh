@@ -35,9 +35,11 @@ import Link from "next/link";
 import { ScrollArea } from "../ui/scroll-area";
 import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
 import { GroupClassType } from "@/db/models/GroupClass";
-import { OrderType } from "@/db/models/Order";
+import Order, { OrderType } from "@/db/models/Order";
 import StatusBadge from "./StatusBadge";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
+import { Button } from "../ui/button";
+import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 
 type MockDataType = {
   users: {
@@ -98,6 +100,7 @@ type AdminDataType = {
   groupClasses: GroupClassType[];
   classOrders: OrderType[];
   evaluationOrders: AthleteEvaluationOrderType[];
+  evaluations: AthleteEvaluationType[];
 };
 
 type SortOptionsType = {
@@ -260,32 +263,55 @@ export default function AdminPageMain({
       return 0;
     });
 
-  const filteredEvaluations = adminData.evaluationOrders.filter(
-    (evaluationOrder) => {
+  const filteredEvaluations = adminData.evaluationOrders
+    .filter((evaluationOrder) => {
       const matchCoach = getFullname(evaluationOrder.coach)
         .toLowerCase()
         .includes(evaluationSearchQuery.toLowerCase());
-      const matchAthlete = getFullname(evaluationOrder.athlete)
+      const matchOrganization = evaluationOrder.coach.organization?.name
         .toLowerCase()
         .includes(evaluationSearchQuery.toLowerCase());
-      const matchSport = evaluationOrder.template
-        ? evaluationOrder.template.selectedSport
-            .toLowerCase()
-            .includes(evaluationSearchQuery.toLowerCase())
-        : false;
 
-      return matchCoach || matchAthlete || matchSport;
-    },
-  );
+      return matchCoach || matchOrganization;
+    })
+    .filter(
+      (item, index, self) =>
+        index ===
+        self.findIndex(
+          (order) =>
+            order.coach.organization?._id === item.coach.organization?._id,
+        ),
+    );
 
-  const sortedEvaluations = filteredEvaluations.sort((a, b) => {
-    if (evaluationSortOptions.column === "date") {
-      return evaluationSortOptions.direction === "asc"
-        ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    }
-    return 0;
-  });
+  function getTotalEvaluations(organizationId: string) {
+    return adminData.evaluationOrders
+      .filter(
+        (evalOrder) => evalOrder.coach.organization?._id === organizationId,
+      )
+      .reduce((acc, curr) => acc + curr.evaluationDates.length, 0);
+  }
+
+  function getActiveEvaluations(organizationId: string) {
+    return adminData.evaluationOrders
+      .filter(
+        (evalOrder) => evalOrder.coach.organization?._id === organizationId,
+      )
+      .reduce(
+        (acc, curr) =>
+          acc +
+          curr.evaluationDates.filter((date) => !date.dateAthleteEvaluated)
+            .length,
+        0,
+      );
+  }
+
+  function getOrganizationEvaluationRevenue(organizationId: string) {
+    return adminData.evaluationOrders
+      .filter(
+        (evalOrder) => evalOrder.coach.organization?._id === organizationId,
+      )
+      .reduce((acc, curr) => acc + curr.totalPrice, 0);
+  }
 
   function getEvaluationStatus(evaluationOrder: AthleteEvaluationOrderType): {
     variant: "default" | "success" | "warning";
@@ -313,7 +339,7 @@ export default function AdminPageMain({
   }
 
   return (
-    <main className="mx-auto w-[90%] max-w-7xl flex-1 space-y-6 py-6">
+    <main className="mx-auto w-[90%] max-w-7xl flex-1 space-y-6 py-6 text-accent-black">
       <h1 className="text-3xl font-bold">Admin Dashboard</h1>
 
       <Tabs defaultValue="users">
@@ -670,13 +696,13 @@ export default function AdminPageMain({
         </TabsContent>
 
         <TabsContent tabIndex={undefined} value="courses" className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <h2 className="text-2xl font-semibold">Courses & Classes</h2>
             <Input
               placeholder="Search courses and classes..."
               value={classSearchQuery}
               onChange={(e) => setClassSearchQuery(e.target.value)}
-              className="max-w-sm"
+              className="flex-1 px-4 py-2 text-sm sm:max-w-sm"
             />
           </div>
           <div className="space-y-6">
@@ -837,75 +863,79 @@ export default function AdminPageMain({
         <TabsContent
           tabIndex={undefined}
           value="evaluations"
-          className="space-y-6"
+          className="space-y-4"
         >
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">Athlete Evaluations</h2>
-            <Input
-              placeholder="Search evaluations..."
-              value={evaluationSearchQuery}
-              onChange={(e) => setEvaluationSearchQuery(e.target.value)}
-              className="max-w-sm"
-            />
-          </div>
-          <div className="space-y-6">
+          <div className="mt-6 space-y-4">
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+              <h2 className="text-2xl font-semibold">Athlete Evaluations</h2>
+              <Input
+                placeholder="Search organizations or head coaches..."
+                value={evaluationSearchQuery}
+                onChange={(e) => setEvaluationSearchQuery(e.target.value)}
+                className="flex-1 px-4 py-2 text-sm sm:max-w-sm"
+              />
+            </div>
             <Card>
               <CardHeader>
-                <CardTitle>Individual Evaluations</CardTitle>
+                <CardTitle>Athlete Evaluation Results</CardTitle>
               </CardHeader>
               <CardContent>
-                <ScrollArea className="h-[450px] w-full">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[200px]">Athlete</TableHead>
-                        <TableHead className="w-[150px]">Sport</TableHead>
-                        <TableHead className="w-[150px]">Evaluator</TableHead>
-                        <TableHead
-                          className="w-[100px] cursor-pointer"
-                          onClick={() => handleSort("date", "evaluations")}
-                        >
-                          <div className="flex items-center">
-                            Date
-                            {evaluationSortOptions.column === "date" ? (
-                              evaluationSortOptions.direction === "asc" ? (
-                                <ChevronUp className="ml-1" />
-                              ) : (
-                                <ChevronDown className="ml-1" />
-                              )
-                            ) : (
-                              <ChevronsUpDown className="ml-1" />
-                            )}
-                          </div>
-                        </TableHead>
-                        <TableHead className="w-[100px]">Status</TableHead>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[30%]">Organization</TableHead>
+                      <TableHead className="w-[15%]">Head Coach</TableHead>
+                      <TableHead className="w-[15%] text-right">
+                        Active Evaluations
+                      </TableHead>
+                      <TableHead className="w-[15%] text-right">
+                        Total Evaluations
+                      </TableHead>
+                      <TableHead className="w-[15%] text-right">
+                        Revenue
+                      </TableHead>
+                      <TableHead className="w-[10%] text-right">
+                        Actions
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredEvaluations.map((evaluationOrder) => (
+                      <TableRow key={evaluationOrder._id}>
+                        <TableCell className="font-medium">
+                          {evaluationOrder.coach.organization?.name}
+                        </TableCell>
+                        <TableCell>
+                          {getFullname(evaluationOrder.coach)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {getActiveEvaluations(
+                            evaluationOrder.coach.organization!._id,
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {getTotalEvaluations(
+                            evaluationOrder.coach.organization!._id,
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          $
+                          {getOrganizationEvaluationRevenue(
+                            evaluationOrder.coach.organization!._id,
+                          )}
+                        </TableCell>
+                        <TableCell className="flex justify-end">
+                          <Link
+                            href={`/admin/evaluations/${evaluationOrder.coach.organization?._id}`}
+                            className="rounded-md border px-2 py-1 text-xs font-medium duration-200 hover:bg-accent-gray-100"
+                          >
+                            View
+                          </Link>
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {sortedEvaluations.map((evaluation) => (
-                        <TableRow key={evaluation._id}>
-                          <TableCell className="font-medium">
-                            {getFullname(evaluation.athlete)}
-                          </TableCell>
-                          <TableCell>
-                            {evaluation.template?.selectedSport || "N/A"}
-                          </TableCell>
-                          <TableCell>{getFullname(evaluation.coach)}</TableCell>
-                          <TableCell>
-                            {formatEvaluationDate(evaluation.createdAt)}
-                          </TableCell>
-                          <TableCell>
-                            <StatusBadge
-                              variant={getEvaluationStatus(evaluation).variant}
-                            >
-                              {getEvaluationStatus(evaluation).text}
-                            </StatusBadge>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </div>

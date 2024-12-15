@@ -1,4 +1,7 @@
 import connectDB from "@/db/connectDB";
+import AthleteEvaluation, {
+  AthleteEvaluationType,
+} from "@/db/models/AthleteEvaluation";
 import AthleteEvaluationOrder, {
   AthleteEvaluationOrderType,
 } from "@/db/models/AthleteEvaluationOrder";
@@ -62,7 +65,20 @@ export async function fetchAdminData() {
         await AthleteEvaluationOrder.find().populate({
           path: "athlete coach",
           select: "firstName lastName profilePicture",
+          populate: { path: "organization", select: "name logo" },
         }),
+      ),
+    );
+
+    const evaluations: AthleteEvaluationType[] = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluation.find()
+          .populate({
+            path: "athlete coach",
+            select: "firstName lastName profilePicture",
+            populate: { path: "organization", select: "name logo" },
+          })
+          .populate({ path: "order", select: "totalPrice" }),
       ),
     );
 
@@ -72,6 +88,7 @@ export async function fetchAdminData() {
       groupClasses,
       classOrders,
       evaluationOrders,
+      evaluations,
     };
     return { adminData, error: null };
   } catch (error) {
