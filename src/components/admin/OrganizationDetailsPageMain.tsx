@@ -14,139 +14,57 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import StatusBadge from "./StatusBadge";
 import ModalContainer from "../ModalContainer";
 import { UserType } from "@/db/models/User";
 import { getFullname } from "@/lib/utils";
 import { OrganizationType } from "@/db/models/Organization";
 import ManageTeamMemberModal from "./ManageTeamMemberModal";
-
-// Mock data for the organization
-const organizationData = {
-  id: "1",
-  name: "Elite Sports Academy",
-  headCoach: "John Smith",
-  members: 250, // Changed from 1250
-  location: "New York, NY",
-  email: "info@elitesportsacademy.com",
-  phone: "+1 (555) 123-4567",
-  founded: "2010",
-  sports: ["Soccer", "Basketball", "Tennis", "Swimming"],
-  teamMembers: [
-    {
-      id: "1",
-      name: "John Smith",
-      role: "Head Coach",
-      email: "john.s@elitesportsacademy.com",
-      status: "Active",
-    },
-    {
-      id: "2",
-      name: "Sarah Johnson",
-      role: "Assistant Coach",
-      email: "sarah.j@elitesportsacademy.com",
-      status: "Active",
-    },
-    {
-      id: "3",
-      name: "Michael Brown",
-      role: "Assistant Coach",
-      email: "michael.b@elitesportsacademy.com",
-      status: "Active",
-    },
-    {
-      id: "4",
-      name: "Emily Davis",
-      role: "Athlete",
-      email: "emily.d@elitesportsacademy.com",
-      status: "Active",
-    },
-    {
-      id: "5",
-      name: "David Wilson",
-      role: "Athlete",
-      email: "david.w@elitesportsacademy.com",
-      status: "Active",
-    },
-    {
-      id: "6",
-      name: "Jessica Lee",
-      role: "Athlete",
-      email: "jessica.l@elitesportsacademy.com",
-      status: "Active",
-    },
-    {
-      id: "7",
-      name: "Robert Taylor",
-      role: "Athlete",
-      email: "robert.t@elitesportsacademy.com",
-      status: "Active",
-    },
-    {
-      id: "8",
-      name: "Sophia Martinez",
-      role: "Athlete",
-      email: "sophia.m@elitesportsacademy.com",
-      status: "Active",
-    },
-  ],
-  contentModeration: [
-    {
-      id: "1",
-      title: "Training Session 123",
-      filename: "training_session_123.mp4",
-      uploadDate: "2024-03-08",
-      active: true,
-    },
-    {
-      id: "2",
-      title: "Team Celebration",
-      filename: "team_celebration.mp4",
-      uploadDate: "2024-03-06",
-      active: true,
-    },
-    {
-      id: "3",
-      title: "Coach's Strategy Talk",
-      filename: "strategy_talk_2024.mp4",
-      uploadDate: "2024-03-04",
-      active: true,
-    },
-    {
-      id: "4",
-      title: "Youth League Highlights",
-      filename: "youth_league_highlights.mp4",
-      uploadDate: "2024-03-01",
-      active: true,
-    },
-  ],
-};
+import RemoveVideoModal from "./RemoveVideoModal";
+import { GroupClassType, VideoType } from "@/db/models/GroupClass";
 
 export default function OrganizationDetailsPageMain({
-  organization,
-  teamMembers,
+  organizationData,
 }: {
-  organization: OrganizationType;
-  teamMembers: UserType[];
+  organizationData: {
+    organization: OrganizationType;
+    teamMembers: UserType[];
+    courses: GroupClassType[];
+  };
 }) {
   const [activeTab, setActiveTab] = useState("overview");
   const [userToManage, setUserToManage] = useState<UserType | null>(null);
+  const [videoToRemove, setVideoToRemove] = useState<VideoType | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredTeamMembers = teamMembers.filter(
+  const filteredTeamMembers = organizationData.teamMembers.filter(
     (member) =>
       getFullname(member).toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
-  //const [showRemoveConfirmation, setShowRemoveConfirmation] = useState(false) //Removed
+
+  const organizationVideos = organizationData.courses.flatMap(
+    (course) => course.videos,
+  );
+
+  function formatVideoDate(date: Date) {
+    const videoDate = new Date(date);
+    const videoMonth = videoDate.getMonth() + 1;
+    const videoDay = videoDate.getDate();
+    return `${videoDate.getFullYear()}-${videoMonth < 10 ? "0" : ""}${videoMonth}-${videoDay < 10 ? "0" : ""}${videoDay}`;
+  }
+
+  function formatVideoDuration(duration: number) {
+    const date = new Date();
+    date.setMinutes(0);
+    date.setHours(0);
+    date.setSeconds(duration);
+    const videoMinutes = date.getMinutes();
+    const videoSeconds = date.getSeconds();
+    const videoHours = date.getHours();
+
+    return `${videoHours}h ${videoMinutes}m ${videoSeconds}s`;
+  }
 
   return (
     <>
@@ -170,7 +88,7 @@ export default function OrganizationDetailsPageMain({
                           Head Coach
                         </dt>
                         <dd className="mt-1 text-sm text-gray-900">
-                          {getFullname(organization.user)}
+                          {getFullname(organizationData.organization.user)}
                         </dd>
                       </div>
                       <div className="sm:col-span-1">
@@ -178,7 +96,7 @@ export default function OrganizationDetailsPageMain({
                           Founded
                         </dt>
                         <dd className="mt-1 text-sm text-gray-900">
-                          {organization.yearFounded}
+                          {organizationData.organization.yearFounded}
                         </dd>
                       </div>
                       <div className="sm:col-span-1">
@@ -187,7 +105,7 @@ export default function OrganizationDetailsPageMain({
                         </dt>
                         <dd className="mt-1 flex items-center text-sm text-gray-900">
                           <Mail className="mr-2 h-4 w-4" />
-                          {organization.user.email}
+                          {organizationData.organization.user.email}
                         </dd>
                       </div>
                       <div className="sm:col-span-1">
@@ -205,7 +123,7 @@ export default function OrganizationDetailsPageMain({
                         </dt>
                         <dd className="mt-1 flex items-center text-sm text-gray-900">
                           <MapPin className="mr-2 h-4 w-4" />
-                          {organization.location}
+                          {organizationData.organization.location}
                         </dd>
                       </div>
                       <div className="sm:col-span-2">
@@ -213,7 +131,7 @@ export default function OrganizationDetailsPageMain({
                           Primary Sport
                         </dt>
                         <dd className="mt-1 text-sm capitalize text-gray-900">
-                          {organization.primarySport}
+                          {organizationData.organization.primarySport}
                         </dd>
                       </div>
                     </dl>
@@ -251,8 +169,9 @@ export default function OrganizationDetailsPageMain({
                               <TableCell>
                                 <Avatar>
                                   <AvatarImage
-                                    src={`https://i.pravatar.cc/150?u=${member._id}`}
+                                    src={member.profilePicture}
                                     alt={getFullname(member)}
+                                    className="object-cover"
                                   />
                                   <AvatarFallback>
                                     {member.firstName[0]}
@@ -298,67 +217,39 @@ export default function OrganizationDetailsPageMain({
                     <TableHeader>
                       <TableRow>
                         <TableHead>Title</TableHead>
-                        <TableHead>Filename</TableHead>
-                        <TableHead>Upload Date</TableHead>
+                        <TableHead>Duration</TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          Upload Date
+                        </TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead className="pr-6 text-right">
+                          Actions
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {organizationData.contentModeration.map((video) => (
-                        <TableRow key={video.id}>
-                          <TableCell>{video.title}</TableCell>
-                          <TableCell>{video.filename}</TableCell>
-                          <TableCell>{video.uploadDate}</TableCell>
-                          <TableCell>
+                      {organizationVideos.map((video) => (
+                        <TableRow key={video._id}>
+                          <TableCell className="min-w-28">
+                            {video.title}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {formatVideoDuration(video.duration)}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {formatVideoDate(video.createdAt)}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
                             <StatusBadge variant="success">Active</StatusBadge>
                           </TableCell>
                           <TableCell className="text-right">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  className="text-red-600 hover:bg-red-100 hover:text-red-800"
-                                >
-                                  Remove
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>
-                                    Confirm Video Removal: {video.title}
-                                  </DialogTitle>
-                                </DialogHeader>
-                                <div className="grid gap-4 py-4">
-                                  <div className="grid grid-cols-4 items-center gap-4">
-                                    <label
-                                      htmlFor="removalReason"
-                                      className="text-right"
-                                    >
-                                      Reason for Removal
-                                    </label>
-                                    <Textarea
-                                      id="removalReason"
-                                      placeholder="Please provide a reason for removing this video"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="flex justify-end space-x-2">
-                                  <Button variant="outline" onClick={() => {}}>
-                                    Cancel
-                                  </Button>
-                                  <Button
-                                    variant="destructive"
-                                    onClick={() => {
-                                      // Here you would typically call an API to remove the video
-                                      console.log("Video removed");
-                                    }}
-                                  >
-                                    Confirm Removal
-                                  </Button>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
+                            <Button
+                              variant="ghost"
+                              className="text-red-600 hover:bg-red-100 hover:text-red-800"
+                              onClick={() => setVideoToRemove(video)}
+                            >
+                              Remove
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -370,6 +261,17 @@ export default function OrganizationDetailsPageMain({
           </Tabs>
         </div>
       </main>
+
+      <ModalContainer
+        open={!!videoToRemove}
+        closeModal={() => setVideoToRemove(null)}
+      >
+        <RemoveVideoModal
+          video={videoToRemove}
+          closeModal={() => setVideoToRemove(null)}
+        />
+      </ModalContainer>
+
       <ModalContainer
         open={!!userToManage}
         closeModal={() => setUserToManage(null)}

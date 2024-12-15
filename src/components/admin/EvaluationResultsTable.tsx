@@ -90,9 +90,9 @@ export default function EvaluationResultsTable({
 
   function formatEvaluationDate(date: Date) {
     const evaluationDate = new Date(date);
-    const monthOfBirth = evaluationDate.getMonth() + 1;
-    const dayOfBirth = evaluationDate.getDate();
-    return `${evaluationDate.getFullYear()}-${monthOfBirth < 10 ? "0" : ""}${monthOfBirth}-${dayOfBirth < 10 ? "0" : ""}${dayOfBirth}`;
+    const evaluationMonth = evaluationDate.getMonth() + 1;
+    const evaluationDay = evaluationDate.getDate();
+    return `${evaluationDate.getFullYear()}-${evaluationMonth < 10 ? "0" : ""}${evaluationMonth}-${evaluationDay < 10 ? "0" : ""}${evaluationDay}`;
   }
 
   const totalPages = Math.ceil(filteredEvaluations.length / itemsPerPage);

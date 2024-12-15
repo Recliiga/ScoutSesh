@@ -1,16 +1,40 @@
 import connectDB from "@/db/connectDB";
+import GroupClass, { GroupClassType } from "@/db/models/GroupClass";
 import Organization, { OrganizationType } from "@/db/models/Organization";
+import User, { UserType } from "@/db/models/User";
 
-export async function fetchOrganization(organizationId: string) {
+export async function fetchOrganizationData(organizationId: string) {
   try {
     await connectDB();
-    const organization: OrganizationType = JSON.parse(
+
+    const organization: OrganizationType | null = JSON.parse(
       JSON.stringify(
-        await Organization.findById(organizationId).populate("user")
-      )
+        await Organization.findById(organizationId).populate("user"),
+      ),
     );
-    return { organization, error: null };
+
+    if (!organization) throw new Error("Invalid organization ID");
+
+    const teamMembers: UserType[] = JSON.parse(
+      JSON.stringify(
+        await User.find({
+          organization: organizationId,
+        }),
+      ),
+    );
+
+    const courses: GroupClassType[] = JSON.parse(
+      JSON.stringify(
+        await GroupClass.find({
+          user: organization.user._id,
+        }),
+      ),
+    );
+
+    const organizationData = { organization, teamMembers, courses };
+
+    return { organizationData, error: null };
   } catch (err) {
-    return { organization: null, error: (err as Error).message };
+    return { organizationData: null, error: (err as Error).message };
   }
 }

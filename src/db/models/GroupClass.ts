@@ -15,6 +15,8 @@ export interface VideoType extends mongoose.Document {
   title: string;
   url: string;
   duration: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface GroupClassType extends mongoose.Document {
@@ -41,20 +43,23 @@ export interface GroupClassType extends mongoose.Document {
   updatedAt: Date;
 }
 
-const VideoSchema = new mongoose.Schema<VideoType>({
-  title: {
-    type: String,
-    required: [true, "Please provide a title for your video lesson"],
+const VideoSchema = new mongoose.Schema<VideoType>(
+  {
+    title: {
+      type: String,
+      required: [true, "Please provide a title for your video lesson"],
+    },
+    url: {
+      type: String,
+      required: [true, "Please provide a url for your video lesson"],
+    },
+    duration: {
+      type: Number,
+      required: [true, "Please provide the video duration"],
+    },
   },
-  url: {
-    type: String,
-    required: [true, "Please provide a url for your video lesson"],
-  },
-  duration: {
-    type: Number,
-    required: [true, "Please provide the video duration"],
-  },
-});
+  { timestamps: true },
+);
 
 const GroupClassSchema = new mongoose.Schema<GroupClassType>(
   {
@@ -102,7 +107,7 @@ const GroupClassSchema = new mongoose.Schema<GroupClassType>(
     customDuration: { type: Number },
     videos: { type: [VideoSchema], default: [] },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const GroupClass =
