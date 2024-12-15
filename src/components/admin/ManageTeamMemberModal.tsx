@@ -4,6 +4,7 @@ import Select from "../Select";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { getFullname } from "@/lib/utils";
+import { XIcon } from "lucide-react";
 
 export default function ManageTeamMemberModal({
   userToManage,
@@ -75,6 +76,12 @@ export default function ManageTeamMemberModal({
         </Button>
         <Button onClick={handleSave}>Save Changes</Button>
       </div>
+      <button
+        onClick={closeModal}
+        className="absolute right-2 top-2 p-1 text-accent-gray-300 duration-200 hover:text-accent-black"
+      >
+        <XIcon className="h-4 w-4" />
+      </button>
     </div>
   );
 }
