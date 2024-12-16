@@ -28,7 +28,7 @@ export default async function OrganizationDetailsPage({
             {organizationData.organization.name}
           </h1>
           <Badge variant="secondary" className="text-lg">
-            Members: {24}
+            Members: {organizationData.teamMembers.length}
           </Badge>
         </div>
       </header>

@@ -5,7 +5,7 @@ import User, { UserStatusType, UserType } from "@/db/models/User";
 
 type UpdateDataType = {
   status: UserStatusType;
-  adminNote: string;
+  note: string;
 };
 
 export async function updateTeamMember(
@@ -26,10 +26,10 @@ export async function updateTeamMember(
       user: userId,
     });
     if (updatedAdminNote) {
-      updatedAdminNote.note = updateData.adminNote;
+      updatedAdminNote.note = updateData.note;
       await updatedAdminNote.save();
     } else {
-      await AdminNote.create({ user: userId, note: updateData.adminNote });
+      await AdminNote.create({ user: userId, note: updateData.note });
     }
 
     return {

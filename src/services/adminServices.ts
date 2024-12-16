@@ -1,4 +1,5 @@
 import connectDB from "@/db/connectDB";
+import AdminNote, { AdminNoteType } from "@/db/models/AdminNotes";
 import AthleteEvaluation, {
   AthleteEvaluationType,
 } from "@/db/models/AthleteEvaluation";
@@ -146,7 +147,20 @@ export async function fetchOrganizationData(organizationId: string) {
       ),
     );
 
-    const organizationData = { organization, teamMembers, courses };
+    const allAdminNotes: AdminNoteType[] = JSON.parse(
+      JSON.stringify(
+        await AdminNote.find().populate({
+          path: "user",
+          select: "organization",
+        }),
+      ),
+    );
+
+    const adminNotes = allAdminNotes.filter(
+      (adminNote) => String(adminNote.user.organization) === organizationId,
+    );
+
+    const organizationData = { organization, teamMembers, courses, adminNotes };
 
     return { organizationData, error: null };
   } catch (err) {

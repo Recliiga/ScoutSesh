@@ -5,10 +5,12 @@ import { Textarea } from "../ui/textarea";
 import { XIcon } from "lucide-react";
 
 export default function RemoveVideoModal({
+  open,
   video,
   closeModal,
 }: {
-  video: VideoType | null;
+  open: boolean;
+  video: VideoType;
   closeModal(): void;
 }) {
   function handleRemoveVideo() {
@@ -19,10 +21,10 @@ export default function RemoveVideoModal({
 
   return (
     <div
-      className={`absolute left-[50%] top-[50%] w-[90%] max-w-lg -translate-x-[50%] -translate-y-[50%] rounded-md bg-white p-4 ${video ? "visible scale-100 opacity-100" : "invisible scale-90 opacity-0"}`}
+      className={`absolute left-[50%] top-[50%] w-[90%] max-w-lg -translate-x-[50%] -translate-y-[50%] rounded-md bg-white p-4 ${open ? "visible scale-100 opacity-100" : "invisible scale-90 opacity-0"}`}
       onClick={(e) => e.stopPropagation()}
     >
-      <h3 className="font-semibold">Confirm Video Removal: {video?.title}</h3>
+      <h3 className="font-semibold">Confirm Video Removal: {video.title}</h3>
       <div className="grid gap-4 py-4">
         <div className="flex flex-col gap-2">
           <label htmlFor="removalReason">Reason for Removal</label>

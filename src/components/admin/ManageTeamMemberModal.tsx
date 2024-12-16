@@ -8,20 +8,23 @@ import { XIcon } from "lucide-react";
 import { updateTeamMember } from "@/actions/adminActions";
 import Error from "../AuthError";
 import LoadingIndicator from "../LoadingIndicator";
+import { AdminNoteType } from "@/db/models/AdminNotes";
 
 export default function ManageTeamMemberModal({
   open,
   user,
   closeModal,
   setTeamMembers,
+  adminNote,
 }: {
   open: boolean;
   user: UserType;
   closeModal: () => void;
   setTeamMembers: React.Dispatch<React.SetStateAction<UserType[]>>;
+  adminNote?: AdminNoteType;
 }) {
   const [status, setStatus] = useState(user.status);
-  const [adminNote, setAdminNote] = useState("");
+  const [note, setNote] = useState(adminNote?.note || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +34,7 @@ export default function ManageTeamMemberModal({
     if (hasChanged) {
       setError(null);
       setLoading(true);
-      const updateData = { status, adminNote };
+      const updateData = { status, note };
       const { updatedUser, error } = await updateTeamMember(
         user._id,
         updateData,
@@ -75,8 +78,8 @@ export default function ManageTeamMemberModal({
         <div className="flex flex-col gap-2">
           <label htmlFor="notes">Admin Notes</label>
           <Textarea
-            value={adminNote}
-            onChange={(e) => setAdminNote(e.target.value)}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
             id="notes"
             rows={3}
             placeholder="Add any relevant notes about this user"
@@ -85,7 +88,13 @@ export default function ManageTeamMemberModal({
         </div>
       </div>
       <div className="flex justify-end space-x-2">
-        <Button onClick={closeModal} variant="outline">
+        <Button
+          onClick={() => {
+            setNote(adminNote?.note || "");
+            closeModal();
+          }}
+          variant="outline"
+        >
           Cancel
         </Button>
         <Button disabled={loading} onClick={handleSave}>

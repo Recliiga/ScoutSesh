@@ -22,6 +22,7 @@ import { OrganizationType } from "@/db/models/Organization";
 import ManageTeamMemberModal from "./ManageTeamMemberModal";
 import RemoveVideoModal from "./RemoveVideoModal";
 import { GroupClassType, VideoType } from "@/db/models/GroupClass";
+import { AdminNoteType } from "@/db/models/AdminNotes";
 
 export default function OrganizationDetailsPageMain({
   organizationData,
@@ -30,6 +31,7 @@ export default function OrganizationDetailsPageMain({
     organization: OrganizationType;
     teamMembers: UserType[];
     courses: GroupClassType[];
+    adminNotes: AdminNoteType[];
   };
 }) {
   const [activeTab, setActiveTab] = useState("overview");
@@ -76,7 +78,7 @@ export default function OrganizationDetailsPageMain({
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="moderation">Content Moderation</TabsTrigger>
             </TabsList>
-            <TabsContent value="overview">
+            <TabsContent tabIndex={undefined} value="overview">
               <div className="grid grid-cols-1 gap-6">
                 <Card>
                   <CardHeader>
@@ -213,6 +215,10 @@ export default function OrganizationDetailsPageMain({
                                 >
                                   <ManageTeamMemberModal
                                     user={member}
+                                    adminNote={organizationData.adminNotes.find(
+                                      (adminNote) =>
+                                        adminNote.user._id === member._id,
+                                    )}
                                     open={userToManage?._id === member._id}
                                     closeModal={() => setUserToManage(null)}
                                     setTeamMembers={setTeamMembers}
@@ -229,7 +235,7 @@ export default function OrganizationDetailsPageMain({
               </div>
             </TabsContent>
 
-            <TabsContent value="moderation">
+            <TabsContent tabIndex={undefined} value="moderation">
               <Card>
                 <CardHeader>
                   <CardTitle>Video Content Moderation</CardTitle>
@@ -272,6 +278,16 @@ export default function OrganizationDetailsPageMain({
                             >
                               Remove
                             </Button>
+                            <ModalContainer
+                              open={videoToRemove?._id === video._id}
+                              closeModal={() => setVideoToRemove(null)}
+                            >
+                              <RemoveVideoModal
+                                open={videoToRemove?._id === video._id}
+                                video={video}
+                                closeModal={() => setVideoToRemove(null)}
+                              />
+                            </ModalContainer>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -283,16 +299,6 @@ export default function OrganizationDetailsPageMain({
           </Tabs>
         </div>
       </main>
-
-      <ModalContainer
-        open={!!videoToRemove}
-        closeModal={() => setVideoToRemove(null)}
-      >
-        <RemoveVideoModal
-          video={videoToRemove}
-          closeModal={() => setVideoToRemove(null)}
-        />
-      </ModalContainer>
     </>
   );
 }
