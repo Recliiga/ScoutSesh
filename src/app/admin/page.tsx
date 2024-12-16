@@ -2,6 +2,8 @@ import React from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminPageMain from "@/components/admin/AdminPageMain";
 import { fetchAdminData } from "@/services/adminServices";
+import AdminLoginPage from "@/components/admin/AdminLoginPage";
+import { getAdminSession } from "@/services/authServices";
 
 const mockData = {
   users: {
@@ -126,13 +128,19 @@ const mockData = {
 };
 
 export default async function AdminPage() {
+  const { isAuthenticated } = await getAdminSession();
+
   const { adminData, error } = await fetchAdminData();
   if (error !== null) throw new Error(error);
 
   return (
     <div className="flex flex-1 flex-col">
-      <AdminHeader />
-      <AdminPageMain mockData={mockData} adminData={adminData} />
+      <AdminHeader isAuthenticated={isAuthenticated} />
+      {isAuthenticated ? (
+        <AdminPageMain mockData={mockData} adminData={adminData} />
+      ) : (
+        <AdminLoginPage />
+      )}
     </div>
   );
 }

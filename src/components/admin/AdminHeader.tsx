@@ -1,9 +1,14 @@
 import Link from "next/link";
 import React from "react";
 import { Button } from "../ui/button";
-import { BellIcon, Users } from "lucide-react";
+import { BellIcon } from "lucide-react";
+import AdminNavUser from "./AdminNavUser";
 
-export default function AdminHeader() {
+export default function AdminHeader({
+  isAuthenticated,
+}: {
+  isAuthenticated: boolean;
+}) {
   return (
     <header className="flex h-16 items-center justify-between border-b px-4">
       <Link href="/admin" className="text-2xl font-bold text-green-600">
@@ -14,10 +19,7 @@ export default function AdminHeader() {
           <BellIcon className="h-5 w-5" />
           <span className="sr-only">Notifications</span>
         </Button>
-        <Button variant="ghost" size="icon">
-          <Users className="h-5 w-5" />
-          <span className="sr-only">Users</span>
-        </Button>
+        <AdminNavUser isAuthenticated={isAuthenticated} />
       </div>
     </header>
   );
