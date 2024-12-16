@@ -142,6 +142,7 @@ export default function LiveClassCard({
             sizes="(max-width: 768px) 720px, 320px"
           />
         </div>
+
         <div className="flex flex-1 flex-col justify-between">
           <div className="space-y-2">
             <div className="flex flex-col items-start justify-between gap-2 md:flex-row">
@@ -156,6 +157,7 @@ export default function LiveClassCard({
             <p className="line-clamp-2 text-sm text-muted-foreground">
               {liveClass.description}
             </p>
+
             {!forAthlete && students.length > 0 && (
               <div className="flex items-start text-sm text-muted-foreground">
                 <PersonIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
@@ -167,6 +169,7 @@ export default function LiveClassCard({
                 </span>
               </div>
             )}
+
             {forAthlete && liveClass.coaches.length > 0 && (
               <div className="flex items-start text-sm text-muted-foreground">
                 <PersonIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
@@ -178,17 +181,16 @@ export default function LiveClassCard({
                 </span>
               </div>
             )}
+
             <div className="flex items-start text-sm text-muted-foreground">
               <TicketIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
               <span>
-                {
+                {liveClass.isRecurring &&
                   getDatesBetween(
                     liveClass.startDate,
                     liveClass.endDate,
                     liveClass.repeatFrequency,
-                  ).length
-                }{" "}
-                Lessons •{" "}
+                  ).length + " Lessons •"}{" "}
                 {liveClass.skillLevels.length === 3
                   ? "All Levels"
                   : liveClass.skillLevels
@@ -196,6 +198,7 @@ export default function LiveClassCard({
                       .join(" and ")}
               </span>
             </div>
+
             {liveClass.isRecurring && (
               <div className="flex items-start text-sm text-muted-foreground">
                 <CalendarIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
@@ -206,6 +209,7 @@ export default function LiveClassCard({
                 </span>
               </div>
             )}
+
             <div>
               <div
                 className={`text-sm ${
@@ -241,6 +245,7 @@ export default function LiveClassCard({
               )}
             </div>
           </div>
+
           <div className="mt-4 flex flex-col justify-between gap-2 min-[360px]:flex-row min-[360px]:items-center">
             <span className="text-xl font-bold">${liveClass.price}</span>
             {forAthlete ? (

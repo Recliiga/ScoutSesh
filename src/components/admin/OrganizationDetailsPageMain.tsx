@@ -36,8 +36,9 @@ export default function OrganizationDetailsPageMain({
   const [userToManage, setUserToManage] = useState<UserType | null>(null);
   const [videoToRemove, setVideoToRemove] = useState<VideoType | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [teamMembers, setTeamMembers] = useState(organizationData.teamMembers);
 
-  const filteredTeamMembers = organizationData.teamMembers.filter(
+  const filteredTeamMembers = teamMembers.filter(
     (member) =>
       getFullname(member).toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.email.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -83,7 +84,7 @@ export default function OrganizationDetailsPageMain({
                   </CardHeader>
                   <CardContent>
                     <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
-                      <div className="sm:col-span-1">
+                      <div>
                         <dt className="text-sm font-medium text-gray-500">
                           Head Coach
                         </dt>
@@ -91,7 +92,7 @@ export default function OrganizationDetailsPageMain({
                           {getFullname(organizationData.organization.user)}
                         </dd>
                       </div>
-                      <div className="sm:col-span-1">
+                      <div>
                         <dt className="text-sm font-medium text-gray-500">
                           Founded
                         </dt>
@@ -99,7 +100,7 @@ export default function OrganizationDetailsPageMain({
                           {organizationData.organization.yearFounded}
                         </dd>
                       </div>
-                      <div className="sm:col-span-1">
+                      <div>
                         <dt className="text-sm font-medium text-gray-500">
                           Email
                         </dt>
@@ -108,7 +109,7 @@ export default function OrganizationDetailsPageMain({
                           {organizationData.organization.user.email}
                         </dd>
                       </div>
-                      <div className="sm:col-span-1">
+                      <div>
                         <dt className="text-sm font-medium text-gray-500">
                           Phone
                         </dt>
@@ -117,7 +118,7 @@ export default function OrganizationDetailsPageMain({
                           N/A
                         </dd>
                       </div>
-                      <div className="sm:col-span-1">
+                      <div>
                         <dt className="text-sm font-medium text-gray-500">
                           Location
                         </dt>
@@ -126,7 +127,7 @@ export default function OrganizationDetailsPageMain({
                           {organizationData.organization.location}
                         </dd>
                       </div>
-                      <div className="sm:col-span-2">
+                      <div>
                         <dt className="text-sm font-medium text-gray-500">
                           Primary Sport
                         </dt>
@@ -185,8 +186,18 @@ export default function OrganizationDetailsPageMain({
                               <TableCell>{member.role}</TableCell>
                               <TableCell>{member.email}</TableCell>
                               <TableCell>
-                                <StatusBadge variant={"success"}>
-                                  {"Active"}
+                                <StatusBadge
+                                  variant={
+                                    member.status === "Active"
+                                      ? "success"
+                                      : member.status === "Suspended"
+                                        ? "warning"
+                                        : member.status === "Banned"
+                                          ? "destructive"
+                                          : "default"
+                                  }
+                                >
+                                  {member.status}
                                 </StatusBadge>
                               </TableCell>
                               <TableCell className="text-right">
@@ -196,6 +207,17 @@ export default function OrganizationDetailsPageMain({
                                 >
                                   Manage
                                 </Button>
+                                <ModalContainer
+                                  open={userToManage?._id === member._id}
+                                  closeModal={() => setUserToManage(null)}
+                                >
+                                  <ManageTeamMemberModal
+                                    user={member}
+                                    open={userToManage?._id === member._id}
+                                    closeModal={() => setUserToManage(null)}
+                                    setTeamMembers={setTeamMembers}
+                                  />
+                                </ModalContainer>
                               </TableCell>
                             </TableRow>
                           ))}
@@ -269,16 +291,6 @@ export default function OrganizationDetailsPageMain({
         <RemoveVideoModal
           video={videoToRemove}
           closeModal={() => setVideoToRemove(null)}
-        />
-      </ModalContainer>
-
-      <ModalContainer
-        open={!!userToManage}
-        closeModal={() => setUserToManage(null)}
-      >
-        <ManageTeamMemberModal
-          userToManage={userToManage}
-          closeModal={() => setUserToManage(null)}
         />
       </ModalContainer>
     </>

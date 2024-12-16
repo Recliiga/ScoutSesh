@@ -18,6 +18,9 @@ export type PrimarySportType =
   | "boxing"
   | "martial_arts";
 
+export type UserRoleType = "Athlete" | "Assistant Coach" | "Head Coach";
+export type UserStatusType = "Active" | "Suspended" | "Banned";
+
 export interface UserType extends mongoose.Document {
   _id: string;
   firstName: string;
@@ -25,14 +28,14 @@ export interface UserType extends mongoose.Document {
   email: string;
   password: string;
   profilePicture: string;
-  role: "Athlete" | "Assistant Coach" | "Head Coach";
+  role: UserRoleType;
   DOB: Date;
   location: string;
   primarySport: PrimarySportType;
   experience: number;
   bio: string;
   organization?: OrganizationType;
-  status: "Active" | "Suspended" | "Banned";
+  status: UserStatusType;
   createdAt: Date;
   updatedAt: Date;
 }

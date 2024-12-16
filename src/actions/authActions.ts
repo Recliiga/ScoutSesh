@@ -2,7 +2,7 @@
 
 import connectDB from "@/db/connectDB";
 import Organization from "@/db/models/Organization";
-import User from "@/db/models/User";
+import User, { UserType } from "@/db/models/User";
 import { getUserIdFromCookies } from "@/lib/utils";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -31,8 +31,18 @@ export async function login(formData: FormData) {
     if (!password) return { error: "Please enter your Password" };
 
     // Get user object from the database
-    const user = await User.findOne({ email });
+    const user: UserType | null = await User.findOne({ email });
     if (!user) return { error: "Invalid email and password combination" };
+    if (user.status === "Banned")
+      return {
+        error:
+          "Your account has been banned. Please contact support if you believe this is a mistake.",
+      };
+    if (user.status === "Suspended")
+      return {
+        error:
+          "Your account has been suspended. Please contact support for more information or assistance.",
+      };
 
     // Compare raw password and hashed password
     const passwordIsCorrect = await bcrypt.compare(password, user.password);

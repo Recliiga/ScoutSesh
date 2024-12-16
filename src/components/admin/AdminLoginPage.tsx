@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import LoadingIndicator from "../LoadingIndicator";
 import Error from "../AuthError";
-import { loginAdmin } from "@/actions/adminActions";
+import { loginAdmin } from "@/actions/adminAuthActions";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");

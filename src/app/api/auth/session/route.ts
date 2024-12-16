@@ -1,6 +1,6 @@
 import connectDB from "@/db/connectDB";
 import jwt from "jsonwebtoken";
-import User from "@/db/models/User";
+import User, { UserType } from "@/db/models/User";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -12,14 +12,17 @@ export async function GET(request: NextRequest) {
 
     const userId = payload.userId;
     await connectDB();
-    const user = await User.findById(userId).populate("organization");
+    const user: UserType | null =
+      await User.findById(userId).populate("organization");
+
     if (!user) throw new Error("User dosen't exists");
+    if (user.status !== "Active") throw new Error("User account not active");
 
     return NextResponse.json({ user, error: null });
   } catch (error) {
     return NextResponse.json(
       { user: null, error: (error as Error).message },
-      { status: 401 }
+      { status: 401 },
     );
   }
 }

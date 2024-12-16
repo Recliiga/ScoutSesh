@@ -14,6 +14,8 @@ export async function fetchUser(userId: string) {
     );
 
     if (!user) return { user: null, error: "Invalid user ID" };
+    if (user.status !== "Active")
+      return { user: null, error: "User is not active" };
 
     return { user, error: null };
   } catch (err) {
@@ -29,6 +31,7 @@ export async function fetchTeamMembers(organizationId: string) {
       JSON.stringify(
         await User.find({
           organization: organizationId,
+          status: "Active",
         }),
       ),
     );

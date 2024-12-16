@@ -12,9 +12,8 @@ export default async function CourseViewPage() {
   if (user.role === "Head Coach") {
     const { groupClasses, error } = await fetchGroupClassesByCoach(user._id);
     if (error !== null) notFound();
-    const { groupClassOrders, error: orderError } = await fetchCourseOrders(
-      groupClasses
-    );
+    const { groupClassOrders, error: orderError } =
+      await fetchCourseOrders(groupClasses);
     if (orderError !== null) notFound();
 
     return (
@@ -22,7 +21,7 @@ export default async function CourseViewPage() {
         groupClassOrders={groupClassOrders}
         courses={groupClasses.filter((course) => course.courseType === "video")}
         liveClasses={groupClasses.filter(
-          (course) => course.courseType === "live"
+          (course) => course.courseType === "live",
         )}
       />
     );
@@ -31,13 +30,13 @@ export default async function CourseViewPage() {
   if (user.role === "Athlete") {
     if (!user.organization)
       return (
-        <div className="flex-1 flex-center">
+        <div className="flex-center flex-1">
           You are not connected to an organization yet
         </div>
       );
 
     const { groupClasses, error } = await fetchGroupClassesByCoach(
-      String(user.organization.user)
+      String(user.organization.user),
     );
     if (error !== null) throw new Error(error);
 
@@ -55,7 +54,7 @@ export default async function CourseViewPage() {
         userOrders={userOrders}
         courses={groupClasses.filter((course) => course.courseType === "video")}
         liveClasses={groupClasses.filter(
-          (course) => course.courseType === "live"
+          (course) => course.courseType === "live",
         )}
       />
     );

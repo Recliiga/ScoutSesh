@@ -1,4 +1,4 @@
-import { logoutAdmin } from "@/actions/adminActions";
+import { logoutAdmin } from "@/actions/adminAuthActions";
 import { useState } from "react";
 import { LogOutIcon, XIcon } from "lucide-react";
 import { Button } from "../ui/button";

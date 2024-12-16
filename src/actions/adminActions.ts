@@ -1,39 +1,42 @@
 "use server";
+import connectDB from "@/db/connectDB";
+import AdminNote, { AdminNoteType } from "@/db/models/AdminNotes";
+import User, { UserStatusType, UserType } from "@/db/models/User";
 
-import jwt from "jsonwebtoken";
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+type UpdateDataType = {
+  status: UserStatusType;
+  adminNote: string;
+};
 
-export async function loginAdmin(email: string, password: string) {
-  const cookieStore = await cookies();
-
+export async function updateTeamMember(
+  userId: string,
+  updateData: UpdateDataType,
+) {
   try {
-    if (!email) return { error: "Please enter a valid Email" };
-    if (!password) return { error: "Please enter your Password" };
+    await connectDB();
 
-    if (
-      !(
-        email === "admin@scoutsesh.com" &&
-        password == process.env.ADMIN_PASSWORD
-      )
-    )
-      return { error: "Invalid email and password combination" };
+    const updatedUser: UserType | null = await User.findById(userId);
+    if (!updatedUser) throw new Error("Invalid User");
 
-    const token = jwt.sign({ isAuthenticated: true }, process.env.JWT_SECRET!);
-    cookieStore.set("adminToken", token, {
-      httpOnly: true,
-      maxAge: 60 * 60 * 24,
+    updatedUser.status = updateData.status;
+
+    await updatedUser.save();
+
+    const updatedAdminNote: AdminNoteType | null = await AdminNote.findOne({
+      user: userId,
     });
+    if (updatedAdminNote) {
+      updatedAdminNote.note = updateData.adminNote;
+      await updatedAdminNote.save();
+    } else {
+      await AdminNote.create({ user: userId, note: updateData.adminNote });
+    }
 
-    return { error: null };
+    return {
+      updatedUser: JSON.parse(JSON.stringify(updatedUser)),
+      error: null,
+    };
   } catch (error) {
-    console.log({ error: (error as Error).message });
-    return { error: "An unexpected error occured" };
+    return { updatedUser: null, error: (error as Error).message };
   }
-}
-
-export async function logoutAdmin() {
-  const cookieStore = await cookies();
-  cookieStore.delete("adminToken");
-  revalidatePath("/admin", "layout");
 }

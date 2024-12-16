@@ -23,7 +23,7 @@ export default async function GroupClassesPage() {
       sessions: getDatesBetween(
         liveClass.startDate,
         liveClass.endDate,
-        liveClass.repeatFrequency
+        liveClass.repeatFrequency,
       ),
       time: liveClass.startTime,
     }));
@@ -41,7 +41,7 @@ export default async function GroupClassesPage() {
     sessions: getDatesBetween(
       liveClass.startDate,
       liveClass.endDate,
-      liveClass.repeatFrequency
+      liveClass.repeatFrequency,
     ),
     time: liveClass.startTime,
   }));

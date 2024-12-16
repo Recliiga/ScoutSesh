@@ -17,7 +17,6 @@ import {
   UserIcon,
   BuildingIcon,
   BookOpenIcon,
-  MessageSquareIcon,
   CheckCircle,
   CameraIcon,
 } from "lucide-react";
@@ -200,18 +199,20 @@ export default function OrganizationProfile({
                     {organizationData.user.firstName}{" "}
                     {organizationData.user.lastName}
                   </p>
-                  <Link
-                    href={`/dashboard/profile/${organizationData.user._id}`}
-                    passHref
-                  >
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="ml-2 h-auto rounded-full px-3 py-1 text-xs"
+                  {organizationData.user.status === "Active" ? (
+                    <Link
+                      href={`/dashboard/profile/${organizationData.user._id}`}
+                      passHref
                     >
-                      View Profile
-                    </Button>
-                  </Link>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="ml-2 h-auto rounded-full px-3 py-1 text-xs"
+                      >
+                        View Profile
+                      </Button>
+                    </Link>
+                  ) : null}
                 </div>
                 <p className="font-semibold text-[#14a800]">
                   {organizationData.user.role}
@@ -261,10 +262,10 @@ export default function OrganizationProfile({
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <Button className="bg-[#14a800] px-6 py-2 text-lg text-white hover:bg-[#14a800]/90">
+                {/* <Button className="bg-[#14a800] px-6 py-2 text-lg text-white hover:bg-[#14a800]/90">
                   <MessageSquareIcon className="mr-2 h-5 w-5" />
                   Message
-                </Button>
+                </Button> */}
                 {isOrganizationHeadCoach ? (
                   <Button
                     variant="outline"

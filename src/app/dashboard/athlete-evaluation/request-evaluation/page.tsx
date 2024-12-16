@@ -15,16 +15,15 @@ export default async function RequestEvaluationPage() {
       </div>
     );
 
-  const { pricingPlan, error } = await fetchCoachPricingPlan(
+  const { pricingPlan } = await fetchCoachPricingPlan(
     String(user.organization.user),
   );
-  if (error !== null) throw new Error(error);
 
   const clubs = pricingPlan
     ? [
         {
           plan: pricingPlan,
-          organization: user.organization!,
+          organization: user.organization,
         },
       ]
     : [];
