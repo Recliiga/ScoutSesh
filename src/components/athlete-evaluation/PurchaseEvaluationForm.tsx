@@ -35,7 +35,7 @@ function generateEvaluationDates(
   numberOfDates: number,
   frequency: FrequencyType,
 ) {
-  const dates = [];
+  const dates: Date[] = [];
   const currentDate = new Date(startDate);
 
   while (dates.length < numberOfDates) {

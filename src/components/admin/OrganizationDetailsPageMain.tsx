@@ -46,9 +46,17 @@ export default function OrganizationDetailsPageMain({
       member.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const organizationVideos = organizationData.courses.flatMap(
-    (course) => course.videos,
+  const [organizationVideos, setOrganizationVideos] = useState(
+    organizationData.courses.flatMap((course) => course.videos),
   );
+
+  function getVideoLiveClassId(videoId: string) {
+    return (
+      organizationData.courses.find((course) =>
+        course.videos.some((vid) => vid._id === videoId),
+      )?._id || ""
+    );
+  }
 
   function formatVideoDate(date: Date) {
     const videoDate = new Date(date);
@@ -285,7 +293,9 @@ export default function OrganizationDetailsPageMain({
                               <RemoveVideoModal
                                 open={videoToRemove?._id === video._id}
                                 video={video}
+                                liveClassId={getVideoLiveClassId(video._id)}
                                 closeModal={() => setVideoToRemove(null)}
+                                setOrganizationVideos={setOrganizationVideos}
                               />
                             </ModalContainer>
                           </TableCell>

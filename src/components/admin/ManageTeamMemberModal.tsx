@@ -89,6 +89,7 @@ export default function ManageTeamMemberModal({
       </div>
       <div className="flex justify-end space-x-2">
         <Button
+          disabled={loading}
           onClick={() => {
             setNote(adminNote?.note || "");
             closeModal();

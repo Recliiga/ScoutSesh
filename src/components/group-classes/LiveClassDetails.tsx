@@ -5,11 +5,13 @@ import { format, isFuture } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, Clock } from "lucide-react";
+import { CalendarIcon, Clock, EditIcon } from "lucide-react";
 import Image from "next/image";
 import { PersonIcon } from "@/components/group-classes/CardIcons";
 import { GroupClassType } from "@/db/models/GroupClass";
 import { getDatesBetween, getFullname } from "@/lib/utils";
+import { UserType } from "@/db/models/User";
+import Link from "next/link";
 
 function getOrdinalSuffix(day: number): string {
   if (day > 3 && day < 21) return "th";
@@ -27,14 +29,19 @@ function getOrdinalSuffix(day: number): string {
 
 export default function LiveClassDetails({
   liveClass,
+  user,
 }: {
   liveClass: GroupClassType;
+  user: UserType;
 }) {
-  const courseSessions = getDatesBetween(
-    liveClass.startDate,
-    liveClass.endDate,
-    liveClass.repeatFrequency
-  );
+  const courseSessions = liveClass.isRecurring
+    ? getDatesBetween(
+        liveClass.startDate,
+        liveClass.endDate,
+        liveClass.repeatFrequency,
+      )
+    : [new Date(liveClass.startDate)];
+
   const pastSessions = courseSessions
     .filter((date) => date !== null && !isFuture(date))
     .sort((a, b) => a.getTime() - b.getTime());
@@ -49,15 +56,15 @@ export default function LiveClassDetails({
   const startTime = new Date();
   startTime.setHours(
     Number(liveClass.startTime.hours),
-    Number(liveClass.startTime.mins)
+    Number(liveClass.startTime.mins),
   );
   const endTime = new Date();
   endTime.setHours(
     Number(liveClass.startTime.hours),
-    Number(liveClass.startTime.mins)
+    Number(liveClass.startTime.mins),
   );
   endTime.setMinutes(
-    startTime.getMinutes() + (liveClass.duration || liveClass.customDuration)
+    startTime.getMinutes() + (liveClass.duration || liveClass.customDuration),
   );
 
   function formatTime(date: Date) {
@@ -73,11 +80,20 @@ export default function LiveClassDetails({
   }
 
   return (
-    <main className="flex-1 w-[90%] max-w-5xl mx-auto py-6">
-      <div className="flex justify-end mb-4">
+    <main className="mx-auto w-[90%] max-w-5xl flex-1 py-6">
+      <div className="mb-4 flex justify-between">
+        {user._id === liveClass.user._id ? (
+          <Link
+            href={`/dashboard/group-classes/courses/${liveClass._id}/edit`}
+            className="flex w-fit items-center gap-2 whitespace-nowrap rounded-md border px-4 py-2 text-sm font-medium duration-200 hover:bg-accent-gray-100"
+          >
+            <EditIcon className="h-4 w-4" />
+            Edit Course
+          </Link>
+        ) : null}
         <Button
           variant="outline"
-          className="text-black hover:bg-gray-100"
+          className="ml-auto text-black hover:bg-gray-100"
           onClick={() => window.history.back()}
         >
           Back
@@ -85,32 +101,33 @@ export default function LiveClassDetails({
       </div>
       <Card>
         <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="relative w-full md:w-1/3 aspect-video md:h-auto">
+          <div className="flex flex-col gap-6 md:flex-row">
+            <div className="relative aspect-video w-full md:h-auto md:w-1/3">
               <Image
                 src={liveClass.thumbnail}
                 alt={liveClass.title}
                 fill
-                className="w-full h-full object-cover rounded"
+                className="h-full w-full rounded object-cover"
               />
             </div>
-            <div className="flex-1 flex flex-col gap-2">
+            <div className="flex flex-1 flex-col gap-2">
               <div className="flex items-start gap-2">
-                <h1 className="text-lg sm:text-xl font-bold">
+                <h1 className="text-lg font-bold sm:text-xl">
                   {liveClass.title}
                 </h1>
+
                 <Badge
                   variant="secondary"
-                  className="bg-red-500 text-white whitespace-nowrap"
+                  className="mt-1 whitespace-nowrap bg-red-500 text-white hover:bg-red-500"
                 >
                   Live Class
                 </Badge>
               </div>
-              <p className="text-muted-foreground text-sm line-clamp-2">
+              <p className="line-clamp-2 text-sm text-muted-foreground">
                 {liveClass.description}
               </p>
               <div className="flex items-start text-sm text-muted-foreground">
-                <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+                <PersonIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
                 <span>
                   {liveClass.coaches
                     .map((coach) => getFullname(coach))
@@ -118,14 +135,14 @@ export default function LiveClassDetails({
                 </span>
               </div>
               <div className="flex items-start text-sm text-muted-foreground">
-                <Clock className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+                <Clock className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
                 <span>
                   {formatTime(startTime)}-{formatTime(endTime)}
                 </span>
               </div>
               {nextSession && (
                 <div className="flex items-start text-sm font-medium">
-                  <CalendarIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0 text-green-600" />
+                  <CalendarIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />
                   <span>
                     Next session: {format(nextSession, "MMMM d")}
                     <sup>{getOrdinalSuffix(nextSession.getDate())}</sup>
@@ -135,7 +152,7 @@ export default function LiveClassDetails({
                 </div>
               )}
               {hasUpcomingSessions ? (
-                <Button className="bg-green-500 hover:bg-green-600 text-white mt-2">
+                <Button className="mt-2 bg-green-500 text-white hover:bg-green-600">
                   Join Virtual Session
                 </Button>
               ) : (
@@ -147,8 +164,8 @@ export default function LiveClassDetails({
           </div>
         </CardContent>
       </Card>
-      <Card className="mt-6 p-4 sm:p-6 text-accent-black">
-        <CardHeader className="p-0 mb-4">
+      <Card className="mt-6 p-4 text-accent-black sm:p-6">
+        <CardHeader className="mb-4 p-0">
           <CardTitle>All Sessions</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -158,7 +175,7 @@ export default function LiveClassDetails({
                 key={index}
                 className={`flex items-center gap-2 text-gray-400`}
               >
-                <CalendarIcon className="w-4 h-4" />
+                <CalendarIcon className="h-4 w-4" />
                 <span>
                   {format(session, "MMMM d")}
                   <sup>{getOrdinalSuffix(session.getDate())}</sup>
@@ -170,7 +187,7 @@ export default function LiveClassDetails({
             ))}
             {upcomingSessions.map((session, index) => (
               <li key={index} className={`flex items-center gap-2`}>
-                <CalendarIcon className="w-4 h-4" />
+                <CalendarIcon className="h-4 w-4" />
                 <span>
                   {format(session, "MMMM d")}
                   <sup>{getOrdinalSuffix(session.getDate())}</sup>

@@ -1,6 +1,7 @@
 "use server";
 import connectDB from "@/db/connectDB";
 import AdminNote, { AdminNoteType } from "@/db/models/AdminNotes";
+import GroupClass, { GroupClassType } from "@/db/models/GroupClass";
 import User, { UserStatusType, UserType } from "@/db/models/User";
 
 type UpdateDataType = {
@@ -38,5 +39,26 @@ export async function updateTeamMember(
     };
   } catch (error) {
     return { updatedUser: null, error: (error as Error).message };
+  }
+}
+
+export async function removeVideo(videoId: string, liveClassId: string) {
+  try {
+    await connectDB();
+
+    const updatedLiveClass: GroupClassType | null =
+      await GroupClass.findById(liveClassId);
+    if (!updatedLiveClass) return { error: "Invalid Video ID" };
+
+    updatedLiveClass.videos = updatedLiveClass.videos.filter(
+      (video) => video._id.toString() !== videoId,
+    );
+    await updatedLiveClass.save();
+
+    return {
+      error: null,
+    };
+  } catch (error) {
+    return { error: (error as Error).message };
   }
 }

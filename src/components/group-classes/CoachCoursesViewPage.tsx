@@ -52,7 +52,7 @@ export default function CoachCoursesView({
             ))
           ) : (
             <p className="text-accent-gray-300">
-              You haven&apos;t created any courses yet
+              You haven&apos;t created any video courses yet
             </p>
           )}
         </div>
