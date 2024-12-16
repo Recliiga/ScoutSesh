@@ -1,6 +1,6 @@
 import OrganizationProfile from "@/components/dashboard-pages/OrganizationProfile";
 import { getSessionFromHeaders } from "@/services/authServices";
-import { fetchOrganizationData } from "@/services/organizationServices";
+import { fetchOrganization } from "@/services/organizationServices";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -13,7 +13,7 @@ export default async function OrganizationProfilePage({
 
   const { organizationId } = await params;
 
-  const { organization, error } = await fetchOrganizationData(organizationId);
+  const { organization, error } = await fetchOrganization(organizationId);
   if (error !== null) notFound();
 
   const isOrganizationHeadCoach = user._id === organization.user._id;

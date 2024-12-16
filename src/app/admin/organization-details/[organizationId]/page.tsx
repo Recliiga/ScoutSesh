@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { fetchOrganizationData } from "@/services/organizationServices";
+import { fetchOrganizationData } from "@/services/adminServices";
 import { notFound } from "next/navigation";
 import OrganizationDetailsPageMain from "@/components/admin/OrganizationDetailsPageMain";
 

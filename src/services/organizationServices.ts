@@ -1,9 +1,7 @@
 import connectDB from "@/db/connectDB";
-import GroupClass, { GroupClassType } from "@/db/models/GroupClass";
 import Organization, { OrganizationType } from "@/db/models/Organization";
-import User, { UserType } from "@/db/models/User";
 
-export async function fetchOrganizationData(organizationId: string) {
+export async function fetchOrganization(organizationId: string) {
   try {
     await connectDB();
 
@@ -15,26 +13,8 @@ export async function fetchOrganizationData(organizationId: string) {
 
     if (!organization) throw new Error("Invalid organization ID");
 
-    const teamMembers: UserType[] = JSON.parse(
-      JSON.stringify(
-        await User.find({
-          organization: organizationId,
-        }),
-      ),
-    );
-
-    const courses: GroupClassType[] = JSON.parse(
-      JSON.stringify(
-        await GroupClass.find({
-          user: organization.user._id,
-        }),
-      ),
-    );
-
-    const organizationData = { organization, teamMembers, courses };
-
-    return { organizationData, error: null };
+    return { organization, error: null };
   } catch (err) {
-    return { organizationData: null, error: (err as Error).message };
+    return { organization: null, error: (err as Error).message };
   }
 }
