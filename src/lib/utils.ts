@@ -7,6 +7,9 @@ import { twMerge } from "tailwind-merge";
 import jwt from "jsonwebtoken";
 import { DailyJournalType } from "@/db/models/DailyJournal";
 import { RepeatFrequencyType } from "@/db/models/GroupClass";
+import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
+import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
+import { NotificationType } from "@/components/DashboardNotificationIcon";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -39,7 +42,7 @@ export function formatTime(timeString: string) {
       minutes: number;
       period: string;
     },
-    showPeriod = true
+    showPeriod = true,
   ) => {
     if (part.minutes === 0) {
       return `${part.hours}${showPeriod ? part.period : ""}`;
@@ -58,7 +61,7 @@ export function formatTime(timeString: string) {
 
 export function resizeImage(
   imgFile: File,
-  width: number = 500
+  width: number = 500,
 ): Promise<string | null> {
   return new Promise((resolve) => {
     const fileReader = new FileReader();
@@ -90,13 +93,13 @@ function getLatestGoal(goalData: GoalDataSchemaType) {
       new Date(curr.updatedAt).getTime() > new Date(prev.updatedAt).getTime()
         ? curr
         : prev,
-    goalData.goals[0]
+    goalData.goals[0],
   );
   return latestGoal;
 }
 
 export async function getWeeklyReflectionStatus(
-  goalData: GoalDataSchemaType | null
+  goalData: GoalDataSchemaType | null,
 ): Promise<StatusType> {
   let status: StatusType = "not_due";
 
@@ -104,7 +107,7 @@ export async function getWeeklyReflectionStatus(
 
   // Check if all goals are completed
   const allGoalsCompleted = !goalData.goals.some(
-    (goal) => goal.dateCompleted === null
+    (goal) => goal.dateCompleted === null,
   );
 
   // Get the updated date of the most recent goal
@@ -120,7 +123,7 @@ export async function getWeeklyReflectionStatus(
   today.setHours(0, 0, 0, 0);
 
   const differenceinMs = Math.abs(
-    today.getTime() - latestGoalCreationDate.getTime()
+    today.getTime() - latestGoalCreationDate.getTime(),
   );
 
   const differenceinDays = differenceinMs / (1000 * 60 * 60 * 24);
@@ -167,7 +170,7 @@ export function getFullname(user: UserType) {
 }
 
 export async function uploadImage(
-  image: string
+  image: string,
 ): Promise<{ url: string; error: null } | { url: null; error: string }> {
   try {
     const formData = new FormData();
@@ -187,7 +190,7 @@ export async function uploadImage(
 }
 
 export async function uploadImageClient(
-  image: string
+  image: string,
 ): Promise<{ url: string; error: null } | { url: null; error: string }> {
   try {
     if (image.startsWith("http")) return { url: image, error: null };
@@ -208,7 +211,7 @@ export async function uploadImageClient(
 }
 
 export async function uploadVideosClient(
-  videos: { title: string; duration: number; url: string }[]
+  videos: { title: string; duration: number; url: string }[],
 ): Promise<
   | {
       uploadedVideos: { title: string; duration: number; url: string }[];
@@ -230,7 +233,7 @@ export async function uploadVideosClient(
         if (error) throw new Error(error);
 
         return { ...video, url };
-      })
+      }),
     );
     return { uploadedVideos, error: null };
   } catch (error) {
@@ -267,7 +270,7 @@ export function calculateStreak(journalEntries: DailyJournalType[]) {
       entryDate.toDateString() === currentDate.toDateString();
     const oneDay = 24 * 60 * 60 * 1000;
     const diffInDays = Math.round(
-      (currentDate.getTime() - entryDate.getTime()) / oneDay
+      (currentDate.getTime() - entryDate.getTime()) / oneDay,
     );
 
     if (entryIsToday || diffInDays === 1) {
@@ -284,7 +287,7 @@ export function calculateStreak(journalEntries: DailyJournalType[]) {
 export function getDatesBetween(
   startDate: Date,
   endDate: Date,
-  frequency: RepeatFrequencyType
+  frequency: RepeatFrequencyType,
 ) {
   const dates = [];
   const currentDate = new Date(startDate);
@@ -309,7 +312,7 @@ export function getDatesBetween(
       currentDate.setMonth(currentDate.getMonth() + intervalDays[frequency]);
     if (frequency === "yearly")
       currentDate.setFullYear(
-        currentDate.getFullYear() + intervalDays[frequency]
+        currentDate.getFullYear() + intervalDays[frequency],
       );
   }
 
@@ -330,4 +333,50 @@ export function getCourseTimeString(courseTime: {
   }
 
   return `${hours}:${mins} ${suffix}`;
+}
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export function getNextEvaluationDueDate(order: AthleteEvaluationOrderType) {
+  const evaluationDateIndex = order.evaluationDates.findIndex(
+    (evaluationDate) => !evaluationDate.dateCoachEvaluated,
+  );
+  return new Date(
+    order.evaluationDates[evaluationDateIndex].date,
+  ).toDateString();
+}
+
+export function getLastEvaluationDate(
+  order: AthleteEvaluationOrderType,
+  evaluations: AthleteEvaluationType[],
+) {
+  return evaluations.find(
+    (evaluation) => String(evaluation.order) === order._id,
+  )?.createdAt;
+}
+
+export function getNotificationMessage(notification: NotificationType) {
+  switch (notification.type) {
+    case "goal":
+      return `${getFullname(notification.fromUser)} achieved their goal`;
+
+    case "evaluation":
+      return `Evaluation due for ${getFullname(notification.fromUser)}`;
+
+    case "team":
+      return `${getFullname(notification.fromUser)} joined your team`;
+
+    case "class":
+      return `${getFullname(notification.fromUser)} enrolled in a class`;
+
+    default:
+      break;
+  }
 }

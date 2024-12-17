@@ -15,20 +15,20 @@ export default function SkillSlider({
 }) {
   return (
     <Card>
-      <CardHeader className="bg-primary text-primary-foreground p-3 rounded-t-lg">
-        <CardTitle className="text-sm font-bold justify-between items-center flex">
+      <CardHeader className="rounded-t-lg bg-primary p-3 text-primary-foreground">
+        <CardTitle className="flex items-center justify-between text-sm font-bold">
           <span>{skill}</span>
           <Button
             variant="ghost"
             size="sm"
             onClick={deleteSkill}
-            className="hover:bg-[#333] duration-200 px-2 hover:text-white text-[#ccc]"
+            className="px-2 text-[#ccc] duration-200 hover:bg-[#333] hover:text-white"
           >
             <X />
           </Button>
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-3 pb-2 px-3">
+      <CardContent className="px-3 pb-2 pt-3">
         <div className="space-y-3">
           <input
             className="w-full accent-accent-black"

@@ -15,6 +15,8 @@ import { OrganizationType } from "@/db/models/Organization";
 import DatePicker from "../DatePicker";
 import Error from "../AuthError";
 import LoadingIndicator from "../LoadingIndicator";
+import { purchaseEvaluation } from "@/actions/AthleteEvaluationActions";
+import BackButton from "../dashboard/BackButton";
 
 type PlanType =
   | "Monthly"
@@ -33,7 +35,7 @@ function generateEvaluationDates(
   numberOfDates: number,
   frequency: FrequencyType,
 ) {
-  const dates = [];
+  const dates: Date[] = [];
   const currentDate = new Date(startDate);
 
   while (dates.length < numberOfDates) {
@@ -70,7 +72,6 @@ export default function PurchaseEvaluationForm({
   const [pricingPlan, setPricingPlan] = useState<string>();
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [addVirtualConsultation, setAddVirtualConsultation] = useState(false);
   const [virtualConsultationsCount, setVirtualConsultationsCount] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,6 +79,14 @@ export default function PurchaseEvaluationForm({
   const selectedProgram = programs.find(
     (program) => program.plan._id === pricingPlan,
   );
+  const [includeVirtualConsultation, setIncludeVirtualConsultation] =
+    useState(false);
+
+  const addVirtualConsultation =
+    selectedProgram?.plan.offerVirtualConsultation &&
+    selectedProgram.plan.virtualConsultationType === "included"
+      ? true
+      : includeVirtualConsultation;
 
   const selectedPlanType = selectedProgram?.plan.standardPlans.find(
     (plan) => plan.name === planType,
@@ -87,15 +96,16 @@ export default function PurchaseEvaluationForm({
     ? selectedPlanType.evaluations
     : evaluations;
 
-  const customPlanPrices =
-    selectedProgram?.plan.customPlanTiers?.flatMap((plan) =>
-      new Array(plan.evaluations.to - plan.evaluations.from + 1)
-        .fill(0)
-        .map((_, index) => ({
-          evaluations: index + plan.evaluations.from,
-          price: plan.price,
-        })),
-    ) || [];
+  const customPlanPrices = selectedProgram?.plan.offerCustomPlan
+    ? selectedProgram.plan.customPlanTiers?.flatMap((plan) =>
+        new Array(plan.evaluations.to - plan.evaluations.from + 1)
+          .fill(0)
+          .map((_, index) => ({
+            evaluations: index + plan.evaluations.from,
+            price: plan.price,
+          })),
+      )
+    : [];
 
   const maxCustomEvaluations = Math.max(
     ...customPlanPrices.map((plan) => plan.evaluations),
@@ -138,7 +148,7 @@ export default function PurchaseEvaluationForm({
   const totalPrice =
     selectedPlanPrice * selectedPlanEvaluations + virtualConsultationPrice;
 
-  const cannotSubmit = !selectedProgram || !planType;
+  const cannotSubmit = !selectedProgram || !planType || !firstEvaluationDate;
 
   function handlePlanTypeChange(value: PlanType) {
     setPlanType(value);
@@ -152,7 +162,7 @@ export default function PurchaseEvaluationForm({
   }
 
   function toggleAddVirtualConsultation(value: boolean) {
-    setAddVirtualConsultation(value);
+    setIncludeVirtualConsultation(value);
     if (!value) setVirtualConsultationsCount(1);
   }
 
@@ -178,11 +188,11 @@ export default function PurchaseEvaluationForm({
     }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    if (selectedProgram) {
+    if (selectedProgram && pricingPlan) {
       if (
         planType === "custom" &&
         selectedDates.length !== selectedPlanEvaluations
@@ -198,32 +208,51 @@ export default function PurchaseEvaluationForm({
         setError("Please select your first evaluation date.");
         return;
       }
+
+      if (cannotSubmit) {
+        setLoading(false);
+        return;
+      }
       const evaluationPurchaseData = {
         plan: planType,
         evaluations: selectedPlanEvaluations,
-        pricingPlan,
-        evaluationDates,
+        pricingPlan: selectedProgram.plan,
+        pricingPlanId: selectedProgram.plan._id,
+        evaluationDates: evaluationDates.map((date) => ({
+          date,
+          dateCoachEvaluated: undefined,
+          dateAthleteEvaluated: undefined,
+        })),
         addVirtualConsultation,
-        discussionTopics: addVirtualConsultation
-          ? selectedProgram.plan.discussionTopics
+        discussionTopics:
+          addVirtualConsultation &&
+          selectedProgram.plan.offerVirtualConsultation
+            ? selectedProgram.plan.discussionTopics
+            : undefined,
+        virtualConsultationDuration: addVirtualConsultation
+          ? virtualConsultationDuration
           : undefined,
-        virtualConsultationDuration,
         totalPrice,
       };
-      console.log(evaluationPurchaseData);
+
+      const data = await purchaseEvaluation(
+        evaluationPurchaseData,
+        String(selectedProgram.organization.user),
+      );
+      if (data?.error) setError(data.error);
     }
     setLoading(false);
   }
 
   return (
     <main className="mx-auto w-[90%] max-w-4xl flex-1 py-8">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-center text-2xl font-bold">
+      <Card className="p-4 sm:p-6">
+        <CardHeader className="p-0">
+          <CardTitle className="mb-4 text-center text-2xl font-bold">
             Purchase an Evaluation
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <label className="block text-sm font-medium text-gray-700">
@@ -241,13 +270,14 @@ export default function PurchaseEvaluationForm({
                       value={program.plan._id}
                     >
                       <div className="flex items-center">
-                        <Image
-                          src={program.organization.logo}
-                          alt={program.organization.name}
-                          width={24}
-                          height={24}
-                          className="mr-2 rounded-full object-cover"
-                        />
+                        <div className="relative mr-2 flex h-6 w-6 items-center overflow-hidden rounded-full">
+                          <Image
+                            src={program.organization.logo}
+                            alt={program.organization.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
                         {program.organization.name}
                       </div>
                     </Select.Option>
@@ -256,7 +286,7 @@ export default function PurchaseEvaluationForm({
               </Select>
             </div>
             {selectedProgram && (
-              <div className="rounded-lg bg-gray-50 p-6 shadow-sm">
+              <div className="rounded-lg bg-gray-50 p-4 shadow-sm sm:p-6">
                 <h3 className="mb-4 text-xl font-semibold text-gray-800">
                   {selectedProgram.organization.name} Pricing
                 </h3>
@@ -383,11 +413,11 @@ export default function PurchaseEvaluationForm({
                     : "Select first evaluation date"}
               </DatePicker>
               {selectedDates.length > 0 && (
-                <div className="mt-2">
+                <div className="mt-4 flex flex-col gap-2">
                   <p className="text-sm font-medium text-gray-700">
                     Evaluation Dates:
                   </p>
-                  <ul className="list-inside list-disc">
+                  <ul className="grid list-inside list-disc grid-cols-[repeat(auto-fit,_minmax(180px,_1fr))] gap-2 lg:grid-cols-4">
                     {evaluationDates.map((date, index) => (
                       <li key={index} className="text-sm text-gray-600">
                         {format(date, "MMMM d, yyyy")}
@@ -399,7 +429,8 @@ export default function PurchaseEvaluationForm({
             </div>
 
             {selectedProgram &&
-              selectedProgram.plan.offerVirtualConsultation && (
+              selectedProgram.plan.offerVirtualConsultation &&
+              selectedPlanType && (
                 <div className="mt-4 space-y-3 border-t pt-4">
                   <h3 className="text-lg font-semibold">
                     Online Virtual Athlete Evaluation Consultation Session
@@ -431,16 +462,19 @@ export default function PurchaseEvaluationForm({
                     </ul>
                   </div>
                   <div className="mt-4 space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        id="addVirtualConsultation"
-                        checked={addVirtualConsultation}
-                        onCheckedChange={toggleAddVirtualConsultation}
-                      />
-                      <Label htmlFor="addVirtualConsultation">
-                        Add Virtual Consultation to my purchase
-                      </Label>
-                    </div>
+                    {selectedProgram.plan.virtualConsultationType ===
+                    "addon" ? (
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="addVirtualConsultation"
+                          checked={addVirtualConsultation}
+                          onCheckedChange={toggleAddVirtualConsultation}
+                        />
+                        <Label htmlFor="addVirtualConsultation">
+                          Add Virtual Consultation to my purchase
+                        </Label>
+                      </div>
+                    ) : null}
                     {addVirtualConsultation && (
                       <div className="space-y-2">
                         <Label htmlFor="virtualConsultationsCount">
@@ -470,23 +504,34 @@ export default function PurchaseEvaluationForm({
             <div className="text-lg font-bold sm:text-xl">
               Total Price: ${totalPrice}
             </div>
+
             {error && <Error error={error} />}
-            <Button
-              disabled={loading || cannotSubmit}
-              type="submit"
-              className="w-full bg-green-600 text-white hover:bg-green-700"
-            >
-              {loading ? (
-                <>
-                  <LoadingIndicator />
-                  Processing...
-                </>
-              ) : selectedProgram ? (
-                `Purchase an Evaluation from ${selectedProgram.organization.name}`
-              ) : (
-                "Purchase Evaluation"
-              )}
-            </Button>
+
+            <div className="flex gap-4">
+              <BackButton />
+
+              <Button
+                disabled={loading || cannotSubmit}
+                type="submit"
+                className="w-full bg-green-600 text-white hover:bg-green-700"
+              >
+                {loading ? (
+                  <>
+                    <LoadingIndicator />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <span className="hidden sm:inline">
+                      {selectedProgram
+                        ? `Purchase an Evaluation from ${selectedProgram.organization.name}`
+                        : "Purchase Evaluation"}
+                    </span>
+                    <span className="sm:hidden">Purchase Evaluation</span>
+                  </>
+                )}
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>

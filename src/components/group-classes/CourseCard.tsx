@@ -16,7 +16,7 @@ function getAverageVideoLength(videos: VideoType[]) {
   let suffix = "secs";
   const totalVideoLength = videos.reduce(
     (prev, curr) => prev + curr.duration,
-    0
+    0,
   );
   let averageVideoLength = totalVideoLength / videos.length;
   if (averageVideoLength / 60 > 1) {
@@ -51,7 +51,7 @@ export default function CourseCard({
   async function handlePurchaseCourse(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const data = await purchaseCourse(course._id);
+    const data = await purchaseCourse(course._id, course.price);
     if (data?.error) {
       console.log(data?.error);
     }
@@ -60,16 +60,16 @@ export default function CourseCard({
 
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-4 border rounded-lg p-3 sm:p-4">
+      <div className="flex flex-col gap-4 rounded-lg border p-3 sm:p-4 md:flex-row">
         <div
-          className={`relative overflow-hidden rounded-md md:w-[33%] aspect-video bg-zinc-300 ${
+          className={`relative aspect-video overflow-hidden rounded-md bg-zinc-300 md:w-[33%] ${
             imageLoaded ? "" : "animate-pulse"
           }`}
         >
           <Image
             src={course.thumbnail}
             alt={course.title + " thumbnail"}
-            className={`w-full h-full object-cover duration-200 ${
+            className={`h-full w-full object-cover duration-200 ${
               imageLoaded ? "opacity-100" : "opacity-0"
             }`}
             onLoad={() => setImageLoaded(true)}
@@ -77,15 +77,15 @@ export default function CourseCard({
             sizes="(max-width: 768px) 720px, 320px"
           />
         </div>
-        <div className="flex flex-col justify-between flex-1">
+        <div className="flex flex-1 flex-col justify-between">
           <div className="space-y-2">
             <h2 className="text-xl font-bold">{course.title}</h2>
-            <p className="text-sm text-muted-foreground line-clamp-2">
+            <p className="line-clamp-2 text-sm text-muted-foreground">
               {course.description}
             </p>
             {!forAthlete && students.length > 0 && (
               <div className="flex items-start text-sm text-muted-foreground">
-                <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+                <PersonIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
                 <span>
                   {students
                     .slice(0, 3)
@@ -96,7 +96,7 @@ export default function CourseCard({
             )}
             {forAthlete && course.coaches.length > 0 && (
               <div className="flex items-start text-sm text-muted-foreground">
-                <PersonIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+                <PersonIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
                 <span>
                   {course.coaches
                     .slice(0, 3)
@@ -106,7 +106,7 @@ export default function CourseCard({
               </div>
             )}
             <div className="flex items-start text-sm text-muted-foreground">
-              <TicketIcon className="w-4 h-4 mr-3 mt-0.5 flex-shrink-0" />
+              <TicketIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0" />
               <span>
                 {course.videos.length} Lesson{course.videos.length > 1 && "s"} •{" "}
                 {averageVideoLength} / Lesson •{" "}
@@ -119,13 +119,13 @@ export default function CourseCard({
             </div>
             <div className="text-sm text-green-500">Available for Purchase</div>
           </div>
-          <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center justify-between mt-4 gap-2">
+          <div className="mt-4 flex flex-col justify-between gap-2 min-[360px]:flex-row min-[360px]:items-center">
             <span className="text-xl font-bold">${course.price}</span>
             {forAthlete ? (
               isPurchased ? (
                 <Link
                   href={`/dashboard/group-classes/my-classes/${course._id}`}
-                  className="bg-green-500 flex items-center hover:bg-green-600 duration-200 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
+                  className="flex items-center whitespace-nowrap rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white duration-200 hover:bg-green-600"
                 >
                   <PlayCircle className="mr-2 h-4 w-4" />
                   Continue Learning
@@ -135,7 +135,7 @@ export default function CourseCard({
                   <Button
                     disabled={loading}
                     type="submit"
-                    className="bg-green-500 hover:bg-green-600 duration-200 text-white"
+                    className="bg-green-500 text-white duration-200 hover:bg-green-600"
                   >
                     {loading ? "Processing..." : "Buy Now"}
                   </Button>
@@ -145,7 +145,7 @@ export default function CourseCard({
               <div className="flex items-center gap-4 max-[360px]:w-full">
                 <Link
                   href={`/dashboard/group-classes/courses/${course._id}/edit`}
-                  className="bg-green-500 hover:bg-green-600 duration-200 flex-1 whitespace-nowrap text-white px-4 py-2 rounded-md text-sm font-medium"
+                  className="flex-1 whitespace-nowrap rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white duration-200 hover:bg-green-600"
                 >
                   Edit Course
                 </Link>

@@ -3,13 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AthleteEvaluationPricingForm from "@/components/athlete-evaluation/AthleteEvaluationPricingForm";
 import { getSessionFromHeaders } from "@/services/authServices";
 import { notFound } from "next/navigation";
-import { fetchPricingPlanByCoach } from "@/services/AEPricingPlanServices";
+import { fetchCoachPricingPlan } from "@/services/AEPricingPlanServices";
 
 export default async function CreateAthleteEvaluationPricingPage() {
   const user = await getSessionFromHeaders();
   if (user.role !== "Head Coach") notFound();
 
-  const { pricingPlans, error } = await fetchPricingPlanByCoach(user._id);
+  const { pricingPlan, error } = await fetchCoachPricingPlan(user._id);
   if (error !== null) throw new Error(error);
 
   return (
@@ -21,7 +21,7 @@ export default async function CreateAthleteEvaluationPricingPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <AthleteEvaluationPricingForm pricingPlan={pricingPlans[0]} />
+          <AthleteEvaluationPricingForm pricingPlan={pricingPlan} />
         </CardContent>
       </Card>
     </main>

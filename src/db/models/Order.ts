@@ -7,6 +7,7 @@ export interface OrderType extends mongoose.Document {
   course: GroupClassType;
   user: UserType;
   completedLessons: VideoType[];
+  price: number;
 }
 
 const OrderSchema = new mongoose.Schema<OrderType>({
@@ -23,6 +24,10 @@ const OrderSchema = new mongoose.Schema<OrderType>({
   completedLessons: {
     type: [{ _id: String, title: String, url: String, duration: Number }],
     default: [],
+  },
+  price: {
+    type: Number,
+    required: [true, "Please provide the amount for the course"],
   },
 });
 

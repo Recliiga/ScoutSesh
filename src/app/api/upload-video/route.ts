@@ -14,14 +14,14 @@ export async function POST(request: NextRequest) {
     const video = formData.get("video") as string;
     if (!video) throw new Error("Please provide a valid video");
 
-    const { url } = await cloudinary.uploader.upload(video, {
+    const { secure_url: url } = await cloudinary.uploader.upload(video, {
       resource_type: "video",
     });
     return NextResponse.json({ url, error: null });
   } catch (error) {
     return NextResponse.json(
       { url: null, error: (error as Error).message },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }

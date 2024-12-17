@@ -17,17 +17,19 @@ export type CustomPlanType = {
 
 type AECustomPlanType =
   | {
-      offerCustomPlan: true;
-      customPlanTiers: CustomPlanType[];
+      offerCustomPlan: false;
     }
   | {
-      offerCustomPlan: false;
-      customPlanTiers: undefined;
+      offerCustomPlan: boolean;
+      customPlanTiers: CustomPlanType[];
     };
 
 type AEVirtualConsultationType =
   | {
-      offerVirtualConsultation: true;
+      offerVirtualConsultation: false;
+    }
+  | {
+      offerVirtualConsultation: boolean;
       virtualConsultationType: "addon" | "included";
       virtualConsultationDuration: number;
       virtualConsultationRate: number;
@@ -37,13 +39,6 @@ type AEVirtualConsultationType =
         dailyJournal: boolean;
         other: boolean;
       };
-    }
-  | {
-      offerVirtualConsultation: false;
-      virtualConsultationType: undefined;
-      virtualConsultationDuration: undefined;
-      virtualConsultationRate: undefined;
-      discussionTopics: undefined;
     };
 
 interface BaseAEPricingPlanType extends mongoose.Document {
@@ -70,7 +65,7 @@ const StandardPlanSchema = new mongoose.Schema<StandardPlanType>({
 const CustomPlanTierSchema = new mongoose.Schema<CustomPlanType>({
   type: {
     type: String,
-    enum: ["single", "range"], // Only allow "single" or "range"
+    enum: ["single", "range"], 
   },
   evaluations: {
     from: {
@@ -84,7 +79,8 @@ const CustomPlanTierSchema = new mongoose.Schema<CustomPlanType>({
     type: Number,
   },
 });
-const AthleteEvaluationPricingPlanSchema =
+
+export const AthleteEvaluationPricingPlanSchema =
   new mongoose.Schema<AEPricingPlanType>(
     {
       standardPlans: [StandardPlanSchema],

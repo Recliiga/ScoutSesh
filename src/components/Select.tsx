@@ -16,19 +16,23 @@ export default function Select({
   value,
   onChange,
   className,
+  containerClassName,
   children,
   disabled = false,
+  defaultChild,
 }: {
   className?: string;
+  containerClassName?: string;
   placeholder?: string;
   value?: string;
   onChange(value: string): void;
   children?: React.ReactNode;
   disabled?: boolean;
+  defaultChild?: React.ReactNode;
 }) {
   const [showOptions, setShowOptions] = useState(false);
   const [childComponent, setChildComponent] = useState<React.ReactNode | null>(
-    null,
+    defaultChild || null,
   );
 
   function closeDropdown() {
@@ -44,19 +48,29 @@ export default function Select({
     closeDropdown();
   }
 
+  function toggleShowOptions() {
+    if (disabled) return;
+    setShowOptions((prev) => !prev);
+  }
+
   return (
     <SelectContext.Provider
       value={{ value, handleChange, showOptions: showOptions, closeDropdown }}
     >
-      <div className="relative text-sm" ref={selectRef}>
+      <div className={`relative text-sm ${containerClassName}`} ref={selectRef}>
         <div
-          onClick={() => {
-            if (disabled) return;
-            setShowOptions((prev) => !prev);
+          tabIndex={0}
+          onClick={toggleShowOptions}
+          className={`line-clamp-1 w-full rounded-md border px-3 py-2 pr-8 ring-accent-black duration-200 hover:bg-accent-gray-100 focus-visible:ring-1 ${disabled ? "bg-accent-gray-100" : ""} ${Boolean(childComponent || value) ? "" : "text-accent-gray-300"} ${className}`}
+          style={{ cursor: disabled ? "default" : "pointer" }}
+          onKeyDown={(e) => {
+            if (e.code === "Enter" || e.code === "Space") {
+              e.preventDefault();
+              toggleShowOptions();
+            }
           }}
-          className={`line-clamp-1 w-full cursor-pointer rounded-md border px-3 py-2 pr-8 duration-200 hover:bg-accent-gray-100 ${disabled ? "cursor-[default] bg-accent-gray-100" : ""} ${className}`}
         >
-          {childComponent || placeholder || "Select"}
+          {childComponent || value || placeholder || "Select"}
         </div>
         {children}
         {showOptions ? (
@@ -80,7 +94,7 @@ function Content({
 
   return (
     <div
-      className={`absolute left-0 top-[calc(100%_+_4px)] z-10 w-full rounded-md border bg-white p-1 shadow ${showOptions ? "visible" : "invisible"} ${className}`}
+      className={`scroll custom-scrollbar absolute left-0 top-[calc(100%_+_4px)] z-10 max-h-60 w-fit min-w-full overflow-y-scroll rounded-md border bg-white p-1 shadow duration-200 ${showOptions ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0"} ${className}`}
     >
       {children}
     </div>
@@ -97,6 +111,7 @@ function Option({
   className?: string;
 }) {
   const { value: selectValue, handleChange } = useSelectContext();
+
   return (
     <div
       onClick={() => handleChange(value, children)}

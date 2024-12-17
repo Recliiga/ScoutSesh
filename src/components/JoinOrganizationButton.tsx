@@ -1,6 +1,6 @@
 "use client";
+
 import { joinTeam } from "@/actions/userActions";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 export default function JoinOrganizationButton({
@@ -9,22 +9,20 @@ export default function JoinOrganizationButton({
   organizationId: string;
 }) {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   async function handleJoinTeam() {
     setLoading(true);
-    const { error } = await joinTeam(organizationId);
-    if (!error) {
-      router.replace("/dashboard");
+    const data = await joinTeam(organizationId);
+    if (data?.error) {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
     <button
       disabled={loading}
       onClick={handleJoinTeam}
-      className="bg-green-500 hover:bg-green-600 disabled:bg-green-500/50 mt-4 px-4 py-2 rounded-md font-medium text-white"
+      className="mt-4 rounded-md bg-green-500 px-4 py-2 font-medium text-white hover:bg-green-600 disabled:bg-green-500/50"
     >
       {loading ? "Joining..." : "Join Team"}
     </button>

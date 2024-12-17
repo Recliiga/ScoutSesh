@@ -2,8 +2,8 @@
 
 import connectDB from "@/db/connectDB";
 import Organization from "@/db/models/Organization";
-import User from "@/db/models/User";
-import { getUserIdFromCookies, uploadImage } from "@/lib/utils";
+import User, { UserType } from "@/db/models/User";
+import { getUserIdFromCookies } from "@/lib/utils";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { revalidatePath } from "next/cache";
@@ -27,17 +27,27 @@ export async function login(formData: FormData) {
   try {
     await connectDB();
 
-    if (!email) throw new Error("Please enter a valid Email");
-    if (!password) throw new Error("Please enter your Password");
+    if (!email) return { error: "Please enter a valid Email" };
+    if (!password) return { error: "Please enter your Password" };
 
     // Get user object from the database
-    const user = await User.findOne({ email });
-    if (!user) throw new Error("Invalid email and password combination");
+    const user: UserType | null = await User.findOne({ email });
+    if (!user) return { error: "Invalid email and password combination" };
+    if (user.status === "Banned")
+      return {
+        error:
+          "Your account has been banned. Please contact support if you believe this is a mistake.",
+      };
+    if (user.status === "Suspended")
+      return {
+        error:
+          "Your account has been suspended. Please contact support for more information or assistance.",
+      };
 
     // Compare raw password and hashed password
     const passwordIsCorrect = await bcrypt.compare(password, user.password);
     if (!passwordIsCorrect)
-      throw new Error("Invalid email and password combination");
+      return { error: "Invalid email and password combination" };
 
     // Create access token and store in cookie
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!);
@@ -48,7 +58,8 @@ export async function login(formData: FormData) {
 
     return { error: null };
   } catch (error) {
-    return { error: (error as Error).message };
+    console.log({ error: (error as Error).message });
+    return { error: "An unexpected error occured" };
   }
 }
 
@@ -70,12 +81,12 @@ export async function signup(formData: FormData) {
     Object.entries(userData).forEach(([key, value]) => {
       if (!value) {
         if (key !== "organization")
-          throw new Error(errorMessages[key as keyof typeof errorMessages]);
+          return { error: errorMessages[key as keyof typeof errorMessages] };
       }
     });
 
     if (userData.password.length < 8)
-      throw new Error("Password must be at least 8 characters");
+      return { error: "Password must be at least 8 characters" };
 
     // Encrypt password
     const encryptedPassword = await bcrypt.hash(userData.password, 10);
@@ -102,32 +113,26 @@ export async function signup(formData: FormData) {
     if (error.name === "MongoServerError" && error.message.includes("E11000")) {
       return { error: "User with email already exists" };
     }
-    return { error: error.message };
+    console.log({ error: error.message });
+    return { error: "An unexpected error occured" };
   }
 }
 
-export async function createOrganization(formData: FormData) {
-  const organizationData = {
-    name: formData.get("organizationName"),
-    logo: formData.get("profilePicture"),
-    type: formData.get("organizationType"),
-    memberCount: formData.get("memberCount"),
-    location: formData.get("location"),
-    primarySport: formData.get("primarySport"),
-    yearFounded: formData.get("yearFounded"),
-    bio: formData.get("bio"),
-  };
-
+export async function createOrganization(organizationData: {
+  name: string;
+  logo: string;
+  type: string;
+  memberCount: string;
+  location: string;
+  primarySport: string;
+  yearFounded: string;
+  bio: string;
+}) {
   try {
     const cookieStore = await cookies();
 
     const { userId, error: authError } = getUserIdFromCookies(cookieStore);
     if (authError !== null) throw new Error(authError);
-
-    // Upload organization profile picture
-    const { url, error } = await uploadImage(organizationData.logo as string);
-    if (error) throw new Error("An error occured uploading profile picture");
-    organizationData.logo = url;
 
     // Create new organization and bind to user's profile
     await connectDB();
@@ -146,28 +151,21 @@ export async function createOrganization(formData: FormData) {
   }
 }
 
-export async function completeProfile(formData: FormData) {
-  const userData = {
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
-    role: formData.get("role"),
-    DOB: formData.get("DOB"),
-    profilePicture: formData.get("profilePicture"),
-    location: formData.get("location"),
-    primarySport: formData.get("primarySport"),
-    experience: formData.get("experience"),
-    bio: formData.get("bio"),
-  };
-
+export async function completeProfile(userData: {
+  firstName: string;
+  lastName: string;
+  role: string;
+  DOB: string;
+  profilePicture: string;
+  location: string;
+  primarySport: string;
+  experience: string;
+  bio: string;
+}) {
   try {
     const cookieStore = await cookies();
     const { userId, error: authError } = getUserIdFromCookies(cookieStore);
     if (authError !== null) throw new Error(authError);
-
-    // Upload organization profile picture
-    const { url, error } = await uploadImage(userData.profilePicture as string);
-    if (error !== null || url === null) throw new Error(error);
-    userData.profilePicture = url;
 
     await connectDB();
     const data = await User.findByIdAndUpdate(userId, userData);

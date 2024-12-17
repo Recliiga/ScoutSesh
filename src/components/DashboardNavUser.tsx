@@ -60,7 +60,7 @@ export default function DashboardNavUser({
     <>
       <div className="relative" ref={userIconRef}>
         <UserIcon
-          className="w-6 h-6 text-muted-foreground hover:text-green-600 cursor-pointer"
+          className="h-6 w-6 cursor-pointer text-muted-foreground hover:text-green-600"
           onClick={(e) => {
             e.stopPropagation();
             setUserMenu(!userMenu);
@@ -70,10 +70,10 @@ export default function DashboardNavUser({
         {userMenu && (
           <div
             ref={userMenuRef}
-            className={"top-[calc(100%_+_.5rem)] right-0 z-10 absolute"}
+            className={"absolute right-0 top-[calc(100%_+_.5rem)] z-10"}
           >
-            <div className="bg-background shadow-lg border rounded-lg">
-              <div className="p-4 border-b">
+            <div className="rounded-lg border bg-background shadow-lg">
+              <div className="border-b p-4">
                 <div className="flex items-center space-x-3">
                   <Avatar>
                     <AvatarImage
@@ -82,15 +82,13 @@ export default function DashboardNavUser({
                       className="object-cover"
                     />
                     <AvatarFallback>
-                      {userName
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                      {user.firstName[0]}
+                      {user.lastName[0]}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h4 className="font-semibold text-sm">{userName}</h4>
-                    <p className="text-muted-foreground text-xs">{user.role}</p>
+                    <h4 className="text-sm font-semibold">{userName}</h4>
+                    <p className="text-xs text-muted-foreground">{user.role}</p>
                   </div>
                 </div>
               </div>
@@ -99,47 +97,50 @@ export default function DashboardNavUser({
                   <>
                     <Button
                       variant="ghost"
-                      className="justify-start px-2 sm:px-4 w-full text-left"
+                      onClick={() => setUserMenu(false)}
+                      className="w-full justify-start px-2 text-left sm:px-4"
                       asChild
                     >
-                      <Link href="">
-                        <UserIcon className="sm:mr-2 w-4 h-4" />
+                      <Link href={`/dashboard/profile/${user._id}`}>
+                        <UserIcon className="h-4 w-4 sm:mr-2" />
                         View/Edit Profile
                       </Link>
                     </Button>
-                    {user.role === "Head Coach" && (
+                    {user.role === "Head Coach" ? (
                       <Button
                         onClick={() => {
                           setUserMenu(false);
                           setOpenModal("addTeamMember");
                         }}
                         variant="ghost"
-                        className="justify-start px-2 sm:px-4 w-full text-left"
+                        className="w-full cursor-pointer justify-start px-2 text-left sm:px-4"
                         asChild
                       >
-                        <Link href="">
-                          <UserPlusIcon className="sm:mr-2 w-4 h-4" />
+                        <div className="flex gap-2">
+                          <UserPlusIcon className="h-4 w-4 sm:mr-2" />
                           Invite Team Members
-                        </Link>
+                        </div>
                       </Button>
-                    )}
+                    ) : null}
                     <Button
                       variant="ghost"
-                      className="justify-start px-2 sm:px-4 w-full text-left"
+                      onClick={() => setUserMenu(false)}
+                      className="w-full justify-start px-2 text-left sm:px-4"
                       asChild
                     >
-                      <Link href="">
-                        <CreditCardIcon className="sm:mr-2 w-4 h-4" />
+                      <Link href="#">
+                        <CreditCardIcon className="h-4 w-4 sm:mr-2" />
                         Billings & Payments
                       </Link>
                     </Button>
                     <Button
                       variant="ghost"
-                      className="justify-start px-2 sm:px-4 w-full text-left"
+                      onClick={() => setUserMenu(false)}
+                      className="w-full justify-start px-2 text-left sm:px-4"
                       asChild
                     >
-                      <Link href="">
-                        <LockIcon className="sm:mr-2 w-4 h-4" />
+                      <Link href="#">
+                        <LockIcon className="h-4 w-4 sm:mr-2" />
                         Password & Security
                       </Link>
                     </Button>
@@ -147,13 +148,13 @@ export default function DashboardNavUser({
                 )}
                 <Button
                   variant="ghost"
-                  className="justify-start px-2 sm:px-4 w-full text-left"
+                  className="w-full justify-start px-2 text-left sm:px-4"
                   onClick={() => {
                     setUserMenu(false);
                     setOpenModal("signout");
                   }}
                 >
-                  <LogOutIcon className="sm:mr-2 w-4 h-4" />
+                  <LogOutIcon className="h-4 w-4 sm:mr-2" />
                   Log Out
                 </Button>
               </div>

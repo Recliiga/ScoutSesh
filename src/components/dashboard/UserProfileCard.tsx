@@ -1,4 +1,3 @@
-import Image from "next/image";
 import React from "react";
 import ScoutSeshStreak from "./ScoutSeshStreak";
 import { getFullname } from "@/lib/utils";
@@ -7,6 +6,7 @@ import { Button } from "../ui/button";
 import { MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { DailyJournalType } from "@/db/models/DailyJournal";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function UserProfileCard({
   journalEntries,
@@ -18,39 +18,45 @@ export default function UserProfileCard({
   journalEntries: DailyJournalType[] | null;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 w-full">
-      <Image
-        src={member.profilePicture}
-        alt={`${getFullname(member)}'s profile`}
-        width={150}
-        height={150}
-        priority
-        className="mb-2 rounded-full w-28 sm:w-36 h-28 sm:h-36 object-cover"
-      />
+    <div className="flex w-full flex-col items-center gap-2">
+      <Avatar className="h-28 w-28 sm:h-36 sm:w-36">
+        <AvatarImage
+          src={member.profilePicture}
+          alt={getFullname(member)}
+          className="object-cover"
+        />
+        <AvatarFallback>
+          {member.firstName[0]}
+          {member.lastName[0]}
+        </AvatarFallback>
+      </Avatar>
       <div className="flex flex-col justify-center">
-        <p className="mb-1 w-full font-medium text-center truncate">
+        <p className="mb-1 w-full truncate text-center font-medium">
           {getFullname(member)}
         </p>
         <ScoutSeshStreak
           journalEntries={journalEntries?.filter(
-            (entry) => entry.user._id === member._id
+            (entry) => entry.user._id === member._id,
           )}
-          className="px-[8px] sm:px-4 py-[4px] sm:py-2 text-[12px] text-center sm:text-sm"
+          className="px-[8px] py-[4px] text-center text-[12px] sm:px-4 sm:py-2 sm:text-sm"
         />
       </div>
       {forCoach && (
-        <div className="flex gap-2 w-full">
+        <div className="flex w-full gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 px-0 py-0 h-8 text-xs"
+            className="h-8 flex-1 px-0 py-0 text-xs"
           >
-            <Link href="#" className="px-4 py-2 w-full h-full">
+            <Link
+              href={`/dashboard/profile/${member._id}`}
+              className="h-full w-full px-4 py-2"
+            >
               View Profile
             </Link>
           </Button>
-          <Button variant="outline" size="sm" className="p-0 w-8 h-8">
-            <MessageCircle className="w-4 h-4" />
+          <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+            <MessageCircle className="h-4 w-4" />
           </Button>
         </div>
       )}

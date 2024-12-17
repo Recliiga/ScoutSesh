@@ -15,9 +15,9 @@ export default function CoachCoursesView({
   groupClassOrders: OrderType[];
 }) {
   return (
-    <div className="max-w-5xl mx-auto py-4 flex-1 w-[90%]">
+    <div className="mx-auto flex w-[90%] max-w-5xl flex-1 flex-col py-4">
       <section className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Live Classes</h2>
+        <h2 className="mb-4 text-2xl font-bold">Live Classes</h2>
         <div className="grid gap-4">
           {liveClasses.length > 0 ? (
             liveClasses.map((liveClass) => (
@@ -37,8 +37,8 @@ export default function CoachCoursesView({
         </div>
       </section>
 
-      <section>
-        <h2 className="text-2xl font-bold mb-4">Course Library</h2>
+      <section className="mb-auto">
+        <h2 className="mb-4 text-2xl font-bold">Course Library</h2>
         <div className="grid gap-4">
           {courses.length > 0 ? (
             courses.map((course) => (
@@ -52,7 +52,7 @@ export default function CoachCoursesView({
             ))
           ) : (
             <p className="text-accent-gray-300">
-              You haven&apos;t created any courses yet
+              You haven&apos;t created any video courses yet
             </p>
           )}
         </div>
@@ -62,7 +62,7 @@ export default function CoachCoursesView({
         <BackButton />
         <Link
           href={"/dashboard/group-classes/create"}
-          className="bg-white font-medium text-green-600 border px-4 py-2 rounded-md text-sm border-green-600 hover:bg-green-600 hover:text-white transition-colors"
+          className="rounded-md border border-green-600 bg-white px-4 py-2 text-sm font-medium text-green-600 transition-colors hover:bg-green-600 hover:text-white"
         >
           Create New Class
         </Link>

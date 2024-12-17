@@ -1,143 +1,98 @@
-import { ClipboardIcon, UserPlusIcon } from "lucide-react";
-import Image from "next/image";
-import { Button } from "../ui/button";
+import { ClipboardIcon } from "lucide-react";
+import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
+import { formatDate, getFullname } from "@/lib/utils";
+import Link from "next/link";
+import AssignToButton from "../athlete-evaluation/AssignToButton";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-const allPlayersNeedingEvaluation = [
-  {
-    id: 1,
-    name: "John Doe",
-    lastEvaluation: "September 23, 2024",
-    completeBy: "October 23, 2024",
-    photo: "/placeholder-profile-picture.png",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    lastEvaluation: "July 25, 2024",
-    completeBy: "October 25, 2024",
-    photo: "/placeholder-profile-picture.png",
-  },
-  {
-    id: 3,
-    name: "Mike Johnson",
-    lastEvaluation: "March 28, 2024",
-    completeBy: "October 28, 2024",
-    photo: "/placeholder-profile-picture.png",
-  },
-  {
-    id: 4,
-    name: "Emily Brown",
-    lastEvaluation: "November 5, 2023",
-    completeBy: "November 5, 2024",
-    photo: "/placeholder-profile-picture.png",
-  },
-  {
-    id: 5,
-    name: "Alex Lee",
-    lastEvaluation: "September 21, 2024",
-    completeBy: "February 15, 2025",
-    photo: "/placeholder-profile-picture.png",
-  },
-  {
-    id: 6,
-    name: "Sarah Johnson",
-    lastEvaluation: "October 1, 2024",
-    completeBy: "March 1, 2025",
-    photo: "/placeholder-profile-picture.png",
-  },
-  {
-    id: 7,
-    name: "Tom Wilson",
-    lastEvaluation: "October 15, 2024",
-    completeBy: "April 15, 2025",
-    photo: "/placeholder-profile-picture.png",
-  },
-];
-
-export default function UpcomingEvaluations() {
-  // Filter players with evaluations due within the next 7 days
-  const sevenDaysFromNow = new Date();
-  sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
-
-  const filteredPlayers = allPlayersNeedingEvaluation.filter(
-    (player) => new Date(player.completeBy) <= sevenDaysFromNow
+function getNextEvaluationDueDate(order: AthleteEvaluationOrderType) {
+  const orderIndex = order.evaluationDates.findIndex(
+    (evaluationDate) => !evaluationDate.dateCoachEvaluated,
   );
+  return new Date(order.evaluationDates[orderIndex].date).toDateString();
+}
 
-  // Sort filtered players by completion date
-  const sortedPlayers = filteredPlayers.sort(
-    (a, b) =>
-      new Date(a.completeBy).getTime() - new Date(b.completeBy).getTime()
-  );
+export default function UpcomingEvaluations({
+  orders,
+}: {
+  orders: AthleteEvaluationOrderType[];
+}) {
+  const filteredOrders = orders;
+
+  const sortedOrders = filteredOrders;
 
   return (
-    <section className="flex-1 bg-white shadow-[0_0_6px_4px_#eee] rounded-lg w-full">
-      <h2 className="mb-4 p-4 font-semibold text-xl">Upcoming Evaluations</h2>
-      <div className="overflow-hidden">
+    <section className="flex w-full flex-1 flex-col overflow-hidden rounded-lg bg-white shadow-[0_0_6px_4px_#eee]">
+      <h2 className="p-4 text-xl font-semibold">Upcoming Evaluations</h2>
+      <div className="flex-1 overflow-hidden">
         <div className="max-h-[280px] overflow-y-auto">
-          <table className="divide-y divide-gray-200 w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="top-0 sticky bg-gray-50 px-2 py-2 font-medium text-gray-500 text-left text-xs uppercase tracking-wider">
-                  Player
-                </th>
-                <th className="top-0 sticky bg-gray-50 px-2 py-2 font-medium text-gray-500 text-left text-xs uppercase tracking-wider">
-                  Complete By
-                </th>
-                <th className="top-0 sticky bg-gray-50 px-2 py-2 font-medium text-gray-500 text-left text-xs uppercase tracking-wider">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {sortedPlayers.map((player) => (
-                <tr key={player.id}>
-                  <td className="px-2 py-2 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 w-8 h-8">
-                        <Image
-                          className="rounded-full w-8 h-8"
-                          src={player.photo}
-                          alt=""
-                          width={32}
-                          height={32}
-                        />
-                      </div>
-                      <div className="ml-2">
-                        <div className="font-medium text-gray-900 text-sm">
-                          {player.name}
+          {sortedOrders.length > 0 ? (
+            <table className="w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="sticky top-0 bg-gray-50 px-2 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Player
+                  </th>
+                  <th className="sticky top-0 bg-gray-50 px-2 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Complete By
+                  </th>
+                  <th className="sticky top-0 bg-gray-50 px-2 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {sortedOrders.map((order) => (
+                  <tr key={order._id}>
+                    <td className="w-full whitespace-nowrap px-2 py-2">
+                      <div className="flex items-center">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            src={order.athlete.profilePicture}
+                            alt={getFullname(order.athlete)}
+                            className="object-cover"
+                          />
+                          <AvatarFallback>
+                            {order.athlete.firstName[0]}
+                            {order.athlete.lastName[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="ml-2">
+                          <div className="line-clamp-1 text-sm font-medium text-gray-900">
+                            {getFullname(order.athlete)}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-2 py-2 whitespace-nowrap">
-                    <div className="text-gray-900 text-sm">
-                      {player.completeBy}
-                    </div>
-                  </td>
-                  <td className="px-2 py-2 whitespace-nowrap">
-                    <div className="flex gap-x-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="hover:bg-green-800 text-xs hover:text-white"
-                      >
-                        <ClipboardIcon className="mr-1 w-3 h-3" />
-                        Evaluate
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="hover:bg-green-800 text-xs hover:text-white"
-                      >
-                        <UserPlusIcon className="mr-1 w-3 h-3" />
-                        Assign
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td className="whitespace-nowrap px-2 py-2">
+                      <div className="text-sm text-gray-900">
+                        {formatDate(getNextEvaluationDueDate(order))}
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-2 py-2">
+                      <div className="flex gap-x-1">
+                        <Link
+                          href={`/dashboard/athlete-evaluation/evaluate/${order._id}`}
+                          className="flex items-center rounded-md border bg-white px-4 py-2 text-xs font-medium hover:bg-green-800 hover:text-white"
+                        >
+                          <ClipboardIcon className="mr-2 h-4 w-4" />
+                          Evaluate
+                        </Link>
+                        <AssignToButton
+                          orderId={order._id}
+                          className="border-accent-gray-200 text-xs text-accent-black hover:bg-green-800 hover:text-white"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="px-4 pb-4 text-accent-gray-300">
+              You do not currently have any athletes awaiting Evaluations
+            </p>
+          )}
         </div>
       </div>
     </section>

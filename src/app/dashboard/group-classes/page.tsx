@@ -20,11 +20,13 @@ export default async function GroupClassesPage() {
       _id: liveClass._id,
       title: liveClass.title,
       coach: user,
-      sessions: getDatesBetween(
-        liveClass.startDate,
-        liveClass.endDate,
-        liveClass.repeatFrequency
-      ),
+      sessions: liveClass.isRecurring
+        ? getDatesBetween(
+            liveClass.startDate,
+            liveClass.endDate,
+            liveClass.repeatFrequency,
+          )
+        : [new Date(liveClass.startDate)],
       time: liveClass.startTime,
     }));
 
@@ -38,11 +40,13 @@ export default async function GroupClassesPage() {
     _id: liveClass._id,
     title: liveClass.title,
     coach: user,
-    sessions: getDatesBetween(
-      liveClass.startDate,
-      liveClass.endDate,
-      liveClass.repeatFrequency
-    ),
+    sessions: liveClass.isRecurring
+      ? getDatesBetween(
+          liveClass.startDate,
+          liveClass.endDate,
+          liveClass.repeatFrequency,
+        )
+      : [new Date(liveClass.startDate)],
     time: liveClass.startTime,
   }));
 

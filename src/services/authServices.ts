@@ -1,5 +1,6 @@
 import { UserType } from "@/db/models/User";
 import { cookies, headers } from "next/headers";
+import jwt from "jsonwebtoken";
 
 export async function getSession(): Promise<
   | {
@@ -34,4 +35,20 @@ export async function getSessionFromHeaders(): Promise<UserType> {
 
   const user = userSessionHeader ? JSON.parse(userSessionHeader) : null;
   return user;
+}
+
+export async function getAdminSession() {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("adminToken")?.value;
+    if (!token) throw new Error("Invalid token");
+    const payload = jwt.verify(token, process.env.JWT_SECRET!);
+    if (typeof payload === "string") throw new Error("Invalid token");
+
+    const isAuthenticated: true | undefined = payload.isAuthenticated;
+
+    return { isAuthenticated: isAuthenticated || false, error: null };
+  } catch (error) {
+    return { isAuthenticated: false, error: (error as Error).message };
+  }
 }

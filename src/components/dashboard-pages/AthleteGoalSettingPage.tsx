@@ -16,9 +16,11 @@ export default async function AthleteGoalSettingPage() {
 
   return (
     <main className="flex-1">
-      <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
-        <h1 className="mb-6 font-bold text-4xl text-black">Goal Setting</h1>
-        <p className="mb-8 text-gray-600 text-lg">
+      <div className="mx-auto w-[90%] max-w-6xl py-6 sm:py-8">
+        <h1 className="mb-4 text-3xl font-bold text-black md:text-4xl">
+          Goal Setting
+        </h1>
+        <p className="mb-8 text-gray-600">
           Set meaningful goals, track your progress, and reflect on your
           achievements to continuously improve your performance.
         </p>
@@ -26,12 +28,12 @@ export default async function AthleteGoalSettingPage() {
           status={status}
           dueDate={goalData && getGoalDueDate(goalData)}
         />
-        <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {canCreateNewGoals ? (
             <GoalCard
               title="Set New Goals"
               description="Define new short-term and long-term goals to focus your training and development efforts. Set SMART (Specific, Measurable, Achievable, Relevant, Time-bound) goals to enhance your athletic performance and personal growth."
-              icon={<Target className="w-6 h-6 text-green-600" />}
+              icon={<Target className="h-6 w-6 text-green-600" />}
               actionText="Set Goals"
               href={"/dashboard/goal-setting/new"}
             />
@@ -39,7 +41,7 @@ export default async function AthleteGoalSettingPage() {
             <GoalCard
               title="Complete Existing Goals"
               description="You cannot create new goals until you have completed your current ones. Stay focused and finish your existing goals to make room for new challenges and achievements."
-              icon={<Target className="w-6 h-6 text-green-600" />}
+              icon={<Target className="h-6 w-6 text-green-600" />}
               actionText="View Latest Goal"
               href={`/dashboard/goal-setting/submissions/${goalData?._id}`}
             />
@@ -47,7 +49,7 @@ export default async function AthleteGoalSettingPage() {
           <GoalCard
             title="Complete Weekly Reflection"
             description="Reflect on your progress, identify challenges, and adjust your goals as needed. Regular reflection helps you stay on track and make necessary improvements."
-            icon={<ClipboardCheck className="w-6 h-6 text-green-600" />}
+            icon={<ClipboardCheck className="h-6 w-6 text-green-600" />}
             actionText="Start Reflection"
             href={"/dashboard/goal-setting/weekly-reflection"}
             disabled={status !== "needs_reflection"}
@@ -55,7 +57,7 @@ export default async function AthleteGoalSettingPage() {
           <GoalCard
             title="View Goal Setting Submissions"
             description="Review your past goal setting submissions and track your progress over time. Analyze your growth and celebrate your achievements."
-            icon={<FileText className="w-6 h-6 text-green-600" />}
+            icon={<FileText className="h-6 w-6 text-green-600" />}
             actionText="View Submissions"
             href={"/dashboard/goal-setting/submissions"}
           />

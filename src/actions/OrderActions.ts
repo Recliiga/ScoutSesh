@@ -7,7 +7,7 @@ import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function purchaseCourse(courseId: string) {
+export async function purchaseCourse(courseId: string, price: number) {
   let redirectUrl;
   try {
     const cookieStore = await cookies();
@@ -15,7 +15,7 @@ export async function purchaseCourse(courseId: string) {
     if (error !== null) throw new Error("Unauthenticated");
 
     await connectDB();
-    await Order.create({ course: courseId, user: userId });
+    await Order.create({ course: courseId, user: userId, price });
 
     redirectUrl = "/dashboard/group-classes/my-classes";
   } catch (err) {
@@ -28,7 +28,7 @@ export async function purchaseCourse(courseId: string) {
 
 export async function addVideoToCompletedLessons(
   courseId: string,
-  video: VideoType
+  video: VideoType,
 ) {
   try {
     const cookieStore = await cookies();

@@ -6,7 +6,7 @@ type DatePickerProps = CalendarProps & {
   toggleCalendar: () => void;
   closeCalendar: () => void;
   calendarOpen: boolean;
-  pickerDisabled: boolean;
+  pickerDisabled?: boolean;
   pickerClassName?: string;
   children?: React.ReactNode;
 };
@@ -23,7 +23,7 @@ export default function DatePicker({
   const [selectRef] = useClickOutside(closeCalendar);
 
   return (
-    <div className={`relative w-fit ${pickerClassName}`} ref={selectRef}>
+    <div className={`relative w-fit rounded-md`} ref={selectRef}>
       <button
         type="button"
         onClick={() => {
@@ -33,12 +33,12 @@ export default function DatePicker({
           }
           toggleCalendar();
         }}
-        className={`rounded-md border px-4 py-2 text-sm font-medium duration-200 hover:bg-accent-gray-100 ${pickerDisabled ? "cursor-[default] bg-accent-gray-100" : ""}`}
+        className={`rounded-md border px-4 py-2 text-sm font-medium ring-accent-black duration-200 hover:bg-accent-gray-100 focus-visible:ring-1 ${pickerClassName} ${pickerDisabled ? "cursor-[default] bg-accent-gray-100" : ""}`}
       >
         {children || "Select Date"}
       </button>
       <div
-        className={`absolute bottom-[calc(100%_+_4px)] left-0 z-10 overflow-hidden rounded-md border bg-white shadow ${calendarOpen ? "visible" : "invisible"}`}
+        className={`absolute bottom-[calc(100%_+_4px)] left-0 z-10 overflow-hidden rounded-md border bg-white shadow duration-200 ${calendarOpen ? "visible scale-100 opacity-100" : "invisible scale-95 opacity-0"}`}
       >
         <Calendar {...calendarProps} />
       </div>

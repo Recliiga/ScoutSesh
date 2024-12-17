@@ -18,7 +18,7 @@ export async function fetchAllAthleteGoalData(): Promise<
     // Connect to database and get latest user goal
     await connectDB();
     const athleteGoalData: GoalDataSchemaType[] = JSON.parse(
-      JSON.stringify(await Goal.find({ user: userId }).sort({ createdAt: -1 }))
+      JSON.stringify(await Goal.find({ user: userId }).sort({ createdAt: -1 })),
     );
 
     return { athleteGoalData, error: null };
@@ -32,7 +32,7 @@ export async function fetchAthleteGoalData(goalSubmissionId: string) {
     // Connect to database and get latest user goal
     await connectDB();
     const goalData: GoalDataSchemaType | null = JSON.parse(
-      JSON.stringify(await Goal.findById(goalSubmissionId).populate("user"))
+      JSON.stringify(await Goal.findById(goalSubmissionId).populate("user")),
     );
 
     return { goalData, error: null };
@@ -50,7 +50,7 @@ export async function fetchAthleteLatestGoalData() {
     // Connect to database and get latest user goal
     await connectDB();
     const allGoalData: GoalDataSchemaType[] | [] = JSON.parse(
-      JSON.stringify(await Goal.find({ user: userId }).sort({ createdAt: -1 }))
+      JSON.stringify(await Goal.find({ user: userId }).sort({ createdAt: -1 })),
     );
     return { goalData: allGoalData.at(0) || null, error: null };
   } catch (error) {
@@ -62,12 +62,14 @@ export async function fetchTeamGoalData(organizationId: string) {
   try {
     await connectDB();
     const allGoalData: GoalDataSchemaType[] = JSON.parse(
-      JSON.stringify(await Goal.find().populate("user").sort({ createdAt: -1 }))
+      JSON.stringify(
+        await Goal.find().populate("user").sort({ createdAt: -1 }),
+      ),
     );
     const teamGoalData = allGoalData.filter(
       (goalData) =>
         JSON.parse(JSON.stringify(goalData.user.organization)) ===
-        organizationId
+        organizationId,
     );
     return { teamGoalData, error: null };
   } catch (error) {

@@ -1,41 +1,46 @@
 import { UserType } from "@/db/models/User";
 import { getFullname } from "@/lib/utils";
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { Button } from "../ui/button";
 import { MessageCircle } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function CoachProfileCard({ coach }: { coach: UserType }) {
   return (
     <div className="flex items-center">
-      <div className="flex sm:flex-row flex-col items-center gap-4 w-full h-full text-center sm:text-left">
-        <div className="relative rounded-full w-20 h-20 overflow-hidden">
-          <Image
+      <div className="flex h-full w-full flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
+        <Avatar className="h-20 w-20">
+          <AvatarImage
             src={coach.profilePicture}
-            alt="Coach profile"
-            fill
-            sizes="160px"
+            alt={getFullname(coach)}
             className="object-cover"
           />
-        </div>
+          <AvatarFallback>
+            {coach.firstName[0]}
+            {coach.lastName[0]}
+          </AvatarFallback>
+        </Avatar>
         <div>
-          <h3 className="font-semibold text-xl cursor-pointer">
+          <h3 className="cursor-pointer text-xl font-semibold">
             {getFullname(coach)}
           </h3>
           <p className="text-gray-600">{coach.role}</p>
-          <div className="flex gap-2 mt-2">
+          <div className="mt-2 flex gap-2">
             <Button
               variant="outline"
               size="sm"
-              className="px-0 py-0 h-8 text-xs"
+              className="h-8 px-0 py-0 text-xs"
             >
-              <Link href="#" className="px-4 py-2 w-full h-full">
+              <Link
+                href={`/dashboard/profile/${coach._id}`}
+                className="h-full w-full px-4 py-2"
+              >
                 View Profile
               </Link>
             </Button>
-            <Button variant="outline" size="sm" className="p-0 w-8 h-8">
-              <MessageCircle className="w-4 h-4" />
+            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+              <MessageCircle className="h-4 w-4" />
             </Button>
           </div>
         </div>

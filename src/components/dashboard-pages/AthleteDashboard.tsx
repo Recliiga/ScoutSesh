@@ -21,7 +21,8 @@ export default function AthleteDashboard({
 }) {
   const today = new Date();
   const todaysJournal = journalEntries.find(
-    (entry) => new Date(entry.createdAt).toDateString() === today.toDateString()
+    (entry) =>
+      new Date(entry.createdAt).toDateString() === today.toDateString(),
   );
 
   const isTodayEntryCompleted = Boolean(todaysJournal);
@@ -44,34 +45,34 @@ export default function AthleteDashboard({
   const isSessionStarted = () => {
     const now = new Date();
     const sessionStart = new Date(
-      now.toDateString() + " " + demoAthlete.nextSessionStartTime
+      now.toDateString() + " " + demoAthlete.nextSessionStartTime,
     );
     return now >= sessionStart;
   };
 
   return (
     <main className="flex-grow">
-      <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
-        <div className="flex sm:flex-row flex-col justify-between items-center gap-2 mb-6">
-          <h1 className="font-bold text-3xl text-black sm:text-4xl">
+      <div className="mx-auto w-[90%] max-w-6xl py-6 sm:py-8">
+        <div className="mb-6 flex flex-col items-center justify-between gap-2 sm:flex-row">
+          <h1 className="text-3xl font-bold text-black sm:text-4xl">
             Welcome back, {user.firstName}!
           </h1>
           <ScoutSeshStreak journalEntries={journalEntries} />
         </div>
-        <div className="bg-white shadow-lg mb-12 p-6 rounded-lg">
-          <div className="flex md:flex-row flex-col items-start">
-            <div className="mb-6 md:mb-0 md:pr-6 md:w-1/2">
-              <h2 className="mb-4 font-semibold text-2xl">Your Next Session</h2>
+        <div className="mb-12 rounded-lg bg-white p-6 shadow-lg">
+          <div className="flex flex-col items-start md:flex-row">
+            <div className="mb-6 md:mb-0 md:w-1/2 md:pr-6">
+              <h2 className="mb-4 text-2xl font-semibold">Your Next Session</h2>
               {organization ? (
                 <>
                   <p className="mb-2 text-xl">{demoAthlete.upcomingSession}</p>
-                  <p className="mb-4 text-gray-600 text-lg">
+                  <p className="mb-4 text-lg text-gray-600">
                     {demoAthlete.nextSessionDate},{" "}
                     {demoAthlete.nextSessionStartTime} -{" "}
                     {demoAthlete.nextSessionEndTime}
                   </p>
-                  <div className="flex items-center gap-4 mb-4">
-                    <Avatar className="w-16 h-16">
+                  <div className="mb-4 flex items-center gap-4">
+                    <Avatar className="h-16 w-16">
                       <AvatarImage
                         src={organization.user.profilePicture}
                         alt={getFullname(organization.user)}
@@ -88,22 +89,22 @@ export default function AthleteDashboard({
                       <p className="font-semibold">
                         Coach {getFullname(organization.user)}
                       </p>
-                      <p className="text-gray-600 text-sm">
+                      <p className="text-sm text-gray-600">
                         {organization.name}
                       </p>
                     </div>
                   </div>
                 </>
               ) : (
-                <p className="text-accent-gray-200">
+                <p className="text-accent-gray-300">
                   You are not connected to any team
                 </p>
               )}
             </div>
-            <div className="pt-6 md:pt-0 md:pl-6 border-t md:border-t-0 md:border-l md:w-1/2">
-              <h2 className="mb-4 font-semibold text-2xl">Daily Journal</h2>
+            <div className="border-t pt-6 md:w-1/2 md:border-l md:border-t-0 md:pl-6 md:pt-0">
+              <h2 className="mb-4 text-2xl font-semibold">Daily Journal</h2>
               {!isTodayEntryCompleted && streakCount > 0 && (
-                <div className="flex items-start mb-4 text-red-600">
+                <div className="mb-4 flex items-start text-red-600">
                   <AlertCircle className="mr-2" />
                   <p>
                     Complete your journal to maintain your {streakCount} day
@@ -118,13 +119,13 @@ export default function AthleteDashboard({
               </p>
             </div>
           </div>
-          <div className="flex sm:flex-row flex-col justify-between gap-4 mt-6 pt-6 border-t">
+          <div className="mt-6 flex flex-col justify-between gap-4 border-t pt-6 sm:flex-row">
             {!isSessionStarted() ? (
               <Button disabled>Session Not Started</Button>
             ) : (
               <Link
                 href={"#"}
-                className="bg-accent-black hover:bg-accent-black/90 px-4 py-2 rounded-md font-medium text-center text-sm text-white duration-300"
+                className="rounded-md bg-accent-black px-4 py-2 text-center text-sm font-medium text-white duration-300 hover:bg-accent-black/90"
               >
                 Join Session
               </Link>
@@ -135,7 +136,7 @@ export default function AthleteDashboard({
                   ? `/dashboard/daily-journal/${todaysJournal?._id}`
                   : "/dashboard/daily-journal/submit-entry"
               }
-              className="bg-accent-black hover:bg-accent-black/90 disabled:bg-accent-gray-300 px-4 py-2 rounded-md font-medium text-center text-sm text-white duration-300"
+              className="rounded-md bg-accent-black px-4 py-2 text-center text-sm font-medium text-white duration-300 hover:bg-accent-black/90 disabled:bg-accent-gray-300"
             >
               {isTodayEntryCompleted
                 ? "View Latest Journal Entry"
@@ -143,8 +144,8 @@ export default function AthleteDashboard({
             </Link>
           </div>
         </div>
-        <h2 className="mb-6 font-bold text-2xl">Your ScoutSesh Dashboard</h2>
-        <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
+        <h2 className="mb-6 text-2xl font-bold">Your ScoutSesh Dashboard</h2>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <DashboardCard
             title="Athlete Evaluation"
             description="Track your progress and receive feedback from coaches to improve your performance."

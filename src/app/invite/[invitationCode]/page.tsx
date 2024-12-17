@@ -19,41 +19,39 @@ export default async function InvitationPage({
     invitationData?.user.firstName + " " + invitationData?.user.lastName;
 
   return (
-    <div className="flex flex-col flex-1 justify-center items-center gap-6 bg-green-50 py-6">
+    <div className="flex flex-1 flex-col items-center justify-center gap-6 bg-green-50 py-6">
       {user.organization ? (
-        <p className="text-accent-gray-300 text-sm">
+        <p className="text-sm text-accent-gray-300">
           You are already connected to a team
         </p>
       ) : (
         <>
-          <h1 className="font-bold text-2xl">Team Invitation</h1>
+          <h1 className="text-2xl font-bold">Team Invitation</h1>
           {invitationData ? (
             <>
-              <div className="flex-col flex-center gap-3">
-                <div className="flex-col flex-center gap-1.5">
-                  <div className="relative rounded-full w-28 h-28 overflow-hidden">
+              <div className="flex-center flex-col gap-3">
+                <div className="flex-center flex-col gap-1.5">
+                  <div className="relative h-28 w-28 overflow-hidden rounded-full">
                     <Image
                       src={invitationData.organization.logo}
                       alt={invitationData.organization.name}
                       fill
                     />
                   </div>
-                  <h2 className="font-semibold text-xl">
+                  <h2 className="text-xl font-semibold">
                     {invitationData.organization.name}
                   </h2>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Avatar className="w-10 h-10">
+                  <Avatar className="h-10 w-10">
                     <AvatarImage
                       src={invitationData.user.profilePicture}
                       alt={coachName}
-                      className="rounded-full object-cover"
+                      className="h-full w-full rounded-full object-cover"
                     />
                     <AvatarFallback>
-                      {coachName
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                      {invitationData.user.firstName[0]}
+                      {invitationData.user.lastName[0]}
                     </AvatarFallback>
                   </Avatar>
                   <h3>{coachName} (Head Coach)</h3>
@@ -64,7 +62,7 @@ export default async function InvitationPage({
               />
             </>
           ) : (
-            <p className="mt-4 text-red-500 text-sm">
+            <p className="mt-4 text-sm text-red-500">
               Sorry, this invitation is invalid or expired.
             </p>
           )}

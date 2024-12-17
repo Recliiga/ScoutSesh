@@ -5,19 +5,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2 } from "lucide-react";
-import { CalendarIcon, MapPinIcon } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
-import { cn, resizeImage } from "@/lib/utils";
+import { MapPinIcon } from "lucide-react";
+import { resizeImage, uploadImageClient } from "@/lib/utils";
 import Image from "next/image";
 import { createOrganization } from "@/actions/authActions";
 import { useRouter, useSearchParams } from "next/navigation";
 import Error from "./AuthError";
 import useFormEntries from "@/hooks/useFormEntries";
+import Select from "./Select";
+
+const sportList = [
+  "volleyball",
+  "basketball",
+  "soccer",
+  "tennis",
+  "swimming",
+  "golf",
+  "baseball",
+  "football",
+  "hockey",
+  "rugby",
+  "cricket",
+  "track_and_field",
+  "gymnastics",
+  "boxing",
+  "martial_arts",
+];
 
 export default function OrganizationRegistrationForm({
   userId,
@@ -32,7 +45,7 @@ export default function OrganizationRegistrationForm({
 
   const { formEntries, updateField } = useFormEntries({
     userId,
-    profilePicture: "",
+    logo: "",
     organizationType: "",
     organizationName: "",
     memberCount: "",
@@ -46,7 +59,7 @@ export default function OrganizationRegistrationForm({
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
   const cannotSubmit = Object.entries(formEntries).some(([key, value]) =>
-    key !== "organizationID" ? value.trim() === "" : false
+    key !== "organizationID" ? value.trim() === "" : false,
   );
 
   async function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -56,7 +69,7 @@ export default function OrganizationRegistrationForm({
     const resizedImageUrl = await resizeImage(file);
     if (!resizedImageUrl) return;
 
-    updateField("profilePicture", resizedImageUrl);
+    updateField("logo", resizedImageUrl);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -64,13 +77,29 @@ export default function OrganizationRegistrationForm({
     if (cannotSubmit) return;
     setLoading(true);
 
-    const formData = new FormData();
-    for (const k in formEntries) {
-      const key = k as keyof typeof formEntries;
-      formData.append(key, formEntries[key]);
-    }
+    const organizationData = {
+      name: formEntries.organizationName,
+      logo: formEntries.logo,
+      type: formEntries.organizationType,
+      memberCount: formEntries.memberCount,
+      location: formEntries.location,
+      primarySport: formEntries.primarySport,
+      yearFounded: formEntries.yearFounded,
+      bio: formEntries.bio,
+    };
 
-    const { error } = await createOrganization(formData);
+    // Upload organization profile picture
+    const { url, error: uploadError } = await uploadImageClient(
+      formEntries.logo,
+    );
+    if (uploadError !== null) {
+      setError("An error occured uploading organization logo");
+      setLoading(false);
+      return;
+    }
+    organizationData.logo = url;
+
+    const { error } = await createOrganization(organizationData);
     setError(error);
     if (!error) {
       router.replace(redirectUrl);
@@ -80,22 +109,22 @@ export default function OrganizationRegistrationForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex flex-col items-center gap-4 mb-6">
-        <Label htmlFor="profilePicture" className="text-center">
+      <div className="mb-6 flex flex-col items-center gap-4">
+        <Label htmlFor="logo" className="text-center">
           Organization Profile Photo
         </Label>
-        <div className="relative bg-gray-100 rounded-full w-32 h-32 overflow-hidden">
-          {formEntries.profilePicture ? (
+        <div className="relative h-32 w-32 overflow-hidden rounded-full bg-gray-100">
+          {formEntries.logo ? (
             <Image
-              src={formEntries.profilePicture}
+              src={formEntries.logo}
               alt="Profile"
               layout="fill"
               objectFit="cover"
             />
           ) : (
-            <div className="flex justify-center items-center w-full h-full text-gray-400">
+            <div className="flex h-full w-full items-center justify-center text-gray-400">
               <svg
-                className="w-16 h-16"
+                className="h-16 w-16"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -120,7 +149,7 @@ export default function OrganizationRegistrationForm({
         </Button>
         <input
           type="file"
-          id="profilePicture"
+          id="logo"
           ref={fileInputRef}
           onChange={handleImageChange}
           accept="image/*"
@@ -136,7 +165,7 @@ export default function OrganizationRegistrationForm({
             name="organizationType"
             value={formEntries["organizationType"]}
             onChange={(e) => updateField("organizationType", e.target.value)}
-            className="border-gray-300 bg-white py-2 pr-10 pl-3 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full text-sm leading-5 appearance-none focus:outline-none"
+            className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           >
             <option hidden>Select organization type</option>
@@ -146,7 +175,7 @@ export default function OrganizationRegistrationForm({
             <option value="Association">Association</option>
             <option value="Other">Other</option>
           </select>
-          <ArrowRight className="right-2 bottom-3 absolute w-4 h-4" />
+          <ArrowRight className="absolute bottom-3 right-2 h-4 w-4" />
         </div>
         {formEntries.organizationType === "Other" && (
           <div className="flex flex-col gap-2">
@@ -180,7 +209,7 @@ export default function OrganizationRegistrationForm({
             name="memberCount"
             value={formEntries["memberCount"]}
             onChange={(e) => updateField("memberCount", e.target.value)}
-            className="border-gray-300 bg-white py-2 pr-10 pl-3 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full text-sm leading-5 appearance-none focus:outline-none"
+            className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           >
             <option hidden>Select member count</option>
@@ -192,12 +221,12 @@ export default function OrganizationRegistrationForm({
             <option value={"501-1000 members"}>501-1000 members</option>
             <option value={"1000+ members"}>1000+ members</option>
           </select>
-          <ArrowRight className="right-2 bottom-3 absolute w-4 h-4" />
+          <ArrowRight className="absolute bottom-3 right-2 h-4 w-4" />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="location">Location</Label>
           <div className="relative">
-            <MapPinIcon className="top-1/2 left-3 absolute w-5 h-5 text-gray-400 transform -translate-y-1/2" />
+            <MapPinIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
             <Input
               id="location"
               name="location"
@@ -211,56 +240,34 @@ export default function OrganizationRegistrationForm({
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="primarySport">Primary Sport</Label>
-          <Input
-            id="primarySport"
-            name="primarySport"
-            value={formEntries["primarySport"]}
-            onChange={(e) => updateField("primarySport", e.target.value)}
+          <Select
+            value={formEntries.primarySport}
+            onChange={(value) => updateField("primarySport", value)}
             placeholder="e.g., Basketball, Soccer, Tennis"
-            required
-          />
+          >
+            <Select.Content>
+              {sportList.map((sport) => (
+                <Select.Option value={sport} key={sport}>
+                  {sport[0].toUpperCase() + sport.slice(1)}
+                </Select.Option>
+              ))}
+            </Select.Content>
+          </Select>
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="yearFounded">Founded Year</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="yearFounded"
-                name="yearFounded"
-                variant={"outline"}
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !formEntries.yearFounded && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 w-4 h-4" />
-                {formEntries.yearFounded ? (
-                  format(formEntries.yearFounded, "yyyy")
-                ) : (
-                  <span>Select year</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-0 w-auto" align="start">
-              <div className="flex flex-col gap-2 p-4">
-                <select
-                  value={formEntries["yearFounded"]}
-                  onChange={(e) => updateField("yearFounded", e.target.value)}
-                  className="p-2 border rounded w-full"
-                >
-                  <option value="">Select year</option>
-                  {Array.from(
-                    { length: new Date().getFullYear() - 1899 },
-                    (_, i) => (
-                      <option key={i} value={`${new Date().getFullYear() - i}`}>
-                        {new Date().getFullYear() - i}
-                      </option>
-                    )
-                  )}
-                </select>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <select
+            value={formEntries["yearFounded"]}
+            onChange={(e) => updateField("yearFounded", e.target.value)}
+            className="w-full rounded border p-2"
+          >
+            <option value="">Select year</option>
+            {Array.from({ length: new Date().getFullYear() - 1899 }, (_, i) => (
+              <option key={i} value={`${new Date().getFullYear() - i}`}>
+                {new Date().getFullYear() - i}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="bio">Short Bio</Label>
@@ -269,17 +276,17 @@ export default function OrganizationRegistrationForm({
             name="bio"
             value={formEntries["bio"]}
             onChange={(e) => updateField("bio", e.target.value)}
-            className="border-gray-300 bg-white px-3 py-2 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full min-h-[100px] text-sm leading-5 appearance-none focus:outline-none"
+            className="min-h-[100px] w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             placeholder="Tell us a bit about your organization..."
           />
           {error && <Error error={error} />}
         </div>
         <Button
-          className="bg-[#14a800] hover:bg-[#14a800]/90 w-full text-white"
+          className="w-full bg-[#14a800] text-white hover:bg-[#14a800]/90"
           type="submit"
           disabled={loading || cannotSubmit}
         >
-          {loading && <Loader2 className="mr-2 w-4 h-4 animate-spin" />}
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {loading ? "Saving..." : "Complete Profile"}
         </Button>
       </div>
