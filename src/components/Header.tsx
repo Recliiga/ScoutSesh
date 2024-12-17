@@ -27,7 +27,7 @@ export default function Header({
   invitationCode: InvitationCodeType | null;
 }) {
   const [mobileNav, setMobileNav] = useState(false);
-  const [docWidth, setDocWidth] = useState(900);
+  const [docWidth, setDocWidth] = useState(0);
 
   useEffect(() => {
     function handleResize() {
