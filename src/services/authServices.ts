@@ -23,16 +23,9 @@ export async function getSession(): Promise<
     });
     const { user, error } = await res.json();
 
-    console.log(
-      "User from getSession function: ",
-      user.firstName,
-      user.lastName,
-    );
-
     return { user, error };
   } catch (err) {
     const error = err as Error;
-    console.log("Error from getSession function", error.message);
     return { user: null, error: error.message };
   }
 }
