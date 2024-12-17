@@ -2,6 +2,7 @@ import connectDB from "@/db/connectDB";
 import jwt from "jsonwebtoken";
 import User, { UserType } from "@/db/models/User";
 import { NextRequest, NextResponse } from "next/server";
+import "@/db/models/Organization";
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,6 +12,7 @@ export async function GET(request: NextRequest) {
     if (typeof payload === "string") throw new Error("Invalid token");
 
     const userId = payload.userId;
+
     await connectDB();
     const user: UserType | null =
       await User.findById(userId).populate("organization");

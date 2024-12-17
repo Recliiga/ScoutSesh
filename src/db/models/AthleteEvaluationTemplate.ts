@@ -67,7 +67,7 @@ export const AthleteEvaluationTemplateSchema =
   );
 
 const AthleteEvaluationTemplate =
-  mongoose.models.AthleteEvaluationTemplate ||
+  mongoose.models?.AthleteEvaluationTemplate ||
   mongoose.model("AthleteEvaluationTemplate", AthleteEvaluationTemplateSchema);
 
 export default AthleteEvaluationTemplate;

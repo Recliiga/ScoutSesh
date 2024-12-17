@@ -22,6 +22,6 @@ const AdminNoteSchema = new mongoose.Schema<AdminNoteType>(
 );
 
 const AdminNote =
-  mongoose.models.AdminNote || mongoose.model("AdminNote", AdminNoteSchema);
+  mongoose.models?.AdminNote || mongoose.model("AdminNote", AdminNoteSchema);
 
 export default AdminNote;

@@ -125,7 +125,7 @@ const AthleteEvaluationSchema = new mongoose.Schema<AthleteEvaluationType>(
 );
 
 const AthleteEvaluation =
-  mongoose.models.AthleteEvaluation ||
+  mongoose.models?.AthleteEvaluation ||
   mongoose.model("AthleteEvaluation", AthleteEvaluationSchema);
 
 export default AthleteEvaluation;

@@ -23,7 +23,11 @@ export async function getSession(): Promise<
     });
     const { user, error } = await res.json();
 
-    console.log("User from getSession function: ", user);
+    console.log(
+      "User from getSession function: ",
+      user.firstName,
+      user.lastName,
+    );
 
     return { user, error };
   } catch (err) {
