@@ -32,8 +32,6 @@ export default function LoginForm() {
     const formData = new FormData(e.currentTarget);
     const { error } = await login(formData);
 
-    console.log({ error });
-
     if (!error) {
       router.replace(redirectUrl);
     } else {
