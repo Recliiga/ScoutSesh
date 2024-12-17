@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ user, error: null });
   } catch (error) {
+    console.log("Error from route handler: ", (error as Error).message);
     return NextResponse.json(
       { user: null, error: (error as Error).message },
       { status: 401 },
