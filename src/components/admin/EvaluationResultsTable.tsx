@@ -104,18 +104,18 @@ export default function EvaluationResultsTable({
   return (
     <main className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
       <div className="px-4 py-6 sm:px-0">
-        <Card>
-          <CardHeader>
+        <Card className="flex flex-col gap-6 p-4 sm:p-6">
+          <CardHeader className="p-0">
             <CardTitle>Evaluation Results</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             <div className="mb-4 flex flex-col gap-4 sm:flex-row">
               <div className="flex-grow">
                 <Input
                   placeholder="Search athletes or evaluators..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 text-sm"
+                  className="w-full p-2 text-sm sm:px-4"
                 />
               </div>
               <div className="flex items-center gap-4 text-sm">

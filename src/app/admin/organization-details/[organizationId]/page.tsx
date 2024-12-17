@@ -20,16 +20,18 @@ export default async function OrganizationDetailsPage({
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
-          <h1 className="flex items-center text-3xl font-bold text-gray-900">
-            <Link href="/admin" className="mr-4">
-              <ArrowLeft className="h-6 w-6" />
-            </Link>
-            {organizationData.organization.name}
-          </h1>
-          <Badge variant="secondary" className="text-lg">
-            Members: {organizationData.teamMembers.length}
-          </Badge>
+        <div className="mx-auto flex max-w-7xl px-4 py-4 sm:items-center sm:px-6 sm:py-6 lg:px-8">
+          <Link href="/admin" className="mr-4">
+            <ArrowLeft className="h-6 w-6" />
+          </Link>
+          <div className="flex flex-1 flex-col justify-between gap-x-4 sm:flex-row sm:items-center">
+            <h1 className="flex items-center text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">
+              {organizationData.organization.name}
+            </h1>
+            <Badge variant="secondary" className="w-fit text-base lg:text-lg">
+              Members: {organizationData.teamMembers.length}
+            </Badge>
+          </div>
         </div>
       </header>
       <OrganizationDetailsPageMain organizationData={organizationData} />

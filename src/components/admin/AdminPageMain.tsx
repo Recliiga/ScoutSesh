@@ -32,7 +32,6 @@ import { OrganizationType } from "@/db/models/Organization";
 import { UserType } from "@/db/models/User";
 import { getFullname } from "@/lib/utils";
 import Link from "next/link";
-import { ScrollArea } from "../ui/scroll-area";
 import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
 import { GroupClassType } from "@/db/models/GroupClass";
 import { OrderType } from "@/db/models/Order";
@@ -335,7 +334,7 @@ export default function AdminPageMain({
 
         <TabsContent value="users" className="space-y-6" tabIndex={undefined}>
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-lg border border-border bg-white p-6">
+            <div className="rounded-lg border border-border bg-white p-4 sm:p-6">
               <div className="grid gap-6 md:grid-cols-2">
                 <StatCard
                   title="New Users This Month"
@@ -359,7 +358,7 @@ export default function AdminPageMain({
                 />
               </div>
             </div>
-            <div className="grid gap-6 rounded-lg border border-border bg-green-50 p-6 md:grid-cols-2">
+            <div className="grid gap-6 rounded-lg border border-border bg-green-50 p-4 sm:p-6 md:grid-cols-2">
               <StatCard
                 title="Athletes"
                 value={athletes.length}
@@ -423,52 +422,48 @@ export default function AdminPageMain({
                   placeholder="Search organizations, coaches, or athletes..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full"
+                  className="w-full p-2 text-sm sm:px-4"
                 />
               </div>
             </div>
-            <Card>
-              <CardHeader>
+            <Card className="flex flex-col gap-6 p-4 sm:p-6">
+              <CardHeader className="p-0">
                 <CardTitle>Organization Search Results</CardTitle>
               </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[450px] w-full">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[50px]">Rank</TableHead>
-                        <TableHead>Organization Name</TableHead>
-                        <TableHead>Head Coach</TableHead>
-                        <TableHead className="text-right">
-                          Team Members
-                        </TableHead>
-                        <TableHead className="w-[100px]">Actions</TableHead>
+              <CardContent className="min-h-[450px] p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[50px]">Rank</TableHead>
+                      <TableHead>Organization Name</TableHead>
+                      <TableHead>Head Coach</TableHead>
+                      <TableHead className="text-right">Team Members</TableHead>
+                      <TableHead className="w-[100px]">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredOrganizations.map((org, index) => (
+                      <TableRow key={org.name}>
+                        <TableCell className="font-medium">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell>{org.name}</TableCell>
+                        <TableCell>{getFullname(org.user)}</TableCell>
+                        <TableCell className="text-right">
+                          {getNumberOfTeamMembers(org)}
+                        </TableCell>
+                        <TableCell>
+                          <Link
+                            href={`/admin/organization-details/${org._id}`}
+                            className="rounded-md border bg-white px-3 py-1.5 text-xs font-medium duration-200 hover:bg-accent-gray-100"
+                          >
+                            View
+                          </Link>
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredOrganizations.map((org, index) => (
-                        <TableRow key={org.name}>
-                          <TableCell className="font-medium">
-                            {index + 1}
-                          </TableCell>
-                          <TableCell>{org.name}</TableCell>
-                          <TableCell>{getFullname(org.user)}</TableCell>
-                          <TableCell className="text-right">
-                            {getNumberOfTeamMembers(org)}
-                          </TableCell>
-                          <TableCell>
-                            <Link
-                              href={`/admin/organization-details/${org._id}`}
-                              className="rounded-md border bg-white px-3 py-1.5 text-xs font-medium duration-200 hover:bg-accent-gray-100"
-                            >
-                              View
-                            </Link>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </div>
@@ -682,151 +677,141 @@ export default function AdminPageMain({
               <CardHeader>
                 <CardTitle>Video Courses</CardTitle>
               </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[450px] w-full">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[300px]">Name</TableHead>
-                        <TableHead className="w-[250px]">
-                          Organization
-                        </TableHead>
-                        <TableHead className="w-[150px]">Instructor</TableHead>
-                        <TableHead
-                          className="w-[100px] cursor-pointer text-right"
-                          onClick={() => handleSort("enrolled", "courses")}
-                        >
-                          <div className="flex items-center justify-end">
-                            Enrolled
-                            {courseSortOptions.column === "enrolled" ? (
-                              courseSortOptions.direction === "asc" ? (
-                                <ChevronUp className="ml-1" />
-                              ) : (
-                                <ChevronDown className="ml-1" />
-                              )
+              <CardContent className="min-h-[450px]">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[300px]">Title</TableHead>
+                      <TableHead className="w-[250px]">Organization</TableHead>
+                      <TableHead className="w-[150px]">Instructor</TableHead>
+                      <TableHead
+                        className="w-[100px] cursor-pointer text-right"
+                        onClick={() => handleSort("enrolled", "courses")}
+                      >
+                        <div className="flex items-center justify-end">
+                          Enrolled
+                          {courseSortOptions.column === "enrolled" ? (
+                            courseSortOptions.direction === "asc" ? (
+                              <ChevronUp className="ml-1" />
                             ) : (
-                              <ChevronsUpDown className="ml-1" />
-                            )}
-                          </div>
-                        </TableHead>
-                        <TableHead
-                          className="w-[150px] cursor-pointer text-right"
-                          onClick={() => handleSort("revenue", "courses")}
-                        >
-                          <div className="flex items-center justify-end">
-                            Revenue
-                            {courseSortOptions.column === "revenue" ? (
-                              courseSortOptions.direction === "asc" ? (
-                                <ChevronUp className="ml-1" />
-                              ) : (
-                                <ChevronDown className="ml-1" />
-                              )
+                              <ChevronDown className="ml-1" />
+                            )
+                          ) : (
+                            <ChevronsUpDown className="ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead
+                        className="w-[150px] cursor-pointer text-right"
+                        onClick={() => handleSort("revenue", "courses")}
+                      >
+                        <div className="flex items-center justify-end">
+                          Revenue
+                          {courseSortOptions.column === "revenue" ? (
+                            courseSortOptions.direction === "asc" ? (
+                              <ChevronUp className="ml-1" />
                             ) : (
-                              <ChevronsUpDown className="ml-1" />
-                            )}
-                          </div>
-                        </TableHead>
+                              <ChevronDown className="ml-1" />
+                            )
+                          ) : (
+                            <ChevronsUpDown className="ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sortedCourses.map((course) => (
+                      <TableRow key={course._id}>
+                        <TableCell className="min-w-28 font-medium">
+                          {course.title}
+                        </TableCell>
+                        <TableCell className="min-w-28">
+                          {course.coaches[0].organization?.name}
+                        </TableCell>
+                        <TableCell>{getFullname(course.coaches[0])}</TableCell>
+                        <TableCell className="text-right">
+                          {getNumberOfClassStudents(course)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          ${getGroupClassRevenue(course)}
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {sortedCourses.map((course) => (
-                        <TableRow key={course._id}>
-                          <TableCell className="font-medium">
-                            {course.title}
-                          </TableCell>
-                          <TableCell>
-                            {course.coaches[0].organization?.name}
-                          </TableCell>
-                          <TableCell>
-                            {getFullname(course.coaches[0])}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {getNumberOfClassStudents(course)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            ${getGroupClassRevenue(course)}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
                 <CardTitle>Live Classes</CardTitle>
               </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[450px] w-full">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[300px]">Name</TableHead>
-                        <TableHead className="w-[250px]">
-                          Organization
-                        </TableHead>
-                        <TableHead className="w-[200px]">Instructor</TableHead>
-                        <TableHead
-                          className="w-[150px] cursor-pointer text-right"
-                          onClick={() => handleSort("enrolled", "liveClasses")}
-                        >
-                          <div className="flex items-center justify-end">
-                            Enrolled
-                            {liveClassSortOptions.column === "enrolled" ? (
-                              liveClassSortOptions.direction === "asc" ? (
-                                <ChevronUp className="ml-1" />
-                              ) : (
-                                <ChevronDown className="ml-1" />
-                              )
+              <CardContent className="min-h-[450px]">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[300px]">Name</TableHead>
+                      <TableHead className="w-[250px]">Organization</TableHead>
+                      <TableHead className="w-[200px]">Instructor</TableHead>
+                      <TableHead
+                        className="w-[150px] cursor-pointer text-right"
+                        onClick={() => handleSort("enrolled", "liveClasses")}
+                      >
+                        <div className="flex items-center justify-end">
+                          Enrolled
+                          {liveClassSortOptions.column === "enrolled" ? (
+                            liveClassSortOptions.direction === "asc" ? (
+                              <ChevronUp className="ml-1" />
                             ) : (
-                              <ChevronsUpDown className="ml-1" />
-                            )}
-                          </div>
-                        </TableHead>
-                        <TableHead
-                          className="w-[150px] cursor-pointer text-right"
-                          onClick={() => handleSort("revenue", "liveClasses")}
-                        >
-                          <div className="flex items-center justify-end">
-                            Revenue
-                            {liveClassSortOptions.column === "revenue" ? (
-                              liveClassSortOptions.direction === "asc" ? (
-                                <ChevronUp className="ml-1" />
-                              ) : (
-                                <ChevronDown className="ml-1" />
-                              )
+                              <ChevronDown className="ml-1" />
+                            )
+                          ) : (
+                            <ChevronsUpDown className="ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead
+                        className="w-[150px] cursor-pointer text-right"
+                        onClick={() => handleSort("revenue", "liveClasses")}
+                      >
+                        <div className="flex items-center justify-end">
+                          Revenue
+                          {liveClassSortOptions.column === "revenue" ? (
+                            liveClassSortOptions.direction === "asc" ? (
+                              <ChevronUp className="ml-1" />
                             ) : (
-                              <ChevronsUpDown className="ml-1" />
-                            )}
-                          </div>
-                        </TableHead>
+                              <ChevronDown className="ml-1" />
+                            )
+                          ) : (
+                            <ChevronsUpDown className="ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sortedGroupClasses.map((liveClass) => (
+                      <TableRow key={liveClass._id}>
+                        <TableCell className="min-w-28 font-medium">
+                          {liveClass.title}
+                        </TableCell>
+                        <TableCell>
+                          {liveClass.coaches[0].organization?.name}
+                        </TableCell>
+                        <TableCell>
+                          {getFullname(liveClass.coaches[0])}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {getNumberOfClassStudents(liveClass)}/
+                          {liveClass.totalSpots}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          ${getGroupClassRevenue(liveClass)}
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {sortedGroupClasses.map((liveClass) => (
-                        <TableRow key={liveClass._id}>
-                          <TableCell className="font-medium">
-                            {liveClass.title}
-                          </TableCell>
-                          <TableCell>
-                            {liveClass.coaches[0].organization?.name}
-                          </TableCell>
-                          <TableCell>
-                            {getFullname(liveClass.coaches[0])}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {getNumberOfClassStudents(liveClass)}/
-                            {liveClass.totalSpots}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            ${getGroupClassRevenue(liveClass)}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </div>
