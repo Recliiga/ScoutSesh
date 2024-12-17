@@ -65,7 +65,7 @@ const StandardPlanSchema = new mongoose.Schema<StandardPlanType>({
 const CustomPlanTierSchema = new mongoose.Schema<CustomPlanType>({
   type: {
     type: String,
-    enum: ["single", "range"], 
+    enum: ["single", "range"],
   },
   evaluations: {
     from: {
@@ -107,7 +107,7 @@ export const AthleteEvaluationPricingPlanSchema =
   );
 
 const AthleteEvaluationPricingPlan =
-  mongoose.models.AthleteEvaluationPricingPlan ||
+  mongoose.models?.AthleteEvaluationPricingPlan ||
   mongoose.model(
     "AthleteEvaluationPricingPlan",
     AthleteEvaluationPricingPlanSchema,

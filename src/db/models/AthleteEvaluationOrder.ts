@@ -79,7 +79,7 @@ const AthleteEvaluationOrderSchema =
   );
 
 const AthleteEvaluationOrder =
-  mongoose.models.AthleteEvaluationOrder ||
+  mongoose.models?.AthleteEvaluationOrder ||
   mongoose.model("AthleteEvaluationOrder", AthleteEvaluationOrderSchema);
 
 export default AthleteEvaluationOrder;

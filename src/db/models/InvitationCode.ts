@@ -34,11 +34,11 @@ const InvitationCodeSchema = new mongoose.Schema<InvitationCodeType>(
       required: [true, "Please enter an expiry date"],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const InvitationCode =
-  mongoose.models.InvitationCode ||
+  mongoose.models?.InvitationCode ||
   mongoose.model("InvitationCode", InvitationCodeSchema);
 
 export default InvitationCode;
