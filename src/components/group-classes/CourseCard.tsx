@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import ModalContainer from "../ModalContainer";
 import DeleteGroupClassModal from "../DeleteGroupClassModal";
-import { purchaseCourse } from "@/actions/OrderActions";
+import { purchaseCourse } from "@/actions/groupClassOrderActions";
 import { PlayCircle } from "lucide-react";
 import { UserType } from "@/db/models/User";
 import { getFullname } from "@/lib/utils";
@@ -51,10 +51,7 @@ export default function CourseCard({
   async function handlePurchaseCourse(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const data = await purchaseCourse(course._id, course.price);
-    if (data?.error) {
-      console.log(data?.error);
-    }
+    await purchaseCourse(course._id, course.price, course.user._id, false);
     setLoading(false);
   }
 

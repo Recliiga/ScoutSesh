@@ -2,7 +2,7 @@ import LiveClassCard from "@/components/group-classes/LiveClassCard";
 import CourseCard from "@/components/group-classes/CourseCard";
 import BackButton from "@/components/dashboard/BackButton";
 import { GroupClassType } from "@/db/models/GroupClass";
-import { OrderType } from "@/db/models/Order";
+import { GroupClassOrderType } from "@/db/models/GroupClassOrder";
 
 export default function AthleteCoursesView({
   userId,
@@ -12,10 +12,10 @@ export default function AthleteCoursesView({
   groupClassOrders,
 }: {
   userId: string;
-  userOrders: OrderType[];
+  userOrders: GroupClassOrderType[];
   liveClasses: GroupClassType[];
   courses: GroupClassType[];
-  groupClassOrders: OrderType[];
+  groupClassOrders: GroupClassOrderType[];
 }) {
   return (
     <div className="mx-auto w-[90%] max-w-5xl flex-1 py-4">

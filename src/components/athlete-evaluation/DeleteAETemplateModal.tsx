@@ -2,7 +2,7 @@ import { useState } from "react";
 import { LogOutIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AthleteEvaluationTemplateType } from "@/db/models/AthleteEvaluationTemplate";
-import { deleteTemplate } from "@/actions/AthleteEvaluationActions";
+import { deleteTemplate } from "@/actions/athleteEvaluationActions";
 import LoadingIndicator from "../LoadingIndicator";
 
 export default function DeleteAETemplateModal({

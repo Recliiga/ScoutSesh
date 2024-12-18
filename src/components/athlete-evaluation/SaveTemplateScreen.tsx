@@ -7,7 +7,7 @@ import { AthleteEvaluationTemplateType } from "@/db/models/AthleteEvaluationTemp
 import {
   createTemplate,
   updateTemplate,
-} from "@/actions/AthleteEvaluationActions";
+} from "@/actions/athleteEvaluationActions";
 import Error from "../AuthError";
 import LoadingIndicator from "../LoadingIndicator";
 

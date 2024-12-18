@@ -14,7 +14,7 @@ import {
 import {
   createPricingPlan,
   updatePricingPlan,
-} from "@/actions/AthleteEvaluationActions";
+} from "@/actions/athleteEvaluationActions";
 import LoadingIndicator from "../LoadingIndicator";
 import Error from "../AuthError";
 import Select from "../Select";

@@ -12,6 +12,7 @@ import AthleteEvaluationPricingPlan, {
 import AthleteEvaluationTemplate, {
   AthleteEvaluationTemplateType,
 } from "@/db/models/AthleteEvaluationTemplate";
+import NotificationEntry from "@/db/models/NotificationEntry";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
@@ -261,6 +262,13 @@ export async function purchaseEvaluation(
       ...evaluationPurchaseData,
       coach: coachId,
       athlete: userId,
+    });
+
+    await NotificationEntry.create({
+      type: "evaluation",
+      fromUser: userId,
+      toUser: coachId,
+      link: "/dashboard/athlete-evaluation",
     });
 
     redirectUrl = "/dashboard/athlete-evaluation";

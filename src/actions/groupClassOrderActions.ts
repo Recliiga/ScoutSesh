@@ -2,12 +2,20 @@
 
 import connectDB from "@/db/connectDB";
 import { VideoType } from "@/db/models/GroupClass";
-import Order, { OrderType } from "@/db/models/Order";
+import NotificationEntry from "@/db/models/NotificationEntry";
+import GroupClassOrder, {
+  GroupClassOrderType,
+} from "@/db/models/GroupClassOrder";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function purchaseCourse(courseId: string, price: number) {
+export async function purchaseCourse(
+  courseId: string,
+  price: number,
+  coachId: string,
+  isLiveClass: boolean,
+) {
   let redirectUrl;
   try {
     const cookieStore = await cookies();
@@ -15,9 +23,27 @@ export async function purchaseCourse(courseId: string, price: number) {
     if (error !== null) throw new Error("Unauthenticated");
 
     await connectDB();
-    await Order.create({ course: courseId, user: userId, price });
+    await GroupClassOrder.create({ course: courseId, user: userId, price });
 
-    redirectUrl = "/dashboard/group-classes/my-classes";
+    if (isLiveClass) {
+      await NotificationEntry.create({
+        type: "liveClass",
+        fromUser: userId,
+        toUser: coachId,
+        link: `/dashboard/group-classes/live-classes/${courseId}`,
+      });
+    } else {
+      await NotificationEntry.create({
+        type: "videoCourse",
+        fromUser: userId,
+        toUser: coachId,
+        link: `/dashboard/group-classes/courses`,
+      });
+    }
+
+    redirectUrl = isLiveClass
+      ? `/dashboard/group-classes/live-classes/${courseId}`
+      : "/dashboard/group-classes/my-classes";
   } catch (err) {
     const error = err as Error;
     return { error: error.message };
@@ -36,10 +62,11 @@ export async function addVideoToCompletedLessons(
     if (error !== null) throw new Error("Unauthenticated");
 
     await connectDB();
-    const updatedOrder: OrderType | null = await Order.findOne({
-      course: courseId,
-      user: userId,
-    });
+    const updatedOrder: GroupClassOrderType | null =
+      await GroupClassOrder.findOne({
+        course: courseId,
+        user: userId,
+      });
 
     if (!updatedOrder)
       throw new Error("Error: Unable to update completed lessons");

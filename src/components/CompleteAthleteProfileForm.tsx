@@ -110,7 +110,7 @@ export default function CompleteAthleteProfileForm({
       bio: formEntries.bio,
     };
 
-    // Upload organization profile picture
+    // Upload profile picture
     const { url, error: uploadError } = await uploadImageClient(
       formEntries.profilePicture,
     );

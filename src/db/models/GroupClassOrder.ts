@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { GroupClassType, VideoType } from "./GroupClass";
 import { UserType } from "./User";
 
-export interface OrderType extends mongoose.Document {
+export interface GroupClassOrderType extends mongoose.Document {
   _id: string;
   course: GroupClassType;
   user: UserType;
@@ -10,7 +10,7 @@ export interface OrderType extends mongoose.Document {
   price: number;
 }
 
-const OrderSchema = new mongoose.Schema<OrderType>({
+const GroupClassOrderSchema = new mongoose.Schema<GroupClassOrderType>({
   course: {
     type: mongoose.SchemaTypes.ObjectId,
     required: [true, "Please provide the courseId"],
@@ -31,7 +31,8 @@ const OrderSchema = new mongoose.Schema<OrderType>({
   },
 });
 
-const Order =
-  mongoose.models?.Order || mongoose.model<OrderType>("Order", OrderSchema);
+const GroupClassOrder =
+  mongoose.models?.GroupClassOrder ||
+  mongoose.model<GroupClassOrderType>("GroupClassOrder", GroupClassOrderSchema);
 
-export default Order;
+export default GroupClassOrder;

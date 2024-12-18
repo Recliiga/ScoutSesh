@@ -6,7 +6,13 @@ import { Button } from "../ui/button";
 import { MessageCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-export default function CoachProfileCard({ coach }: { coach: UserType }) {
+export default function CoachProfileCard({
+  coach,
+  user,
+}: {
+  coach: UserType;
+  user: UserType;
+}) {
   return (
     <div className="flex items-center">
       <div className="flex h-full w-full flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
@@ -39,9 +45,11 @@ export default function CoachProfileCard({ coach }: { coach: UserType }) {
                 View Profile
               </Link>
             </Button>
-            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-              <MessageCircle className="h-4 w-4" />
-            </Button>
+            {user._id !== coach._id ? (
+              <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                <MessageCircle className="h-4 w-4" />
+              </Button>
+            ) : null}
           </div>
         </div>
       </div>

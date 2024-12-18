@@ -11,14 +11,14 @@ export default async function MyClassesPage() {
   if (user.role !== "Athlete") notFound();
 
   const { liveClassOrders, error: orderError } = await fetchUserLiveClassOrders(
-    user._id
+    user._id,
   );
   if (orderError !== null) throw new Error(orderError);
 
   return (
-    <main className="flex-1 w-[90%] max-w-7xl mx-auto flex flex-col justify-between py-4">
-      <div className="flex flex-col w-full">
-        <h1 className="text-3xl font-bold mb-4 sm:mb-6">My Courses</h1>
+    <main className="mx-auto flex w-[90%] max-w-7xl flex-1 flex-col justify-between py-4">
+      <div className="flex w-full flex-col">
+        <h1 className="mb-4 text-3xl font-bold sm:mb-6">My Courses</h1>
 
         <Tabs defaultValue="all" className="mb-6">
           <TabsList>
@@ -34,7 +34,7 @@ export default async function MyClassesPage() {
                     .filter(
                       (order) =>
                         order.completedLessons.length <
-                        order.course.videos.length
+                        order.course.videos.length,
                     )
                     .map((order) => (
                       <VideoLibraryCourseCard key={order._id} order={order} />
@@ -47,7 +47,7 @@ export default async function MyClassesPage() {
                     .filter(
                       (order) =>
                         order.completedLessons.length >=
-                        order.course.videos.length
+                        order.course.videos.length,
                     )
                     .map((order) => (
                       <VideoLibraryCourseCard key={order._id} order={order} />
@@ -63,7 +63,7 @@ export default async function MyClassesPage() {
               </TabsContent>
             </>
           ) : (
-            <p className="text-sm p-4 text-accent-gray-300">
+            <p className="p-4 text-sm text-accent-gray-300">
               You haven&apos;t enrolled in any courses yet. Explore our{" "}
               <Link
                 href={"/dashboard/group-classes/courses"}

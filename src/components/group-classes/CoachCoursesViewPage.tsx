@@ -3,7 +3,7 @@ import CourseCard from "@/components/group-classes/CourseCard";
 import Link from "next/link";
 import BackButton from "@/components/dashboard/BackButton";
 import { GroupClassType } from "@/db/models/GroupClass";
-import { OrderType } from "@/db/models/Order";
+import { GroupClassOrderType } from "@/db/models/GroupClassOrder";
 
 export default function CoachCoursesView({
   liveClasses,
@@ -12,7 +12,7 @@ export default function CoachCoursesView({
 }: {
   liveClasses: GroupClassType[];
   courses: GroupClassType[];
-  groupClassOrders: OrderType[];
+  groupClassOrders: GroupClassOrderType[];
 }) {
   return (
     <div className="mx-auto flex w-[90%] max-w-5xl flex-1 flex-col py-4">

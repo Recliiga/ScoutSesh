@@ -8,7 +8,7 @@ import { UpdateEvaluationDataParams } from "./EvaluationForm";
 import {
   createSelfEvaluation,
   createCoachAthleteEvaluation,
-} from "@/actions/AthleteEvaluationActions";
+} from "@/actions/athleteEvaluationActions";
 import Error from "../AuthError";
 import LoadingIndicator from "../LoadingIndicator";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";

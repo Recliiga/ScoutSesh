@@ -9,7 +9,7 @@ import { DailyJournalType } from "@/db/models/DailyJournal";
 import { RepeatFrequencyType } from "@/db/models/GroupClass";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
-import { NotificationType } from "@/components/DashboardNotificationIcon";
+import { NotificationEntryType } from "@/db/models/NotificationEntry";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -362,7 +362,7 @@ export function getLastEvaluationDate(
   )?.createdAt;
 }
 
-export function getNotificationMessage(notification: NotificationType) {
+export function getNotificationMessage(notification: NotificationEntryType) {
   switch (notification.type) {
     case "goal":
       return `${getFullname(notification.fromUser)} achieved their goal`;
@@ -373,10 +373,43 @@ export function getNotificationMessage(notification: NotificationType) {
     case "team":
       return `${getFullname(notification.fromUser)} joined your team`;
 
-    case "class":
+    case "liveClass":
       return `${getFullname(notification.fromUser)} enrolled in a class`;
+
+    case "videoCourse":
+      return `${getFullname(notification.fromUser)} purchased a course`;
 
     default:
       break;
   }
+}
+
+export function getDuration(fromDate: Date, toDate: Date = new Date()) {
+  let suffix = " seconds ago";
+  const fromTime = new Date(fromDate).getTime();
+  const toTime = toDate.getTime();
+  let duration = Math.round((toTime - fromTime) / 1000);
+
+  if (duration >= 60) {
+    duration = Math.floor(duration / 60);
+    suffix = duration > 1 ? " minutes ago" : " minute ago";
+    if (duration >= 60) {
+      duration = Math.floor(duration / 60);
+      suffix = duration > 1 ? " hours ago" : " hour ago";
+      if (duration >= 24) {
+        duration = Math.floor(duration / 24);
+        suffix = duration > 1 ? " days ago" : " day ago";
+        if (duration >= 30) {
+          duration = Math.floor(duration / 30);
+          suffix = duration > 1 ? " months ago" : " month ago";
+          if (duration >= 12) {
+            duration = Math.round(duration / 12);
+            suffix = duration > 1 ? " years ago" : " year ago";
+          }
+        }
+      }
+    }
+  }
+
+  return duration + suffix;
 }

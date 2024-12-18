@@ -33,6 +33,7 @@ export default async function TeamMembersPage() {
 
   return (
     <CoachTeamMembersPage
+      user={user}
       invitationCode={invitationCode}
       organizationMembers={teamMembers!}
       teamJournalEntries={teamJournalEntries}
