@@ -1,20 +1,30 @@
+import connectDB from "@/db/connectDB";
 import NotificationEntry, {
   NotificationEntryType,
 } from "@/db/models/NotificationEntry";
-import { UserType } from "@/db/models/User";
+import { getUserIdFromCookies } from "@/lib/utils";
+import { cookies } from "next/headers";
 
-export async function fetchNotifications(user: UserType | null) {
+export async function fetchNotifications() {
   try {
-    if (!user) return { notifications: [], error: null };
+    const cookieStore = await cookies();
+    const { userId, error } = getUserIdFromCookies(cookieStore);
+    if (error !== null) return { notifications: [], error: null };
 
-    const notifications: NotificationEntryType[] = await NotificationEntry.find(
-      { toUser: user._id },
-    )
-      .populate({
-        path: "fromUser toUser",
-        select: "firstName lastName profilePicture",
-      })
-      .sort({ createdAt: -1 });
+    await connectDB();
+
+    const notifications: NotificationEntryType[] = JSON.parse(
+      JSON.stringify(
+        await NotificationEntry.find({
+          toUser: userId,
+        })
+          .populate({
+            path: "fromUser toUser",
+            select: "firstName lastName profilePicture",
+          })
+          .sort({ createdAt: -1 }),
+      ),
+    );
 
     return { notifications, error: null };
   } catch (err) {

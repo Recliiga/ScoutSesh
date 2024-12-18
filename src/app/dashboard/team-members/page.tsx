@@ -27,7 +27,6 @@ export default async function TeamMembersPage() {
       <AthleteTeamMembersPage
         organizationMembers={teamMembers}
         teamJournalEntries={teamJournalEntries}
-        user={user}
       />
     );
   }
