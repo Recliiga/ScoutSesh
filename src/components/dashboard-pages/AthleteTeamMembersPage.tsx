@@ -8,11 +8,13 @@ import { DailyJournalType } from "@/db/models/DailyJournal";
 type PropsType = {
   teamJournalEntries: DailyJournalType[] | null;
   organizationMembers: UserType[] | null;
+  user: UserType;
 };
 
 export default function AthleteTeamMembersPage({
   teamJournalEntries,
   organizationMembers,
+  user,
 }: PropsType) {
   if (!organizationMembers)
     return (
@@ -46,7 +48,7 @@ export default function AthleteTeamMembersPage({
               </div>
               <div className="mt-8 grid grid-cols-2 gap-4 min-[540px]:grid-cols-3 sm:grid-cols-2 lg:grid-cols-3">
                 {coaches.map((coach) => (
-                  <CoachProfileCard coach={coach} key={coach._id} />
+                  <CoachProfileCard coach={coach} key={coach._id} user={user} />
                 ))}
               </div>
             </div>

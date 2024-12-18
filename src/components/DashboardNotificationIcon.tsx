@@ -87,7 +87,7 @@ export default function DashboardNotificationIcon({
                 </Link>
               ))
             ) : (
-              <p className="p-4 text-accent-gray-300">
+              <p className="p-4 text-sm text-accent-gray-300">
                 You don&apos;t have any notifications yet. When something comes
                 up, you&apos;ll see it here!
               </p>
