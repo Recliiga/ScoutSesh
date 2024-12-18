@@ -34,7 +34,7 @@ import { getFullname } from "@/lib/utils";
 import Link from "next/link";
 import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
 import { GroupClassType } from "@/db/models/GroupClass";
-import { OrderType } from "@/db/models/Order";
+import { GroupClassOrderType } from "@/db/models/GroupClassOrder";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 
@@ -95,7 +95,7 @@ type AdminDataType = {
   users: UserType[];
   organizations: OrganizationType[];
   groupClasses: GroupClassType[];
-  classOrders: OrderType[];
+  classOrders: GroupClassOrderType[];
   evaluationOrders: AthleteEvaluationOrderType[];
   evaluations: AthleteEvaluationType[];
 };

@@ -1,12 +1,13 @@
 "use server";
 import connectDB from "@/db/connectDB";
+import NotificationEntry from "@/db/models/NotificationEntry";
 import User, { PrimarySportType, UserType } from "@/db/models/User";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function joinTeam(organizationId: string) {
+export async function joinTeam(organizationId: string, coachId: string) {
   let redirectUrl;
   try {
     const cookieStore = await cookies();
@@ -18,6 +19,13 @@ export async function joinTeam(organizationId: string) {
       organization: organizationId,
     });
     if (!updatedUser) throw new Error("An error occured while joining team");
+
+    await NotificationEntry.create({
+      type: "team",
+      fromUser: userId,
+      toUser: coachId,
+      link: "/dashboard/team-members",
+    });
 
     redirectUrl = "/dashboard";
   } catch (err) {

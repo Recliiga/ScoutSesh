@@ -1,4 +1,4 @@
-import { OrderType } from "@/db/models/Order";
+import { GroupClassOrderType } from "@/db/models/GroupClassOrder";
 import Image from "next/image";
 import { Progress } from "../ui/progress";
 import Link from "next/link";
@@ -7,37 +7,37 @@ import { CheckCircle, PlayCircle } from "lucide-react";
 export default function VideoLibraryCourseCard({
   order,
 }: {
-  order: OrderType;
+  order: GroupClassOrderType;
 }) {
   const course = order.course;
   const totalLessons = course.videos.length;
   const completedLessons = order.completedLessons;
   const progress = Math.floor(
-    (order.completedLessons.length / course.videos.length) * 100
+    (order.completedLessons.length / course.videos.length) * 100,
   );
 
   const coaches = course.coaches.map(
-    (coach) => coach.firstName + " " + coach.lastName
+    (coach) => coach.firstName + " " + coach.lastName,
   );
 
   return (
-    <div className="border rounded-lg overflow-hidden shadow-sm flex flex-col">
-      <div className="w-full h-48 overflow-hidden relative">
+    <div className="flex flex-col overflow-hidden rounded-lg border shadow-sm">
+      <div className="relative h-48 w-full overflow-hidden">
         <Image
           src={course.thumbnail}
           alt={course.title}
           fill
           sizes="480px"
-          className="object-cover"
+          className="bg-accent-gray-200 object-cover"
         />
       </div>
-      <div className="p-4 flex flex-col gap-2 flex-1">
+      <div className="flex flex-1 flex-col gap-2 p-4">
         <h3 className="text-lg font-semibold">{course.title}</h3>
-        <p className="text-sm text-gray-600 mb-2 line-clamp-1">
+        <p className="mb-2 line-clamp-1 text-sm text-gray-600">
           {coaches.join(", ")}
         </p>
         <Progress value={progress} className="mt-auto" />
-        <div className="flex justify-between items-center text-sm text-gray-600 mb-4">
+        <div className="mb-4 flex items-center justify-between text-sm text-gray-600">
           <span>{progress}% complete</span>
           <span>
             {completedLessons.length}/{totalLessons} lessons
@@ -45,7 +45,7 @@ export default function VideoLibraryCourseCard({
         </div>
         <Link
           href={`/dashboard/group-classes/my-classes/${course._id}`}
-          className="w-full bg-green-500 hover:bg-green-600 text-white flex-center rounded-md px-4 py-2 text-sm font-medium"
+          className="flex-center w-full rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600"
         >
           {progress === 100 ? (
             <>

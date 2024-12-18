@@ -7,7 +7,9 @@ import AthleteEvaluationOrder, {
   AthleteEvaluationOrderType,
 } from "@/db/models/AthleteEvaluationOrder";
 import GroupClass, { GroupClassType } from "@/db/models/GroupClass";
-import Order, { OrderType } from "@/db/models/Order";
+import GroupClassOrder, {
+  GroupClassOrderType,
+} from "@/db/models/GroupClassOrder";
 import Organization, { OrganizationType } from "@/db/models/Organization";
 import User, { UserType } from "@/db/models/User";
 
@@ -47,9 +49,9 @@ export async function fetchAdminData() {
       ),
     );
 
-    const classOrders: OrderType[] = JSON.parse(
+    const classOrders: GroupClassOrderType[] = JSON.parse(
       JSON.stringify(
-        await Order.find()
+        await GroupClassOrder.find()
           .populate({
             path: "user",
             select: "firstName lastName profilePicture",

@@ -59,6 +59,7 @@ export default async function InvitationPage({
               </div>
               <JoinOrganizationButton
                 organizationId={invitationData.organization._id}
+                coachId={invitationData.user._id}
               />
             </>
           ) : (
