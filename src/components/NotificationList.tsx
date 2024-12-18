@@ -108,7 +108,7 @@ export default function NotificationList({
             </Link>
           ))
         ) : (
-          <p className="p-4 text-center text-accent-gray-300">
+          <p className="p-4 text-center text-sm text-accent-gray-300">
             You don&apos;t have any notifications yet. When something comes up,
             you&apos;ll see it here!
           </p>
