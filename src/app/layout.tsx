@@ -7,6 +7,8 @@ import Footer from "@/components/Footer";
 import { fetchLatestInvitationCode } from "@/services/invitationServices";
 import { fetchNotifications } from "@/services/notificationServices";
 
+//comment
+
 export const metadata: Metadata = {
   title: "ScoutSesh",
   description:
