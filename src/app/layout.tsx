@@ -6,6 +6,8 @@ import { getSession } from "@/services/authServices";
 import Footer from "@/components/Footer";
 import { fetchLatestInvitationCode } from "@/services/invitationServices";
 
+//comment
+
 export const metadata: Metadata = {
   title: "ScoutSesh",
   description:
