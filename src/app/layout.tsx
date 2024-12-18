@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import { getSession } from "@/services/authServices";
 import Footer from "@/components/Footer";
 import { fetchLatestInvitationCode } from "@/services/invitationServices";
+import { fetchNotifications } from "@/services/notificationServices";
 
 export const metadata: Metadata = {
   title: "ScoutSesh",
@@ -19,13 +20,19 @@ export default async function RootLayout({
 }>) {
   const { user } = await getSession();
   const { invitationCode } = await fetchLatestInvitationCode();
+  const { notifications, error } = await fetchNotifications(user);
+  if (error !== null) throw new Error(error);
 
   return (
     <html lang="en">
       <body
         className={`${GeistSans.className} flex min-h-screen flex-col text-accent-black antialiased`}
       >
-        <Header user={user} invitationCode={invitationCode} />
+        <Header
+          user={user}
+          invitationCode={invitationCode}
+          notifications={notifications}
+        />
         {children}
         <Footer />
       </body>

@@ -1,14 +1,16 @@
 import connectDB from "@/db/connectDB";
-import Order, { OrderType } from "@/db/models/Order";
+import GroupClassOrder, {
+  GroupClassOrderType,
+} from "@/db/models/GroupClassOrder";
 import "@/db/models/GroupClass";
 import { GroupClassType } from "@/db/models/GroupClass";
 
 export async function fetchUserOrders(userId: string) {
   try {
     await connectDB();
-    const userOrders: OrderType[] = JSON.parse(
+    const userOrders: GroupClassOrderType[] = JSON.parse(
       JSON.stringify(
-        await Order.find({ user: userId })
+        await GroupClassOrder.find({ user: userId })
           .populate({
             path: "user",
             select: "firstName lastName profilePicture",
@@ -18,8 +20,8 @@ export async function fetchUserOrders(userId: string) {
             select: "title videos thumbnail coaches",
             populate: { path: "coaches", select: "firstName lastName" },
           })
-          .populate("completedLessons")
-      )
+          .populate("completedLessons"),
+      ),
     );
     return { userOrders, error: null };
   } catch (error) {
@@ -30,9 +32,9 @@ export async function fetchUserOrders(userId: string) {
 export async function fetchUserLiveClassOrders(userId: string) {
   try {
     await connectDB();
-    const userOrders: OrderType[] = JSON.parse(
+    const userOrders: GroupClassOrderType[] = JSON.parse(
       JSON.stringify(
-        await Order.find({ user: userId })
+        await GroupClassOrder.find({ user: userId })
           .populate({
             path: "user",
             select: "firstName lastName profilePicture",
@@ -42,12 +44,12 @@ export async function fetchUserLiveClassOrders(userId: string) {
             select: "title videos thumbnail coaches courseType",
             populate: { path: "coaches", select: "firstName lastName" },
           })
-          .populate("completedLessons")
-      )
+          .populate("completedLessons"),
+      ),
     );
 
     const liveClassOrders = userOrders.filter(
-      (order) => order.course.courseType === "video"
+      (order) => order.course.courseType === "video",
     );
     return { liveClassOrders, error: null };
   } catch (error) {
@@ -58,9 +60,9 @@ export async function fetchUserLiveClassOrders(userId: string) {
 export async function fetchCourseOrders(courses: GroupClassType[]) {
   try {
     await connectDB();
-    const groupClassOrders: OrderType[] = JSON.parse(
+    const groupClassOrders: GroupClassOrderType[] = JSON.parse(
       JSON.stringify(
-        await Order.find()
+        await GroupClassOrder.find()
           .populate({
             path: "user",
             select: "firstName lastName profilePicture",
@@ -70,13 +72,13 @@ export async function fetchCourseOrders(courses: GroupClassType[]) {
             select: "title videos thumbnail coaches",
             populate: { path: "coaches", select: "firstName lastName" },
           })
-          .populate("completedLessons")
-      )
+          .populate("completedLessons"),
+      ),
     );
 
     return {
       groupClassOrders: groupClassOrders.filter((order) =>
-        courses.some((course) => course._id === order.course._id)
+        courses.some((course) => course._id === order.course._id),
       ),
       error: null,
     };
@@ -88,9 +90,9 @@ export async function fetchCourseOrders(courses: GroupClassType[]) {
 export async function fetchUserOrderCourse(userId: string, courseId: string) {
   try {
     await connectDB();
-    const userOrder: OrderType = JSON.parse(
+    const userOrder: GroupClassOrderType = JSON.parse(
       JSON.stringify(
-        await Order.findOne({ user: userId, course: courseId })
+        await GroupClassOrder.findOne({ user: userId, course: courseId })
           .populate({
             path: "user",
             select: "firstName lastName profilePicture",
@@ -98,8 +100,8 @@ export async function fetchUserOrderCourse(userId: string, courseId: string) {
           .populate({
             path: "course",
           })
-          .populate("completedLessons")
-      )
+          .populate("completedLessons"),
+      ),
     );
     return { userOrder, error: null };
   } catch (error) {

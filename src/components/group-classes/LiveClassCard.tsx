@@ -9,7 +9,7 @@ import { GroupClassType } from "@/db/models/GroupClass";
 import Link from "next/link";
 import ModalContainer from "../ModalContainer";
 import DeleteGroupClassModal from "../DeleteGroupClassModal";
-import { purchaseCourse } from "@/actions/OrderActions";
+import { purchaseCourse } from "@/actions/groupClassOrderActions";
 import { TvMinimalPlay } from "lucide-react";
 import { UserType } from "@/db/models/User";
 import { getDatesBetween, getFullname } from "@/lib/utils";
@@ -116,7 +116,12 @@ export default function LiveClassCard({
   async function handlePurchaseCourse(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const data = await purchaseCourse(liveClass._id, liveClass.price);
+    const data = await purchaseCourse(
+      liveClass._id,
+      liveClass.price,
+      liveClass.user._id,
+      true,
+    );
     if (data?.error) {
       console.log(data?.error);
     }
