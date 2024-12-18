@@ -2,6 +2,7 @@
 import connectDB from "@/db/connectDB";
 import User, { PrimarySportType, UserType } from "@/db/models/User";
 import { getUserIdFromCookies } from "@/lib/utils";
+import bcrypt from "bcrypt";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -60,5 +61,37 @@ export async function updateUser(
     return { updatedUser, error: null };
   } catch {
     return { updatedUser: null, error: "An error occured updating user" };
+  }
+}
+
+export async function updatePassword(
+  currentPassword: string,
+  newPassword: string,
+) {
+  try {
+    const cookieStore = await cookies();
+    const { userId, error } = getUserIdFromCookies(cookieStore);
+    if (error !== null) return { error: "Unauthenticated" };
+
+    await connectDB();
+    const user = await User.findById(userId);
+
+    // Compare raw password and hashed password
+    const passwordIsCorrect = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+    if (!passwordIsCorrect) return { error: "Incorrect password" };
+
+    const encryptedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = encryptedPassword;
+    await user.save();
+
+    return { error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.log("Update password error", error.message);
+    return { error: "Something went wrong: Unable to update password" };
   }
 }

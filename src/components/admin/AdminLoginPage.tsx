@@ -22,7 +22,7 @@ export default function AdminLoginPage() {
   const canSubmit = !!email.trim() && !!password.trim();
   return (
     <div className="flex-center flex-1">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 rounded-lg border border-accent-gray-200 bg-white p-3 shadow-sm sm:p-6">
+      <div className="mx-auto flex max-w-md w-[90%] flex-col gap-6 rounded-lg border border-accent-gray-200 bg-white p-3 shadow-sm sm:p-6">
         <div className="flex flex-col gap-1">
           <h3 className="text-center text-2xl font-bold tracking-tight">
             Welcome to ScoutSesh Admin
