@@ -83,7 +83,6 @@ export default function EvaluationTab({
   });
 
   function handleSort(column: "active" | "total" | "revenue") {
-    console.log(column);
     if (column === evaluationSortOptions.column) {
       setEvaluationSortOptions((prev) => ({
         column,
