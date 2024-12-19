@@ -388,7 +388,7 @@ export function getDuration(fromDate: Date, toDate: Date = new Date()) {
   const fromTime = new Date(fromDate).getTime();
   const toTime = new Date(toDate).getTime();
 
-  let duration = (toTime - fromTime) / 1000;
+  let duration = Math.floor((toTime - fromTime) / 1000);
   let suffix = duration > 1 ? " secs ago" : " sec ago";
 
   if (duration > 60) {
