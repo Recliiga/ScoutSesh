@@ -6,19 +6,9 @@ import { getDuration, getNotificationMessage } from "@/lib/utils";
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { NotificationEntryType } from "@/db/models/NotificationEntry";
 
-export type NotificationType = {
-  _id: number;
-  type: "goal" | "evaluation" | "team" | "course" | "liveClass";
-  read: boolean;
-  fromUser: UserType;
-  toUser: UserType;
-  link: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-const notifications: NotificationType[] = [
+const notifications: NotificationEntryType[] = [
   {
     _id: 1,
     type: "team",

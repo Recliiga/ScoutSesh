@@ -4,12 +4,12 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDuration, getNotificationMessage } from "@/lib/utils";
-import { NotificationType } from "./DashboardNotificationIcon";
+import { NotificationEntryType } from "@/db/models/NotificationEntry";
 
 export default function NotificationList({
   notifications,
 }: {
-  notifications: NotificationType[];
+  notifications: NotificationEntryType[];
 }) {
   const [filter, setFilter] = useState("all");
 

@@ -1,10 +1,10 @@
 import React from "react";
 import { UserType } from "@/db/models/User";
-import { NotificationType } from "@/components/DashboardNotificationIcon";
 import BackButton from "@/components/dashboard/BackButton";
 import NotificationList from "@/components/NotificationList";
+import { NotificationEntryType } from "@/db/models/NotificationEntry";
 
-const notifications: NotificationType[] = [
+const notifications: NotificationEntryType[] = [
   {
     _id: 1,
     type: "team",
