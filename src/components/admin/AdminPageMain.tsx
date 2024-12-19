@@ -152,8 +152,15 @@ export default function AdminPageMain({
     return matchesName || matchesCoach;
   });
 
-  const filteredGroupClasses = adminData.groupClasses.filter((groupClass) =>
-    groupClass.title.toLowerCase().includes(classSearchQuery.toLowerCase()),
+  const filteredGroupClasses = adminData.groupClasses.filter(
+    (groupClass) =>
+      groupClass.title.toLowerCase().includes(classSearchQuery.toLowerCase()) ||
+      groupClass.coaches[0].organization?.name
+        .toLowerCase()
+        .includes(classSearchQuery.toLowerCase()) ||
+      getFullname(groupClass.user)
+        .toLowerCase()
+        .includes(classSearchQuery.toLowerCase()),
   );
 
   const sortedGroupClasses = filteredGroupClasses
