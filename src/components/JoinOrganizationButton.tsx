@@ -5,14 +5,16 @@ import React, { useState } from "react";
 
 export default function JoinOrganizationButton({
   organizationId,
+  coachId,
 }: {
   organizationId: string;
+  coachId: string;
 }) {
   const [loading, setLoading] = useState(false);
 
   async function handleJoinTeam() {
     setLoading(true);
-    const data = await joinTeam(organizationId);
+    const data = await joinTeam(organizationId, coachId);
     if (data?.error) {
       setLoading(false);
     }

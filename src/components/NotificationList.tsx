@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +13,11 @@ export default function NotificationList({
   notifications: NotificationEntryType[];
 }) {
   const [filter, setFilter] = useState("all");
+  const [domLoaded, setDomLoaded] = useState(false);
+
+  useEffect(() => {
+    setDomLoaded(true);
+  }, []);
 
   const filteredNotifications =
     filter === "all"
@@ -75,9 +80,13 @@ export default function NotificationList({
                   <p className="truncate text-sm">
                     {getNotificationMessage(notification)}
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {getDuration(notification.createdAt)}
-                  </p>
+                  {domLoaded ? (
+                    <p className="text-xs text-muted-foreground">
+                      {getDuration(notification.createdAt)}
+                    </p>
+                  ) : (
+                    <div className="h-3 w-20 animate-pulse rounded-full bg-zinc-300"></div>
+                  )}
                 </div>
               </div>
             </Link>
