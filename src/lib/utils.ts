@@ -373,7 +373,7 @@ export function getNotificationMessage(notification: NotificationEntryType) {
     case "team":
       return `${getFullname(notification.fromUser)} joined your team`;
 
-    case "course":
+    case "videoCourse":
       return `${getFullname(notification.fromUser)} purchased a course`;
 
     case "liveClass":

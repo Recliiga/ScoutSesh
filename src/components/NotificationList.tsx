@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDuration, getNotificationMessage } from "@/lib/utils";
 import { NotificationEntryType } from "@/db/models/NotificationEntry";
+import { Button } from "./ui/button";
 
 export default function NotificationList({
   notifications,
@@ -43,11 +44,17 @@ export default function NotificationList({
         </div>
       </CardHeader>
       <CardContent className="p-0">
+        <Button
+          variant={"outline"}
+          className="m-4 flex-1 hover:border-green-600 hover:bg-green-600 hover:text-white"
+        >
+          Mark all as read
+        </Button>
         {filteredNotifications.map((notification) => (
           <Link
             href={notification.link}
             key={notification._id}
-            className={`block px-4 py-2 hover:bg-muted sm:py-3 ${notification.read ? "opacity-60" : ""}`}
+            className={`block px-4 py-2 hover:bg-muted sm:py-3`}
           >
             <div className="flex items-start space-x-4 overflow-hidden">
               <Avatar>
@@ -61,7 +68,9 @@ export default function NotificationList({
                   {notification.fromUser.lastName[0]}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 space-y-1">
+              <div
+                className={`flex-1 space-y-1 ${notification.read ? "opacity-60" : ""}`}
+              >
                 <p className="truncate text-sm">
                   {getNotificationMessage(notification)}
                 </p>

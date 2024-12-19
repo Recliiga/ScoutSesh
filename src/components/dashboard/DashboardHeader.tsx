@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import DashboardNavUser from "../DashboardNavUser";
 import { InvitationCodeType } from "@/db/models/InvitationCode";
 import DashboardNotificationIcon from "../DashboardNotificationIcon";
+import { NotificationEntryType } from "@/db/models/NotificationEntry";
 
 const navLinks = [
   { title: "Goal Setting", href: "/dashboard/goal-setting" },
@@ -21,9 +22,11 @@ const navLinks = [
 export default function DashboardHeader({
   user,
   invitationCode,
+  notifications,
 }: {
   user: UserType;
   invitationCode: InvitationCodeType | null;
+  notifications: NotificationEntryType[];
 }) {
   const [mobileNav, setMobileNav] = useState(false);
   const [docWidth, setDocWidth] = useState(900);
@@ -150,7 +153,7 @@ export default function DashboardHeader({
           </nav>
         </div>
         <div className="flex items-center space-x-4">
-          <DashboardNotificationIcon />
+          <DashboardNotificationIcon notifications={notifications} />
           <DashboardNavUser user={user} invitationCode={invitationCode} />
         </div>
       </header>

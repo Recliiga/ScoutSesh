@@ -3,87 +3,15 @@ import React, { useRef, useState } from "react";
 import useClickOutside from "@/hooks/useClickOutside";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { getDuration, getNotificationMessage } from "@/lib/utils";
-import { UserType } from "@/db/models/User";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { NotificationEntryType } from "@/db/models/NotificationEntry";
 
-const notifications: NotificationEntryType[] = [
-  {
-    _id: 1,
-    type: "team",
-    read: false,
-    fromUser: {
-      firstName: "John",
-      lastName: "Doe",
-      profilePicture: "/placeholder-profile-picture.png",
-    } as UserType,
-    toUser: {
-      firstName: "David",
-      lastName: "Smith",
-      profilePicture: "/placeholder-profile-picture.png",
-    } as UserType,
-    link: "/dashboard/team-members",
-    createdAt: new Date("2022-12-23"),
-    updatedAt: new Date("2022-12-23"),
-  },
-  {
-    _id: 2,
-    type: "evaluation",
-    read: false,
-    fromUser: {
-      firstName: "John",
-      lastName: "Doe",
-      profilePicture: "/placeholder-profile-picture.png",
-    } as UserType,
-    toUser: {
-      firstName: "David",
-      lastName: "Smith",
-      profilePicture: "/placeholder-profile-picture.png",
-    } as UserType,
-    link: "/dashboard/athlete-evaluation",
-    createdAt: new Date("2022-12-23"),
-    updatedAt: new Date("2022-12-23"),
-  },
-  {
-    _id: 3,
-    type: "goal",
-    read: false,
-    fromUser: {
-      firstName: "John",
-      lastName: "Doe",
-      profilePicture: "/placeholder-profile-picture.png",
-    } as UserType,
-    toUser: {
-      firstName: "David",
-      lastName: "Smith",
-      profilePicture: "/placeholder-profile-picture.png",
-    } as UserType,
-    link: "/dashboard/goal-setting",
-    createdAt: new Date("2022-12-23"),
-    updatedAt: new Date("2022-12-23"),
-  },
-  {
-    _id: 5,
-    type: "liveClass",
-    read: true,
-    fromUser: {
-      firstName: "John",
-      lastName: "Doe",
-      profilePicture: "/placeholder-profile-picture.png",
-    } as UserType,
-    toUser: {
-      firstName: "David",
-      lastName: "Smith",
-      profilePicture: "/placeholder-profile-picture.png",
-    } as UserType,
-    link: "/dashboard/goal-setting",
-    createdAt: new Date("2024-12-18"),
-    updatedAt: new Date("2022-12-23"),
-  },
-];
-
-export default function DashboardNotificationIcon() {
+export default function DashboardNotificationIcon({
+  notifications,
+}: {
+  notifications: NotificationEntryType[];
+}) {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
 
