@@ -38,43 +38,51 @@ export default function DashboardNotificationIcon({
         <div
           ref={userMenuRef}
           className={
-            "absolute -right-10 top-[calc(100%_+_.5rem)] z-10 max-w-80 overflow-hidden rounded-lg border bg-white"
+            "absolute -right-10 top-[calc(100%_+_.5rem)] z-10 w-72 overflow-hidden rounded-lg border bg-white"
           }
         >
           <div className="border-b px-4 py-2 sm:py-4">
             <h4 className="text-lg font-semibold">Notifications</h4>
           </div>
           <div>
-            {notifications.map((notification) => (
-              <Link
-                href={notification.link}
-                key={notification._id}
-                onClick={() => setDropdownIsOpen(false)}
-                className={`block px-4 py-1.5 duration-200 hover:bg-muted sm:py-2 ${notification.read ? "opacity-60" : ""}`}
-              >
-                <div className="flex items-start space-x-4 overflow-hidden">
-                  <Avatar>
-                    <AvatarImage
-                      src={notification.fromUser.profilePicture}
-                      alt={notification.fromUser.firstName + " profile picture"}
-                      className="object-cover"
-                    />
-                    <AvatarFallback>
-                      {notification.fromUser.firstName[0]}
-                      {notification.fromUser.lastName[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-1">
-                    <p className="truncate text-sm">
-                      {getNotificationMessage(notification)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {getDuration(notification.createdAt)}
-                    </p>
+            {notifications.length ? (
+              notifications.map((notification) => (
+                <Link
+                  href={notification.link}
+                  key={notification._id}
+                  onClick={() => setDropdownIsOpen(false)}
+                  className={`block px-4 py-1.5 duration-200 hover:bg-muted sm:py-2 ${notification.read ? "opacity-60" : ""}`}
+                >
+                  <div className="flex items-start space-x-4 overflow-hidden">
+                    <Avatar>
+                      <AvatarImage
+                        src={notification.fromUser.profilePicture}
+                        alt={
+                          notification.fromUser.firstName + " profile picture"
+                        }
+                        className="object-cover"
+                      />
+                      <AvatarFallback>
+                        {notification.fromUser.firstName[0]}
+                        {notification.fromUser.lastName[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-1">
+                      <p className="truncate text-sm">
+                        {getNotificationMessage(notification)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {getDuration(notification.createdAt)}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))
+            ) : (
+              <p className="p-4 text-sm text-zinc-400">
+                You&apos;re all set, no new notifications to check right now.
+              </p>
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-2 border-t p-2 sm:p-4">
             <Button

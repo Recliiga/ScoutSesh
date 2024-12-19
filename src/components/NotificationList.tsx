@@ -50,37 +50,43 @@ export default function NotificationList({
         >
           Mark all as read
         </Button>
-        {filteredNotifications.map((notification) => (
-          <Link
-            href={notification.link}
-            key={notification._id}
-            className={`block px-4 py-2 hover:bg-muted sm:py-3`}
-          >
-            <div className="flex items-start space-x-4 overflow-hidden">
-              <Avatar>
-                <AvatarImage
-                  src={notification.fromUser.profilePicture}
-                  alt={notification.fromUser.firstName + " profile picture"}
-                  className="object-cover"
-                />
-                <AvatarFallback>
-                  {notification.fromUser.firstName[0]}
-                  {notification.fromUser.lastName[0]}
-                </AvatarFallback>
-              </Avatar>
-              <div
-                className={`flex-1 space-y-1 ${notification.read ? "opacity-60" : ""}`}
-              >
-                <p className="truncate text-sm">
-                  {getNotificationMessage(notification)}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {getDuration(notification.createdAt)}
-                </p>
+        {notifications.length ? (
+          filteredNotifications.map((notification) => (
+            <Link
+              href={notification.link}
+              key={notification._id}
+              className={`block px-4 py-2 hover:bg-muted sm:py-3`}
+            >
+              <div className="flex items-start space-x-4 overflow-hidden">
+                <Avatar>
+                  <AvatarImage
+                    src={notification.fromUser.profilePicture}
+                    alt={notification.fromUser.firstName + " profile picture"}
+                    className="object-cover"
+                  />
+                  <AvatarFallback>
+                    {notification.fromUser.firstName[0]}
+                    {notification.fromUser.lastName[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <div
+                  className={`flex-1 space-y-1 ${notification.read ? "opacity-60" : ""}`}
+                >
+                  <p className="truncate text-sm">
+                    {getNotificationMessage(notification)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {getDuration(notification.createdAt)}
+                  </p>
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          ))
+        ) : (
+          <p className="p-4 pt-0 text-sm text-zinc-400">
+            You&apos;re all set, no new notifications to check right now.
+          </p>
+        )}
       </CardContent>
     </Card>
   );

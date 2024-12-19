@@ -32,7 +32,9 @@ export async function purchaseCourse(
         : "/dashboard/group-classes/courses",
     });
 
-    redirectUrl = "/dashboard/group-classes/my-classes";
+    redirectUrl = isLiveClass
+      ? `/dashboard/group-classes/live-classes/${courseId}`
+      : "/dashboard/group-classes/my-classes";
   } catch (err) {
     const error = err as Error;
     return { error: error.message };
