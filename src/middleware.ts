@@ -6,6 +6,7 @@ export async function middleware(request: NextRequest) {
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
   const { user } = await getSession();
 
+  // Routes
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/signup");
   const isProtectedRoute = pathname.startsWith("/dashboard");
@@ -13,6 +14,8 @@ export async function middleware(request: NextRequest) {
   const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
   const isCreateOrganizationRoute = pathname.startsWith("/create-organization");
   const isCreateGoalRoute = pathname === "/dashboard/goal-setting/new";
+
+  // Conditions
   const isAuthenticated = Boolean(user);
   const userIsAthlete = user?.role === "Athlete";
   const userIsHeadCoach = user?.role === "Head Coach";
@@ -21,6 +24,14 @@ export async function middleware(request: NextRequest) {
 
   const response = NextResponse.next();
 
+  function redirectTo(path: string, addRedirect = true) {
+    const url = new URL(path, request.url);
+    if (pathname !== "/dashboard" && addRedirect) {
+      url.searchParams.set("redirect", pathname);
+    }
+    return NextResponse.redirect(url);
+  }
+
   // Add user session to headers if the user exists
   if (isAuthenticated) {
     response.headers.set("x-user-session", JSON.stringify(user));
@@ -28,79 +39,68 @@ export async function middleware(request: NextRequest) {
     response.headers.delete("x-user-session");
   }
 
-  // Redirect unauthenticated user from invitation route
-  if (isInviteRoute && !isAuthenticated) {
-    const url = new URL("/login", request.url);
-    url.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(url);
-  }
-
-  // Redirect Head Coach from invitation route
-  if (isInviteRoute && isAuthenticated && userIsHeadCoach) {
-    const url = new URL("/dashboard", request.url);
-    return NextResponse.redirect(url);
-  }
-
   // Redirect authenticated user from auth routes
   if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL(redirectUrl, request.url));
+    return redirectTo(redirectUrl, false);
   }
 
-  // Redirect authenticated users who haven't completed their profile or created their organization to complete-profile page or create-organiation page
-  if (isProtectedRoute && isAuthenticated) {
-    if (!userProfileCompleted) {
-      const url = new URL("/complete-profile", request.url);
-      if (pathname !== "/dashboard") url.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(url);
-    } else if (!userIsAthlete && !coachProfileCompleted) {
-      const url = new URL("/create-organization", request.url);
-      if (pathname !== "/dashboard") url.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(url);
+  // Redirect un-authenticated users or users who haven't completed their profile or created their organization from protected routes
+  if (isProtectedRoute) {
+    if (isAuthenticated) {
+      if (!userProfileCompleted) {
+        return redirectTo("/complete-profile");
+      } else if (!userIsAthlete && !coachProfileCompleted) {
+        return redirectTo("/create-organization");
+      }
+    } else {
+      return redirectTo("/login");
+    }
+  }
+
+  // Redirect authenticated users who have not completed their profile to create organization page or dashboard page depending on user role
+  if (isCompleteProfileRoute) {
+    if (isAuthenticated) {
+      if (userProfileCompleted) {
+        if (userIsHeadCoach) {
+          return redirectTo("/create-organization", false);
+        } else {
+          return redirectTo(redirectUrl, false);
+        }
+      }
+    } else {
+      return redirectTo("/login");
+    }
+  }
+
+  // Redirect authenticated coaches who have not created their organization to create profile page or dashboard page depending on user role
+  if (isCreateOrganizationRoute) {
+    if (isAuthenticated) {
+      if (userProfileCompleted) {
+        if (userIsAthlete || coachProfileCompleted) {
+          return redirectTo(redirectUrl, false);
+        }
+      } else {
+        return redirectTo("/complete-profile", false);
+      }
+    } else {
+      return redirectTo("/login");
+    }
+  }
+
+  // Redirect unauthenticated users and head coaches from invitation route
+  if (isInviteRoute) {
+    if (!isAuthenticated) {
+      return redirectTo("/login");
+    } else {
+      if (userIsHeadCoach) {
+        return redirectTo("/dashboard", false);
+      }
     }
   }
 
   // Redirect non-athletes from create new goal page
   if (isCreateGoalRoute && isAuthenticated && !userIsAthlete) {
-    return NextResponse.redirect(
-      new URL("/dashboard/goal-setting", request.url)
-    );
-  }
-
-  // Redirect un-authenticated users from protected routes
-  if (
-    (isProtectedRoute || isCompleteProfileRoute || isCreateOrganizationRoute) &&
-    !isAuthenticated
-  ) {
-    const url = new URL("/login", request.url);
-    if (
-      !Boolean(pathname === "/dashboard") &&
-      !isCompleteProfileRoute &&
-      !isCreateOrganizationRoute
-    )
-      url.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(url);
-  }
-
-  // Redirect authenticated users who have not completed their profile to create organization page or dashboard page depending on user role
-  if (isCompleteProfileRoute && isAuthenticated && userProfileCompleted) {
-    if (userIsHeadCoach) {
-      return NextResponse.redirect(
-        new URL("/create-organization", request.url)
-      );
-    } else {
-      return NextResponse.redirect(new URL(redirectUrl, request.url));
-    }
-  }
-
-  // Redirect authenticated coaches who have not created their organization to create profile page or dashboard page depending on user role
-  if (isCreateOrganizationRoute && isAuthenticated) {
-    if (userProfileCompleted) {
-      if (userIsAthlete || coachProfileCompleted) {
-        return NextResponse.redirect(new URL(redirectUrl, request.url));
-      }
-    } else {
-      return NextResponse.redirect(new URL("/complete-profile", request.url));
-    }
+    return redirectTo("/dashboard/goal-setting", false);
   }
 
   return response;
