@@ -37,6 +37,7 @@ import { GroupClassType } from "@/db/models/GroupClass";
 import { OrderType } from "@/db/models/Order";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
+import EvaluationTab from "./EvaluationTab";
 
 type MockDataType = {
   users: {
@@ -91,7 +92,7 @@ type MockDataType = {
   }[];
 };
 
-type AdminDataType = {
+export type AdminDataType = {
   users: UserType[];
   organizations: OrganizationType[];
   groupClasses: GroupClassType[];
@@ -121,9 +122,6 @@ export default function AdminPageMain({
   const [selectedChartType, setSelectedChartType] = useState("monthly");
   const [searchQuery, setSearchQuery] = useState("");
   const [classSearchQuery, setClassSearchQuery] = useState("");
-  const [evaluationSearchQuery, setEvaluationSearchQuery] = useState("");
-  const [evaluationSortOptions, setEvaluationSortOptions] =
-    useState<SortOptionsType>({ column: "date", direction: "desc" });
   const [courseSortOptions, setCourseSortOptions] =
     useState<SortOptionsType>(initialSortOptions);
   const [liveClassSortOptions, setLiveClassSortOptions] =
@@ -200,15 +198,6 @@ export default function AdminPageMain({
       } else {
         setLiveClassSortOptions({ column, direction: "desc" });
       }
-    } else if (table === "evaluations") {
-      if (column === evaluationSortOptions.column) {
-        setEvaluationSortOptions((prev) => ({
-          column,
-          direction: prev.direction === "asc" ? "desc" : "asc",
-        }));
-      } else {
-        return;
-      }
     }
   }
 
@@ -266,56 +255,6 @@ export default function AdminPageMain({
       }
       return 0;
     });
-
-  const filteredEvaluations = adminData.evaluationOrders
-    .filter((evaluationOrder) => {
-      const matchCoach = getFullname(evaluationOrder.coach)
-        .toLowerCase()
-        .includes(evaluationSearchQuery.toLowerCase());
-      const matchOrganization = evaluationOrder.coach.organization?.name
-        .toLowerCase()
-        .includes(evaluationSearchQuery.toLowerCase());
-
-      return matchCoach || matchOrganization;
-    })
-    .filter(
-      (item, index, self) =>
-        index ===
-        self.findIndex(
-          (order) =>
-            order.coach.organization?._id === item.coach.organization?._id,
-        ),
-    );
-
-  function getTotalEvaluations(organizationId: string) {
-    return adminData.evaluationOrders
-      .filter(
-        (evalOrder) => evalOrder.coach.organization?._id === organizationId,
-      )
-      .reduce((acc, curr) => acc + curr.evaluationDates.length, 0);
-  }
-
-  function getActiveEvaluations(organizationId: string) {
-    return adminData.evaluationOrders
-      .filter(
-        (evalOrder) => evalOrder.coach.organization?._id === organizationId,
-      )
-      .reduce(
-        (acc, curr) =>
-          acc +
-          curr.evaluationDates.filter((date) => !date.dateAthleteEvaluated)
-            .length,
-        0,
-      );
-  }
-
-  function getOrganizationEvaluationRevenue(organizationId: string) {
-    return adminData.evaluationOrders
-      .filter(
-        (evalOrder) => evalOrder.coach.organization?._id === organizationId,
-      )
-      .reduce((acc, curr) => acc + curr.totalPrice, 0);
-  }
 
   return (
     <main className="mx-auto w-[90%] max-w-7xl flex-1 space-y-6 py-6 text-accent-black">
@@ -824,86 +763,7 @@ export default function AdminPageMain({
           </div>
         </TabsContent>
 
-        <TabsContent
-          tabIndex={undefined}
-          value="evaluations"
-          className="space-y-4"
-        >
-          <div className="mt-6 space-y-4">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <h2 className="text-2xl font-semibold">Athlete Evaluations</h2>
-              <Input
-                placeholder="Search organizations or head coaches..."
-                value={evaluationSearchQuery}
-                onChange={(e) => setEvaluationSearchQuery(e.target.value)}
-                className="flex-1 px-4 py-2 text-sm sm:max-w-sm"
-              />
-            </div>
-            <Card>
-              <CardHeader>
-                <CardTitle>Athlete Evaluation Results</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[30%]">Organization</TableHead>
-                      <TableHead className="w-[15%]">Head Coach</TableHead>
-                      <TableHead className="w-[15%] text-right">
-                        Active Evaluations
-                      </TableHead>
-                      <TableHead className="w-[15%] text-right">
-                        Total Evaluations
-                      </TableHead>
-                      <TableHead className="w-[15%] text-right">
-                        Revenue
-                      </TableHead>
-                      <TableHead className="w-[10%] text-right">
-                        Actions
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredEvaluations.map((evaluationOrder) => (
-                      <TableRow key={evaluationOrder._id}>
-                        <TableCell className="font-medium">
-                          {evaluationOrder.coach.organization?.name}
-                        </TableCell>
-                        <TableCell>
-                          {getFullname(evaluationOrder.coach)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {getActiveEvaluations(
-                            evaluationOrder.coach.organization!._id,
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {getTotalEvaluations(
-                            evaluationOrder.coach.organization!._id,
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          $
-                          {getOrganizationEvaluationRevenue(
-                            evaluationOrder.coach.organization!._id,
-                          )}
-                        </TableCell>
-                        <TableCell className="flex justify-end">
-                          <Link
-                            href={`/admin/evaluations/${evaluationOrder.coach.organization?._id}`}
-                            className="rounded-md border px-2 py-1 text-xs font-medium duration-200 hover:bg-accent-gray-100"
-                          >
-                            View
-                          </Link>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+        <EvaluationTab adminData={adminData} />
       </Tabs>
     </main>
   );
