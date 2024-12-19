@@ -2,12 +2,18 @@
 
 import connectDB from "@/db/connectDB";
 import { VideoType } from "@/db/models/GroupClass";
+import NotificationEntry from "@/db/models/NotificationEntry";
 import Order, { OrderType } from "@/db/models/Order";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function purchaseCourse(courseId: string, price: number) {
+export async function purchaseCourse(
+  courseId: string,
+  price: number,
+  isLiveClass: boolean,
+  coachId: string,
+) {
   let redirectUrl;
   try {
     const cookieStore = await cookies();
@@ -16,6 +22,15 @@ export async function purchaseCourse(courseId: string, price: number) {
 
     await connectDB();
     await Order.create({ course: courseId, user: userId, price });
+
+    await NotificationEntry.create({
+      type: isLiveClass ? "liveClass" : "videoCourse",
+      fromUser: userId,
+      toUser: coachId,
+      link: isLiveClass
+        ? `/dashboard/group-classes/live-classes/${courseId}`
+        : "/dashboard/group-classes/courses",
+    });
 
     redirectUrl = "/dashboard/group-classes/my-classes";
   } catch (err) {

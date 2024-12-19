@@ -59,7 +59,10 @@ export default function DashboardNotificationIcon({
                       alt={notification.fromUser.firstName + " profile picture"}
                       className="object-cover"
                     />
-                    <AvatarFallback>AV</AvatarFallback>
+                    <AvatarFallback>
+                      {notification.fromUser.firstName[0]}
+                      {notification.fromUser.lastName[0]}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 space-y-1">
                     <p className="truncate text-sm">

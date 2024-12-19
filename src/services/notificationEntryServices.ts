@@ -2,12 +2,10 @@ import connectDB from "@/db/connectDB";
 import NotificationEntry, {
   NotificationEntryType,
 } from "@/db/models/NotificationEntry";
-import { revalidatePath } from "next/cache";
 
 export async function fetchNotifications(userId?: string) {
   try {
     if (!userId) {
-      revalidatePath("/", "layout");
       return { notifications: [], error: null };
     }
 

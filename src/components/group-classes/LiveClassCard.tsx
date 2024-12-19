@@ -116,7 +116,12 @@ export default function LiveClassCard({
   async function handlePurchaseCourse(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const data = await purchaseCourse(liveClass._id, liveClass.price);
+    const data = await purchaseCourse(
+      liveClass._id,
+      liveClass.price,
+      true,
+      liveClass.user._id,
+    );
     if (data?.error) {
       console.log(data?.error);
     }

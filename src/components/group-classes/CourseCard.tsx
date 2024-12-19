@@ -51,7 +51,12 @@ export default function CourseCard({
   async function handlePurchaseCourse(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const data = await purchaseCourse(course._id, course.price);
+    const data = await purchaseCourse(
+      course._id,
+      course.price,
+      false,
+      course.user._id,
+    );
     if (data?.error) {
       console.log(data?.error);
     }
