@@ -2,15 +2,14 @@ import { BellIcon } from "lucide-react";
 import React, { useRef, useState } from "react";
 import useClickOutside from "@/hooks/useClickOutside";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { getNotificationMessage } from "@/lib/utils";
+import { getDuration, getNotificationMessage } from "@/lib/utils";
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
 import { Button } from "./ui/button";
 
 export type NotificationType = {
   _id: number;
-  type: "goal" | "evaluation" | "team" | "class";
-  time: string;
+  type: "goal" | "evaluation" | "team" | "course" | "liveClass";
   read: boolean;
   fromUser: UserType;
   toUser: UserType;
@@ -23,7 +22,6 @@ const notifications: NotificationType[] = [
   {
     _id: 1,
     type: "team",
-    time: "5m ago",
     read: false,
     fromUser: {
       firstName: "John",
@@ -42,7 +40,6 @@ const notifications: NotificationType[] = [
   {
     _id: 2,
     type: "evaluation",
-    time: "1h ago",
     read: false,
     fromUser: {
       firstName: "John",
@@ -61,7 +58,6 @@ const notifications: NotificationType[] = [
   {
     _id: 3,
     type: "goal",
-    time: "2h ago",
     read: false,
     fromUser: {
       firstName: "John",
@@ -79,8 +75,7 @@ const notifications: NotificationType[] = [
   },
   {
     _id: 5,
-    type: "class",
-    time: "1d ago",
+    type: "liveClass",
     read: true,
     fromUser: {
       firstName: "John",
@@ -93,7 +88,7 @@ const notifications: NotificationType[] = [
       profilePicture: "/placeholder-profile-picture.png",
     } as UserType,
     link: "/dashboard/goal-setting",
-    createdAt: new Date("2022-12-23"),
+    createdAt: new Date("2024-12-18"),
     updatedAt: new Date("2022-12-23"),
   },
 ];
@@ -136,7 +131,8 @@ export default function DashboardNotificationIcon() {
               <Link
                 href={notification.link}
                 key={notification._id}
-                className={`block px-4 py-2 duration-200 hover:bg-muted sm:py-3 ${notification.read ? "opacity-60" : ""}`}
+                onClick={() => setDropdownIsOpen(false)}
+                className={`block px-4 py-1.5 duration-200 hover:bg-muted sm:py-2 ${notification.read ? "opacity-60" : ""}`}
               >
                 <div className="flex items-start space-x-4 overflow-hidden">
                   <Avatar>
@@ -152,7 +148,7 @@ export default function DashboardNotificationIcon() {
                       {getNotificationMessage(notification)}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {notification.time}
+                      {getDuration(notification.createdAt)}
                     </p>
                   </div>
                 </div>
@@ -169,6 +165,7 @@ export default function DashboardNotificationIcon() {
 
             <Link
               href={"/dashboard/notifications"}
+              onClick={() => setDropdownIsOpen(false)}
               className="block h-9 flex-1 rounded-md border px-4 py-2 text-center text-sm font-medium text-primary duration-200 hover:bg-primary/90 hover:text-primary-foreground"
             >
               See All

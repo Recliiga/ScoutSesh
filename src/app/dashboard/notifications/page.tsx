@@ -8,7 +8,6 @@ const notifications: NotificationType[] = [
   {
     _id: 1,
     type: "team",
-    time: "5m ago",
     read: false,
     fromUser: {
       firstName: "John",
@@ -27,7 +26,6 @@ const notifications: NotificationType[] = [
   {
     _id: 2,
     type: "evaluation",
-    time: "1h ago",
     read: false,
     fromUser: {
       firstName: "John",
@@ -46,7 +44,6 @@ const notifications: NotificationType[] = [
   {
     _id: 3,
     type: "goal",
-    time: "2h ago",
     read: false,
     fromUser: {
       firstName: "John",
@@ -64,8 +61,7 @@ const notifications: NotificationType[] = [
   },
   {
     _id: 5,
-    type: "class",
-    time: "1d ago",
+    type: "liveClass",
     read: true,
     fromUser: {
       firstName: "John",

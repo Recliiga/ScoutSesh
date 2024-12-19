@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getNotificationMessage } from "@/lib/utils";
+import { getDuration, getNotificationMessage } from "@/lib/utils";
 import { NotificationType } from "./DashboardNotificationIcon";
 
 export default function NotificationList({
@@ -37,7 +37,8 @@ export default function NotificationList({
             <option value="goal">Goal Setting</option>
             <option value="evaluation">Athlete Evaluation</option>
             <option value="team">Team Members</option>
-            <option value="class">Group Classes</option>
+            <option value="liveClass">Live Classes</option>
+            <option value="course">Video Courses</option>
           </select>
         </div>
       </CardHeader>
@@ -65,7 +66,7 @@ export default function NotificationList({
                   {getNotificationMessage(notification)}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {notification.time}
+                  {getDuration(notification.createdAt)}
                 </p>
               </div>
             </div>

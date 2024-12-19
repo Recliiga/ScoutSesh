@@ -373,10 +373,44 @@ export function getNotificationMessage(notification: NotificationType) {
     case "team":
       return `${getFullname(notification.fromUser)} joined your team`;
 
-    case "class":
+    case "course":
+      return `${getFullname(notification.fromUser)} purchased a course`;
+
+    case "liveClass":
       return `${getFullname(notification.fromUser)} enrolled in a class`;
 
     default:
       break;
   }
+}
+
+export function getDuration(fromDate: Date, toDate: Date = new Date()) {
+  const fromTime = new Date(fromDate).getTime();
+  const toTime = new Date(toDate).getTime();
+
+  let duration = (toTime - fromTime) / 1000;
+  let suffix = duration > 1 ? " secs ago" : " sec ago";
+
+  if (duration > 60) {
+    duration = Math.floor(duration / 60);
+    suffix = duration > 1 ? " mins ago" : " min ago";
+  }
+  if (duration > 60) {
+    duration = Math.floor(duration / 60);
+    suffix = duration > 1 ? " hours ago" : " hour ago";
+  }
+  if (duration > 24) {
+    duration = Math.floor(duration / 24);
+    suffix = duration > 1 ? " days ago" : " day ago";
+  }
+  if (duration > 30) {
+    duration = Math.floor(duration / 30);
+    suffix = duration > 1 ? " months ago" : " month ago";
+  }
+  if (duration > 18) {
+    duration = Math.round(duration / 12);
+    suffix = duration > 1 ? " years ago" : " year ago";
+  }
+
+  return duration + suffix;
 }
