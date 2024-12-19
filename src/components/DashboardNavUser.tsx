@@ -128,7 +128,7 @@ export default function DashboardNavUser({
                       className="w-full justify-start px-2 text-left sm:px-4"
                       asChild
                     >
-                      <Link href="#">
+                      <Link href="/dashboard/billings-and-payments">
                         <CreditCardIcon className="h-4 w-4 sm:mr-2" />
                         Billings & Payments
                       </Link>
