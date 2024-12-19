@@ -29,8 +29,10 @@ export type ReflectionDataType = {
 
 export default function WeeklyReflectionForm({
   goalData,
+  coachId,
 }: {
   goalData: GoalDataSchemaType;
+  coachId?: string;
 }) {
   const goals = [...goalData.goals];
   const [loading, setLoading] = useState(false);
@@ -46,13 +48,13 @@ export default function WeeklyReflectionForm({
         improvement: "",
         isCompleted: false,
       },
-    })) || []
+    })) || [],
   );
 
   function updateReflectionData(
     goalIndex: number,
     field: string,
-    value: string | boolean
+    value: string | boolean,
   ) {
     setReflectionData((prevData) => {
       const newData = [...prevData];
@@ -86,7 +88,8 @@ export default function WeeklyReflectionForm({
     if (isFormValid(currentGoalIndex)) {
       const { error } = await performWeeklyReflection(
         goalData._id,
-        reflectionData
+        reflectionData,
+        coachId,
       );
       setLoading(false);
       if (error) return;
@@ -120,7 +123,7 @@ export default function WeeklyReflectionForm({
               currentScreen === `reflection-goal-${index + 1}` && (
                 <ReflectionGoalScreen
                   goals={goalData.goals.filter(
-                    (goal) => goal.dateCompleted === null
+                    (goal) => goal.dateCompleted === null,
                   )}
                   key={index}
                   goalIndex={index}
@@ -134,7 +137,7 @@ export default function WeeklyReflectionForm({
                   updateReflectionData={updateReflectionData}
                   loading={loading}
                 />
-              )
+              ),
           )}
         {currentScreen === "congratulations" && (
           <CongratulationsScreen
@@ -159,7 +162,7 @@ export default function WeeklyReflectionForm({
               Cancel
             </Button>
             <Button
-              className="bg-green-500 hover:bg-green-600 text-white"
+              className="bg-green-500 text-white hover:bg-green-600"
               onClick={confirmGoalCompletion}
             >
               Confirm

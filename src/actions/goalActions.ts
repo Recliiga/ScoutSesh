@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 import { ReflectionDataType } from "@/components/weekly-reflection/WeeklyReflectionForm";
 import { GoalSubmissionType } from "@/components/goal-setting/CreateGoalForm";
 import { getUserIdFromCookies } from "@/lib/utils";
+import NotificationEntry from "@/db/models/NotificationEntry";
 
 export async function createGoal(goalData: GoalSubmissionType) {
   try {
@@ -47,7 +48,7 @@ export async function updateGoal(goalId: string, goalData: GoalSubmissionType) {
 
     const updatedGoal = await Goal.findOneAndUpdate(
       { _id: goalId, user: userId },
-      goalData
+      goalData,
     );
     if (!updatedGoal) throw new Error("Unable to update goal");
     return { error: null };
@@ -58,7 +59,8 @@ export async function updateGoal(goalId: string, goalData: GoalSubmissionType) {
 
 export async function performWeeklyReflection(
   goalId: string,
-  reflectionData: ReflectionDataType[]
+  reflectionData: ReflectionDataType[],
+  coachId?: string,
 ) {
   try {
     const cookieStore = await cookies();
@@ -73,12 +75,19 @@ export async function performWeeklyReflection(
     if (updatedGoal.user.toString() !== userId)
       throw new Error(`User is unauthorized`);
 
-    updatedGoal.goals.forEach((goal, index) => {
+    updatedGoal.goals.forEach(async (goal, index) => {
       goal.weeklyReflections.push(
-        reflectionData[index].reflection as WeeklyReflectionSchemaType
+        reflectionData[index].reflection as WeeklyReflectionSchemaType,
       );
       if (reflectionData[index].reflection.isCompleted) {
         goal.dateCompleted = new Date();
+
+        await NotificationEntry.create({
+          type: "evaluation",
+          fromUser: userId,
+          toUser: coachId,
+          link: `/dashboard/goal-setting/weekly-reflection/${goalId}`,
+        });
       }
     });
 

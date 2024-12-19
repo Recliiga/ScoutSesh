@@ -6,7 +6,7 @@ export type NotificationEntryType = {
   type: "goal" | "evaluation" | "team" | "videoCourse" | "liveClass";
   read: boolean;
   fromUser: UserType;
-  toUser: UserType;
+  toUser?: UserType;
   link: string;
   createdAt: Date;
   updatedAt: Date;
@@ -27,7 +27,6 @@ const NotificationEntrySchema = new mongoose.Schema<NotificationEntryType>(
     },
     toUser: {
       type: mongoose.SchemaTypes.ObjectId,
-      required: [true, "Please provide the toUser"],
       ref: "User",
     },
     link: {

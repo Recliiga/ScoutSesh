@@ -4,8 +4,11 @@ import { fetchAthleteLatestGoalData } from "@/services/goalServices";
 import NoWeeklyReflectionPage from "@/components/weekly-reflection/NoWeeklyReflectionPage";
 import { notFound } from "next/navigation";
 import { getGoalDueDate, getWeeklyReflectionStatus } from "@/lib/utils";
+import { getSessionFromHeaders } from "@/services/authServices";
 
 export default async function WeeklyReflectionPage() {
+  const user = await getSessionFromHeaders();
+
   const { goalData, error } = await fetchAthleteLatestGoalData();
   if (error !== null) notFound();
 
@@ -16,5 +19,10 @@ export default async function WeeklyReflectionPage() {
   if (!goalData || status !== "needs_reflection")
     return <NoWeeklyReflectionPage status={status} dueDate={dueDate} />;
 
-  return <WeeklyReflectionForm goalData={goalData} />;
+  return (
+    <WeeklyReflectionForm
+      goalData={goalData}
+      coachId={user.organization ? String(user.organization.user) : undefined}
+    />
+  );
 }
