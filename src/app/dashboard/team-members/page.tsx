@@ -36,6 +36,7 @@ export default async function TeamMembersPage() {
       invitationCode={invitationCode}
       organizationMembers={teamMembers!}
       teamJournalEntries={teamJournalEntries}
+      user={user}
     />
   );
 }

@@ -4,7 +4,7 @@ import InvitationEmail from "@/components/emails/InvitationEmail";
 import connectDB from "@/db/connectDB";
 import InvitationCode, { InvitationCodeType } from "@/db/models/InvitationCode";
 import { OrganizationType } from "@/db/models/Organization";
-import { UserType } from "@/db/models/User";
+import User, { UserType } from "@/db/models/User";
 import { getSessionFromHeaders } from "@/services/authServices";
 import { Resend } from "resend";
 
@@ -40,26 +40,28 @@ export async function sendInvitationEmail(
   toEmail: string,
   invitationCode: string,
   organization: OrganizationType,
-  user?: UserType,
+  coachFirstName: string,
 ) {
+  const user: UserType | null = await User.findOne({ email: toEmail });
+
   try {
-    await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: "noreply@scoutsesh.com",
       to: toEmail,
       subject: "You're Invited to Join ScoutSesh",
       react: InvitationEmail({
-        coachFirstName: organization.user.firstName,
+        coachFirstName,
         invitationLink: invitationCode,
         teamImage: organization.logo,
         teamName: organization.name,
-        userImage: user?.profilePicture,
-        username: user?.firstName,
+        userImage: user ? user.profilePicture : undefined,
+        username: user ? user.firstName : undefined,
       }),
     });
+    if (error) throw new Error(error.message);
+
     return { error: null };
-  } catch (err) {
-    const error = err as Error;
-    console.log("Invitation Email Error: ", error.message);
+  } catch {
     return { error: "An error occured sending email" };
   }
 }

@@ -42,16 +42,16 @@ export default function InvitationEmail({
       <Preview>{previewText}</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white px-2 font-sans">
-          <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
+          <Container className="mx-auto my-[40px] max-w-[465px] rounded-lg border border-solid border-[#eaeaea] bg-green-50 p-[20px]">
             <Section className="mt-4 flex items-center justify-center">
               <Link
                 href="/"
-                className="mx-auto text-center text-2xl font-bold text-green-600"
+                className="mx-auto flex items-center justify-center text-center text-2xl font-bold text-green-600"
               >
                 ScoutSesh
               </Link>
             </Section>
-            <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
+            <Heading className="mx-0 my-[30px] p-0 text-center text-[18px] font-normal text-black">
               Join <strong>{teamName}</strong> on{" "}
               <strong className="text-green-600">Scoutsesh</strong>
             </Heading>
@@ -90,7 +90,7 @@ export default function InvitationEmail({
             ) : (
               <Section className="flex items-center justify-center">
                 <Img
-                  className="rounded-full"
+                  className="mx-auto rounded-full"
                   src={teamImage}
                   width="64"
                   height="64"
@@ -122,10 +122,10 @@ export default function InvitationEmail({
 }
 
 InvitationEmail.PreviewProps = {
-  username: "John",
-  userImage: `/placeholder-profile-picture.png`,
+  // username: "John",
+  // userImage: `/placeholder-profile-picture.png`,
   coachFirstName: "David",
   teamName: "Los Angeles Lakers",
-  teamImage: `/placeholder-profile-picture.png`,
+  teamImage: `https://ci3.googleusercontent.com/meips/ADKq_NbMMQj-2kpYabHMRiAnCnJ4ctyD0ScRbcixHJYIDlfwLvgFtot0JJEQFm4mtkSXQp2jXSgpB210OtPzEVzKcmd6noDP0bcXT-vgVPJBIBKpjiPTmg1y8eQu4EN3K9tTDisSxsGX8JymJMqD4g=s0-d-e1-ft#https://res.cloudinary.com/dpw5ibssm/image/upload/v1734176638/ek5pscon1sp9nfcubdj0.jpg`,
   invitationLink: "http://localhost:3000/invite/123",
 } as VercelInviteUserEmailProps;

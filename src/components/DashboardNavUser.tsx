@@ -167,6 +167,7 @@ export default function DashboardNavUser({
           invitationCode={invitationCode}
           open={openModal === "addTeamMember"}
           closeModal={closeModal}
+          user={user}
         />
         <LogoutModal open={openModal === "signout"} closeModal={closeModal} />
       </ModalContainer>
