@@ -17,10 +17,10 @@ interface DropboxResetPasswordEmailProps {
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `https://scoutsesh.com`;
 
-export const DropboxResetPasswordEmail = ({
+export default function ResetPasswordEmail({
   userFirstname,
   resetPasswordLink,
-}: DropboxResetPasswordEmailProps) => {
+}: DropboxResetPasswordEmailProps) {
   return (
     <Html>
       <Head />
@@ -65,14 +65,12 @@ export const DropboxResetPasswordEmail = ({
       </Body>
     </Html>
   );
-};
+}
 
-DropboxResetPasswordEmail.PreviewProps = {
+ResetPasswordEmail.PreviewProps = {
   userFirstname: "John",
   resetPasswordLink: "https://dropbox.com",
 } as DropboxResetPasswordEmailProps;
-
-export default DropboxResetPasswordEmail;
 
 const styles = {
   main: {

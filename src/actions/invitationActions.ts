@@ -34,14 +34,14 @@ export async function generateInvitationCode(code: string) {
   }
 }
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function sendInvitationEmail(
   toEmail: string,
   invitationCode: string,
   organization: OrganizationType,
   coachFirstName: string,
 ) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
   const user: UserType | null = await User.findOne({ email: toEmail });
 
   try {
