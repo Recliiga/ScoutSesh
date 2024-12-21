@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { GeistSans } from "geist/font/sans";
 import Header from "@/components/Header";
-import { getSession } from "@/services/authServices";
+import { getSessionFromHeaders } from "@/services/authServices";
 import Footer from "@/components/Footer";
 import { fetchLatestInvitationCode } from "@/services/invitationServices";
 import { fetchNotifications } from "@/services/notificationEntryServices";
+import { UserType } from "@/db/models/User";
 
 export const metadata: Metadata = {
   title: "ScoutSesh",
@@ -18,7 +19,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { user } = await getSession();
+  const user: UserType | null = await getSessionFromHeaders();
   const { invitationCode } = await fetchLatestInvitationCode();
 
   const { notifications, error } = await fetchNotifications(user?._id);

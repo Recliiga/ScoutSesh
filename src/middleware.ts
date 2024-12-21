@@ -8,7 +8,9 @@ export async function middleware(request: NextRequest) {
 
   // Routes
   const isAuthRoute =
-    pathname.startsWith("/login") || pathname.startsWith("/signup");
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/signup") ||
+    pathname.startsWith("/forgot-password");
   const isProtectedRoute = pathname.startsWith("/dashboard");
   const isInviteRoute = pathname.startsWith("/invite");
   const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
@@ -108,11 +110,24 @@ export async function middleware(request: NextRequest) {
 
 export const config: MiddlewareConfig = {
   matcher: [
-    "/login",
-    "/signup",
-    "/dashboard/:path*",
-    "/invite/:path*",
-    "/complete-profile",
-    "/create-organization",
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };
+
+// export const config: MiddlewareConfig = {
+//   matcher: [
+//     "/login",
+//     "/signup",
+//     "/dashboard/:path*",
+//     "/invite/:path*",
+//     "/complete-profile",
+//     "/create-organization",
+//   ],
+// };
