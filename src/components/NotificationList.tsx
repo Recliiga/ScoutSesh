@@ -24,6 +24,10 @@ export default function NotificationList({
       ? notifications
       : notifications.filter((notif) => notif.type === filter);
 
+  const hasUnreadNotifications = notifications.some(
+    (notif) => notif.read === false,
+  );
+
   return (
     <Card>
       <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-x-4 border-b p-4 sm:p-6">
@@ -52,6 +56,7 @@ export default function NotificationList({
         <Button
           variant={"outline"}
           className="m-4 flex-1 hover:border-green-600 hover:bg-green-600 hover:text-white"
+          disabled={!hasUnreadNotifications}
         >
           Mark all as read
         </Button>

@@ -88,6 +88,7 @@ export default function DashboardNotificationIcon({
             <Button
               variant={"outline"}
               className="flex-1 hover:border-green-600 hover:bg-green-600 hover:text-white"
+              disabled={!hasUnreadNotifications}
             >
               Mark as read
             </Button>
