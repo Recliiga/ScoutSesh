@@ -168,7 +168,10 @@ export async function completeProfile(userData: {
     if (authError !== null) throw new Error(authError);
 
     await connectDB();
-    const data = await User.findByIdAndUpdate(userId, userData);
+    const data = await User.findByIdAndUpdate(userId, {
+      ...userData,
+      profileCompleted: true,
+    });
     if (!data) throw new Error("An error occured");
     return { error: null };
   } catch (error) {

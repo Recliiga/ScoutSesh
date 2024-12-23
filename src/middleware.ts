@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
   const isAuthenticated = Boolean(user);
   const userIsAthlete = user?.role === "Athlete";
   const userIsHeadCoach = user?.role === "Head Coach";
-  const userProfileCompleted = Boolean(user?.DOB);
+  const userProfileCompleted = Boolean(user?.profileCompleted);
   const coachProfileCompleted = userIsHeadCoach && Boolean(user?.organization);
 
   const response = NextResponse.next();
