@@ -6,20 +6,31 @@ import { getDuration, getNotificationMessage } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { NotificationEntryType } from "@/db/models/NotificationEntry";
+import { markNotificationsAsRead } from "@/actions/notificationActions";
 
 export default function DashboardNotificationIcon({
   notifications,
+  userId,
 }: {
   notifications: NotificationEntryType[];
+  userId: string;
 }) {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [notficationIconRef] = useClickOutside(() => setDropdownIsOpen(false));
 
   const hasUnreadNotifications = notifications.some(
     (notif) => notif.read === false,
   );
+
+  async function handleMarkAsRead() {
+    setLoading(true);
+    await markNotificationsAsRead(userId);
+    setLoading(false);
+    setDropdownIsOpen(false);
+  }
 
   return (
     <div className="relative" ref={notficationIconRef}>
@@ -46,7 +57,7 @@ export default function DashboardNotificationIcon({
           </div>
           <div>
             {notifications.length ? (
-              notifications.map((notification) => (
+              notifications.slice(0, 5).map((notification) => (
                 <Link
                   href={notification.link}
                   key={notification._id}
@@ -88,7 +99,8 @@ export default function DashboardNotificationIcon({
             <Button
               variant={"outline"}
               className="flex-1 hover:border-green-600 hover:bg-green-600 hover:text-white"
-              disabled={!hasUnreadNotifications}
+              disabled={!hasUnreadNotifications || loading}
+              onClick={handleMarkAsRead}
             >
               Mark as read
             </Button>

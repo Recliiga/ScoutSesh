@@ -6,14 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDuration, getNotificationMessage } from "@/lib/utils";
 import { NotificationEntryType } from "@/db/models/NotificationEntry";
 import { Button } from "./ui/button";
+import { markNotificationsAsRead } from "@/actions/notificationActions";
 
 export default function NotificationList({
   notifications,
+  userId,
 }: {
   notifications: NotificationEntryType[];
+  userId: string;
 }) {
   const [filter, setFilter] = useState("all");
   const [domLoaded, setDomLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setDomLoaded(true);
@@ -27,6 +31,12 @@ export default function NotificationList({
   const hasUnreadNotifications = notifications.some(
     (notif) => notif.read === false,
   );
+
+  async function handleMarkAsRead() {
+    setLoading(true);
+    await markNotificationsAsRead(userId);
+    setLoading(false);
+  }
 
   return (
     <Card>
@@ -56,7 +66,8 @@ export default function NotificationList({
         <Button
           variant={"outline"}
           className="m-4 flex-1 hover:border-green-600 hover:bg-green-600 hover:text-white"
-          disabled={!hasUnreadNotifications}
+          disabled={!hasUnreadNotifications || loading}
+          onClick={handleMarkAsRead}
         >
           Mark all as read
         </Button>
@@ -83,7 +94,7 @@ export default function NotificationList({
                   className={`flex-1 space-y-1 ${notification.read ? "opacity-60" : ""}`}
                 >
                   <p className="truncate text-sm">
-                    {getNotificationMessage(notification)}
+                    {getNotificationMessage(notification, true)}
                   </p>
                   {domLoaded ? (
                     <p className="text-xs text-muted-foreground">

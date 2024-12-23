@@ -19,7 +19,7 @@ export default async function NotificationsPage() {
           </h1>
           <BackButton className="hover:bg-white hover:text-green-600" />
         </div>
-        <NotificationList notifications={notifications} />
+        <NotificationList notifications={notifications} userId={user._id} />
       </div>
     </div>
   );

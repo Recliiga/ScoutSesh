@@ -362,22 +362,25 @@ export function getLastEvaluationDate(
   )?.createdAt;
 }
 
-export function getNotificationMessage(notification: NotificationEntryType) {
+export function getNotificationMessage(
+  notification: NotificationEntryType,
+  useFullname = false,
+) {
   switch (notification.type) {
     case "goal":
-      return `${getFullname(notification.fromUser)} achieved their goal`;
+      return `${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName} achieved their goal`;
 
     case "evaluation":
-      return `Evaluation due for ${getFullname(notification.fromUser)}`;
+      return `Evaluation due for ${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName}`;
 
     case "team":
-      return `${getFullname(notification.fromUser)} joined your team`;
+      return `${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName} joined your team`;
 
     case "videoCourse":
-      return `${getFullname(notification.fromUser)} purchased a course`;
+      return `${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName} purchased a course`;
 
     case "liveClass":
-      return `${getFullname(notification.fromUser)} enrolled in a class`;
+      return `${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName} enrolled in a class`;
 
     default:
       break;

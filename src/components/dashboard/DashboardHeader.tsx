@@ -153,7 +153,10 @@ export default function DashboardHeader({
           </nav>
         </div>
         <div className="flex items-center space-x-4">
-          <DashboardNotificationIcon notifications={notifications} />
+          <DashboardNotificationIcon
+            notifications={notifications}
+            userId={user._id}
+          />
           <DashboardNavUser user={user} invitationCode={invitationCode} />
         </div>
       </header>
