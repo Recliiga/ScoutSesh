@@ -1,5 +1,6 @@
 "use server";
 
+import AccountVerificationEmail from "@/components/emails/AccountVerificationEmail";
 import connectDB from "@/db/connectDB";
 import Organization from "@/db/models/Organization";
 import User, { UserType } from "@/db/models/User";
@@ -9,6 +10,7 @@ import jwt from "jsonwebtoken";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Resend } from "resend";
 
 const errorMessages = {
   firstName: "Please enter your First name",
@@ -109,6 +111,18 @@ export async function signup(formData: FormData, redirectUrl: string) {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
     });
+
+    // const resend = new Resend(process.env.RESEND_API_KEY);
+
+    // await resend.emails.send({
+    //   from: "noreply@scoutsesh.com",
+    //   to: userData.email,
+    //   subject: "Verify your account on Scoutsesh",
+    //   react: ScoutseshVerifyEmail({
+    //     name:user.firstName,
+    //     verificationCode: user.verificationCode,
+    //   }),
+    // });
 
     canRedirect = true;
   } catch (err) {

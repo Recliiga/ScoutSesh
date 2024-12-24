@@ -10,7 +10,7 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-interface DropboxResetPasswordEmailProps {
+interface ScoutseshResetPasswordEmailProps {
   userFirstname: string;
   resetPasswordLink?: string;
 }
@@ -20,7 +20,7 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `https://scoutsesh.com`;
 export default function ResetPasswordEmail({
   userFirstname,
   resetPasswordLink,
-}: DropboxResetPasswordEmailProps) {
+}: ScoutseshResetPasswordEmailProps) {
   return (
     <Html>
       <Head />
@@ -70,7 +70,7 @@ export default function ResetPasswordEmail({
 ResetPasswordEmail.PreviewProps = {
   userFirstname: "John",
   resetPasswordLink: "https://dropbox.com",
-} as DropboxResetPasswordEmailProps;
+} as ScoutseshResetPasswordEmailProps;
 
 const styles = {
   main: {
