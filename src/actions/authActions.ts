@@ -4,9 +4,11 @@ import AccountVerificationEmail from "@/components/emails/AccountVerificationEma
 import connectDB from "@/db/connectDB";
 import Organization from "@/db/models/Organization";
 import User, { UserType } from "@/db/models/User";
+import VerificationCode from "@/db/models/VerificationCode";
 import { getUserIdFromCookies } from "@/lib/utils";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { customAlphabet } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -112,17 +114,30 @@ export async function signup(formData: FormData, redirectUrl: string) {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    // const resend = new Resend(process.env.RESEND_API_KEY);
+    // Generate verification code and send email
+    const characterSet = "0123456789";
+    const customNanoId = customAlphabet(characterSet, 6);
+    const code = customNanoId();
+    const expDate = new Date();
+    expDate.setMinutes(expDate.getMinutes() + 10);
 
-    // await resend.emails.send({
-    //   from: "noreply@scoutsesh.com",
-    //   to: userData.email,
-    //   subject: "Verify your account on Scoutsesh",
-    //   react: ScoutseshVerifyEmail({
-    //     name:user.firstName,
-    //     verificationCode: user.verificationCode,
-    //   }),
-    // });
+    await VerificationCode.create({
+      code: code,
+      user: newUser._id,
+      exp: expDate,
+    });
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    await resend.emails.send({
+      from: "verify@scoutsesh.com",
+      to: newUser.email,
+      subject: "Verify your account on Scoutsesh",
+      react: AccountVerificationEmail({
+        name: newUser.firstName,
+        verificationCode: code,
+      }),
+    });
 
     canRedirect = true;
   } catch (err) {

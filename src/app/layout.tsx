@@ -28,7 +28,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${GeistSans.className} flex min-h-screen flex-col text-accent-black antialiased`}
+        className={`${GeistSans.className} flex min-h-dvh flex-col text-accent-black antialiased`}
       >
         <Header
           user={user}

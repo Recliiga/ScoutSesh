@@ -70,7 +70,9 @@ export default function DashboardNavUser({
         {userMenu && (
           <div
             ref={userMenuRef}
-            className={"absolute right-0 top-[calc(100%_+_.5rem)] z-10"}
+            className={
+              "absolute right-0 top-[calc(100%_+_.5rem)] z-10 min-w-40"
+            }
           >
             <div className="rounded-lg border bg-background shadow-lg">
               <div className="border-b p-4">

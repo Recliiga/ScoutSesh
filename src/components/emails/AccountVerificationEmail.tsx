@@ -4,7 +4,6 @@ import {
   Container,
   Head,
   Heading,
-  Hr,
   Html,
   Preview,
   Section,
@@ -55,13 +54,6 @@ export default function AccountVerificationEmail({
                 </Text>
               </Section>
             </Section>
-            <Hr />
-            <Section style={styles.lowerSection}>
-              <Text style={{ ...styles.cautionText, marginBottom: "0px" }}>
-                Scoutsesh will never email you and ask you to disclose or verify
-                your password, credit card, or banking account number.
-              </Text>
-            </Section>
           </Section>
         </Container>
       </Body>
@@ -109,14 +101,15 @@ const styles: Record<string, React.CSSProperties> = {
 
   header: {
     display: "flex",
-    paddingTop: "20px",
+    padding: "20px",
+    paddingBottom: "0",
     alignItems: "center",
     justifyContent: "center",
   },
 
   coverSection: { backgroundColor: "#fff", borderRadius: "8px" },
 
-  upperSection: { padding: "25px 35px" },
+  upperSection: { padding: "25px 35px", paddingTop: "0" },
 
   lowerSection: { padding: "25px 35px" },
 

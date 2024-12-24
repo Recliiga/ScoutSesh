@@ -11,8 +11,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
     pathname.startsWith("/forgot-password");
-  pathname.startsWith("/verify-email");
   const isProtectedRoute = pathname.startsWith("/dashboard");
+  const isVerifyEmailRoute = pathname.startsWith("/verify-email");
   const isInviteRoute = pathname.startsWith("/invite");
   const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
   const isCreateOrganizationRoute = pathname.startsWith("/create-organization");
@@ -23,6 +23,7 @@ export async function middleware(request: NextRequest) {
   const userIsAthlete = user?.role === "Athlete";
   const userIsHeadCoach = user?.role === "Head Coach";
   const userProfileCompleted = Boolean(user?.profileCompleted);
+  const userEmailVerified = Boolean(user?.emailVerified);
   const coachProfileCompleted = userIsHeadCoach && Boolean(user?.organization);
 
   const response = NextResponse.next();
@@ -47,10 +48,19 @@ export async function middleware(request: NextRequest) {
     return redirectTo(redirectUrl, false);
   }
 
+  // Redirect authenticated user from verify email route
+  if (isVerifyEmailRoute) {
+    if (isAuthenticated && userEmailVerified) {
+      return redirectTo(redirectUrl, false);
+    }
+  }
+
   // Redirect un-authenticated users or users who haven't completed their profile or created their organization from protected routes
   if (isProtectedRoute) {
     if (isAuthenticated) {
-      if (!userProfileCompleted) {
+      if (!userEmailVerified) {
+        return redirectTo("/verify-email");
+      } else if (!userProfileCompleted) {
         return redirectTo("/complete-profile");
       } else if (!userIsAthlete && !coachProfileCompleted) {
         return redirectTo("/create-organization");
@@ -63,7 +73,9 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users who have not completed their profile to create organization page or dashboard page depending on user role
   if (isCompleteProfileRoute) {
     if (isAuthenticated) {
-      if (userProfileCompleted) {
+      if (!userEmailVerified) {
+        return redirectTo("/verify-email", false);
+      } else if (userProfileCompleted) {
         if (userIsHeadCoach) {
           return redirectTo("/create-organization", false);
         } else {
@@ -78,7 +90,9 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated coaches who have not created their organization to create profile page or dashboard page depending on user role
   if (isCreateOrganizationRoute) {
     if (isAuthenticated) {
-      if (userProfileCompleted) {
+      if (!userEmailVerified) {
+        return redirectTo("/verify-email", false);
+      } else if (userProfileCompleted) {
         if (userIsAthlete || coachProfileCompleted) {
           return redirectTo(redirectUrl, false);
         }
