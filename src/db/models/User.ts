@@ -37,6 +37,7 @@ export interface UserType extends mongoose.Document {
   organization?: OrganizationType;
   status: UserStatusType;
   profileCompleted: boolean;
+  emailVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -70,6 +71,7 @@ const UserSchema: mongoose.Schema = new mongoose.Schema(
     bio: { type: String },
     status: { type: String, default: "Active" },
     profileCompleted: { type: Boolean, default: false },
+    emailVerified: { type: Boolean, default: false },
     organization: { type: mongoose.SchemaTypes.ObjectId, ref: "Organization" },
   },
   { timestamps: true },

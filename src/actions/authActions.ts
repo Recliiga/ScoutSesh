@@ -18,11 +18,13 @@ const errorMessages = {
   role: "Please select a Role",
 };
 
-export async function login(formData: FormData) {
+export async function login(formData: FormData, redirectUrl: string) {
   const cookieStore = await cookies();
 
   const email = formData.get("email");
   const password = formData.get("password") as string;
+
+  let canRedirect = false;
 
   try {
     await connectDB();
@@ -56,16 +58,19 @@ export async function login(formData: FormData) {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    return { error: null };
+    canRedirect = true;
   } catch (error) {
     console.log({ error: (error as Error).message });
     return { error: "An unexpected error occured" };
+  } finally {
+    if (canRedirect) redirect(redirectUrl);
   }
 }
 
-export async function signup(formData: FormData) {
+export async function signup(formData: FormData, redirectUrl: string) {
   const cookieStore = await cookies();
   const role = formData.get("role");
+  let canRedirect = false;
 
   const userData = {
     firstName: formData.get("firstName"),
@@ -105,7 +110,7 @@ export async function signup(formData: FormData) {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    return { error: null };
+    canRedirect = true;
   } catch (err) {
     const error = err as Error;
 
@@ -115,6 +120,13 @@ export async function signup(formData: FormData) {
     }
     console.log({ error: error.message });
     return { error: "An unexpected error occured" };
+  } finally {
+    if (canRedirect)
+      redirect(
+        redirectUrl === "/dashboard"
+          ? "/verify-email"
+          : `/verify-email?redirect=${redirectUrl}`,
+      );
   }
 }
 

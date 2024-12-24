@@ -2,13 +2,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import { signup } from "@/actions/authActions";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Error from "./AuthError";
 import LoadingIndicator from "./LoadingIndicator";
 import useFormEntries from "@/hooks/useFormEntries";
 
 export default function SignupForm({ orgId }: { orgId: string }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
@@ -72,17 +71,14 @@ export default function SignupForm({ orgId }: { orgId: string }) {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const { error } = await signup(formData);
+    const data = await signup(formData, redirectUrl);
 
-    if (error === null) {
-      router.replace(redirectUrl);
-    } else {
+    if (data?.error) {
+      setSignupError(data?.error);
       updateField("password", "");
       updateField("confirmPassword", "");
       setLoading(false);
     }
-
-    setSignupError(error);
   }
 
   return (

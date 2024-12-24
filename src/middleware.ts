@@ -11,6 +11,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
     pathname.startsWith("/forgot-password");
+  pathname.startsWith("/verify-email");
   const isProtectedRoute = pathname.startsWith("/dashboard");
   const isInviteRoute = pathname.startsWith("/invite");
   const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
