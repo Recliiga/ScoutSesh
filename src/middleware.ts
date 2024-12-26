@@ -50,8 +50,12 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated user from verify email route
   if (isVerifyEmailRoute) {
-    if (isAuthenticated && userEmailVerified) {
-      return redirectTo(redirectUrl, false);
+    if (isAuthenticated) {
+      if (userEmailVerified) {
+        return redirectTo(redirectUrl, false);
+      }
+    } else {
+      return redirectTo("/login", false);
     }
   }
 
