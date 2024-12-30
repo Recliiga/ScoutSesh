@@ -1,4 +1,5 @@
 import AuthTabs from "@/components/AuthTabs";
+import Link from "next/link";
 import React from "react";
 
 export default async function layout({
@@ -7,26 +8,29 @@ export default async function layout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-1 justify-center items-center bg-gray-100 p-4">
-      <div className="flex flex-col gap-6 border-accent-gray-200 bg-white shadow-sm p-3 sm:p-6 border rounded-lg w-full max-w-md">
+    <div className="flex flex-1 items-center justify-center bg-gray-100 p-4">
+      <div className="flex w-full max-w-md flex-col gap-6 rounded-lg border border-accent-gray-200 bg-white p-3 shadow-sm sm:p-6">
         <div className="flex flex-col gap-1">
-          <h3 className="font-bold text-2xl text-center tracking-tight">
+          <h3 className="text-center text-2xl font-bold tracking-tight">
             Welcome to ScoutSesh
           </h3>
-          <p className="text-accent-gray-300 text-center text-sm">
+          <p className="text-center text-sm text-accent-gray-300">
             Elevate your game with expert coaching
           </p>
         </div>
         <div>
-          <div className="flex flex-col gap-2 w-full">
+          <div className="flex w-full flex-col gap-2">
             <AuthTabs />
             {children}
           </div>
         </div>
-        <div className="flex flex-col justify-center items-center space-y-2">
-          <button className="font-medium text-accent-gray-300 text-xs">
+        <div className="flex flex-col items-center justify-center space-y-2">
+          <Link
+            href={"/forgot-password"}
+            className="text-xs font-medium text-accent-gray-300 hover:underline"
+          >
             Forgot password?
-          </button>
+          </Link>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Error from "./AuthError";
 import LoadingIndicator from "./LoadingIndicator";
 import { login } from "@/actions/authActions";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
@@ -14,8 +14,6 @@ export default function LoginForm() {
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
   const canSubmit = Boolean(email.trim()) && Boolean(password.trim());
-
-  const router = useRouter();
 
   function clearInput(...names: string[]) {
     names.forEach((id) => {
@@ -30,15 +28,13 @@ export default function LoginForm() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const { error } = await login(formData);
+    const data = await login(formData, redirectUrl);
 
-    if (!error) {
-      router.replace(redirectUrl);
-    } else {
+    if (data?.error) {
+      setError(data?.error);
       clearInput("password");
       setLoading(false);
     }
-    setError(error);
   }
 
   return (

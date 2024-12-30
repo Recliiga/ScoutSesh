@@ -56,6 +56,7 @@ export default function CompleteAthleteProfileForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>();
   const [calendarRef] = useClickOutside(() => setCalendarOpen(false));
+  const [imageError, setImageError] = useState<string | null>(null);
 
   const { formEntries, updateField } = useFormEntries({
     userId,
@@ -85,6 +86,12 @@ export default function CompleteAthleteProfileForm({
   async function handleChangeImage(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
+    if (file.size > 10485759) {
+      setImageError(
+        "File too large: Please select an image less than 10mb in size",
+      );
+      return;
+    }
 
     const resizedImageUrl = await resizeImage(file);
     if (!resizedImageUrl) return;
@@ -170,6 +177,7 @@ export default function CompleteAthleteProfileForm({
         >
           Upload Photo
         </Button>
+        {imageError && <Error error={imageError} />}
         <input
           type="file"
           ref={fileInputRef}

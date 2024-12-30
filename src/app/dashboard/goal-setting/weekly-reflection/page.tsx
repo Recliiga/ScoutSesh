@@ -22,7 +22,7 @@ export default async function WeeklyReflectionPage() {
   return (
     <WeeklyReflectionForm
       goalData={goalData}
-      coachId={user.organization ? String(user.organization.user) : null}
+      coachId={user.organization ? String(user.organization.user) : undefined}
     />
   );
 }

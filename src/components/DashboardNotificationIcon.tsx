@@ -6,12 +6,14 @@ import { getDuration, getNotificationMessage } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { NotificationEntryType } from "@/db/models/NotificationEntry";
-import { markAllNotificationAsRead } from "@/actions/notificationActions";
+import { markNotificationsAsRead } from "@/actions/notificationActions";
 
 export default function DashboardNotificationIcon({
   notifications,
+  userId,
 }: {
   notifications: NotificationEntryType[];
+  userId: string;
 }) {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
@@ -23,10 +25,11 @@ export default function DashboardNotificationIcon({
     (notif) => notif.read === false,
   );
 
-  async function handleMarkAllAsRead() {
+  async function handleMarkAsRead() {
     setLoading(true);
-    await markAllNotificationAsRead();
+    await markNotificationsAsRead(userId);
     setLoading(false);
+    setDropdownIsOpen(false);
   }
 
   return (
@@ -54,16 +57,16 @@ export default function DashboardNotificationIcon({
             <h4 className="text-lg font-semibold">Notifications</h4>
           </div>
           <div>
-            {notifications.length > 0 ? (
+            {notifications.length ? (
               notifications.slice(0, 5).map((notification) => (
                 <Link
                   href={notification.link}
                   key={notification._id}
                   onClick={() => setDropdownIsOpen(false)}
-                  className={`block px-4 py-1.5 duration-200 hover:bg-muted sm:py-2`}
+                  className={`block px-4 py-1.5 duration-200 hover:bg-muted sm:py-2 ${notification.read ? "opacity-60" : ""}`}
                 >
                   <div className="flex items-start space-x-4 overflow-hidden">
-                    <Avatar className="h-9 w-9">
+                    <Avatar>
                       <AvatarImage
                         src={notification.fromUser.profilePicture}
                         alt={
@@ -71,11 +74,12 @@ export default function DashboardNotificationIcon({
                         }
                         className="object-cover"
                       />
-                      <AvatarFallback>AV</AvatarFallback>
+                      <AvatarFallback>
+                        {notification.fromUser.firstName[0]}
+                        {notification.fromUser.lastName[0]}
+                      </AvatarFallback>
                     </Avatar>
-                    <div
-                      className={`flex-1 space-y-1 ${notification.read ? "opacity-60" : ""}`}
-                    >
+                    <div className="flex-1 space-y-1">
                       <p className="truncate text-sm">
                         {getNotificationMessage(notification)}
                       </p>
@@ -87,18 +91,17 @@ export default function DashboardNotificationIcon({
                 </Link>
               ))
             ) : (
-              <p className="p-4 text-sm text-accent-gray-300">
-                You don&apos;t have any notifications yet. When something comes
-                up, you&apos;ll see it here!
+              <p className="p-4 text-sm text-zinc-400">
+                You&apos;re all set, no new notifications to check right now.
               </p>
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2 border-t p-2 sm:p-4">
             <Button
               variant={"outline"}
-              onClick={handleMarkAllAsRead}
-              disabled={loading || !hasUnreadNotifications}
-              className={`flex-1 hover:border-green-600 hover:bg-green-600 hover:text-white ${loading ? "bg-accent-gray-100" : ""}`}
+              className="flex-1 hover:border-green-600 hover:bg-green-600 hover:text-white"
+              disabled={!hasUnreadNotifications || loading}
+              onClick={handleMarkAsRead}
             >
               Mark as read
             </Button>

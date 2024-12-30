@@ -119,8 +119,8 @@ export default function LiveClassCard({
     const data = await purchaseCourse(
       liveClass._id,
       liveClass.price,
-      liveClass.user._id,
       true,
+      liveClass.user._id,
     );
     if (data?.error) {
       console.log(data?.error);

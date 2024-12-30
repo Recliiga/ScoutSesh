@@ -3,24 +3,32 @@ import { Check, Copy, Send, XIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { generateInvitationCode } from "@/actions/invitationActions";
+import {
+  generateInvitationCode,
+  sendInvitationEmail,
+} from "@/actions/invitationActions";
 import { customAlphabet } from "nanoid";
 import { InvitationCodeType } from "@/db/models/InvitationCode";
+import LoadingIndicator from "./LoadingIndicator";
+import { UserType } from "@/db/models/User";
 
 export default function AddTeamMemberModal({
   open,
   closeModal,
   invitationCode,
+  user,
 }: {
   open: boolean;
   closeModal: () => void;
   invitationCode: InvitationCodeType | null;
+  user: UserType;
 }) {
   const [email, setEmail] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [loading, setLoading] = useState(false);
   const [inviteLink, setInviteLink] = useState("");
+  const [inviteLoading, setInviteLoading] = useState(false);
 
   useEffect(() => {
     if (!invitationCode) return;
@@ -30,19 +38,29 @@ export default function AddTeamMemberModal({
     setLoading(false);
   }, [invitationCode]);
 
-  async function handleGenerateInviteLink() {
-    setGenerating(true);
+  async function generateInvitationLink() {
     const characterSet =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     const customNanoId = customAlphabet(characterSet, 8);
     const newInvitationCode = customNanoId();
     const BASE_URL = window.location.origin;
 
-    const { invitationCode, error } = await generateInvitationCode(
-      newInvitationCode
-    );
+    const { invitationCode, error } =
+      await generateInvitationCode(newInvitationCode);
+
+    if (error !== null) {
+      return { invitationLink: null, error };
+    }
+
+    const invitationLink = `${BASE_URL}/invite/${invitationCode.code}`;
+    return { invitationLink, error };
+  }
+
+  async function handleGenerateInviteLink() {
+    setGenerating(true);
+    const { invitationLink, error } = await generateInvitationLink();
     if (error === null) {
-      setInviteLink(`${BASE_URL}/invite/${invitationCode.code}`);
+      setInviteLink(invitationLink);
     }
 
     setGenerating(false);
@@ -56,28 +74,48 @@ export default function AddTeamMemberModal({
     }, 3000);
   }
 
-  function handleSendInvite() {
-    return;
+  async function handleSendInvite() {
+    setInviteLoading(true);
+    const { invitationLink, error } = inviteLink
+      ? { invitationLink: inviteLink, error: null }
+      : await generateInvitationLink();
+
+    if (error === null) {
+      setInviteLink(invitationLink);
+      const { error } = await sendInvitationEmail(
+        email,
+        invitationLink,
+        user.organization!,
+        user.firstName
+      );
+      if (error === null) {
+        setEmail("");
+      }
+      setInviteLoading(false);
+    }
   }
+
+  const notAValidEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const cannotSubmit = !email.trim() || notAValidEmail;
 
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className={`bg-white rounded-md duration-300 max-w-lg flex flex-col gap-8 w-[90%] p-6 absolute top-[50%] -translate-x-[50%] -translate-y-[50%] left-[50%] ${
-        open ? "visible opacity-100 scale-100" : "invisible opacity-0 scale-90"
+      className={`absolute left-[50%] top-[50%] flex w-[90%] max-w-lg -translate-x-[50%] -translate-y-[50%] flex-col gap-8 rounded-md bg-white p-6 duration-300 ${
+        open ? "visible scale-100 opacity-100" : "invisible scale-90 opacity-0"
       }`}
     >
       <div className="flex flex-col text-center sm:text-left">
-        <h1 className="font-semibold text-lg">Add Team Members</h1>
+        <h1 className="text-lg font-semibold">Add Team Members</h1>
 
-        <p className="font-normal text-accent-gray-300 text-sm">
+        <p className="text-sm font-normal text-accent-gray-300">
           Invite coaches and athletes to join your team on ScoutSesh.
         </p>
       </div>
 
-      <div className="gap-4 grid">
+      <div className="grid gap-4">
         {invitationCode || inviteLink ? (
-          <div className="gap-2 grid">
+          <div className="grid gap-2">
             <Label htmlFor="invite-link">Shareable Invite Link</Label>
             <div className="flex gap-2">
               {!loading ? (
@@ -88,12 +126,12 @@ export default function AddTeamMemberModal({
                   className="flex-grow"
                 />
               ) : (
-                <div className="flex-1 bg-accent-gray-200 border rounded-md animate-pulse"></div>
+                <div className="flex-1 animate-pulse rounded-md border bg-accent-gray-200"></div>
               )}
               <Button
                 disabled={loading}
                 onClick={handleCopyLink}
-                className="bg-green-600 hover:bg-green-700 px-3 sm:px-4 text-white"
+                className="bg-green-600 px-3 text-white hover:bg-green-700 sm:px-4"
               >
                 {isCopied ? (
                   <>
@@ -102,7 +140,7 @@ export default function AddTeamMemberModal({
                   </>
                 ) : (
                   <>
-                    <Copy className="mr-2 w-4 h-4" />
+                    <Copy className="mr-2 h-4 w-4" />
                     Copy
                   </>
                 )}
@@ -113,12 +151,12 @@ export default function AddTeamMemberModal({
           <Button
             disabled={generating}
             onClick={handleGenerateInviteLink}
-            className="bg-green-600 hover:bg-green-700 px-3 sm:px-4 text-white"
+            className="bg-green-600 px-3 text-white hover:bg-green-700 sm:px-4"
           >
             {generating ? "Generating..." : "Generate Invitation Link"}
           </Button>
         )}
-        <div className="gap-2 grid">
+        <div className="grid gap-2">
           <Label htmlFor="email-invite">Invite by Email</Label>
           <div className="flex gap-2">
             <Input
@@ -128,13 +166,24 @@ export default function AddTeamMemberModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="flex-grow"
+              disabled={inviteLoading}
             />
             <Button
+              disabled={inviteLoading || cannotSubmit}
               onClick={handleSendInvite}
-              className="bg-green-600 hover:bg-green-700 px-3 sm:px-4 text-white"
+              className="bg-green-600 px-3 text-white hover:bg-green-700 sm:px-4"
             >
-              <Send className="mr-2 w-4 h-4" />
-              Send
+              {inviteLoading ? (
+                <>
+                  <LoadingIndicator />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Send className="mr-2 h-4 w-4" />
+                  Send
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -151,8 +200,8 @@ export default function AddTeamMemberModal({
       </div>
 
       <div className="mt-4">
-        <h4 className="mb-2 font-medium text-sm">Instructions:</h4>
-        <ol className="space-y-1 text-sm list-decimal list-inside">
+        <h4 className="mb-2 text-sm font-medium">Instructions:</h4>
+        <ol className="list-inside list-decimal space-y-1 text-sm">
           <li>Copy and share the invite link, or</li>
           <li>Enter email addresses and click Send to invite team members</li>
           <li>Invited members will receive instructions to join your team</li>
@@ -162,7 +211,7 @@ export default function AddTeamMemberModal({
 
       <button
         onClick={closeModal}
-        className="top-2 right-2 absolute p-2 text-accent-gray-300 hover:text-accent-black duration-300"
+        className="absolute right-2 top-2 p-2 text-accent-gray-300 duration-300 hover:text-accent-black"
       >
         <XIcon width={16} height={16} />
       </button>

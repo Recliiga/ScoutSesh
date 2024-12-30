@@ -126,6 +126,7 @@ export default function CoachTeamMembersPage({
           invitationCode={invitationCode}
           open={modalIsOpen}
           closeModal={closeModal}
+          user={user}
         />
       </ModalContainer>
     </>

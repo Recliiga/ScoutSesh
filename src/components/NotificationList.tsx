@@ -4,18 +4,20 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDuration, getNotificationMessage } from "@/lib/utils";
-import { Button } from "./ui/button";
 import { NotificationEntryType } from "@/db/models/NotificationEntry";
-import { markAllNotificationAsRead } from "@/actions/notificationActions";
+import { Button } from "./ui/button";
+import { markNotificationsAsRead } from "@/actions/notificationActions";
 
 export default function NotificationList({
   notifications,
+  userId,
 }: {
   notifications: NotificationEntryType[];
+  userId: string;
 }) {
   const [filter, setFilter] = useState("all");
-  const [loading, setLoading] = useState(false);
   const [domLoaded, setDomLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setDomLoaded(true);
@@ -26,15 +28,15 @@ export default function NotificationList({
       ? notifications
       : notifications.filter((notif) => notif.type === filter);
 
-  async function handleMarkAllAsRead() {
-    setLoading(true);
-    await markAllNotificationAsRead();
-    setLoading(false);
-  }
-
   const hasUnreadNotifications = notifications.some(
     (notif) => notif.read === false,
   );
+
+  async function handleMarkAsRead() {
+    setLoading(true);
+    await markNotificationsAsRead(userId);
+    setLoading(false);
+  }
 
   return (
     <Card>
@@ -55,28 +57,26 @@ export default function NotificationList({
             <option value="goal">Goal Setting</option>
             <option value="evaluation">Athlete Evaluation</option>
             <option value="team">Team Members</option>
-            <option value="class">Group Classes</option>
+            <option value="liveClass">Live Classes</option>
+            <option value="course">Video Courses</option>
           </select>
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        {notifications.length > 0 ? (
-          <Button
-            variant={"outline"}
-            onClick={handleMarkAllAsRead}
-            disabled={loading || !hasUnreadNotifications}
-            className={`mx-4 my-2 flex-1 hover:border-green-600 hover:bg-green-600 hover:text-white ${loading ? "bg-accent-gray-100" : ""}`}
-          >
-            Mark all as read
-          </Button>
-        ) : null}
-
-        {notifications.length > 0 ? (
+        <Button
+          variant={"outline"}
+          className="m-4 flex-1 hover:border-green-600 hover:bg-green-600 hover:text-white"
+          disabled={!hasUnreadNotifications || loading}
+          onClick={handleMarkAsRead}
+        >
+          Mark all as read
+        </Button>
+        {notifications.length ? (
           filteredNotifications.map((notification) => (
             <Link
               href={notification.link}
               key={notification._id}
-              className="block px-4 py-2 hover:bg-muted sm:py-3"
+              className={`block px-4 py-2 hover:bg-muted sm:py-3`}
             >
               <div className="flex items-start space-x-4 overflow-hidden">
                 <Avatar>
@@ -94,7 +94,7 @@ export default function NotificationList({
                   className={`flex-1 space-y-1 ${notification.read ? "opacity-60" : ""}`}
                 >
                   <p className="truncate text-sm">
-                    {getNotificationMessage(notification)}
+                    {getNotificationMessage(notification, true)}
                   </p>
                   {domLoaded ? (
                     <p className="text-xs text-muted-foreground">
@@ -108,9 +108,8 @@ export default function NotificationList({
             </Link>
           ))
         ) : (
-          <p className="p-4 text-center text-sm text-accent-gray-300">
-            You don&apos;t have any notifications yet. When something comes up,
-            you&apos;ll see it here!
+          <p className="p-4 pt-0 text-sm text-zinc-400">
+            You&apos;re all set, no new notifications to check right now.
           </p>
         )}
       </CardContent>

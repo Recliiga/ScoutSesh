@@ -2,10 +2,10 @@
 
 import connectDB from "@/db/connectDB";
 import { VideoType } from "@/db/models/GroupClass";
-import NotificationEntry from "@/db/models/NotificationEntry";
 import GroupClassOrder, {
   GroupClassOrderType,
 } from "@/db/models/GroupClassOrder";
+import NotificationEntry from "@/db/models/NotificationEntry";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -13,8 +13,8 @@ import { redirect } from "next/navigation";
 export async function purchaseCourse(
   courseId: string,
   price: number,
-  coachId: string,
   isLiveClass: boolean,
+  coachId: string,
 ) {
   let redirectUrl;
   try {
@@ -25,21 +25,14 @@ export async function purchaseCourse(
     await connectDB();
     await GroupClassOrder.create({ course: courseId, user: userId, price });
 
-    if (isLiveClass) {
-      await NotificationEntry.create({
-        type: "liveClass",
-        fromUser: userId,
-        toUser: coachId,
-        link: `/dashboard/group-classes/live-classes/${courseId}`,
-      });
-    } else {
-      await NotificationEntry.create({
-        type: "videoCourse",
-        fromUser: userId,
-        toUser: coachId,
-        link: `/dashboard/group-classes/courses`,
-      });
-    }
+    await NotificationEntry.create({
+      type: isLiveClass ? "liveClass" : "videoCourse",
+      fromUser: userId,
+      toUser: coachId,
+      link: isLiveClass
+        ? `/dashboard/group-classes/live-classes/${courseId}`
+        : "/dashboard/group-classes/courses",
+    });
 
     redirectUrl = isLiveClass
       ? `/dashboard/group-classes/live-classes/${courseId}`
