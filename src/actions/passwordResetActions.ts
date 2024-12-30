@@ -4,7 +4,7 @@ import ResetPasswordEmail from "@/components/emails/ResetPasswordEmail";
 import User, { UserType } from "@/db/models/User";
 import { Resend } from "resend";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import connectDB from "@/db/connectDB";
 
 export async function sendPasswordResetEmail(email: string) {

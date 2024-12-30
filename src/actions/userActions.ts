@@ -3,7 +3,7 @@ import connectDB from "@/db/connectDB";
 import NotificationEntry from "@/db/models/NotificationEntry";
 import User, { PrimarySportType, UserType } from "@/db/models/User";
 import { getUserIdFromCookies } from "@/lib/utils";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";

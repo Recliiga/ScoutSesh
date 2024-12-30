@@ -6,7 +6,7 @@ import Organization from "@/db/models/Organization";
 import User, { UserType } from "@/db/models/User";
 import VerificationCode from "@/db/models/VerificationCode";
 import { getUserIdFromCookies } from "@/lib/utils";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { customAlphabet } from "nanoid";
 import { revalidatePath } from "next/cache";
