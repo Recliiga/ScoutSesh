@@ -362,19 +362,25 @@ export function getLastEvaluationDate(
   )?.createdAt;
 }
 
-export function getNotificationMessage(notification: NotificationEntryType) {
+export function getNotificationMessage(
+  notification: NotificationEntryType,
+  useFullname = false,
+) {
   switch (notification.type) {
     case "goal":
-      return `${getFullname(notification.fromUser)} achieved their goal`;
+      return `${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName} achieved their goal`;
 
     case "evaluation":
-      return `Evaluation due for ${getFullname(notification.fromUser)}`;
+      return `Evaluation due for ${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName}`;
 
     case "team":
-      return `${getFullname(notification.fromUser)} joined your team`;
+      return `${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName} joined your team`;
+
+    case "videoCourse":
+      return `${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName} purchased a course`;
 
     case "liveClass":
-      return `${getFullname(notification.fromUser)} enrolled in a class`;
+      return `${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName} enrolled in a class`;
 
     case "videoCourse":
       return `${getFullname(notification.fromUser)} purchased a course`;
@@ -385,30 +391,31 @@ export function getNotificationMessage(notification: NotificationEntryType) {
 }
 
 export function getDuration(fromDate: Date, toDate: Date = new Date()) {
-  let suffix = " seconds ago";
   const fromTime = new Date(fromDate).getTime();
-  const toTime = toDate.getTime();
-  let duration = Math.round((toTime - fromTime) / 1000);
+  const toTime = new Date(toDate).getTime();
 
-  if (duration >= 60) {
+  let duration = Math.floor((toTime - fromTime) / 1000);
+  let suffix = duration > 1 ? " secs ago" : " sec ago";
+
+  if (duration > 60) {
     duration = Math.floor(duration / 60);
-    suffix = duration > 1 ? " minutes ago" : " minute ago";
-    if (duration >= 60) {
-      duration = Math.floor(duration / 60);
-      suffix = duration > 1 ? " hours ago" : " hour ago";
-      if (duration >= 24) {
-        duration = Math.floor(duration / 24);
-        suffix = duration > 1 ? " days ago" : " day ago";
-        if (duration >= 30) {
-          duration = Math.floor(duration / 30);
-          suffix = duration > 1 ? " months ago" : " month ago";
-          if (duration >= 12) {
-            duration = Math.round(duration / 12);
-            suffix = duration > 1 ? " years ago" : " year ago";
-          }
-        }
-      }
-    }
+    suffix = duration > 1 ? " mins ago" : " min ago";
+  }
+  if (duration > 60) {
+    duration = Math.floor(duration / 60);
+    suffix = duration > 1 ? " hours ago" : " hour ago";
+  }
+  if (duration > 24) {
+    duration = Math.floor(duration / 24);
+    suffix = duration > 1 ? " days ago" : " day ago";
+  }
+  if (duration > 30) {
+    duration = Math.floor(duration / 30);
+    suffix = duration > 1 ? " months ago" : " month ago";
+  }
+  if (duration > 18) {
+    duration = Math.round(duration / 12);
+    suffix = duration > 1 ? " years ago" : " year ago";
   }
 
   return duration + suffix;

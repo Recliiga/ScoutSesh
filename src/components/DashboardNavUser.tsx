@@ -70,7 +70,9 @@ export default function DashboardNavUser({
         {userMenu && (
           <div
             ref={userMenuRef}
-            className={"absolute right-0 top-[calc(100%_+_.5rem)] z-10"}
+            className={
+              "absolute right-0 top-[calc(100%_+_.5rem)] z-10 min-w-40"
+            }
           >
             <div className="rounded-lg border bg-background shadow-lg">
               <div className="border-b p-4">
@@ -107,20 +109,33 @@ export default function DashboardNavUser({
                       </Link>
                     </Button>
                     {user.role === "Head Coach" ? (
-                      <Button
-                        onClick={() => {
-                          setUserMenu(false);
-                          setOpenModal("addTeamMember");
-                        }}
-                        variant="ghost"
-                        className="w-full cursor-pointer justify-start px-2 text-left sm:px-4"
-                        asChild
-                      >
-                        <div className="flex gap-2">
-                          <UserPlusIcon className="h-4 w-4 sm:mr-2" />
-                          Invite Team Members
-                        </div>
-                      </Button>
+                      <>
+                        <Button
+                          onClick={() => {
+                            setUserMenu(false);
+                            setOpenModal("addTeamMember");
+                          }}
+                          variant="ghost"
+                          className="w-full cursor-pointer justify-start px-2 text-left sm:px-4"
+                          asChild
+                        >
+                          <div className="flex gap-2">
+                            <UserPlusIcon className="h-4 w-4 sm:mr-2" />
+                            Invite Team Members
+                          </div>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          onClick={() => setUserMenu(false)}
+                          className="w-full justify-start px-2 text-left sm:px-4"
+                          asChild
+                        >
+                          <Link href="/dashboard/billings-and-payments">
+                            <CreditCardIcon className="h-4 w-4 sm:mr-2" />
+                            Billings & Payments
+                          </Link>
+                        </Button>
+                      </>
                     ) : null}
                     <Button
                       variant="ghost"
@@ -128,18 +143,7 @@ export default function DashboardNavUser({
                       className="w-full justify-start px-2 text-left sm:px-4"
                       asChild
                     >
-                      <Link href="#">
-                        <CreditCardIcon className="h-4 w-4 sm:mr-2" />
-                        Billings & Payments
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => setUserMenu(false)}
-                      className="w-full justify-start px-2 text-left sm:px-4"
-                      asChild
-                    >
-                      <Link href="#">
+                      <Link href="/dashboard/password-and-security">
                         <LockIcon className="h-4 w-4 sm:mr-2" />
                         Password & Security
                       </Link>
@@ -167,6 +171,7 @@ export default function DashboardNavUser({
           invitationCode={invitationCode}
           open={openModal === "addTeamMember"}
           closeModal={closeModal}
+          user={user}
         />
         <LogoutModal open={openModal === "signout"} closeModal={closeModal} />
       </ModalContainer>

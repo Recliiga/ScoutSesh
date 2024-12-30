@@ -32,7 +32,7 @@ export default function WeeklyReflectionForm({
   coachId,
 }: {
   goalData: GoalDataSchemaType;
-  coachId: string | null;
+  coachId?: string;
 }) {
   const goals = [...goalData.goals];
   const [loading, setLoading] = useState(false);

@@ -50,6 +50,8 @@ export default function Header({
     pathname.includes("/complete-profile") ||
     pathname.includes("/create-organization");
 
+  const isVerifyEmailRoute = pathname.startsWith("/verify-email");
+
   if (pathname.startsWith("/admin")) return null;
 
   if (user && pathname.startsWith("/dashboard"))
@@ -169,7 +171,7 @@ export default function Header({
           </nav>
         </div>
         {user ? (
-          isCompleteProfileRoute ? (
+          isCompleteProfileRoute || isVerifyEmailRoute ? (
             <DashboardNavUser
               user={user}
               profileCompleted={false}

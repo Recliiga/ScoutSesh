@@ -60,7 +60,7 @@ export async function updateGoal(goalId: string, goalData: GoalSubmissionType) {
 export async function performWeeklyReflection(
   goalId: string,
   reflectionData: ReflectionDataType[],
-  coachId: string | null,
+  coachId?: string,
 ) {
   try {
     const cookieStore = await cookies();
@@ -82,13 +82,12 @@ export async function performWeeklyReflection(
       if (reflectionData[index].reflection.isCompleted) {
         goal.dateCompleted = new Date();
 
-        if (coachId)
-          await NotificationEntry.create({
-            type: "goal",
-            fromUser: userId,
-            toUser: coachId,
-            link: `/dashboard/goal-setting/weekly-reflection/${goalId}`,
-          });
+        await NotificationEntry.create({
+          type: "evaluation",
+          fromUser: userId,
+          toUser: coachId,
+          link: `/dashboard/goal-setting/weekly-reflection/${goalId}`,
+        });
       }
     });
 

@@ -15,7 +15,7 @@ const navLinks = [
   { title: "Daily Journal", href: "/dashboard/daily-journal" },
   { title: "Group Classes", href: "/dashboard/group-classes" },
   { title: "Athlete Evaluation", href: "/dashboard/athlete-evaluation" },
-  { title: "Messages", href: "/dashboard/messages" },
+  // { title: "Messages", href: "/dashboard/messages" },
   { title: "My Team Members", href: "/dashboard/team-members" },
 ];
 
@@ -153,7 +153,10 @@ export default function DashboardHeader({
           </nav>
         </div>
         <div className="flex items-center space-x-4">
-          <DashboardNotificationIcon notifications={notifications} />
+          <DashboardNotificationIcon
+            notifications={notifications}
+            userId={user._id}
+          />
           <DashboardNavUser user={user} invitationCode={invitationCode} />
         </div>
       </header>

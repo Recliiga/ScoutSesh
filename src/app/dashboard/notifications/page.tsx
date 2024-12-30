@@ -1,13 +1,13 @@
 import React from "react";
 import BackButton from "@/components/dashboard/BackButton";
 import NotificationList from "@/components/NotificationList";
-import { fetchNotifications } from "@/services/notificationServices";
-import { getSession } from "@/services/authServices";
+import { getSessionFromHeaders } from "@/services/authServices";
+import { fetchNotifications } from "@/services/notificationEntryServices";
 
 export default async function NotificationsPage() {
-  const { user } = await getSession();
+  const user = await getSessionFromHeaders();
 
-  const { notifications, error } = await fetchNotifications(user);
+  const { notifications, error } = await fetchNotifications(user._id);
   if (error !== null) throw new Error(error);
 
   return (
@@ -19,7 +19,7 @@ export default async function NotificationsPage() {
           </h1>
           <BackButton className="hover:bg-white hover:text-green-600" />
         </div>
-        <NotificationList notifications={notifications} />
+        <NotificationList notifications={notifications} userId={user._id} />
       </div>
     </div>
   );

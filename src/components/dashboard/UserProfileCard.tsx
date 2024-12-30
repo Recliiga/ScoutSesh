@@ -9,12 +9,14 @@ import { DailyJournalType } from "@/db/models/DailyJournal";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function UserProfileCard({
-  journalEntries,
   member,
   forCoach = false,
+  initialsOnly = false,
+  journalEntries,
 }: {
   member: UserType;
   forCoach?: boolean;
+  initialsOnly?: boolean;
   journalEntries: DailyJournalType[] | null;
 }) {
   return (
@@ -32,7 +34,9 @@ export default function UserProfileCard({
       </Avatar>
       <div className="flex flex-col justify-center">
         <p className="mb-1 w-full truncate text-center font-medium">
-          {getFullname(member)}
+          {initialsOnly
+            ? `${member.firstName} ${member.lastName[0]}.`
+            : getFullname(member)}
         </p>
         <ScoutSeshStreak
           journalEntries={journalEntries?.filter(

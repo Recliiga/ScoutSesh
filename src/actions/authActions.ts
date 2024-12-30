@@ -1,14 +1,18 @@
 "use server";
 
+import AccountVerificationEmail from "@/components/emails/AccountVerificationEmail";
 import connectDB from "@/db/connectDB";
 import Organization from "@/db/models/Organization";
 import User, { UserType } from "@/db/models/User";
+import VerificationCode from "@/db/models/VerificationCode";
 import { getUserIdFromCookies } from "@/lib/utils";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { customAlphabet } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Resend } from "resend";
 
 const errorMessages = {
   firstName: "Please enter your First name",
@@ -18,11 +22,13 @@ const errorMessages = {
   role: "Please select a Role",
 };
 
-export async function login(formData: FormData) {
+export async function login(formData: FormData, redirectUrl: string) {
   const cookieStore = await cookies();
 
   const email = formData.get("email");
   const password = formData.get("password") as string;
+
+  let canRedirect = false;
 
   try {
     await connectDB();
@@ -56,16 +62,19 @@ export async function login(formData: FormData) {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    return { error: null };
+    canRedirect = true;
   } catch (error) {
     console.log({ error: (error as Error).message });
     return { error: "An unexpected error occured" };
+  } finally {
+    if (canRedirect) redirect(redirectUrl);
   }
 }
 
-export async function signup(formData: FormData) {
+export async function signup(formData: FormData, redirectUrl: string) {
   const cookieStore = await cookies();
   const role = formData.get("role");
+  let canRedirect = false;
 
   const userData = {
     firstName: formData.get("firstName"),
@@ -105,7 +114,32 @@ export async function signup(formData: FormData) {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    return { error: null };
+    // Generate verification code and send email
+    const characterSet = "0123456789";
+    const customNanoId = customAlphabet(characterSet, 6);
+    const code = customNanoId();
+    const expDate = new Date();
+    expDate.setMinutes(expDate.getMinutes() + 10);
+
+    await VerificationCode.create({
+      code: code,
+      user: newUser._id,
+      exp: expDate,
+    });
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    await resend.emails.send({
+      from: "verify@scoutsesh.com",
+      to: newUser.email,
+      subject: "Verify your account on Scoutsesh",
+      react: AccountVerificationEmail({
+        name: newUser.firstName,
+        verificationCode: code,
+      }),
+    });
+
+    canRedirect = true;
   } catch (err) {
     const error = err as Error;
 
@@ -115,6 +149,13 @@ export async function signup(formData: FormData) {
     }
     console.log({ error: error.message });
     return { error: "An unexpected error occured" };
+  } finally {
+    if (canRedirect)
+      redirect(
+        redirectUrl === "/dashboard"
+          ? "/verify-email"
+          : `/verify-email?redirect=${redirectUrl}`,
+      );
   }
 }
 
@@ -168,7 +209,10 @@ export async function completeProfile(userData: {
     if (authError !== null) throw new Error(authError);
 
     await connectDB();
-    const data = await User.findByIdAndUpdate(userId, userData);
+    const data = await User.findByIdAndUpdate(userId, {
+      ...userData,
+      profileCompleted: true,
+    });
     if (!data) throw new Error("An error occured");
     return { error: null };
   } catch (error) {
