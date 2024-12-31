@@ -86,7 +86,7 @@ export default function CoachTeamMembersPage({
                 style={{ minHeight: "300px" }}
               >
                 <h2 className="mb-6 text-2xl font-bold">
-                  Riverside Basketball Club
+                  {user.organization?.name}
                 </h2>
                 <div className="right-4 top-4 w-fit whitespace-nowrap rounded-full bg-green-100 px-4 py-2 text-xl font-bold text-green-800 sm:text-2xl">
                   {organizationMembers.length} Team Members 🏅
