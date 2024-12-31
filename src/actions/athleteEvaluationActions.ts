@@ -138,13 +138,13 @@ export async function updateTemplate(
     await connectDB();
 
     // Check if authenticated user is the owner of the template
-    const templateToDelete: AthleteEvaluationTemplateType | null =
+    const templateToUpdate: AthleteEvaluationTemplateType | null =
       await AthleteEvaluationTemplate.findById(templateId).populate({
         path: "user",
         select: "_id",
       });
-    if (!templateToDelete) throw new Error("Invalid template ID");
-    if (templateToDelete.user._id.toString() !== userId)
+    if (!templateToUpdate) throw new Error("Invalid template ID");
+    if (templateToUpdate.user._id.toString() !== userId)
       throw new Error("User unauthorized");
 
     const updatedTemplate = await AthleteEvaluationTemplate.findByIdAndUpdate(
@@ -227,7 +227,7 @@ export async function updatePricingPlan(
     const { userId, error: authError } = getUserIdFromCookies(cookieStore);
     if (authError !== null) return { error: "User unauthenticated" };
 
-    if (String(pricingPlanData.user) !== userId)
+    if (pricingPlanData.user._id !== userId)
       return { error: "User unauthorized" };
 
     await connectDB();

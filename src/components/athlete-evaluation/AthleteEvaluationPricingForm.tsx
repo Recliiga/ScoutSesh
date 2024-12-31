@@ -196,27 +196,29 @@ export default function AthleteEvaluationPricingForm({
     setLoading(false);
   }
 
-  const customPlanError = customPlanTiers.some((tier, index) => {
-    if (tier.type === "range") {
-      if (index === 0 && tier.evaluations.from <= 0) {
-        return true;
-      }
+  const customPlanError = offerCustomPlan
+    ? customPlanTiers.some((tier, index) => {
+        if (tier.type === "range") {
+          if (index === 0 && tier.evaluations.from <= 0) {
+            return true;
+          }
 
-      if (tier.evaluations.to <= tier.evaluations.from) {
-        return true;
-      }
-    }
-    if (Number(tier.price) <= 0) {
-      return true;
-    }
-    if (
-      index > 0 &&
-      tier.evaluations.from <= customPlanTiers[index - 1].evaluations.to
-    ) {
-      return true;
-    }
-    return false;
-  });
+          if (tier.evaluations.to <= tier.evaluations.from) {
+            return true;
+          }
+        }
+        if (Number(tier.price) <= 0) {
+          return true;
+        }
+        if (
+          index > 0 &&
+          tier.evaluations.from <= customPlanTiers[index - 1].evaluations.to
+        ) {
+          return true;
+        }
+        return false;
+      })
+    : false;
 
   const cannotSubmit =
     (offerVirtualConsultation &&
