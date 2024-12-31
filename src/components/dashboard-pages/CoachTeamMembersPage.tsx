@@ -89,7 +89,8 @@ export default function CoachTeamMembersPage({
                   {user.organization?.name}
                 </h2>
                 <div className="right-4 top-4 w-fit whitespace-nowrap rounded-full bg-green-100 px-4 py-2 text-xl font-bold text-green-800 sm:text-2xl">
-                  {organizationMembers.length} Team Members 🏅
+                  {organizationMembers.length} Team Member
+                  {organizationMembers.length > 1 ? "s" : ""} 🏅
                 </div>
                 <div className="mt-8 grid grid-cols-[repeat(auto-fill,_minmax(150px,_1fr))] gap-4 sm:grid-cols-[repeat(auto-fill,_minmax(240px,_1fr))]">
                   {coaches.map((coach) => (
