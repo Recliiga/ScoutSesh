@@ -187,7 +187,7 @@ export default function UserProfilePage({
                 )}
                 <p className="font-semibold text-[#14a800]">{userData.role}</p>
                 {user.organization && user.organization._id ? (
-                  <div className="mt-2">
+                  <div className="mt-2 w-fit">
                     <Link
                       href={`/dashboard/organization/${user.organization._id}`}
                       className="flex items-center space-x-2 rounded-md border border-gray-200 bg-white px-4 py-2 text-gray-800 hover:bg-gray-50"

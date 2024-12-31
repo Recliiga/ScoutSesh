@@ -1,5 +1,6 @@
 import connectDB from "@/db/connectDB";
 import User, { UserType } from "@/db/models/User";
+import "@/db/models/Organization";
 
 export async function fetchUser(userId: string) {
   try {

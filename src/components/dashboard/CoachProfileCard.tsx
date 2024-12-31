@@ -28,11 +28,11 @@ export default function CoachProfileCard({
           </AvatarFallback>
         </Avatar>
         <div>
-          <h3 className="cursor-pointer text-xl font-semibold">
+          <h3 className="cursor-pointer text-lg font-semibold">
             {getFullname(coach)}
           </h3>
-          <p className="text-gray-600">{coach.role}</p>
-          <div className="mt-2 flex gap-2">
+          <p className="text-sm text-gray-600">{coach.role}</p>
+          <div className="mt-1 flex gap-2">
             <Button
               variant="outline"
               size="sm"
