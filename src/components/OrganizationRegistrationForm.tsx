@@ -41,6 +41,8 @@ export default function OrganizationRegistrationForm({
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>();
+  const [imageError, setImageError] = useState<string | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { formEntries, updateField } = useFormEntries({
@@ -65,6 +67,13 @@ export default function OrganizationRegistrationForm({
   async function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    if (file.size > 10485759) {
+      setImageError(
+        "File too large: Please select an image less than 10mb in size",
+      );
+      return;
+    }
 
     const resizedImageUrl = await resizeImage(file);
     if (!resizedImageUrl) return;
@@ -147,6 +156,8 @@ export default function OrganizationRegistrationForm({
         >
           Upload Photo
         </Button>
+        {imageError && <Error error={imageError} />}
+
         <input
           type="file"
           id="logo"
