@@ -1,18 +1,14 @@
 "use server";
 
-import AccountVerificationEmail from "@/components/emails/AccountVerificationEmail";
 import connectDB from "@/db/connectDB";
 import Organization from "@/db/models/Organization";
 import User, { UserType } from "@/db/models/User";
-import VerificationCode from "@/db/models/VerificationCode";
 import { getUserIdFromCookies } from "@/lib/utils";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { customAlphabet } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Resend } from "resend";
 
 const errorMessages = {
   firstName: "Please enter your First name",
@@ -36,7 +32,7 @@ export async function login(formData: FormData, redirectUrl: string) {
     if (!email) return { error: "Please enter a valid Email" };
     if (!password) return { error: "Please enter your Password" };
 
-    // Get user object from the database
+    // Check if user exists and is active
     const user: UserType | null = await User.findOne({ email });
     if (!user) return { error: "Invalid email and password combination" };
     if (user.status === "Banned")
@@ -94,6 +90,7 @@ export async function signup(formData: FormData, redirectUrl: string) {
       }
     });
 
+    // Check if password is at least 8 characters
     if (userData.password.length < 8)
       return { error: "Password must be at least 8 characters" };
 
@@ -112,31 +109,6 @@ export async function signup(formData: FormData, redirectUrl: string) {
     cookieStore.set("token", token, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
-    });
-
-    // Generate verification code and send email
-    const characterSet = "0123456789";
-    const customNanoId = customAlphabet(characterSet, 6);
-    const code = customNanoId();
-    const expDate = new Date();
-    expDate.setMinutes(expDate.getMinutes() + 10);
-
-    await VerificationCode.create({
-      code: code,
-      user: newUser._id,
-      exp: expDate,
-    });
-
-    const resend = new Resend(process.env.RESEND_API_KEY);
-
-    await resend.emails.send({
-      from: "verify@scoutsesh.com",
-      to: newUser.email,
-      subject: "Verify your account on Scoutsesh",
-      react: AccountVerificationEmail({
-        name: newUser.firstName,
-        verificationCode: code,
-      }),
     });
 
     canRedirect = true;
@@ -208,6 +180,7 @@ export async function completeProfile(userData: {
     const { userId, error: authError } = getUserIdFromCookies(cookieStore);
     if (authError !== null) throw new Error(authError);
 
+    // Update user's profile
     await connectDB();
     const data = await User.findByIdAndUpdate(userId, {
       ...userData,
