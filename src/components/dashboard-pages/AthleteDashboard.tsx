@@ -54,7 +54,7 @@ export default function AthleteDashboard({
     <main className="flex-grow">
       <div className="mx-auto w-[90%] max-w-6xl py-6 sm:py-8">
         <div className="mb-6 flex flex-col items-center justify-between gap-2 sm:flex-row">
-          <h1 className="text-3xl font-bold text-black sm:text-4xl">
+          <h1 className="text-2xl font-bold text-black sm:text-3xl md:text-4xl">
             Welcome back, {user.firstName}!
           </h1>
           <ScoutSeshStreak journalEntries={journalEntries} />

@@ -35,11 +35,10 @@ export default function AccountVerificationEmail({
             <Section style={styles.upperSection}>
               <Heading style={styles.h1}>Verify your email address</Heading>
               <Text style={{ ...styles.text, marginBottom: "14px" }}>
-                Hi {name}, Thanks for starting the new Scoutsesh account
-                creation process. We want to make sure it&apos;s really you.
-                Please enter the following verification code when prompted. If
-                you don&apos;t want to create an account, you can ignore this
-                message.
+                Hi {name}, Thanks for starting the Scoutsesh account creation
+                process. We want to make sure it&apos;s really you. Please enter
+                the following verification code when prompted. If you don&apos;t
+                want to create an account, you can ignore this message.
               </Text>
               <Section style={styles.verificationSection}>
                 <Text style={{ ...styles.text, ...styles.verifyText }}>

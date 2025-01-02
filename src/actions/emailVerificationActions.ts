@@ -10,16 +10,25 @@ import { Resend } from "resend";
 export async function verifyEmail(userId: string, code: string) {
   let redirectUrl: string = "";
   try {
-    const userLatestVerificationCode = await VerificationCode.findOne({
+    // Get all valid verification codes for user
+    const validVerificationCodes = await VerificationCode.find({
       user: userId,
+      exp: { $gt: new Date() },
     }).sort({ createdAt: -1 });
-    if (!userLatestVerificationCode || userLatestVerificationCode.code !== code)
+
+    // Check if code entered is valid
+    if (
+      validVerificationCodes.some(
+        (verificationCode) => verificationCode.code === code,
+      )
+    ) {
+      // Set user email as verified
+      await User.findByIdAndUpdate(userId, { emailVerified: true });
+
+      redirectUrl = "/complete-profile";
+    } else {
       return { error: "The code you entered is incorrect" };
-
-    // Set user email as verified
-    await User.findByIdAndUpdate(userId, { emailVerified: true });
-
-    redirectUrl = "/complete-profile";
+    }
   } catch (error) {
     return { error: (error as Error).message };
   } finally {
@@ -27,19 +36,22 @@ export async function verifyEmail(userId: string, code: string) {
   }
 }
 
-export async function resendVerificationEmail(user: UserType) {
+export async function sendVerificationEmail(user: UserType) {
   try {
     const thirtyMinutesAgo = new Date();
     thirtyMinutesAgo.setMinutes(thirtyMinutesAgo.getMinutes() - 30);
 
+    // Get all verification codes for user in the last 30 minutes
     const userCodes = await VerificationCode.find({
       user: user._id,
       createdAt: { $gte: thirtyMinutesAgo },
     }).sort({ createdAt: -1 });
 
-    if (userCodes.length >= 2) {
-      const lastEmail = userCodes[0];
+    // Check if user has requested more than 3 verification emails in the last 30 minutes
+    if (userCodes.length >= 3) {
+      const lastEmail = userCodes[2];
 
+      // Calculate time left before user can request another verification email
       if (lastEmail) {
         const nextAllowedTime = new Date(lastEmail.createdAt);
         nextAllowedTime.setMinutes(nextAllowedTime.getMinutes() + 30);
@@ -59,12 +71,6 @@ export async function resendVerificationEmail(user: UserType) {
     const expDate = new Date();
     expDate.setMinutes(expDate.getMinutes() + 10);
 
-    await VerificationCode.create({
-      code: code,
-      user: user._id,
-      exp: expDate,
-    });
-
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { error } = await resend.emails.send({
@@ -76,7 +82,15 @@ export async function resendVerificationEmail(user: UserType) {
         verificationCode: code,
       }),
     });
-    if (error) return { error: "Unable to send email" };
+    if (error) return { error: "An unexpected error occured" };
+
+    // Create verification code in database
+    await VerificationCode.create({
+      code: code,
+      user: user._id,
+      exp: expDate,
+    });
+
     return { error: null };
   } catch (error) {
     return { error: (error as Error).message };
