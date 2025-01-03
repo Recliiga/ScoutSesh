@@ -7,8 +7,12 @@ import { customAlphabet } from "nanoid";
 import { redirect } from "next/navigation";
 import { Resend } from "resend";
 
-export async function verifyEmail(userId: string, code: string) {
-  let redirectUrl: string = "";
+export async function verifyEmail(
+  userId: string,
+  code: string,
+  redirectUrl: string,
+) {
+  let canRedirect = false;
   try {
     // Get all valid verification codes for user
     const validVerificationCodes = await VerificationCode.find({
@@ -25,14 +29,14 @@ export async function verifyEmail(userId: string, code: string) {
       // Set user email as verified
       await User.findByIdAndUpdate(userId, { emailVerified: true });
 
-      redirectUrl = "/complete-profile";
+      canRedirect = true;
     } else {
       return { error: "The code you entered is incorrect" };
     }
   } catch (error) {
     return { error: (error as Error).message };
   } finally {
-    if (redirectUrl) redirect(redirectUrl);
+    if (canRedirect) redirect(redirectUrl);
   }
 }
 

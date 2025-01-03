@@ -8,8 +8,12 @@ import {
 import { UserType } from "@/db/models/User";
 import LoadingIndicator from "./LoadingIndicator";
 import Error from "./AuthError";
+import { useSearchParams } from "next/navigation";
 
 export default function VerifyEmailPage({ user }: { user: UserType }) {
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || "/dashboard";
+
   const [verificationCode, setVerificationCode] = useState([
     "",
     "",
@@ -33,7 +37,11 @@ export default function VerifyEmailPage({ user }: { user: UserType }) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const data = await verifyEmail(user._id, verificationCode.join(""));
+    const data = await verifyEmail(
+      user._id,
+      verificationCode.join(""),
+      redirectUrl,
+    );
     if (data?.error) {
       setError(data.error);
       setLoading(false);
