@@ -373,6 +373,9 @@ export function getNotificationMessage(
     case "evaluation":
       return `Evaluation due for ${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName}`;
 
+    case "evaluation-athlete":
+      return `Coach ${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName} has finished evaluating your recent performance`;
+
     case "team":
       return `${useFullname ? getFullname(notification.fromUser) : notification.fromUser.firstName} joined your team`;
 

@@ -80,7 +80,10 @@ export default function DashboardNotificationIcon({
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 space-y-1">
-                      <p className="truncate text-sm">
+                      <p
+                        className="line-clamp-2 text-sm"
+                        // title={getNotificationMessage(notification)}
+                      >
                         {getNotificationMessage(notification)}
                       </p>
                       <p className="text-xs text-muted-foreground">
