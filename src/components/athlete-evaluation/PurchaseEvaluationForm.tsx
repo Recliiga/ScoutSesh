@@ -307,29 +307,29 @@ export default function PurchaseEvaluationForm({
                       </div>
                     ))}
                   </div>
-                  <div className="space-y-3">
-                    <h4 className="text-lg font-medium text-gray-700">
-                      Custom Plan
-                    </h4>
-                    {selectedProgram.plan.offerCustomPlan
-                      ? selectedProgram.plan.customPlanTiers.map((tier) => (
-                          <div key={tier._id} className="flex items-center">
-                            <CheckCircle2 className="mr-2 h-5 w-5 text-green-500" />
-                            <span className="text-gray-600">
-                              <span className="font-medium">
-                                {tier.evaluations.from}{" "}
-                                {tier.evaluations.to !== tier.evaluations.from
-                                  ? `- ${tier.evaluations.to}`
-                                  : ""}{" "}
-                                evaluation
-                                {tier.evaluations.from !== 1 && "s"}:
-                              </span>{" "}
-                              ${tier.price}/each
-                            </span>
-                          </div>
-                        ))
-                      : null}
-                  </div>
+                  {selectedProgram.plan.offerCustomPlan ? (
+                    <div className="space-y-3">
+                      <h4 className="text-lg font-medium text-gray-700">
+                        Custom Plan
+                      </h4>
+                      {selectedProgram.plan.customPlanTiers.map((tier) => (
+                        <div key={tier._id} className="flex items-center">
+                          <CheckCircle2 className="mr-2 h-5 w-5 text-green-500" />
+                          <span className="text-gray-600">
+                            <span className="font-medium">
+                              {tier.evaluations.from}{" "}
+                              {tier.evaluations.to !== tier.evaluations.from
+                                ? `- ${tier.evaluations.to}`
+                                : ""}{" "}
+                              evaluation
+                              {tier.evaluations.from !== 1 && "s"}:
+                            </span>{" "}
+                            ${tier.price}/each
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             )}
@@ -396,7 +396,12 @@ export default function PurchaseEvaluationForm({
                 toggleCalendar={() => setCalendarOpen((prev) => !prev)}
                 selected={selectedDates}
                 onSelect={handleDateSelect}
-                disabled={(date) => isBefore(date, new Date())}
+                disabled={(date) =>
+                  isBefore(date, new Date()) ||
+                  date.getDate() <
+                    new Date().getDate() +
+                      Number(selectedProgram?.plan.firstEvaluationDays)
+                }
                 max={
                   planType === "custom" ? selectedPlanEvaluations : undefined
                 }
@@ -439,8 +444,11 @@ export default function PurchaseEvaluationForm({
                     You have the option to add up to{" "}
                     <span className="font-bold">{selectedPlanEvaluations}</span>
                     , {virtualConsultationDuration}
-                    -minute online consultations for an additional $
-                    {virtualConsultationRate} each.
+                    -minute online consultations{" "}
+                    {virtualConsultationRate > 0
+                      ? `for an additional $
+                    ${virtualConsultationRate} each.`
+                      : "at no additional cost."}
                   </p>
                   <div className="mt-4">
                     <h4 className="mb-2 text-sm font-semibold">

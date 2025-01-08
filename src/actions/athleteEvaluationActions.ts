@@ -54,6 +54,13 @@ export async function createCoachAthleteEvaluation(
       ),
     );
 
+    await NotificationEntry.create({
+      type: "evaluation-athlete",
+      fromUser: userId,
+      toUser: evaluationData.athlete,
+      link: "/dashboard/athlete-evaluation",
+    });
+
     return { newEvaluation, error: null };
   } catch (err) {
     console.log((err as Error).message);

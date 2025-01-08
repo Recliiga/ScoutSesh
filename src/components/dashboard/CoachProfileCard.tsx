@@ -32,7 +32,7 @@ export default function CoachProfileCard({
             {getFullname(coach)}
           </h3>
           <p className="text-sm text-gray-600">{coach.role}</p>
-          <div className="mt-1 flex gap-2">
+          <div className="flex-center mt-1 flex gap-2">
             <Button
               variant="outline"
               size="sm"

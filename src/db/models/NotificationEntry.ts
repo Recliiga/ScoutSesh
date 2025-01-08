@@ -3,7 +3,13 @@ import { UserType } from "./User";
 
 export type NotificationEntryType = {
   _id: number;
-  type: "goal" | "evaluation" | "team" | "videoCourse" | "liveClass";
+  type:
+    | "goal"
+    | "evaluation"
+    | "evaluation-athlete"
+    | "team"
+    | "videoCourse"
+    | "liveClass";
   read: boolean;
   fromUser: UserType;
   toUser?: UserType;
@@ -17,7 +23,14 @@ const NotificationEntrySchema = new mongoose.Schema<NotificationEntryType>(
     type: {
       type: String,
       required: [true, "Please provide the notification type"],
-      enum: ["goal", "evaluation", "team", "videoCourse", "liveClass"],
+      enum: [
+        "goal",
+        "evaluation",
+        "evaluation-athlete",
+        "team",
+        "videoCourse",
+        "liveClass",
+      ],
     },
     read: { type: Boolean, default: false },
     fromUser: {

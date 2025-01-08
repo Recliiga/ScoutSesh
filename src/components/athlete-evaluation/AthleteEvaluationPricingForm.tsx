@@ -184,7 +184,16 @@ export default function AthleteEvaluationPricingForm({
       virtualConsultationRate: offerVirtualConsultation
         ? virtualConsultationRate
         : undefined,
-      discussionTopics: offerVirtualConsultation ? discussionTopics : undefined,
+      discussionTopics: offerVirtualConsultation
+        ? virtualConsultationType === "addon"
+          ? discussionTopics
+          : {
+              athleteEvaluation: true,
+              goalSetting: true,
+              dailyJournal: true,
+              other: true,
+            }
+        : undefined,
       firstEvaluationDays,
     } as AEPricingPlanType;
 
@@ -222,6 +231,7 @@ export default function AthleteEvaluationPricingForm({
 
   const cannotSubmit =
     (offerVirtualConsultation &&
+      virtualConsultationType === "addon" &&
       !Object.values(discussionTopics).some((value) => value)) ||
     customPlanError;
 
@@ -452,34 +462,36 @@ export default function AthleteEvaluationPricingForm({
                 <Label htmlFor="addon">Add-on purchase</Label>
               </div>
             </RadioGroup>
-            <div className="rounded-md border p-3">
-              <Label className="mb-2 block text-base font-medium">
-                Discussion Topics
-              </Label>
-              <div className="space-y-2">
-                {Object.entries(discussionTopics).map(([key, value]) => (
-                  <div
-                    key={key}
-                    className="flex items-center justify-between rounded-md bg-gray-50 p-2"
-                  >
-                    <Label htmlFor={key} className="flex-grow">
-                      {key
-                        .replace(/([A-Z])/g, " $1")
-                        .replace(/^./, (str) => str.toUpperCase())}
-                    </Label>
-                    <Switch
-                      id={key}
-                      checked={value}
-                      onCheckedChange={() =>
-                        handleDiscussionTopicChange(
-                          key as keyof typeof discussionTopics,
-                        )
-                      }
-                    />
-                  </div>
-                ))}
+            {virtualConsultationType === "addon" ? (
+              <div className="rounded-md border p-3">
+                <Label className="mb-2 block text-base font-medium">
+                  Discussion Topics
+                </Label>
+                <div className="space-y-2">
+                  {Object.entries(discussionTopics).map(([key, value]) => (
+                    <div
+                      key={key}
+                      className="flex items-center justify-between rounded-md bg-gray-50 p-2"
+                    >
+                      <Label htmlFor={key} className="flex-grow">
+                        {key
+                          .replace(/([A-Z])/g, " $1")
+                          .replace(/^./, (str) => str.toUpperCase())}
+                      </Label>
+                      <Switch
+                        id={key}
+                        checked={value}
+                        onCheckedChange={() =>
+                          handleDiscussionTopicChange(
+                            key as keyof typeof discussionTopics,
+                          )
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : null}
             <div className="flex flex-col space-y-2">
               <Label htmlFor="virtualConsultationDuration">
                 Virtual Consultation Duration:
@@ -504,40 +516,44 @@ export default function AthleteEvaluationPricingForm({
                 </span>
               </div>
             </div>
-            <div className="flex flex-col space-y-2">
-              <Label htmlFor="virtualConsultationRate">
-                Rate per Virtual Consultation:
-              </Label>
-              <div className="flex items-center space-x-2">
-                <div className="relative flex-grow">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500">
-                    $
-                  </span>
-                  <Input
-                    id="virtualConsultationRate"
-                    type="number"
-                    value={
-                      virtualConsultationRate > 0 ? virtualConsultationRate : ""
-                    }
-                    onChange={handleVirtualConsultationRateChange}
-                    onKeyDown={(e) => {
-                      if (e.key === "ArrowUp") {
-                        e.preventDefault();
-                        handleVirtualConsultationRateStep(1);
-                      } else if (e.key === "ArrowDown") {
-                        e.preventDefault();
-                        handleVirtualConsultationRateStep(-1);
+            {virtualConsultationType === "addon" ? (
+              <div className="flex flex-col space-y-2">
+                <Label htmlFor="virtualConsultationRate">
+                  Rate per Virtual Consultation:
+                </Label>
+                <div className="flex items-center space-x-2">
+                  <div className="relative flex-grow">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500">
+                      $
+                    </span>
+                    <Input
+                      id="virtualConsultationRate"
+                      type="number"
+                      value={
+                        virtualConsultationRate > 0
+                          ? virtualConsultationRate
+                          : ""
                       }
-                    }}
-                    min={0}
-                    step={1}
-                    className="pl-6 pr-3"
-                    required
-                  />
+                      onChange={handleVirtualConsultationRateChange}
+                      onKeyDown={(e) => {
+                        if (e.key === "ArrowUp") {
+                          e.preventDefault();
+                          handleVirtualConsultationRateStep(1);
+                        } else if (e.key === "ArrowDown") {
+                          e.preventDefault();
+                          handleVirtualConsultationRateStep(-1);
+                        }
+                      }}
+                      min={0}
+                      step={1}
+                      className="pl-6 pr-3"
+                      required
+                    />
+                  </div>
+                  <span className="text-gray-500">/consultation</span>
                 </div>
-                <span className="text-gray-500">/consultation</span>
               </div>
-            </div>
+            ) : null}
           </div>
         )}
       </div>

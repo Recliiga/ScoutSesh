@@ -29,6 +29,10 @@ export default function AddTeamMemberModal({
   const [loading, setLoading] = useState(false);
   const [inviteLink, setInviteLink] = useState("");
   const [inviteLoading, setInviteLoading] = useState(false);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!invitationCode) return;
@@ -76,6 +80,7 @@ export default function AddTeamMemberModal({
 
   async function handleSendInvite() {
     setInviteLoading(true);
+    setMessage(null);
     const { invitationLink, error } = inviteLink
       ? { invitationLink: inviteLink, error: null }
       : await generateInvitationLink();
@@ -86,10 +91,11 @@ export default function AddTeamMemberModal({
         email,
         invitationLink,
         user.organization!,
-        user.firstName
+        user.firstName,
       );
       if (error === null) {
         setEmail("");
+        setMessage({ type: "success", text: "Invitation sent successfully" });
       }
       setInviteLoading(false);
     }
@@ -186,6 +192,13 @@ export default function AddTeamMemberModal({
               )}
             </Button>
           </div>
+          {message ? (
+            <p
+              className={`text-sm ${message.type === "success" ? "text-green-500" : "text-red-500"}`}
+            >
+              {message.text}
+            </p>
+          ) : null}
         </div>
         {/* {invitedEmails.length > 0 && (
           <div className="gap-2 grid">
