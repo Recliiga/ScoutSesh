@@ -42,6 +42,7 @@ import { nanoid } from "nanoid";
 import { RepeatFrequencyType } from "@/db/models/GroupClass";
 import Error from "../AuthError";
 import BackButton from "../dashboard/BackButton";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function CreateClassForm({
   assistantCoaches,
@@ -89,9 +90,17 @@ export default function CreateClassForm({
       );
       return;
     }
-    const resizedImage = await resizeImage(imageFile, 800);
-    if (!resizedImage) return;
-    setThumbnail(resizedImage);
+    try {
+      const resizedImage = await resizeImage(imageFile, 800);
+      if (!resizedImage) return;
+      setThumbnail(resizedImage);
+    } catch (error) {
+      console.log((error as Error).message);
+      setThumbnailError("Error resizing image");
+    }
+    // const resizedImage = await resizeImage(imageFile, 800);
+    // if (!resizedImage) return;
+    // setThumbnail(resizedImage);
   }
 
   async function handleChangeVideo(
@@ -220,11 +229,14 @@ export default function CreateClassForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     const isLiveClass = courseType === "live";
     if (isLiveClass && (!startDate || !endDate)) return;
+
+    if (cannotSubmit) return;
+
     setLoading((prev) => ({ ...prev, status: true }));
     setError("");
-    if (cannotSubmit) return;
 
     const classData = {
       title,
@@ -357,13 +369,24 @@ export default function CreateClassForm({
                   <div className="flex-center absolute h-full w-full bg-accent-gray-100">
                     {user.firstName[0] + user.lastName[0]}
                   </div>
-                  <Image
+                  {/* <Image
                     src={user.profilePicture}
                     alt={user.firstName}
                     fill
                     sizes="160px"
                     className="absolute h-full w-full object-cover"
-                  />
+                  /> */}
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage
+                      src={user.profilePicture}
+                      alt={user.firstName}
+                      className="object-cover"
+                    />
+                    <AvatarFallback>
+                      {user.firstName[0]}
+                      {user.lastName[0]}
+                    </AvatarFallback>
+                  </Avatar>
                 </div>
                 <div className="flex flex-col">
                   <h4 className="text-accent-black">
@@ -428,11 +451,11 @@ export default function CreateClassForm({
             className="mt-2 flex space-x-4"
           >
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="live" id="live-course" />
+              <RadioGroupItem value="live" id="live-course" tabIndex={0} />
               <Label htmlFor="live-course">Live Class</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="video" id="video-course" />
+              <RadioGroupItem value="video" id="video-course" tabIndex={0} />
               <Label htmlFor="video-course">Video Course</Label>
             </div>
           </RadioGroup>
@@ -496,13 +519,16 @@ export default function CreateClassForm({
               <Input
                 id="startTime"
                 name="startTime"
+                min={"10:00"}
                 value={`${startTime.hours}:${startTime.mins}`}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const hours = e.target.value.split(":")[0];
+                  const mins = e.target.value.split(":")[1];
                   setStartTime({
-                    hours: e.target.value.split(":")[0],
-                    mins: e.target.value.split(":")[1],
-                  })
-                }
+                    hours,
+                    mins,
+                  });
+                }}
                 type="time"
                 required
                 className="w-fit"
