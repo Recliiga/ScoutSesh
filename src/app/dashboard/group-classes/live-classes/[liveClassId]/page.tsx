@@ -22,7 +22,10 @@ export default async function LiveClassDetailsPage({
   const { userOrders, error: orderError } = await fetchUserOrders(user._id);
   if (orderError !== null) throw new Error(orderError);
 
-  if (!userOrders.some((order) => order.course._id === groupClass._id))
+  if (
+    !userOrders.some((order) => order.course._id === groupClass._id) &&
+    groupClass.coaches[0]._id !== user._id
+  )
     notFound();
 
   return <LiveClassDetails liveClass={groupClass} user={user} />;
