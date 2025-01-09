@@ -145,7 +145,7 @@ export default function CoachGroupClassesPage({
                         isPast ? "past-session" : ""
                       }`}
                     >
-                      <CardContent className="flex items-center gap-2 p-4 lg:flex-col">
+                      <CardContent className="flex flex-col items-center gap-2 p-4 sm:flex-row lg:flex-col">
                         <div className="flex w-full items-center gap-4">
                           <Avatar className="h-10 w-10">
                             <AvatarImage
@@ -177,10 +177,10 @@ export default function CoachGroupClassesPage({
                             </p>
                           </div>
                         </div>
-                        <div className="ml-auto flex items-center space-x-2 lg:w-full">
+                        <div className="ml-auto flex w-full items-center space-x-2 sm:w-fit lg:w-full">
                           <Link
                             href={`/dashboard/group-classes/live-classes/${course._id}`}
-                            className={`flex-center flex-1 rounded-md border px-3 py-1.5 text-xs duration-200 hover:bg-accent-gray-100`}
+                            className={`flex-center flex-1 whitespace-nowrap rounded-md border px-3 py-1.5 text-xs duration-200 hover:bg-accent-gray-100`}
                           >
                             View Schedule
                           </Link>

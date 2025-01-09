@@ -19,7 +19,7 @@ export default async function GroupClassesPage() {
     const courses = liveClasses.map((liveClass) => ({
       _id: liveClass._id,
       title: liveClass.title,
-      coach: user,
+      coach: liveClass.coaches[0],
       sessions: liveClass.isRecurring
         ? getDatesBetween(
             liveClass.startDate,
