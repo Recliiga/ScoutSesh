@@ -43,11 +43,14 @@ import { RepeatFrequencyType } from "@/db/models/GroupClass";
 import Error from "../AuthError";
 import BackButton from "../dashboard/BackButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import Link from "next/link";
 
 export default function CreateClassForm({
   assistantCoaches,
+  user,
 }: {
   assistantCoaches: UserType[];
+  user: UserType;
 }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -222,6 +225,7 @@ export default function CreateClassForm({
     !Boolean(totalSpots.trim());
 
   const cannotSubmit =
+    !user.zoomRefreshToken ||
     loading.status ||
     formFieldVacant ||
     (courseType === "video" && videoFieldVacant) ||
@@ -366,16 +370,6 @@ export default function CreateClassForm({
                 }`}
               >
                 <div className="relative h-10 w-10 overflow-hidden rounded-full font-medium">
-                  <div className="flex-center absolute h-full w-full bg-accent-gray-100">
-                    {user.firstName[0] + user.lastName[0]}
-                  </div>
-                  {/* <Image
-                    src={user.profilePicture}
-                    alt={user.firstName}
-                    fill
-                    sizes="160px"
-                    className="absolute h-full w-full object-cover"
-                  /> */}
                   <Avatar className="h-10 w-10">
                     <AvatarImage
                       src={user.profilePicture}
@@ -461,199 +455,220 @@ export default function CreateClassForm({
           </RadioGroup>
         </div>
 
-        {courseType === "live" && (
-          <>
-            <div className="space-y-2">
-              <Label>Course Dates</Label>
-              <div className="flex flex-wrap gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <div className="flex items-center gap-2">
-                      Start Date:
-                      <Button variant="outline" type="button">
-                        {startDate ? format(startDate, "PPP") : "Select Date"}
-                        <CalendarIcon className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={setStartDate}
-                      fromDate={new Date()}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <div className="flex items-center gap-2">
-                      End Date:
-                      <Button
-                        variant="outline"
-                        type="button"
+        {courseType === "live" ? (
+          user.zoomRefreshToken ? (
+            <>
+              <div className="space-y-2">
+                <Label>Course Dates</Label>
+                <div className="flex flex-wrap gap-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <div className="flex items-center gap-2">
+                        Start Date:
+                        <Button variant="outline" type="button">
+                          {startDate ? format(startDate, "PPP") : "Select Date"}
+                          <CalendarIcon className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={setStartDate}
+                        fromDate={new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <div className="flex items-center gap-2">
+                        End Date:
+                        <Button
+                          variant="outline"
+                          type="button"
+                          disabled={!startDate}
+                        >
+                          {endDate ? format(endDate, "PPP") : "Select Date"}
+                          <CalendarIcon className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={setEndDate}
+                        fromDate={startDate}
                         disabled={!startDate}
-                      >
-                        {endDate ? format(endDate, "PPP") : "Select Date"}
-                        <CalendarIcon className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={setEndDate}
-                      fromDate={startDate}
-                      disabled={!startDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-center gap-2">
-              <Label htmlFor="startTime">Start Time</Label>
-              <Input
-                id="startTime"
-                name="startTime"
-                min={"10:00"}
-                value={`${startTime.hours}:${startTime.mins}`}
-                onChange={(e) => {
-                  const hours = e.target.value.split(":")[0];
-                  const mins = e.target.value.split(":")[1];
-                  setStartTime({
-                    hours,
-                    mins,
-                  });
-                }}
-                type="time"
-                required
-                className="w-fit"
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label>Lesson Duration (minutes)</Label>
-              <RadioGroup
-                name="lessonDuration"
-                value={duration}
-                onValueChange={(value) => {
-                  setDuration(value);
-                  if (value !== "custom") setCustomDuration("");
-                }}
-                className="grid grid-cols-2 gap-4"
-              >
-                <div className="space-y-2">
-                  {["15", "30", "45", "60"].map((duration) => (
-                    <div key={duration} className="flex items-center space-x-2">
-                      <RadioGroupItem
-                        value={duration}
-                        id={`duration-${duration}`}
-                      />
-                      <Label
-                        htmlFor={`duration-${duration}`}
-                      >{`${duration} minutes`}</Label>
-                    </div>
-                  ))}
-                </div>
-                <div className="space-y-2">
-                  {["75", "90", "120", "custom"].map((duration) => (
-                    <div key={duration} className="flex items-center space-x-2">
-                      <RadioGroupItem
-                        value={duration}
-                        id={`duration-${duration}`}
-                      />
-                      <Label htmlFor={`duration-${duration}`}>
-                        {duration === "custom"
-                          ? "Custom"
-                          : `${duration} minutes`}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </RadioGroup>
-              {duration === "custom" && (
+              <div className="flex items-center gap-2">
+                <Label htmlFor="startTime">Start Time</Label>
                 <Input
-                  type="number"
-                  min="1"
-                  name="customDuration"
-                  value={customDuration}
-                  onChange={(e) => setCustomDuration(e.target.value)}
-                  placeholder="Enter custom duration"
-                  className="mt-2 w-full"
+                  id="startTime"
+                  name="startTime"
+                  min={"10:00"}
+                  value={`${startTime.hours}:${startTime.mins}`}
+                  onChange={(e) => {
+                    const hours = e.target.value.split(":")[0];
+                    const mins = e.target.value.split(":")[1];
+                    setStartTime({
+                      hours,
+                      mins,
+                    });
+                  }}
+                  type="time"
                   required
+                  className="w-fit"
                 />
-              )}
-            </div>
+              </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="recurring"
-                checked={isRecurring}
-                onCheckedChange={setIsRecurring}
-              />
-              <Label htmlFor="recurring">Recurring Course</Label>
-            </div>
+              <div className="flex flex-col gap-2">
+                <Label>Lesson Duration (minutes)</Label>
+                <RadioGroup
+                  name="lessonDuration"
+                  value={duration}
+                  onValueChange={(value) => {
+                    setDuration(value);
+                    if (value !== "custom") setCustomDuration("");
+                  }}
+                  className="grid grid-cols-2 gap-4"
+                >
+                  <div className="space-y-2">
+                    {["15", "30", "45", "60"].map((duration) => (
+                      <div
+                        key={duration}
+                        className="flex items-center space-x-2"
+                      >
+                        <RadioGroupItem
+                          value={duration}
+                          id={`duration-${duration}`}
+                        />
+                        <Label
+                          htmlFor={`duration-${duration}`}
+                        >{`${duration} minutes`}</Label>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="space-y-2">
+                    {["75", "90", "120", "custom"].map((duration) => (
+                      <div
+                        key={duration}
+                        className="flex items-center space-x-2"
+                      >
+                        <RadioGroupItem
+                          value={duration}
+                          id={`duration-${duration}`}
+                        />
+                        <Label htmlFor={`duration-${duration}`}>
+                          {duration === "custom"
+                            ? "Custom"
+                            : `${duration} minutes`}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </RadioGroup>
+                {duration === "custom" && (
+                  <Input
+                    type="number"
+                    min="1"
+                    name="customDuration"
+                    value={customDuration}
+                    onChange={(e) => setCustomDuration(e.target.value)}
+                    placeholder="Enter custom duration"
+                    className="mt-2 w-full"
+                    required
+                  />
+                )}
+              </div>
 
-            {isRecurring && (
-              <>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="repeatFrequency">Repeat</Label>
-                  <Select
-                    name="repeatFrequency"
-                    value={repeatFrequency}
-                    onValueChange={(value) =>
-                      setRepeatFrequency(value as RepeatFrequencyType)
-                    }
-                  >
-                    <SelectTrigger id="repeatFrequency">
-                      <SelectValue placeholder="Select repeat option" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="daily">Every Day</SelectItem>
-                      <SelectItem value="weekly">Every Week</SelectItem>
-                      <SelectItem value="bi-weekly">Every 2 Weeks</SelectItem>
-                      <SelectItem value="monthly">Every Month</SelectItem>
-                      <SelectItem value="yearly">Every Year</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {startDate && endDate && repeatFrequency && (
-                  <div>
-                    <h3 className="mb-2 font-medium">Class Sessions</h3>
-                    <ul className="grid grid-cols-2 gap-4 gap-y-2 text-sm sm:grid-cols-3 md:grid-cols-4">
-                      {getDatesBetween(startDate, endDate, repeatFrequency).map(
-                        (date) => (
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="recurring"
+                  checked={isRecurring}
+                  onCheckedChange={setIsRecurring}
+                />
+                <Label htmlFor="recurring">Recurring Course</Label>
+              </div>
+
+              {isRecurring && (
+                <>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="repeatFrequency">Repeat</Label>
+                    <Select
+                      name="repeatFrequency"
+                      value={repeatFrequency}
+                      onValueChange={(value) =>
+                        setRepeatFrequency(value as RepeatFrequencyType)
+                      }
+                    >
+                      <SelectTrigger id="repeatFrequency">
+                        <SelectValue placeholder="Select repeat option" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="daily">Every Day</SelectItem>
+                        <SelectItem value="weekly">Every Week</SelectItem>
+                        <SelectItem value="bi-weekly">Every 2 Weeks</SelectItem>
+                        <SelectItem value="monthly">Every Month</SelectItem>
+                        <SelectItem value="yearly">Every Year</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {startDate && endDate && repeatFrequency && (
+                    <div>
+                      <h3 className="mb-2 font-medium">Class Sessions</h3>
+                      <ul className="grid grid-cols-2 gap-4 gap-y-2 text-sm sm:grid-cols-3 md:grid-cols-4">
+                        {getDatesBetween(
+                          startDate,
+                          endDate,
+                          repeatFrequency,
+                        ).map((date) => (
                           <li
                             key={date.getTime()}
                             className="list-inside list-disc text-zinc-700"
                           >
                             {date.toDateString()}
                           </li>
-                        ),
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </>
-            )}
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="totalSpots">Total Spots</Label>
-              <Input
-                id="totalSpots"
-                name="totalSpots"
-                value={totalSpots}
-                onChange={(e) => setTotalSpots(e.target.value)}
-                type="number"
-                min="1"
-                required
-              />
-            </div>
-          </>
-        )}
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </>
+              )}
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="totalSpots">Total Spots</Label>
+                <Input
+                  id="totalSpots"
+                  name="totalSpots"
+                  value={totalSpots}
+                  onChange={(e) => setTotalSpots(e.target.value)}
+                  type="number"
+                  min="1"
+                  required
+                />
+              </div>
+            </>
+          ) : (
+            <p className="text-sm text-zinc-500">
+              You have not connected your Zoom account. Please go to your{" "}
+              <Link
+                href={`/dashboard/profile/${user._id}`}
+                className="text-accent-green-100 hover:underline"
+              >
+                profile
+              </Link>{" "}
+              to connect it.
+            </p>
+          )
+        ) : null}
 
         {courseType === "video" && (
           <div className="flex flex-col gap-2">

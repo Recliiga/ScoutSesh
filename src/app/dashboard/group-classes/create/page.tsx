@@ -14,8 +14,9 @@ export default async function CreateClassPage() {
 
   return (
     <CreateClassForm
+      user={user}
       assistantCoaches={teamMembers.filter(
-        (member) => member.role !== "Athlete"
+        (member) => member.role !== "Athlete",
       )}
     />
   );
