@@ -206,6 +206,35 @@ export default function UserProfilePage({
                     </Link>
                   </div>
                 ) : null}
+                <Link
+                  href={"/api/zoom/auth"}
+                  className="flex-center mt-2 block w-fit gap-2 rounded-md bg-[#2D8CFF] p-2 px-4 text-sm text-white duration-200 hover:bg-[#2D8CFF]/90"
+                >
+                  <svg
+                    width={24}
+                    height={24}
+                    viewBox="0 0 192 192"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                  >
+                    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                    <g
+                      id="SVGRepo_tracerCarrier"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></g>
+                    <g id="SVGRepo_iconCarrier">
+                      <path
+                        stroke="#fff"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="12"
+                        d="M16.869 60.973v53.832c.048 12.173 10.87 21.965 24.072 21.925h85.406c2.42 0 4.385-1.797 4.385-3.978V78.92c-.064-12.164-10.887-21.965-24.073-21.917H21.237c-2.412 0-4.368 1.79-4.368 3.97zm119.294 21.006 35.27-23.666c3.06-2.332 5.432-1.749 5.432 2.468v72.171c0 4.8-2.9 4.217-5.432 2.468l-35.27-23.618V81.98z"
+                      ></path>
+                    </g>
+                  </svg>
+                  Connect Zoom
+                </Link>
               </div>
               <div className="flex items-center space-x-2">
                 <Button className="bg-[#14a800] px-6 py-2 text-base text-white hover:bg-[#14a800]/90 sm:text-lg">
