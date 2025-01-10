@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const clientId = process.env.ZOOM_CLIENT_ID;
   const clientSecret = process.env.ZOOM_CLIENT_SECRET;
-  const redirectUri = process.env.ZOOM_REDIRECT_URI;
+  const redirectUri = process.env.BASE_URL + "/api/zoom/callback";
 
   const url = new URL("/dashboard/profile", request.url);
 
