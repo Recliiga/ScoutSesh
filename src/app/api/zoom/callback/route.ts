@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const clientSecret = process.env.ZOOM_CLIENT_SECRET;
   const redirectUri = process.env.BASE_URL + "/api/zoom/callback";
 
-  const url = new URL("/dashboard/profile", request.url);
+  const url = new URL("/dashboard/profile", process.env.BASE_URL);
 
   try {
     const response = await fetch("https://zoom.us/oauth/token", {

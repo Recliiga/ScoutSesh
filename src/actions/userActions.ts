@@ -108,12 +108,15 @@ export async function disconnectZoom(userId: string) {
   try {
     await connectDB();
     const updatedUser = await User.findByIdAndUpdate(userId, {
-      zoomRefreshToken: undefined,
+      zoomRefreshToken: null,
     });
     if (!updatedUser) throw new Error("Error updating user ");
 
     revalidatePath("/dashboard", "layout");
-  } catch (error) {
-    console.log("Error disconnecting zoom: ", (error as Error).message);
+    return { error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error disconnecting zoom: ", error.message);
+    return { error: error.message };
   }
 }

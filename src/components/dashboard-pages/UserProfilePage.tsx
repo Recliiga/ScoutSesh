@@ -39,6 +39,7 @@ export default function UserProfilePage({
   const [isEditing, setIsEditing] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [zoomLoading, setZoomLoading] = useState(false);
+  const [zoomConnected, setZoomConnected] = useState(!!user.zoomRefreshToken);
 
   const [calendarRef] = useClickOutside(() => setCalendarOpen(false));
 
@@ -119,7 +120,10 @@ export default function UserProfilePage({
 
   async function handleDisconnectZoom() {
     setZoomLoading(true);
-    await disconnectZoom(user._id);
+    const { error } = await disconnectZoom(user._id);
+    if (!error) {
+      setZoomConnected(false);
+    }
     setZoomLoading(false);
   }
 
@@ -213,9 +217,13 @@ export default function UserProfilePage({
                     </Link>
                   </div>
                 ) : null}
-                {user.role === "Head Coach" ? (
-                  !user.zoomRefreshToken ? (
-                    <Link href={"/api/zoom/auth"} className="mt-2 block">
+                {user.role === "Head Coach" && isOwnProfile ? (
+                  !zoomConnected ? (
+                    <Link
+                      href={"/api/zoom/auth"}
+                      className="mt-2 block"
+                      prefetch={false}
+                    >
                       <Button
                         variant={"outline"}
                         className="border-[#2D8CFF] text-[#2D8CFF] hover:bg-[#2D8CFF]/10 hover:text-[#2D8CFF]"
