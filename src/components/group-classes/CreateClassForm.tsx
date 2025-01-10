@@ -230,27 +230,6 @@ export default function CreateClassForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    let meetings: MeetingType[] | undefined = undefined;
-
-    if (courseType === "live") {
-      if (!user.zoomRefreshToken || !startDate || !endDate) return;
-
-      setLoading({ message: "Scheduling Meetings", status: true });
-
-      const { data, error } = await scheduleMeeting(
-        title,
-        startTime,
-        duration === "custom" ? Number(customDuration) : Number(duration),
-        repeatFrequency
-          ? getDatesBetween(startDate, endDate, repeatFrequency)
-          : [startDate],
-        user.zoomRefreshToken!,
-        user._id,
-      );
-      if (error === null) {
-        meetings = data;
-      }
-    }
 
     const isLiveClass = courseType === "live";
     if (isLiveClass && (!startDate || !endDate)) return;
@@ -259,6 +238,30 @@ export default function CreateClassForm({
 
     setLoading((prev) => ({ ...prev, status: true }));
     setError("");
+
+    let meetings: MeetingType[] | undefined = undefined;
+
+    if (courseType === "live") {
+      if (!user.zoomRefreshToken || !startDate || !endDate) return;
+
+      setLoading({ message: "Scheduling Meetings", status: true });
+
+      const meetingDates = repeatFrequency
+        ? getDatesBetween(startDate, endDate, repeatFrequency)
+        : [startDate];
+
+      const { data, error } = await scheduleMeeting(
+        title,
+        startTime,
+        duration === "custom" ? Number(customDuration) : Number(duration),
+        meetingDates,
+        user.zoomRefreshToken!,
+        user._id,
+      );
+      if (error === null) {
+        meetings = data;
+      }
+    }
 
     const classData = {
       title,

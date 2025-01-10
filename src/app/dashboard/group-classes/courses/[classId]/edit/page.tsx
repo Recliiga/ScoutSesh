@@ -26,8 +26,9 @@ export default async function EditClassPage({
     <EditClassForm
       course={groupClass}
       assistantCoaches={teamMembers.filter(
-        (member) => member.role !== "Athlete"
+        (member) => member.role !== "Athlete",
       )}
+      user={user}
     />
   );
 }

@@ -156,10 +156,9 @@ export async function scheduleMeeting(
         const classStartTime = new Date(date);
         classStartTime.setHours(Number(startTime.hours));
         classStartTime.setMinutes(Number(startTime.mins));
-        const formattedStartTime = classStartTime.toISOString();
         const body = JSON.stringify({
           topic: title,
-          start_time: formattedStartTime,
+          start_time: classStartTime,
           duration: durationInMinutes,
         });
         const response = await fetch(url, {

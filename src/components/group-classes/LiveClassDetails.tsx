@@ -107,6 +107,7 @@ export default function LiveClassDetails({
                 src={liveClass.thumbnail}
                 alt={liveClass.title}
                 fill
+                sizes="(max-width: 768px) 90vw, 33vw"
                 className="h-full w-full rounded object-cover"
               />
             </div>
