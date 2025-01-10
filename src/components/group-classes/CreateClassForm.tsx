@@ -27,7 +27,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { format } from "date-fns";
-import { createClass } from "@/actions/groupClassActions";
+import { createClass, scheduleMeeting } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
 import Image from "next/image";
 import placeholderThumbnail from "@/assets/placeholder-thumbnail.png";
@@ -39,7 +39,7 @@ import {
 } from "@/lib/utils";
 import LoadingIndicator from "../LoadingIndicator";
 import { nanoid } from "nanoid";
-import { RepeatFrequencyType } from "@/db/models/GroupClass";
+import { MeetingType, RepeatFrequencyType } from "@/db/models/GroupClass";
 import Error from "../AuthError";
 import BackButton from "../dashboard/BackButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -101,9 +101,6 @@ export default function CreateClassForm({
       console.log((error as Error).message);
       setThumbnailError("Error resizing image");
     }
-    // const resizedImage = await resizeImage(imageFile, 800);
-    // if (!resizedImage) return;
-    // setThumbnail(resizedImage);
   }
 
   async function handleChangeVideo(
@@ -233,6 +230,27 @@ export default function CreateClassForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    let meetings: MeetingType[] | undefined = undefined;
+
+    if (courseType === "live") {
+      if (!user.zoomRefreshToken || !startDate || !endDate) return;
+
+      setLoading({ message: "Scheduling Meetings", status: true });
+
+      const { data, error } = await scheduleMeeting(
+        title,
+        startTime,
+        duration === "custom" ? Number(customDuration) : Number(duration),
+        repeatFrequency
+          ? getDatesBetween(startDate, endDate, repeatFrequency)
+          : [startDate],
+        user.zoomRefreshToken!,
+        user._id,
+      );
+      if (error === null) {
+        meetings = data;
+      }
+    }
 
     const isLiveClass = courseType === "live";
     if (isLiveClass && (!startDate || !endDate)) return;
@@ -257,6 +275,7 @@ export default function CreateClassForm({
       repeatFrequency,
       totalSpots: Number(totalSpots) || 0,
       skillLevels,
+      meetings,
       videos: videoLessons.map((vid) => ({
         title: vid.title,
         duration: vid.duration,

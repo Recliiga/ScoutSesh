@@ -78,7 +78,7 @@ export async function fetchCourseOrders(courses: GroupClassType[]) {
 
     return {
       groupClassOrders: groupClassOrders.filter((order) =>
-        courses.some((course) => course._id === order.course._id),
+        courses.some((course) => course._id === order.course?._id),
       ),
       error: null,
     };

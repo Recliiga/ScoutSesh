@@ -19,6 +19,26 @@ export interface VideoType extends mongoose.Document {
   updatedAt: Date;
 }
 
+export type MeetingType = {
+  uuid: string;
+  id: number;
+  host_id: string;
+  host_email: string;
+  topic: string;
+  type: number;
+  status: string;
+  start_time: string;
+  duration: number;
+  timezone: string;
+  created_at: string;
+  start_url: string;
+  join_url: string;
+  password: string;
+  h323_password: string;
+  pstn_password: string;
+  encrypted_password: string;
+};
+
 export interface GroupClassType extends mongoose.Document {
   _id: string;
   title: string;
@@ -39,6 +59,7 @@ export interface GroupClassType extends mongoose.Document {
   videos: VideoType[];
   coaches: UserType[];
   user: UserType;
+  meetings?: MeetingType[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -60,6 +81,26 @@ const VideoSchema = new mongoose.Schema<VideoType>(
   },
   { timestamps: true },
 );
+
+const MeetingDetailsSchema = new mongoose.Schema<MeetingType>({
+  uuid: { type: String, required: true },
+  id: { type: Number, required: true },
+  host_id: { type: String, required: true },
+  host_email: { type: String, required: true },
+  topic: { type: String, required: true },
+  type: { type: Number, required: true },
+  status: { type: String, required: true },
+  start_time: { type: String, required: true },
+  duration: { type: Number, required: true },
+  timezone: { type: String, required: true },
+  created_at: { type: String, required: true },
+  start_url: { type: String, required: true },
+  join_url: { type: String, required: true },
+  password: { type: String, required: true },
+  h323_password: { type: String, required: true },
+  pstn_password: { type: String, required: true },
+  encrypted_password: { type: String, required: true },
+});
 
 const GroupClassSchema = new mongoose.Schema<GroupClassType>(
   {
@@ -106,6 +147,7 @@ const GroupClassSchema = new mongoose.Schema<GroupClassType>(
     duration: { type: Number },
     customDuration: { type: Number },
     videos: { type: [VideoSchema], default: [] },
+    meetings: { type: [MeetingDetailsSchema] },
   },
   { timestamps: true },
 );

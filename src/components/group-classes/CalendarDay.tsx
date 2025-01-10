@@ -41,7 +41,7 @@ export default function CalendarDay({
     <Popover>
       <PopoverTrigger asChild>
         <div
-          className={`h-32 cursor-pointer overflow-hidden border p-2 ${dayCourses.length > 0 ? "bg-green-50" : ""}`}
+          className={`h-32 cursor-pointer overflow-hidden border p-2 ${dayCourses.length > 0 ? "bg-green-50" : ""} ${isFutureOrToday ? "border-green-300" : ""}`}
         >
           <div
             className={`text-sm font-bold sm:text-base ${dayCourses.length > 0 ? "text-green-500" : ""}`}

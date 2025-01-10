@@ -12,6 +12,7 @@ export default async function CourseViewPage() {
   if (user.role === "Head Coach") {
     const { groupClasses, error } = await fetchGroupClassesByCoach(user._id);
     if (error !== null) notFound();
+
     const { groupClassOrders, error: orderError } =
       await fetchCourseOrders(groupClasses);
     if (orderError !== null) notFound();
