@@ -103,3 +103,17 @@ export async function updatePassword(
     return { error: "Something went wrong: Unable to update password" };
   }
 }
+
+export async function disconnectZoom(userId: string) {
+  try {
+    await connectDB();
+    const updatedUser = await User.findByIdAndUpdate(userId, {
+      zoomRefreshToken: undefined,
+    });
+    if (!updatedUser) throw new Error("Error updating user ");
+
+    revalidatePath("/dashboard", "layout");
+  } catch (error) {
+    console.log("Error disconnecting zoom: ", (error as Error).message);
+  }
+}

@@ -32,14 +32,18 @@ export default function CoachProfileCard({
             {getFullname(coach)}
           </h3>
           <p className="text-sm text-gray-600">{coach.role}</p>
-          <div className="flex-center mt-1 flex gap-2">
+          <div className="mt-1 flex items-center justify-center gap-2 sm:justify-start">
             <Button
               variant="outline"
               size="sm"
               className="h-8 px-0 py-0 text-xs"
             >
               <Link
-                href={`/dashboard/profile/${coach._id}`}
+                href={
+                  user._id === coach._id
+                    ? "/dashboard/profile"
+                    : `/dashboard/profile/${coach._id}`
+                }
                 className="h-full w-full px-4 py-2"
               >
                 View Profile

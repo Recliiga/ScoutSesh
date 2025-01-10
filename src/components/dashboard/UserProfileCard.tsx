@@ -21,7 +21,7 @@ export default function UserProfileCard({
 }) {
   return (
     <div className="flex w-full flex-col items-center gap-2">
-      <Avatar className="h-28 w-28 sm:h-36 sm:w-36">
+      <Avatar className="h-24 w-24 sm:h-32 sm:w-32">
         <AvatarImage
           src={member.profilePicture}
           alt={getFullname(member)}
