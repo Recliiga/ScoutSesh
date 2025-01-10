@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { format, isFuture } from "date-fns";
+import { format, isToday } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,24 +34,31 @@ export default function LiveClassDetails({
   liveClass: GroupClassType;
   user: UserType;
 }) {
-  const courseSessions = liveClass.isRecurring
-    ? getDatesBetween(
-        liveClass.startDate,
-        liveClass.endDate,
-        liveClass.repeatFrequency,
-      )
-    : [new Date(liveClass.startDate)];
+  const courseSessions = getDatesBetween(
+    liveClass.startDate,
+    liveClass.isRecurring ? liveClass.endDate : liveClass.startDate,
+    liveClass.repeatFrequency,
+  ).map((session) => {
+    const date = new Date(session);
+    date.setHours(Number(liveClass.startTime.hours));
+    date.setMinutes(Number(liveClass.startTime.mins));
+    return date;
+  });
 
-  const pastSessions = courseSessions
-    .filter((date) => date !== null && !isFuture(date))
-    .sort((a, b) => a.getTime() - b.getTime());
+  function sessionIsPast(session: Date) {
+    return session.getTime() < new Date().getTime();
+  }
 
-  const upcomingSessions = courseSessions
-    .filter((date) => date !== null && isFuture(date))
-    .sort((a, b) => a.getTime() - b.getTime());
+  const nextSessionIndex = courseSessions.findIndex(
+    (session) => !sessionIsPast(session),
+  );
+  const nextSession = courseSessions[nextSessionIndex];
 
-  const nextSession = upcomingSessions[0];
-  const hasUpcomingSessions = upcomingSessions.length > 0;
+  const isLiveClassCoach = liveClass.coaches[0]._id === user._id;
+
+  const nextMeetingLink = isLiveClassCoach
+    ? liveClass.meetings?.[nextSessionIndex].start_url
+    : liveClass.meetings?.[nextSessionIndex].join_url;
 
   const startTime = new Date();
   startTime.setHours(
@@ -145,19 +152,30 @@ export default function LiveClassDetails({
                 <div className="flex items-start text-sm font-medium">
                   <CalendarIcon className="mr-3 mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />
                   <span>
-                    Next session: {format(nextSession, "MMMM d")}
-                    <sup>{getOrdinalSuffix(nextSession.getDate())}</sup>
-                    {", "}
-                    {format(nextSession, "yyyy")}
+                    Next session:{" "}
+                    {!isToday(nextSession) ? (
+                      <>
+                        {format(nextSession, "MMMM d")}
+                        <sup>
+                          {getOrdinalSuffix(nextSession.getDate())}
+                        </sup>{" "}
+                        {format(nextSession, "yyyy")}
+                      </>
+                    ) : (
+                      "Today"
+                    )}{" "}
+                    at {format(nextSession, "p")}
                   </span>
                 </div>
               )}
-              {hasUpcomingSessions ? (
-                <Button className="mt-2 bg-green-500 text-white hover:bg-green-600">
-                  Join Virtual Session
-                </Button>
+              {nextSession ? (
+                <Link href={nextMeetingLink || "#"} target="_blank">
+                  <Button className="mt-2 w-full flex-1 bg-green-500 text-white hover:bg-green-600">
+                    {isLiveClassCoach ? "Start" : "Join"} Virtual Session
+                  </Button>
+                </Link>
               ) : (
-                <div className="text-red-500">
+                <div className="text-sm text-red-500">
                   All live sessions for this course have passed.
                 </div>
               )}
@@ -171,10 +189,10 @@ export default function LiveClassDetails({
         </CardHeader>
         <CardContent className="p-0">
           <ul className="space-y-2 text-sm">
-            {pastSessions.map((session, index) => (
+            {courseSessions.map((session, index) => (
               <li
                 key={index}
-                className={`flex items-center gap-2 text-gray-400`}
+                className={`flex items-center gap-2 ${sessionIsPast(session) ? "text-gray-400" : ""}`}
               >
                 <CalendarIcon className="h-4 w-4" />
                 <span>
@@ -182,18 +200,7 @@ export default function LiveClassDetails({
                   <sup>{getOrdinalSuffix(session.getDate())}</sup>
                   {", "}
                   {format(session, "yyyy")}
-                  (Past)
-                </span>
-              </li>
-            ))}
-            {upcomingSessions.map((session, index) => (
-              <li key={index} className={`flex items-center gap-2`}>
-                <CalendarIcon className="h-4 w-4" />
-                <span>
-                  {format(session, "MMMM d")}
-                  <sup>{getOrdinalSuffix(session.getDate())}</sup>
-                  {", "}
-                  {format(session, "yyyy")}
+                  {sessionIsPast(session) ? "(Past)" : ""}
                 </span>
               </li>
             ))}

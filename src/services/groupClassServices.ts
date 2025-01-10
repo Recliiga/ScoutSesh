@@ -59,7 +59,7 @@ export async function fetchAthleteLiveClasses(athleteId: string) {
     );
 
     const liveClasses = allLiveClasses.filter((liveClass) =>
-      userOrders.some((order) => order.course._id === liveClass._id),
+      userOrders.some((order) => order.course?._id === liveClass._id),
     );
 
     return { liveClasses, error: null };

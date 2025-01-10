@@ -40,12 +40,12 @@ export default function CoursesTab({
 
   function getGroupClassRevenue(groupClass: GroupClassType) {
     return classOrders
-      .filter((order) => order.course._id === groupClass._id)
+      .filter((order) => order.course?._id === groupClass._id)
       .reduce((curr, acc) => curr + acc.price, 0);
   }
 
   function getNumberOfClassStudents(groupClass: GroupClassType) {
-    return classOrders.filter((order) => order.course._id === groupClass._id)
+    return classOrders.filter((order) => order.course?._id === groupClass._id)
       .length;
   }
 
