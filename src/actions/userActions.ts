@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import Stripe from "stripe";
 
 export async function joinTeam(organizationId: string, coachId: string) {
   let redirectUrl;
@@ -118,5 +119,44 @@ export async function disconnectZoom(userId: string) {
     const error = err as Error;
     console.log("Error disconnecting zoom: ", error.message);
     return { error: error.message };
+  }
+}
+
+export async function disconnectStripe(userId: string) {
+  try {
+    await connectDB();
+    const updatedUser = await User.findByIdAndUpdate(userId, {
+      stripeAccountId: null,
+    });
+    if (!updatedUser) throw new Error("Error updating user ");
+
+    revalidatePath("/dashboard", "layout");
+    return { error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error disconnecting stripe: ", error.message);
+    return { error: error.message };
+  }
+}
+
+export async function createStripeOnboardingLink(accountId?: string) {
+  if (!accountId) return { url: null, error: "Invalid account ID" };
+  try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+    const redirect_uri = `${process.env.BASE_URL}/dashboard/profile`;
+
+    const accountLink = await stripe.accountLinks.create({
+      account: accountId,
+      refresh_url: redirect_uri,
+      return_url: redirect_uri,
+      type: "account_onboarding",
+    });
+
+    return { url: accountLink.url, error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error creating account update link: ", error.message);
+    return { url: null, error: error.message };
   }
 }

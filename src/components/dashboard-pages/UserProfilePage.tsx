@@ -26,13 +26,16 @@ import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import useClickOutside from "@/hooks/useClickOutside";
 import ConnectStripeButton from "../ConnectStripeButton";
+import Stripe from "stripe";
 
 export default function UserProfilePage({
   user,
   isOwnProfile,
+  stripeAccount,
 }: {
   user: UserType;
   isOwnProfile: boolean;
+  stripeAccount: Stripe.Response<Stripe.Account> | null;
 }) {
   const [userData, setUserData] = useState<UserType>(user);
   const [loading, setLoading] = useState(false);
@@ -218,7 +221,12 @@ export default function UserProfilePage({
                     </Link>
                   </div>
                 ) : null}
-                <ConnectStripeButton userId={user._id} />
+                {isOwnProfile && (
+                  <ConnectStripeButton
+                    user={user}
+                    stripeAccount={stripeAccount}
+                  />
+                )}
               </div>
               <div className="flex items-center space-x-2">
                 <Button className="bg-[#14a800] px-6 py-2 text-base text-white hover:bg-[#14a800]/90 sm:text-lg">

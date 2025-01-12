@@ -54,9 +54,9 @@ export async function GET() {
     const redirect_uri = `${process.env.BASE_URL}/dashboard/profile`;
 
     const accountLink = await stripe.accountLinks.create({
-      account: userStripeAccount, // The connected account ID from your database or passed in query params
-      refresh_url: `${process.env.NEXT_PUBLIC_SITE_URL}/reauth`,
-      return_url: redirect_uri, // Where to redirect after the process
+      account: userStripeAccount,
+      refresh_url: redirect_uri,
+      return_url: redirect_uri,
       type: "account_onboarding",
     });
 

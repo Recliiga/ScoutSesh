@@ -1,6 +1,7 @@
 import connectDB from "@/db/connectDB";
 import User, { UserType } from "@/db/models/User";
 import "@/db/models/Organization";
+import Stripe from "stripe";
 
 export async function fetchUser(userId: string) {
   try {
@@ -40,5 +41,23 @@ export async function fetchTeamMembers(organizationId: string) {
   } catch (err) {
     const error = err as Error;
     return { teamMembers: null, error: error.message };
+  }
+}
+
+export async function fetchUserStripeAccount(
+  stripeAccountId?: string,
+): Promise<
+  | { account: Stripe.Response<Stripe.Account>; error: null }
+  | { account: null; error: string }
+> {
+  try {
+    const res = await fetch(
+      `${process.env.BASE_URL}/api/stripe/retrieve?accountId=${stripeAccountId || ""}`,
+    );
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    const error = err as Error;
+    return { account: null, error: error.message };
   }
 }
