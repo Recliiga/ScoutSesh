@@ -136,7 +136,8 @@ export async function createOrganization(organizationData: {
   logo: string;
   type: string;
   memberCount: string;
-  location: string;
+  city: string;
+  country: string;
   primarySport: string;
   yearFounded: string;
   bio: string;
@@ -170,7 +171,8 @@ export async function completeProfile(userData: {
   role: string;
   DOB: string;
   profilePicture: string;
-  location: string;
+  city: string;
+  country: string;
   primarySport: string;
   experience: string;
   bio: string;

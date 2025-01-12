@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { fetchLatestInvitationCode } from "@/services/invitationServices";
 import { fetchNotifications } from "@/services/notificationEntryServices";
 import { UserType } from "@/db/models/User";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "ScoutSesh",
@@ -30,6 +31,7 @@ export default async function RootLayout({
       <body
         className={`${GeistSans.className} flex min-h-dvh flex-col text-accent-black antialiased`}
       >
+        <Toaster position="top-right" reverseOrder={false} />
         <Header
           user={user}
           invitationCode={invitationCode}

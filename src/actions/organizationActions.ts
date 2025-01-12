@@ -25,7 +25,8 @@ export async function updateOrganization(
     name: string;
     logo: string;
     memberCount: string;
-    location: string;
+    city: string;
+    country: string;
     primarySport: string;
     bio: string;
     yearFounded: number;

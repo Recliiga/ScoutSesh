@@ -68,7 +68,8 @@ export default function CompleteAthleteProfileForm({
     selectedYear: new Date().getFullYear(),
     DOB: "",
     profilePicture: "",
-    location: "",
+    city: "",
+    country: "",
     primarySport: "",
     experience: "",
     bio: "",
@@ -111,7 +112,8 @@ export default function CompleteAthleteProfileForm({
       role: formEntries.role,
       DOB: formEntries.DOB,
       profilePicture: formEntries.profilePicture,
-      location: formEntries.location,
+      city: formEntries.city,
+      country: formEntries.country,
       primarySport: formEntries.primarySport,
       experience: formEntries.experience,
       bio: formEntries.bio,
@@ -322,14 +324,29 @@ export default function CompleteAthleteProfileForm({
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="location">Location</Label>
+          <Label htmlFor="city">City</Label>
           <div className="relative">
             <MapPinIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
             <Input
-              id="location"
-              name="location"
-              value={formEntries.location}
-              onChange={(e) => updateField("location", e.target.value)}
+              id="city"
+              name="city"
+              value={formEntries.city}
+              onChange={(e) => updateField("city", e.target.value)}
+              className="pl-10"
+              placeholder="City, Country"
+              required
+            />
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="country">Country</Label>
+          <div className="relative">
+            <MapPinIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+            <Input
+              id="country"
+              name="country"
+              value={formEntries.country}
+              onChange={(e) => updateField("country", e.target.value)}
               className="pl-10"
               placeholder="City, Country"
               required

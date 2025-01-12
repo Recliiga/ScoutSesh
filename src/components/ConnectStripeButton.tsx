@@ -8,6 +8,7 @@ import {
   createStripeOnboardingLink,
   disconnectStripe,
 } from "@/actions/userActions";
+import toast from "react-hot-toast";
 
 export default function ConnectStripeButton({
   user,
@@ -31,11 +32,15 @@ export default function ConnectStripeButton({
       method: "GET",
     });
 
-    const { url } = await res.json();
+    const { url, error } = await res.json();
 
     // Redirect the user to the Stripe OAuth page
-    if (url) window.location.href = url;
-    else setLoading(false);
+    if (error === null) {
+      window.location.href = url;
+    } else {
+      toast.error(error, { style: { fontSize: "14px" } });
+      setLoading(false);
+    }
   }
 
   async function handleDisconnectStripe() {
@@ -47,9 +52,15 @@ export default function ConnectStripeButton({
 
   async function handleUpdateInformation() {
     setLoading(true);
-    const { url } = await createStripeOnboardingLink(user.stripeAccountId);
-    if (url) window.location.href = url;
-    setLoading(false);
+    const { url, error } = await createStripeOnboardingLink(
+      user.stripeAccountId,
+    );
+    if (error === null) {
+      window.location.href = url;
+    } else {
+      toast.error(error, { style: { fontSize: "14px" } });
+      setLoading(false);
+    }
   }
 
   if (stripeConnected)

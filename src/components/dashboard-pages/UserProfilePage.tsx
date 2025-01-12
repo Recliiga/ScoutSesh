@@ -51,7 +51,8 @@ export default function UserProfilePage({
     firstName: user.firstName,
     lastName: user.lastName,
     profilePicture: user.profilePicture,
-    location: user.location,
+    city: user.city,
+    country: user.country,
     primarySport: user.primarySport,
     experience: user.experience,
     bio: user.bio,
@@ -260,24 +261,43 @@ export default function UserProfilePage({
           </CardHeader>
           <CardContent className="space-y-6 p-4 sm:p-6">
             <div
-              className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${user.role === "Athlete" ? "" : "lg:grid-cols-3"}`}
+              className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${user.role === "Athlete" ? "lg:grid-cols-3" : ""}`}
             >
               <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                 <MapPinIcon className="h-5 w-5 text-[#14a800]" />
-                <span className="text-sm text-gray-600">Location:</span>
+                <span className="text-sm text-gray-600">City:</span>
                 {isEditing ? (
                   <input
                     type="text"
                     disabled={loading}
-                    name="location"
-                    placeholder="Location"
-                    value={formEntries.location}
-                    onChange={(e) => updateField("location", e.target.value)}
+                    name="city"
+                    placeholder="city"
+                    value={formEntries.city}
+                    onChange={(e) => updateField("city", e.target.value)}
                     className="w-0 flex-1 rounded-md border px-4 py-2 text-sm disabled:bg-accent-gray-100"
                   />
                 ) : (
                   <span className="font-medium text-gray-800">
-                    {userData.location}
+                    {userData.city}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
+                <MapPinIcon className="h-5 w-5 text-[#14a800]" />
+                <span className="text-sm text-gray-600">Country:</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    disabled={loading}
+                    name="country"
+                    placeholder="country"
+                    value={formEntries.country}
+                    onChange={(e) => updateField("country", e.target.value)}
+                    className="w-0 flex-1 rounded-md border px-4 py-2 text-sm disabled:bg-accent-gray-100"
+                  />
+                ) : (
+                  <span className="font-medium text-gray-800">
+                    {userData.country}
                   </span>
                 )}
               </div>

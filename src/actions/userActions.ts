@@ -42,7 +42,8 @@ export async function updateUser(
   userData: {
     firstName: string;
     lastName: string;
-    location: string;
+    city: string;
+    country: string;
     primarySport: PrimarySportType;
     profilePicture: string;
     experience: number;

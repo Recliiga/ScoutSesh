@@ -8,7 +8,7 @@ async function createConnectedAccount(userEmail: string) {
   try {
     const account = await stripe.accounts.create({
       type: "express",
-      country: "US",
+      country: "NG",
       email: userEmail,
       capabilities: {
         transfers: { requested: true },
@@ -19,11 +19,11 @@ async function createConnectedAccount(userEmail: string) {
     return { accountId: account.id, error: null };
   } catch (err) {
     const error = err as Error;
-    console.error("Error creating connected account:", error.message);
+    console.error("Error connecting stripe:", error.message);
 
     return {
       accountId: null,
-      error: `Error creating connected account: 
+      error: `Error connecting stripe: 
       ${error.message}`,
     };
   }
@@ -47,7 +47,15 @@ export async function GET() {
 
         userStripeAccount = accountId;
       } else {
-        throw new Error(error);
+        return new Response(
+          JSON.stringify({
+            url: null,
+            error,
+          }),
+          {
+            status: 500,
+          },
+        );
       }
     }
 
