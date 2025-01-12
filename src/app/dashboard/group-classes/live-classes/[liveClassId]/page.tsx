@@ -1,7 +1,7 @@
 import LiveClassDetails from "@/components/group-classes/LiveClassDetails";
 import { getSessionFromHeaders } from "@/services/authServices";
 import { fetchGroupClass } from "@/services/groupClassServices";
-import { fetchUserOrders } from "@/services/orderServices";
+import { fetchUserOrders } from "@/services/groupClassOrderServices";
 import { notFound } from "next/navigation";
 import React from "react";
 

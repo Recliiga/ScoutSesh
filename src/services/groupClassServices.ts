@@ -1,6 +1,6 @@
 import connectDB from "@/db/connectDB";
 import GroupClass, { GroupClassType } from "@/db/models/GroupClass";
-import { fetchUserOrders } from "./orderServices";
+import { fetchUserOrders } from "./groupClassOrderServices";
 
 export async function fetchGroupClassesByCoach(coachId: string) {
   try {

@@ -4,7 +4,10 @@ import { getSessionFromHeaders } from "@/services/authServices";
 import { fetchGroupClassesByCoach } from "@/services/groupClassServices";
 import { notFound } from "next/navigation";
 import AthleteCoursesView from "@/components/group-classes/AthleteCoursesViewPage";
-import { fetchCourseOrders, fetchUserOrders } from "@/services/orderServices";
+import {
+  fetchCourseOrders,
+  fetchUserOrders,
+} from "@/services/groupClassOrderServices";
 
 export default async function CourseViewPage() {
   const user = await getSessionFromHeaders();

@@ -1,5 +1,5 @@
 import { getSessionFromHeaders } from "@/services/authServices";
-import { fetchUserLiveClassOrders } from "@/services/orderServices";
+import { fetchUserLiveClassOrders } from "@/services/groupClassOrderServices";
 import { notFound } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VideoLibraryCourseCard from "@/components/group-classes/VideoLibraryCourseCard";
