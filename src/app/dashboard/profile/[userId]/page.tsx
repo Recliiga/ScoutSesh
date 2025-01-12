@@ -1,5 +1,5 @@
 import { getSessionFromHeaders } from "@/services/authServices";
-import { fetchUser } from "@/services/userServices";
+import { fetchCountries, fetchUser } from "@/services/userServices";
 import { notFound } from "next/navigation";
 import React from "react";
 import UserProfilePage from "@/components/dashboard-pages/UserProfilePage";
@@ -16,10 +16,14 @@ export default async function ProfilePage({
   const { user: profileUser, error } = await fetchUser(userId);
   if (error !== null) notFound();
 
+  const { countries } = await fetchCountries();
+
   return (
     <UserProfilePage
       user={profileUser}
       isOwnProfile={profileUser._id === user._id}
+      countries={countries}
+      stripeAccount={null}
     />
   );
 }

@@ -4,8 +4,8 @@ import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, Loader2 } from "lucide-react";
-import { CalendarIcon, MapPinIcon } from "lucide-react";
+import { ArrowRight, Loader2, SearchIcon } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn, resizeImage, uploadImageClient } from "@/lib/utils";
@@ -16,14 +16,8 @@ import Error from "./AuthError";
 import useFormEntries from "@/hooks/useFormEntries";
 import Select from "./Select";
 import useClickOutside from "@/hooks/useClickOutside";
-
-interface ProfileProps {
-  firstName: string;
-  lastName: string;
-  email: string;
-  userId: string;
-  role: string;
-}
+import { PrimarySportType, UserRoleType, UserType } from "@/db/models/User";
+import { CountryDataType } from "@/services/userServices";
 
 const sportList = [
   "volleyball",
@@ -44,12 +38,12 @@ const sportList = [
 ];
 
 export default function CompleteAthleteProfileForm({
-  firstName,
-  lastName,
-  email,
-  userId,
-  role,
-}: ProfileProps) {
+  user,
+  countries,
+}: {
+  user: UserType;
+  countries: CountryDataType[];
+}) {
   const router = useRouter();
 
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -59,30 +53,65 @@ export default function CompleteAthleteProfileForm({
   const [imageError, setImageError] = useState<string | null>(null);
 
   const { formEntries, updateField } = useFormEntries({
-    userId,
-    email,
-    firstName,
-    lastName,
-    role,
+    userId: user._id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    role: user.role,
     selectedMonth: new Date().getMonth(),
     selectedYear: new Date().getFullYear(),
     DOB: "",
-    profilePicture: "",
-    city: "",
-    country: "",
-    primarySport: "",
-    experience: "",
-    bio: "",
+    profilePicture: user.profilePicture || "",
+    city: user.city || "",
+    country: user.country || { name: "", iso2: "" },
+    primarySport: user.primarySport || "",
+    experience: user.experience.toString() || "",
+    bio: user.bio || "",
+
+    countrySearchQuery: "",
+    citySearchQuery: "",
   });
+
+  const filteredCountries = countries.filter(
+    (country) =>
+      country.country
+        .toLowerCase()
+        .includes(formEntries.countrySearchQuery.toLowerCase().trim()) ||
+      country.iso2
+        .toLowerCase()
+        .includes(formEntries.countrySearchQuery.toLowerCase().trim()),
+  );
+
+  const cities =
+    countries.find((country) => country.iso2 === formEntries.country.iso2)
+      ?.cities || [];
+
+  const filteredCities = cities.filter((city) =>
+    city
+      .toLowerCase()
+      .includes(formEntries.citySearchQuery.toLowerCase().trim()),
+  );
+
+  function updateCountryField(countryISO2: string) {
+    const countryName = countries.find(
+      (country) => country.iso2 === countryISO2,
+    );
+    updateField("country", {
+      name: countryName?.country || "",
+      iso2: countryISO2,
+    });
+    updateField("city", "");
+  }
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
-  const cannotSubmit = Object.values(formEntries).some(
-    (value) => value.toString().trim() === "",
-  );
+  const cannotSubmit =
+    Object.values(formEntries).some(
+      (value) => value.toString().trim() === "",
+    ) || formEntries.country.name.trim() === "";
 
   async function handleChangeImage(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -151,7 +180,7 @@ export default function CompleteAthleteProfileForm({
               src={formEntries.profilePicture}
               alt="Profile"
               layout="fill"
-              objectFit="cover"
+              className="object-cover"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-gray-400">
@@ -233,10 +262,12 @@ export default function CompleteAthleteProfileForm({
               name="role"
               className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               value={formEntries.role}
-              onChange={(e) => updateField("role", e.target.value)}
+              onChange={(e) =>
+                updateField("role", e.target.value as UserRoleType)
+              }
               required
             >
-              {role === "Head Coach" ? (
+              {formEntries.role === "Head Coach" ? (
                 <option value={"Head Coach"}>Head Coach</option>
               ) : (
                 <>
@@ -324,40 +355,74 @@ export default function CompleteAthleteProfileForm({
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="city">City</Label>
+          <Label htmlFor="country">Country</Label>
           <div className="relative">
-            <MapPinIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-            <Input
-              id="city"
-              name="city"
-              value={formEntries.city}
-              onChange={(e) => updateField("city", e.target.value)}
-              className="pl-10"
-              placeholder="City, Country"
-              required
-            />
+            <Select
+              value={formEntries.country.iso2}
+              onChange={(value) => updateCountryField(value)}
+              placeholder="Select Country"
+            >
+              <Select.Content className="px-0 pt-0">
+                <div className="flex items-center border-b px-2">
+                  <SearchIcon className="h-4 w-4 text-zinc-400" />
+                  <input
+                    type="text"
+                    placeholder="Search Countries"
+                    className="sticky top-0 w-full p-2"
+                    value={formEntries.countrySearchQuery}
+                    onChange={(e) =>
+                      updateField("countrySearchQuery", e.target.value)
+                    }
+                  />
+                </div>
+                {filteredCountries.map((country) => (
+                  <Select.Option value={country.iso2} key={country.iso2}>
+                    {country.country}
+                  </Select.Option>
+                ))}
+              </Select.Content>
+            </Select>
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="country">Country</Label>
+          <Label htmlFor="city">City</Label>
           <div className="relative">
-            <MapPinIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-            <Input
-              id="country"
-              name="country"
-              value={formEntries.country}
-              onChange={(e) => updateField("country", e.target.value)}
-              className="pl-10"
-              placeholder="City, Country"
-              required
-            />
+            <Select
+              value={formEntries.city}
+              onChange={(value) => updateField("city", value)}
+              placeholder="Select City"
+              disabled={!formEntries.country}
+              key={formEntries.country.name}
+            >
+              <Select.Content>
+                <div className="flex items-center border-b px-2">
+                  <SearchIcon className="h-4 w-4 text-zinc-400" />
+                  <input
+                    type="text"
+                    placeholder="Search Cities"
+                    className="sticky top-0 w-full p-2"
+                    value={formEntries.citySearchQuery}
+                    onChange={(e) =>
+                      updateField("citySearchQuery", e.target.value)
+                    }
+                  />
+                </div>
+                {filteredCities.map((city, index) => (
+                  <Select.Option value={city} key={index}>
+                    {city}
+                  </Select.Option>
+                ))}
+              </Select.Content>
+            </Select>
           </div>
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="primarySport">Primary Sport</Label>
           <Select
             value={formEntries.primarySport}
-            onChange={(value) => updateField("primarySport", value)}
+            onChange={(value) =>
+              updateField("primarySport", value as PrimarySportType)
+            }
             placeholder="e.g., Basketball, Soccer, Tennis"
           >
             <Select.Content>

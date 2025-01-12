@@ -43,7 +43,7 @@ export async function updateUser(
     firstName: string;
     lastName: string;
     city: string;
-    country: string;
+    country: { name: string; iso2: string };
     primarySport: PrimarySportType;
     profilePicture: string;
     experience: number;

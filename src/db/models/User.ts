@@ -31,7 +31,7 @@ export interface UserType extends mongoose.Document {
   role: UserRoleType;
   DOB: Date;
   city: string;
-  country: string;
+  country: { name: string; iso2: string };
   primarySport: PrimarySportType;
   experience: number;
   bio: string;
@@ -69,7 +69,7 @@ const UserSchema: mongoose.Schema = new mongoose.Schema(
     role: { type: String, required: [true, "Please select a valid role"] },
     DOB: { type: String },
     city: { type: String },
-    country: { type: String },
+    country: { name: String, iso2: String },
     primarySport: { type: String },
     experience: { type: Number },
     bio: { type: String },

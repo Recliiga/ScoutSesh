@@ -137,7 +137,7 @@ export async function createOrganization(organizationData: {
   type: string;
   memberCount: string;
   city: string;
-  country: string;
+  country: { name: string; iso2: string };
   primarySport: string;
   yearFounded: string;
   bio: string;
@@ -172,7 +172,7 @@ export async function completeProfile(userData: {
   DOB: string;
   profilePicture: string;
   city: string;
-  country: string;
+  country: { name: string; iso2: string };
   primarySport: string;
   experience: string;
   bio: string;

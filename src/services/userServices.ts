@@ -58,3 +58,27 @@ export async function fetchUserStripeAccount(stripeAccountId?: string) {
     return { account: null, error: error.message };
   }
 }
+
+export type CountryDataType = {
+  iso2: string;
+  iso3: string;
+  country: string;
+  cities: string[];
+};
+
+type CountriesDataType = {
+  error: boolean;
+  msg: string;
+  data: CountryDataType[];
+};
+
+export async function fetchCountries() {
+  try {
+    const res = await fetch("https://countriesnow.space/api/v0.1/countries");
+    const data: CountriesDataType = await res.json();
+    return { countries: data.data, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { countries: [], error: error.message };
+  }
+}

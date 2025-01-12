@@ -14,11 +14,12 @@ import {
   CheckCircle,
   CalendarIcon,
   CameraIcon,
+  SearchIcon,
 } from "lucide-react";
 import { PrimarySportType, UserType } from "@/db/models/User";
 import { cn, getFullname, uploadImageClient } from "@/lib/utils";
 import useFormEntries from "@/hooks/useFormEntries";
-import { disconnectZoom, updateUser } from "@/actions/userActions";
+import { updateUser } from "@/actions/userActions";
 import LoadingIndicator from "../LoadingIndicator";
 import Error from "../AuthError";
 import Link from "next/link";
@@ -27,23 +28,29 @@ import { Calendar } from "../ui/calendar";
 import useClickOutside from "@/hooks/useClickOutside";
 import ConnectStripeButton from "../ConnectStripeButton";
 import Stripe from "stripe";
+import Select from "../Select";
+import { CountryDataType } from "@/services/userServices";
 
 export default function UserProfilePage({
   user,
   isOwnProfile,
   stripeAccount,
+  countries,
 }: {
   user: UserType;
   isOwnProfile: boolean;
   stripeAccount: Stripe.Response<Stripe.Account> | null;
+  countries: CountryDataType[];
 }) {
   const [userData, setUserData] = useState<UserType>(user);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [zoomLoading, setZoomLoading] = useState(false);
-  const [zoomConnected, setZoomConnected] = useState(!!user.zoomRefreshToken);
+  const [countrySearchQuery, setCountrySearchQuery] = useState("");
+  const [citySearchQuery, setCitySearchQuery] = useState("");
+  // const [zoomLoading, setZoomLoading] = useState(false);
+  // const [zoomConnected, setZoomConnected] = useState(!!user.zoomRefreshToken);
 
   const [calendarRef] = useClickOutside(() => setCalendarOpen(false));
 
@@ -95,10 +102,14 @@ export default function UserProfilePage({
 
   function cancelEditing() {
     Object.keys(formEntries).forEach((key) => {
-      updateField(
-        key as keyof typeof formEntries,
-        userData[key as keyof UserType],
-      );
+      if (key === "country") {
+        updateCountryField(userData.country.iso2);
+      } else {
+        updateField(
+          key as keyof typeof formEntries,
+          userData[key as keyof UserType],
+        );
+      }
     });
     setIsEditing(false);
   }
@@ -123,13 +134,43 @@ export default function UserProfilePage({
   const dayOfBirth = dateOfBirth.getDate();
   const formattedDOB = `${dateOfBirth.getFullYear()}-${monthOfBirth < 10 ? "0" : ""}${monthOfBirth}-${dayOfBirth < 10 ? "0" : ""}${dayOfBirth}`;
 
-  async function handleDisconnectZoom() {
-    setZoomLoading(true);
-    const { error } = await disconnectZoom(user._id);
-    if (!error) {
-      setZoomConnected(false);
-    }
-    setZoomLoading(false);
+  // async function handleDisconnectZoom() {
+  //   setZoomLoading(true);
+  //   const { error } = await disconnectZoom(user._id);
+  //   if (!error) {
+  //     setZoomConnected(false);
+  //   }
+  //   setZoomLoading(false);
+  // }
+
+  const filteredCountries = countries.filter(
+    (country) =>
+      country.country
+        .toLowerCase()
+        .includes(countrySearchQuery.toLowerCase().trim()) ||
+      country.iso2
+        .toLowerCase()
+        .includes(countrySearchQuery.toLowerCase().trim()),
+  );
+
+  const cities =
+    countries.find((country) => country.iso2 === formEntries.country.iso2)
+      ?.cities || [];
+
+  const filteredCities = cities.filter((city) =>
+    city.toLowerCase().includes(citySearchQuery.toLowerCase().trim()),
+  );
+
+  function updateCountryField(countryISO2: string) {
+    const countryName = countries.find(
+      (country) => country.iso2 === countryISO2,
+    );
+    updateField("country", {
+      name: countryName?.country || "",
+      iso2: countryISO2,
+    });
+    updateField("city", "");
+    setCountrySearchQuery("");
   }
 
   return (
@@ -206,7 +247,7 @@ export default function UserProfilePage({
                   <div className="mt-2 w-fit">
                     <Link
                       href={`/dashboard/organization/${user.organization._id}`}
-                      className="flex items-center space-x-2 rounded-md border border-gray-200 bg-white px-4 py-2 text-gray-800 hover:bg-gray-50"
+                      className="flex items-center space-x-2 rounded-md border border-gray-200 bg-white px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
                     >
                       <Avatar className="h-6 w-6">
                         <AvatarImage
@@ -265,39 +306,77 @@ export default function UserProfilePage({
             >
               <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                 <MapPinIcon className="h-5 w-5 text-[#14a800]" />
-                <span className="text-sm text-gray-600">City:</span>
+                <span className="text-sm text-gray-600">Country:</span>
                 {isEditing ? (
-                  <input
-                    type="text"
-                    disabled={loading}
-                    name="city"
-                    placeholder="city"
-                    value={formEntries.city}
-                    onChange={(e) => updateField("city", e.target.value)}
-                    className="w-0 flex-1 rounded-md border px-4 py-2 text-sm disabled:bg-accent-gray-100"
-                  />
+                  <Select
+                    value={formEntries.country.iso2}
+                    defaultChild={formEntries.country.name}
+                    onChange={(value) => updateCountryField(value)}
+                    placeholder="Select Country"
+                    containerClassName="w-full"
+                  >
+                    <Select.Content className="px-0 pt-0">
+                      <div className="flex items-center border-b px-2">
+                        <SearchIcon className="h-4 w-4 text-zinc-400" />
+                        <input
+                          type="text"
+                          placeholder="Search Countries"
+                          className="sticky top-0 w-full p-2"
+                          value={countrySearchQuery}
+                          onChange={(e) =>
+                            setCountrySearchQuery(e.target.value)
+                          }
+                        />
+                      </div>
+                      {filteredCountries.map((country) => (
+                        <Select.Option value={country.iso2} key={country.iso2}>
+                          {country.country}
+                        </Select.Option>
+                      ))}
+                    </Select.Content>
+                  </Select>
                 ) : (
                   <span className="font-medium text-gray-800">
-                    {userData.city}
+                    {userData.country.name}
                   </span>
                 )}
               </div>
               <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                 <MapPinIcon className="h-5 w-5 text-[#14a800]" />
-                <span className="text-sm text-gray-600">Country:</span>
+                <span className="text-sm text-gray-600">City:</span>
                 {isEditing ? (
-                  <input
-                    type="text"
-                    disabled={loading}
-                    name="country"
-                    placeholder="country"
-                    value={formEntries.country}
-                    onChange={(e) => updateField("country", e.target.value)}
-                    className="w-0 flex-1 rounded-md border px-4 py-2 text-sm disabled:bg-accent-gray-100"
-                  />
+                  <Select
+                    value={formEntries.city}
+                    defaultChild={formEntries.city}
+                    onChange={(value) => {
+                      updateField("city", value);
+                      setCitySearchQuery("");
+                    }}
+                    placeholder="Select City"
+                    containerClassName="w-full"
+                    key={formEntries.country.iso2}
+                  >
+                    <Select.Content className="px-0 pt-0">
+                      <div className="flex items-center border-b px-2">
+                        <SearchIcon className="h-4 w-4 text-zinc-400" />
+                        <input
+                          type="text"
+                          placeholder="Search Cities"
+                          className="sticky top-0 w-full p-2"
+                          value={citySearchQuery}
+                          onChange={(e) => setCitySearchQuery(e.target.value)}
+                        />
+                      </div>
+                      {filteredCities.map((city, index) => (
+                        <Select.Option value={city} key={index}>
+                          {city}
+                        </Select.Option>
+                      ))}
+                    </Select.Content>
+                  </Select>
                 ) : (
                   <span className="font-medium text-gray-800">
-                    {userData.country}
+                    {userData.city}
                   </span>
                 )}
               </div>

@@ -246,7 +246,7 @@ export default function OrganizationRegistrationForm({
               value={formEntries["city"]}
               onChange={(e) => updateField("city", e.target.value)}
               className="pl-10"
-              placeholder="City, Country"
+              placeholder="Enter your city"
               required
             />
           </div>
@@ -261,7 +261,7 @@ export default function OrganizationRegistrationForm({
               value={formEntries["country"]}
               onChange={(e) => updateField("country", e.target.value)}
               className="pl-10"
-              placeholder="City, Country"
+              placeholder="Enter your country"
               required
             />
           </div>
