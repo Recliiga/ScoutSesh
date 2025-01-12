@@ -5,45 +5,8 @@ import { VideoType } from "@/db/models/GroupClass";
 import GroupClassOrder, {
   GroupClassOrderType,
 } from "@/db/models/GroupClassOrder";
-import NotificationEntry from "@/db/models/NotificationEntry";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-
-export async function purchaseCourse(
-  courseId: string,
-  price: number,
-  isLiveClass: boolean,
-  coachId: string,
-) {
-  let redirectUrl;
-  try {
-    const cookieStore = await cookies();
-    const { userId, error } = getUserIdFromCookies(cookieStore);
-    if (error !== null) throw new Error("Unauthenticated");
-
-    await connectDB();
-    await GroupClassOrder.create({ course: courseId, user: userId, price });
-
-    await NotificationEntry.create({
-      type: isLiveClass ? "liveClass" : "videoCourse",
-      fromUser: userId,
-      toUser: coachId,
-      link: isLiveClass
-        ? `/dashboard/group-classes/live-classes/${courseId}`
-        : "/dashboard/group-classes/courses",
-    });
-
-    redirectUrl = isLiveClass
-      ? `/dashboard/group-classes/live-classes/${courseId}`
-      : "/dashboard/group-classes/my-classes";
-  } catch (err) {
-    const error = err as Error;
-    return { error: error.message };
-  } finally {
-    if (redirectUrl) redirect(redirectUrl);
-  }
-}
 
 export async function addVideoToCompletedLessons(
   courseId: string,

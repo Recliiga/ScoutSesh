@@ -33,6 +33,7 @@ const GroupClassOrderSchema = new mongoose.Schema<GroupClassOrderType>({
   stripeSessionId: {
     type: String,
     required: [true, "Please provide the stripe checkout session id"],
+    unique: true,
   },
 });
 

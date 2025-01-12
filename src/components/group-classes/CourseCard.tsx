@@ -10,14 +10,9 @@ import DeleteGroupClassModal from "../DeleteGroupClassModal";
 import { PlayCircle } from "lucide-react";
 import { UserType } from "@/db/models/User";
 import { getFullname } from "@/lib/utils";
-
-import { loadStripe } from "@stripe/stripe-js";
 import { createStripeCheckoutSession } from "@/actions/stripeActions";
 import toast from "react-hot-toast";
-
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
-);
+import { stripePromise } from "@/lib/stripe";
 
 function getAverageVideoLength(videos: VideoType[]) {
   let suffix = "secs";
@@ -59,7 +54,7 @@ export default function CourseCard({
     e.preventDefault();
     setLoading(true);
 
-    const { sessionId } = await createStripeCheckoutSession(
+    const { sessionId, error } = await createStripeCheckoutSession(
       "group-class",
       course,
     );
@@ -68,7 +63,7 @@ export default function CourseCard({
       const stripe = await stripePromise;
       await stripe?.redirectToCheckout({ sessionId });
     } else {
-      toast.error("Error: Failed to create checkout session");
+      toast.error(`Error: ${error}`);
     }
 
     setLoading(false);

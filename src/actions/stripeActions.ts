@@ -1,7 +1,9 @@
 "use server";
 
 import connectDB from "@/db/connectDB";
-import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
+import AthleteEvaluationOrder, {
+  AthleteEvaluationOrderType,
+} from "@/db/models/AthleteEvaluationOrder";
 import { GroupClassType } from "@/db/models/GroupClass";
 import GroupClassOrder from "@/db/models/GroupClassOrder";
 import { getSession } from "@/services/authServices";
@@ -15,7 +17,11 @@ export async function createStripeCheckoutSession<
   T extends "group-class" | "athlete-evaluation",
 >(
   type: T,
-  item: T extends "group-class" ? GroupClassType : AthleteEvaluationType,
+  item: T extends "group-class"
+    ? GroupClassType
+    : Partial<AthleteEvaluationOrderType>,
+  coachId?: string,
+  organizationName?: string,
 ) {
   try {
     const { user } = await getSession();
@@ -62,7 +68,42 @@ export async function createStripeCheckoutSession<
 
       return { sessionId: session.id, error: null };
     } else {
-      return { sessionId: null, error: "type is athlete evaluation" };
+      const productItem = item as AthleteEvaluationOrderType;
+
+      if (!coachId || !organizationName)
+        return { sessionId: null, error: "Invalid Coach or Organization" };
+
+      await connectDB();
+      const newOrder = await AthleteEvaluationOrder.create({
+        ...productItem,
+        coach: coachId,
+        athlete: user._id,
+      });
+
+      const successUrl = `${process.env.BASE_URL}/api/payment-success/athlete-evaluation?evaluation_order_id=${newOrder._id}&user_id=${user._id}&coach_id=${coachId}&session_id={CHECKOUT_SESSION_ID}`;
+      const cancelUrl = `${process.env.BASE_URL}/dashboard/athlete-evaluation/request-evaluation`;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [productItem].map((item) => ({
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: `Athlete Evaluation from ${organizationName}`,
+              description: `Athlete Evaluation from ${organizationName}`,
+            },
+            unit_amount: item.totalPrice * 100, // Price in cents
+          },
+
+          quantity: 1,
+        })),
+        mode: "payment",
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        customer_email: user.email,
+      });
+
+      return { sessionId: session.id, error: null };
     }
   } catch (err) {
     const error = err as Error;

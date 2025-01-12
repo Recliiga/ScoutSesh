@@ -15,8 +15,9 @@ import { OrganizationType } from "@/db/models/Organization";
 import DatePicker from "../DatePicker";
 import Error from "../AuthError";
 import LoadingIndicator from "../LoadingIndicator";
-import { purchaseEvaluation } from "@/actions/athleteEvaluationActions";
 import BackButton from "../dashboard/BackButton";
+import { createStripeCheckoutSession } from "@/actions/stripeActions";
+import { stripePromise } from "@/lib/stripe";
 
 type PlanType =
   | "Monthly"
@@ -235,11 +236,19 @@ export default function PurchaseEvaluationForm({
         totalPrice,
       };
 
-      const data = await purchaseEvaluation(
+      const { sessionId, error } = await createStripeCheckoutSession(
+        "athlete-evaluation",
         evaluationPurchaseData,
         String(selectedProgram.organization.user),
+        selectedProgram.organization.name,
       );
-      if (data?.error) setError(data.error);
+
+      if (sessionId) {
+        const stripe = await stripePromise;
+        await stripe?.redirectToCheckout({ sessionId });
+      } else {
+        setError(error);
+      }
     }
     setLoading(false);
   }
@@ -396,12 +405,14 @@ export default function PurchaseEvaluationForm({
                 toggleCalendar={() => setCalendarOpen((prev) => !prev)}
                 selected={selectedDates}
                 onSelect={handleDateSelect}
-                disabled={(date) =>
-                  isBefore(date, new Date()) ||
-                  date.getDate() <
-                    new Date().getDate() +
-                      Number(selectedProgram?.plan.firstEvaluationDays)
-                }
+                disabled={(date) => {
+                  const firstEvaluationDate = new Date();
+                  firstEvaluationDate.setDate(
+                    firstEvaluationDate.getDate() +
+                      Number(selectedProgram?.plan.firstEvaluationDays),
+                  );
+                  return isBefore(date, firstEvaluationDate);
+                }}
                 max={
                   planType === "custom" ? selectedPlanEvaluations : undefined
                 }

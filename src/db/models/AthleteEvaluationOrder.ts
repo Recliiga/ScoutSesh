@@ -26,6 +26,7 @@ export type AthleteEvaluationOrderType = {
   totalPrice: number;
   athlete: UserType;
   coach: UserType;
+  stripeSessionId?: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -73,6 +74,10 @@ const AthleteEvaluationOrderSchema =
         type: mongoose.SchemaTypes.ObjectId,
         required: [true, "Please provide a valid coach ID"],
         ref: "User",
+      },
+      stripeSessionId: {
+        type: String,
+        unique: true,
       },
     },
     { timestamps: true },

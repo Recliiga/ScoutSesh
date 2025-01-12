@@ -58,7 +58,7 @@ export default function DashboardNotificationIcon({
           </div>
           <div>
             {notifications.length ? (
-              notifications.slice(0, 5).map((notification) => (
+              notifications.slice(0, 4).map((notification) => (
                 <Link
                   href={notification.link}
                   key={notification._id}

@@ -1,5 +1,5 @@
 import connectDB from "@/db/connectDB";
-import GroupClassOrder from "@/db/models/GroupClassOrder";
+import AthleteEvaluationOrder from "@/db/models/AthleteEvaluationOrder";
 import NotificationEntry from "@/db/models/NotificationEntry";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -12,12 +12,9 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const sessionId = searchParams.get("session_id");
-    const groupClassType = searchParams.get("group_class_type");
-    const groupClassId = searchParams.get("group_class_id");
     const userId = searchParams.get("user_id");
     const coachId = searchParams.get("coach_id");
-
-    const isLiveClass = groupClassType === "live";
+    const evaluationOrderId = searchParams.get("evaluation_order_id");
 
     if (!sessionId) {
       return NextResponse.json(
@@ -30,43 +27,30 @@ export async function GET(req: NextRequest) {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     // Perform actions based on session details
-    const { payment_status, amount_total } = session;
+    const { payment_status } = session;
 
     if (payment_status === "paid") {
       // Update database and create notification for purchase
       await connectDB();
-
-      const hasOrder = await GroupClassOrder.findOne({
-        user: userId,
-        course: groupClassId,
+      await AthleteEvaluationOrder.findByIdAndUpdate(evaluationOrderId, {
+        stripeSessionId: sessionId,
       });
-      if (!hasOrder) {
-        await GroupClassOrder.create({
-          course: groupClassId,
-          user: userId,
-          price: amount_total,
-          stripeSessionId: sessionId,
-        });
-      }
 
       await NotificationEntry.create({
-        type: isLiveClass ? "liveClass" : "videoCourse",
+        type: "evaluation",
         fromUser: userId,
         toUser: coachId,
-        link: isLiveClass
-          ? `/dashboard/group-classes/live-classes/${groupClassId}`
-          : "/dashboard/group-classes/courses",
+        link: "/dashboard/athlete-evaluation",
       });
 
-      const redirectUrl = isLiveClass
-        ? `/dashboard/group-classes/live-classes/${groupClassId}`
-        : "/dashboard/group-classes/my-classes";
-
-      const url = new URL(redirectUrl, process.env.BASE_URL);
+      const url = new URL(
+        "/dashboard/athlete-evaluation",
+        process.env.BASE_URL,
+      );
       return NextResponse.redirect(url);
     } else {
       const url = new URL(
-        "/dashboard/group-classes/courses",
+        "/dashboard/athlete-evaluation/request-evaluation",
         process.env.BASE_URL,
       );
       return NextResponse.redirect(url);

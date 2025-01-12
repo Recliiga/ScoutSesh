@@ -23,7 +23,6 @@ export default async function ProfilePage({
       user={profileUser}
       isOwnProfile={profileUser._id === user._id}
       countries={countries}
-      stripeAccount={null}
     />
   );
 }
