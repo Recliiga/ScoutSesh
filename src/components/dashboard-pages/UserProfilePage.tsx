@@ -25,6 +25,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import useClickOutside from "@/hooks/useClickOutside";
+import ConnectStripeButton from "../ConnectStripeButton";
 
 export default function UserProfilePage({
   user,
@@ -217,77 +218,7 @@ export default function UserProfilePage({
                     </Link>
                   </div>
                 ) : null}
-                {user.role === "Head Coach" && isOwnProfile ? (
-                  !zoomConnected ? (
-                    <Link
-                      href={"/api/zoom/auth"}
-                      className="mt-2 block"
-                      prefetch={false}
-                    >
-                      <Button
-                        variant={"outline"}
-                        className="border-[#2D8CFF] text-[#2D8CFF] hover:bg-[#2D8CFF]/10 hover:text-[#2D8CFF]"
-                      >
-                        <svg
-                          width={24}
-                          height={24}
-                          viewBox="0 0 192 192"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                        >
-                          <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                          <g
-                            id="SVGRepo_tracerCarrier"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          ></g>
-                          <g id="SVGRepo_iconCarrier">
-                            <path
-                              stroke="#2D8CFF"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="12"
-                              d="M16.869 60.973v53.832c.048 12.173 10.87 21.965 24.072 21.925h85.406c2.42 0 4.385-1.797 4.385-3.978V78.92c-.064-12.164-10.887-21.965-24.073-21.917H21.237c-2.412 0-4.368 1.79-4.368 3.97zm119.294 21.006 35.27-23.666c3.06-2.332 5.432-1.749 5.432 2.468v72.171c0 4.8-2.9 4.217-5.432 2.468l-35.27-23.618V81.98z"
-                            ></path>
-                          </g>
-                        </svg>
-                        Connect Zoom
-                      </Button>
-                    </Link>
-                  ) : (
-                    <Button
-                      variant={"outline"}
-                      className="flex-center mt-2"
-                      onClick={handleDisconnectZoom}
-                      disabled={zoomLoading}
-                    >
-                      <svg
-                        width={24}
-                        height={24}
-                        viewBox="0 0 192 192"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                      >
-                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                        <g
-                          id="SVGRepo_tracerCarrier"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        ></g>
-                        <g id="SVGRepo_iconCarrier">
-                          <path
-                            stroke="#000"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="12"
-                            d="M16.869 60.973v53.832c.048 12.173 10.87 21.965 24.072 21.925h85.406c2.42 0 4.385-1.797 4.385-3.978V78.92c-.064-12.164-10.887-21.965-24.073-21.917H21.237c-2.412 0-4.368 1.79-4.368 3.97zm119.294 21.006 35.27-23.666c3.06-2.332 5.432-1.749 5.432 2.468v72.171c0 4.8-2.9 4.217-5.432 2.468l-35.27-23.618V81.98z"
-                          ></path>
-                        </g>
-                      </svg>
-                      {zoomLoading ? "Disconnecting..." : "Disconnect Zoom"}
-                    </Button>
-                  )
-                ) : null}
+                <ConnectStripeButton userId={user._id} />
               </div>
               <div className="flex items-center space-x-2">
                 <Button className="bg-[#14a800] px-6 py-2 text-base text-white hover:bg-[#14a800]/90 sm:text-lg">
@@ -539,3 +470,75 @@ export default function UserProfilePage({
     </main>
   );
 }
+
+/*
+{
+  user.role === "Head Coach" && isOwnProfile ? (
+    !zoomConnected ? (
+      <Link href={"/api/zoom/auth"} className="mt-2 block" prefetch={false}>
+        <Button
+          variant={"outline"}
+          className="border-[#2D8CFF] text-[#2D8CFF] hover:bg-[#2D8CFF]/10 hover:text-[#2D8CFF]"
+        >
+          <svg
+            width={24}
+            height={24}
+            viewBox="0 0 192 192"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+          >
+            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                stroke="#2D8CFF"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="12"
+                d="M16.869 60.973v53.832c.048 12.173 10.87 21.965 24.072 21.925h85.406c2.42 0 4.385-1.797 4.385-3.978V78.92c-.064-12.164-10.887-21.965-24.073-21.917H21.237c-2.412 0-4.368 1.79-4.368 3.97zm119.294 21.006 35.27-23.666c3.06-2.332 5.432-1.749 5.432 2.468v72.171c0 4.8-2.9 4.217-5.432 2.468l-35.27-23.618V81.98z"
+              ></path>
+            </g>
+          </svg>
+          Connect Zoom
+        </Button>
+      </Link>
+    ) : (
+      <Button
+        variant={"outline"}
+        className="flex-center mt-2"
+        onClick={handleDisconnectZoom}
+        disabled={zoomLoading}
+      >
+        <svg
+          width={24}
+          height={24}
+          viewBox="0 0 192 192"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+        >
+          <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              stroke="#000"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="12"
+              d="M16.869 60.973v53.832c.048 12.173 10.87 21.965 24.072 21.925h85.406c2.42 0 4.385-1.797 4.385-3.978V78.92c-.064-12.164-10.887-21.965-24.073-21.917H21.237c-2.412 0-4.368 1.79-4.368 3.97zm119.294 21.006 35.27-23.666c3.06-2.332 5.432-1.749 5.432 2.468v72.171c0 4.8-2.9 4.217-5.432 2.468l-35.27-23.618V81.98z"
+            ></path>
+          </g>
+        </svg>
+        {zoomLoading ? "Disconnecting..." : "Disconnect Zoom"}
+      </Button>
+    )
+  ) : null;
+}
+*/
