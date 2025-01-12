@@ -2,6 +2,7 @@ import connectDB from "@/db/connectDB";
 import User, { UserType } from "@/db/models/User";
 import "@/db/models/Organization";
 import Stripe from "stripe";
+import countriesData from "@/data/countries.json";
 
 export async function fetchUser(userId: string) {
   try {
@@ -66,19 +67,12 @@ export type CountryDataType = {
   cities: string[];
 };
 
-type CountriesDataType = {
-  error: boolean;
-  msg: string;
-  data: CountryDataType[];
-};
-
 export async function fetchCountries() {
   try {
-    const res = await fetch("https://countriesnow.space/api/v0.1/countries");
-    const data: CountriesDataType = await res.json();
-    return { countries: data.data, error: null };
+    return { countries: countriesData.data, error: null };
   } catch (err) {
     const error = err as Error;
+    console.log("Error fetching countries: ", error.message);
     return { countries: [], error: error.message };
   }
 }

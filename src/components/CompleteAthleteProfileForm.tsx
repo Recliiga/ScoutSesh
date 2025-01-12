@@ -363,12 +363,12 @@ export default function CompleteAthleteProfileForm({
               placeholder="Select Country"
             >
               <Select.Content className="px-0 pt-0">
-                <div className="flex items-center border-b px-2">
+                <div className="sticky top-0 flex items-center border-b px-2">
                   <SearchIcon className="h-4 w-4 text-zinc-400" />
                   <input
                     type="text"
                     placeholder="Search Countries"
-                    className="sticky top-0 w-full p-2"
+                    className="w-full p-2"
                     value={formEntries.countrySearchQuery}
                     onChange={(e) =>
                       updateField("countrySearchQuery", e.target.value)

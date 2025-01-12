@@ -19,6 +19,7 @@ import {
   BookOpenIcon,
   CheckCircle,
   CameraIcon,
+  SearchIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { OrganizationType } from "@/db/models/Organization";
@@ -27,6 +28,8 @@ import useFormEntries from "@/hooks/useFormEntries";
 import Error from "../AuthError";
 import { uploadImageClient } from "@/lib/utils";
 import { updateOrganization } from "@/actions/organizationActions";
+import Select from "../Select";
+import { CountryDataType } from "@/services/userServices";
 
 const sportList = [
   "volleyball",
@@ -60,14 +63,18 @@ function getMembershipEmoji(memberCount: string): string {
 export default function OrganizationProfile({
   organization,
   isOrganizationHeadCoach,
+  countries,
 }: {
   organization: OrganizationType;
   isOrganizationHeadCoach: boolean;
+  countries: CountryDataType[];
 }) {
   const [organizationData, setOrganizationData] = useState(organization);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [countrySearchQuery, setCountrySearchQuery] = useState("");
+  const [citySearchQuery, setCitySearchQuery] = useState("");
 
   const { formEntries, updateField } = useFormEntries({
     name: organizationData.name,
@@ -142,6 +149,36 @@ export default function OrganizationProfile({
 
       updateField("logo", imageDataUrl as string);
     };
+  }
+
+  const filteredCountries = countries.filter(
+    (country) =>
+      country.country
+        .toLowerCase()
+        .includes(countrySearchQuery.toLowerCase().trim()) ||
+      country.iso2
+        .toLowerCase()
+        .includes(countrySearchQuery.toLowerCase().trim()),
+  );
+
+  const cities =
+    countries.find((country) => country.iso2 === formEntries.country.iso2)
+      ?.cities || [];
+
+  const filteredCities = cities.filter((city) =>
+    city.toLowerCase().includes(citySearchQuery.toLowerCase().trim()),
+  );
+
+  function updateCountryField(countryISO2: string) {
+    const countryName = countries.find(
+      (country) => country.iso2 === countryISO2,
+    );
+    updateField("country", {
+      name: countryName?.country || "",
+      iso2: countryISO2,
+    });
+    updateField("city", "");
+    setCountrySearchQuery("");
   }
 
   return (
@@ -263,10 +300,6 @@ export default function OrganizationProfile({
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                {/* <Button className="bg-[#14a800] px-6 py-2 text-lg text-white hover:bg-[#14a800]/90">
-                  <MessageSquareIcon className="mr-2 h-5 w-5" />
-                  Message
-                </Button> */}
                 {isOrganizationHeadCoach ? (
                   <Button
                     variant="outline"
@@ -297,39 +330,80 @@ export default function OrganizationProfile({
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                   <MapPinIcon className="h-5 w-5 text-[#14a800]" />
-                  <span className="text-sm text-gray-600">City:</span>
+                  <span className="text-sm text-gray-600">Country:</span>
                   {isEditing ? (
-                    <input
-                      type="text"
-                      disabled={loading}
-                      name="city"
-                      placeholder="city"
-                      value={formEntries.city}
-                      onChange={(e) => updateField("city", e.target.value)}
-                      className="w-0 flex-1 rounded-md border px-4 py-2 text-sm disabled:bg-accent-gray-100"
-                    />
+                    <Select
+                      value={formEntries.country.iso2}
+                      defaultChild={formEntries.country.name}
+                      onChange={(value) => updateCountryField(value)}
+                      placeholder="Select Country"
+                      containerClassName="w-full"
+                    >
+                      <Select.Content className="px-0 pt-0">
+                        <div className="sticky top-0 flex items-center border-b px-2">
+                          <SearchIcon className="h-4 w-4 text-zinc-400" />
+                          <input
+                            type="text"
+                            placeholder="Search Countries"
+                            className="w-full p-2"
+                            value={countrySearchQuery}
+                            onChange={(e) =>
+                              setCountrySearchQuery(e.target.value)
+                            }
+                          />
+                        </div>
+                        {filteredCountries.map((country) => (
+                          <Select.Option
+                            value={country.iso2}
+                            key={country.iso2}
+                          >
+                            {country.country}
+                          </Select.Option>
+                        ))}
+                      </Select.Content>
+                    </Select>
                   ) : (
                     <span className="font-medium text-gray-800">
-                      {organizationData.city}
+                      {organizationData.country.name}
                     </span>
                   )}
                 </div>
                 <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                   <MapPinIcon className="h-5 w-5 text-[#14a800]" />
-                  <span className="text-sm text-gray-600">Country:</span>
+                  <span className="text-sm text-gray-600">City:</span>
                   {isEditing ? (
-                    <input
-                      type="text"
-                      disabled={loading}
-                      name="country"
-                      placeholder="country"
-                      value={formEntries.country}
-                      onChange={(e) => updateField("country", e.target.value)}
-                      className="w-0 flex-1 rounded-md border px-4 py-2 text-sm disabled:bg-accent-gray-100"
-                    />
+                    <Select
+                      value={formEntries.city}
+                      defaultChild={formEntries.city}
+                      onChange={(value) => {
+                        updateField("city", value);
+                        setCitySearchQuery("");
+                      }}
+                      placeholder="Select City"
+                      containerClassName="w-full"
+                      key={formEntries.country.iso2}
+                    >
+                      <Select.Content className="px-0 pt-0">
+                        <div className="flex items-center border-b px-2">
+                          <SearchIcon className="h-4 w-4 text-zinc-400" />
+                          <input
+                            type="text"
+                            placeholder="Search Cities"
+                            className="sticky top-0 w-full p-2"
+                            value={citySearchQuery}
+                            onChange={(e) => setCitySearchQuery(e.target.value)}
+                          />
+                        </div>
+                        {filteredCities.map((city, index) => (
+                          <Select.Option value={city} key={index}>
+                            {city}
+                          </Select.Option>
+                        ))}
+                      </Select.Content>
+                    </Select>
                   ) : (
                     <span className="font-medium text-gray-800">
-                      {organizationData.country}
+                      {organizationData.city}
                     </span>
                   )}
                 </div>

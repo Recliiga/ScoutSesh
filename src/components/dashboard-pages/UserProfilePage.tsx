@@ -70,6 +70,7 @@ export default function UserProfilePage({
 
   async function handleUpdateUser() {
     if (!isOwnProfile) return;
+    if (!formEntries.country.iso2 || !formEntries.city) return;
     setError(null);
     setLoading(true);
     let newProfilePicture;
@@ -157,9 +158,11 @@ export default function UserProfilePage({
     countries.find((country) => country.iso2 === formEntries.country.iso2)
       ?.cities || [];
 
-  const filteredCities = cities.filter((city) =>
-    city.toLowerCase().includes(citySearchQuery.toLowerCase().trim()),
-  );
+  const filteredCities = cities
+    .filter((city) =>
+      city.toLowerCase().includes(citySearchQuery.toLowerCase().trim()),
+    )
+    .slice(0, 100);
 
   function updateCountryField(countryISO2: string) {
     const countryName = countries.find(
@@ -316,12 +319,12 @@ export default function UserProfilePage({
                     containerClassName="w-full"
                   >
                     <Select.Content className="px-0 pt-0">
-                      <div className="flex items-center border-b px-2">
+                      <div className="sticky top-0 flex items-center border-b px-2">
                         <SearchIcon className="h-4 w-4 text-zinc-400" />
                         <input
                           type="text"
                           placeholder="Search Countries"
-                          className="sticky top-0 w-full p-2"
+                          className="w-full p-2"
                           value={countrySearchQuery}
                           onChange={(e) =>
                             setCountrySearchQuery(e.target.value)

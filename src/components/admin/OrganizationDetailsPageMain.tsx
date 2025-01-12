@@ -143,7 +143,7 @@ export default function OrganizationDetailsPageMain({
                         </dt>
                         <dd className="mt-1 flex items-center text-sm text-gray-900">
                           <MapPin className="mr-2 h-4 w-4" />
-                          {organizationData.organization.country}
+                          {organizationData.organization.country.name}
                         </dd>
                       </div>
                       <div>
