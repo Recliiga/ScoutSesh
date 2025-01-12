@@ -260,7 +260,7 @@ export default function UserProfilePage({
           </CardHeader>
           <CardContent className="space-y-6 p-4 sm:p-6">
             <div
-              className={`grid grid-cols-1 gap-4 ${user.role === "Athlete" ? "sm:grid-cols-2" : "md:grid-cols-3"}`}
+              className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${user.role === "Athlete" ? "" : "lg:grid-cols-3"}`}
             >
               <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                 <MapPinIcon className="h-5 w-5 text-[#14a800]" />

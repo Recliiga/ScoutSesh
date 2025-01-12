@@ -44,18 +44,15 @@ export async function fetchTeamMembers(organizationId: string) {
   }
 }
 
-export async function fetchUserStripeAccount(
-  stripeAccountId?: string,
-): Promise<
-  | { account: Stripe.Response<Stripe.Account>; error: null }
-  | { account: null; error: string }
-> {
+export async function fetchUserStripeAccount(stripeAccountId?: string) {
   try {
-    const res = await fetch(
-      `${process.env.BASE_URL}/api/stripe/retrieve?accountId=${stripeAccountId || ""}`,
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    if (!stripeAccountId) throw new Error("Invalid account ID");
+    const account = JSON.parse(
+      JSON.stringify(await stripe.accounts.retrieve(stripeAccountId)),
     );
-    const data = await res.json();
-    return data;
+
+    return { account, error: null };
   } catch (err) {
     const error = err as Error;
     return { account: null, error: error.message };
