@@ -9,10 +9,18 @@ import { GroupClassType } from "@/db/models/GroupClass";
 import Link from "next/link";
 import ModalContainer from "../ModalContainer";
 import DeleteGroupClassModal from "../DeleteGroupClassModal";
-import { purchaseCourse } from "@/actions/groupClassOrderActions";
+// import { purchaseCourse } from "@/actions/groupClassOrderActions";
 import { TvMinimalPlay } from "lucide-react";
 import { UserType } from "@/db/models/User";
 import { getDatesBetween, getFullname } from "@/lib/utils";
+import { createStripeCheckoutSession } from "@/actions/stripeActions";
+import toast from "react-hot-toast";
+
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
+);
 
 const daysOfTheWeek = [
   "Sunday",
@@ -116,15 +124,19 @@ export default function LiveClassCard({
   async function handlePurchaseCourse(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const data = await purchaseCourse(
-      liveClass._id,
-      liveClass.price,
-      true,
-      liveClass.user._id,
+
+    const { sessionId, error } = await createStripeCheckoutSession(
+      "group-class",
+      liveClass,
     );
-    if (data?.error) {
-      console.log(data?.error);
+
+    if (sessionId) {
+      const stripe = await stripePromise;
+      await stripe?.redirectToCheckout({ sessionId });
+    } else {
+      toast.error(`Error: ${error}`);
     }
+
     setLoading(false);
   }
 

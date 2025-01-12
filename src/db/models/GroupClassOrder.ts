@@ -8,6 +8,7 @@ export interface GroupClassOrderType extends mongoose.Document {
   user: UserType;
   completedLessons: VideoType[];
   price: number;
+  stripeSessionId: string;
 }
 
 const GroupClassOrderSchema = new mongoose.Schema<GroupClassOrderType>({
@@ -28,6 +29,10 @@ const GroupClassOrderSchema = new mongoose.Schema<GroupClassOrderType>({
   price: {
     type: Number,
     required: [true, "Please provide the amount for the course"],
+  },
+  stripeSessionId: {
+    type: String,
+    required: [true, "Please provide the stripe checkout session id"],
   },
 });
 

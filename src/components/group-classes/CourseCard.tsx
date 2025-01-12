@@ -7,10 +7,17 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import ModalContainer from "../ModalContainer";
 import DeleteGroupClassModal from "../DeleteGroupClassModal";
-import { purchaseCourse } from "@/actions/groupClassOrderActions";
 import { PlayCircle } from "lucide-react";
 import { UserType } from "@/db/models/User";
 import { getFullname } from "@/lib/utils";
+
+import { loadStripe } from "@stripe/stripe-js";
+import { createStripeCheckoutSession } from "@/actions/stripeActions";
+import toast from "react-hot-toast";
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
+);
 
 function getAverageVideoLength(videos: VideoType[]) {
   let suffix = "secs";
@@ -51,15 +58,19 @@ export default function CourseCard({
   async function handlePurchaseCourse(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const data = await purchaseCourse(
-      course._id,
-      course.price,
-      false,
-      course.user._id,
+
+    const { sessionId } = await createStripeCheckoutSession(
+      "group-class",
+      course,
     );
-    if (data?.error) {
-      console.log(data?.error);
+
+    if (sessionId) {
+      const stripe = await stripePromise;
+      await stripe?.redirectToCheckout({ sessionId });
+    } else {
+      toast.error("Error: Failed to create checkout session");
     }
+
     setLoading(false);
   }
 

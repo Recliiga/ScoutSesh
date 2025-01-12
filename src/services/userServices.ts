@@ -1,7 +1,6 @@
 import connectDB from "@/db/connectDB";
 import User, { UserType } from "@/db/models/User";
 import "@/db/models/Organization";
-import Stripe from "stripe";
 import countriesData from "@/data/countries.json";
 
 export async function fetchUser(userId: string) {
@@ -42,21 +41,6 @@ export async function fetchTeamMembers(organizationId: string) {
   } catch (err) {
     const error = err as Error;
     return { teamMembers: null, error: error.message };
-  }
-}
-
-export async function fetchUserStripeAccount(stripeAccountId?: string) {
-  try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-    if (!stripeAccountId) throw new Error("Invalid account ID");
-    const account = JSON.parse(
-      JSON.stringify(await stripe.accounts.retrieve(stripeAccountId)),
-    );
-
-    return { account, error: null };
-  } catch (err) {
-    const error = err as Error;
-    return { account: null, error: error.message };
   }
 }
 
