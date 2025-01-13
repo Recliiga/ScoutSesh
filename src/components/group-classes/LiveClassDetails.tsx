@@ -56,9 +56,9 @@ export default function LiveClassDetails({
 
   const isLiveClassCoach = liveClass.coaches[0]._id === user._id;
 
-  const nextMeetingLink = isLiveClassCoach
-    ? liveClass.meetings?.[nextSessionIndex].start_url
-    : liveClass.meetings?.[nextSessionIndex].join_url;
+  // const nextMeetingLink = isLiveClassCoach
+  //   ? liveClass.meetings?.[nextSessionIndex].start_url
+  //   : liveClass.meetings?.[nextSessionIndex].join_url;
 
   const startTime = new Date();
   startTime.setHours(
@@ -169,12 +169,12 @@ export default function LiveClassDetails({
                 </div>
               )}
               {nextSession ? (
-                <Link href={nextMeetingLink || "#"} target="_blank">
-                  <Button className="mt-2 w-full flex-1 bg-green-500 text-white hover:bg-green-600">
-                    {isLiveClassCoach ? "Start" : "Join"} Virtual Session
-                  </Button>
-                </Link>
+                // <Link href={nextMeetingLink || "#"} target="_blank">
+                <Button className="mt-2 w-full flex-1 bg-green-500 text-white hover:bg-green-600">
+                  {isLiveClassCoach ? "Start" : "Join"} Virtual Session
+                </Button>
               ) : (
+                // </Link>
                 <div className="text-sm text-red-500">
                   All live sessions for this course have passed.
                 </div>
