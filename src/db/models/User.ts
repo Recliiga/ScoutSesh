@@ -21,6 +21,15 @@ export type PrimarySportType =
 export type UserRoleType = "Athlete" | "Assistant Coach" | "Head Coach";
 export type UserStatusType = "Active" | "Suspended" | "Banned";
 
+export type BankInformationType = {
+  accountName: string;
+  accountNumber: number;
+  routingNumber: number;
+  bankName: string;
+  createdAt: Date;
+  updatedAt: Date;
+} & mongoose.Document;
+
 export interface UserType extends mongoose.Document {
   _id: string;
   firstName: string;
@@ -41,11 +50,35 @@ export interface UserType extends mongoose.Document {
   emailVerified: boolean;
   zoomRefreshToken?: string;
   accountBalance: number;
+  bankInformations: BankInformationType[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-const UserSchema: mongoose.Schema = new mongoose.Schema(
+const BankInformationSchema: mongoose.Schema =
+  new mongoose.Schema<BankInformationType>(
+    {
+      accountName: {
+        type: String,
+        required: [true, "Please provide the account name"],
+      },
+      accountNumber: {
+        type: Number,
+        required: [true, "Please provide the account number"],
+      },
+      routingNumber: {
+        type: Number,
+        required: [true, "Please provide the routing number"],
+      },
+      bankName: {
+        type: String,
+        required: [true, "Please provide the bank name"],
+      },
+    },
+    { timestamps: true },
+  );
+
+const UserSchema: mongoose.Schema = new mongoose.Schema<UserType>(
   {
     firstName: {
       type: String,
@@ -67,7 +100,7 @@ const UserSchema: mongoose.Schema = new mongoose.Schema(
       default: "/placeholder-profile-picture.png",
     },
     role: { type: String, required: [true, "Please select a valid role"] },
-    DOB: { type: String },
+    DOB: { type: Date },
     city: { type: String },
     country: { name: String, iso2: String },
     primarySport: { type: String },
@@ -78,6 +111,7 @@ const UserSchema: mongoose.Schema = new mongoose.Schema(
     emailVerified: { type: Boolean, default: false },
     zoomRefreshToken: { type: String },
     accountBalance: { type: Number, default: 0 },
+    bankInformations: { type: [BankInformationSchema], default: [] },
     organization: { type: mongoose.SchemaTypes.ObjectId, ref: "Organization" },
   },
   { timestamps: true },
