@@ -40,6 +40,7 @@ export interface UserType extends mongoose.Document {
   profileCompleted: boolean;
   emailVerified: boolean;
   zoomRefreshToken?: string;
+  accountBalance: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -76,6 +77,7 @@ const UserSchema: mongoose.Schema = new mongoose.Schema(
     profileCompleted: { type: Boolean, default: false },
     emailVerified: { type: Boolean, default: false },
     zoomRefreshToken: { type: String },
+    accountBalance: { type: Number, default: 0 },
     organization: { type: mongoose.SchemaTypes.ObjectId, ref: "Organization" },
   },
   { timestamps: true },

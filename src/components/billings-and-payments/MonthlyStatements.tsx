@@ -10,9 +10,41 @@ import {
 } from "../ui/card";
 import Select from "../Select";
 import { Button } from "../ui/button";
+import { calculateMonthlyEarnings, getLast12Months } from "@/lib/utils";
+import { format } from "date-fns";
+import { TransactionType } from "@/app/dashboard/billings-and-payments/page";
 
-export default function MonthlyStatements() {
-  const [selectedMonth, setSelectedMonth] = React.useState("2023-10");
+export default function MonthlyStatements({
+  transactions,
+}: {
+  transactions: TransactionType[];
+}) {
+  const [selectedMonth, setSelectedMonth] = React.useState(
+    format(new Date().toDateString(), "LLLL yyyy"),
+  );
+
+  const last12Months = [...getLast12Months()].reverse();
+
+  const currentSelectedMonth = new Date(selectedMonth).getMonth();
+  const currentSelectedYear = new Date(selectedMonth).getFullYear();
+  const currentMonthEarnings = calculateMonthlyEarnings(
+    transactions,
+    currentSelectedMonth,
+    currentSelectedYear,
+  );
+
+  const totalTransactionsOnSelectedMonth = transactions.filter(
+    (transaction) => {
+      const transactionDate = new Date(transaction.purchaseDate);
+      return (
+        transactionDate.getMonth() === new Date(selectedMonth).getMonth() &&
+        transactionDate.getFullYear() === new Date(selectedMonth).getFullYear()
+      );
+    },
+  ).length;
+
+  const platFormFees = (20 / 100) * currentMonthEarnings;
+  const netEarnings = currentMonthEarnings - platFormFees;
 
   return (
     <Card className="mt-24">
@@ -31,11 +63,14 @@ export default function MonthlyStatements() {
             placeholder="Select month"
           >
             <Select.Content>
-              <Select.Option value="2023-12">December 2023</Select.Option>
-              <Select.Option value="2023-11">November 2023</Select.Option>
-              <Select.Option value="2023-10">October 2023</Select.Option>
-              <Select.Option value="2023-09">September 2023</Select.Option>
-              <Select.Option value="2023-08">August 2023</Select.Option>
+              {last12Months.map((month) => (
+                <Select.Option
+                  key={month.getMonth()}
+                  value={format(month, "LLLL yyyy")}
+                >
+                  {format(month, "LLLL yyyy")}
+                </Select.Option>
+              ))}
             </Select.Content>
           </Select>
           <Button>Download Statement</Button>
@@ -44,10 +79,10 @@ export default function MonthlyStatements() {
           <h3 className="mb-2 font-semibold">
             Statement Summary for {selectedMonth}
           </h3>
-          <p>Total Earnings: $7,800.00</p>
-          <p>Number of Projects: 12</p>
-          <p>Platform Fees: $780.00</p>
-          <p>Net Earnings: $7,020.00</p>
+          <p>Total Earnings: ${currentMonthEarnings.toFixed(2)}</p>
+          <p>Number of Transactions: {totalTransactionsOnSelectedMonth}</p>
+          <p>Platform Fees: ${platFormFees.toFixed(2)}</p>
+          <p>Net Earnings: ${netEarnings.toFixed(2)}</p>
         </div>
       </CardContent>
     </Card>

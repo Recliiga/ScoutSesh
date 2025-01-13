@@ -1,6 +1,7 @@
 import connectDB from "@/db/connectDB";
 import AthleteEvaluationOrder from "@/db/models/AthleteEvaluationOrder";
 import NotificationEntry from "@/db/models/NotificationEntry";
+import User from "@/db/models/User";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -27,21 +28,32 @@ export async function GET(req: NextRequest) {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     // Perform actions based on session details
-    const { payment_status } = session;
+    const { payment_status, amount_total } = session;
 
-    if (payment_status === "paid") {
+    if (payment_status === "paid" && amount_total) {
       // Update database and create notification for purchase
       await connectDB();
-      await AthleteEvaluationOrder.findByIdAndUpdate(evaluationOrderId, {
+
+      const hasOrder = await AthleteEvaluationOrder.findOne({
         stripeSessionId: sessionId,
       });
 
-      await NotificationEntry.create({
-        type: "evaluation",
-        fromUser: userId,
-        toUser: coachId,
-        link: "/dashboard/athlete-evaluation",
-      });
+      if (!hasOrder) {
+        await AthleteEvaluationOrder.findByIdAndUpdate(evaluationOrderId, {
+          stripeSessionId: sessionId,
+        });
+
+        await User.findByIdAndUpdate(coachId, {
+          $inc: { accountBalance: (amount_total / 100) * 0.8 },
+        });
+
+        await NotificationEntry.create({
+          type: "evaluation",
+          fromUser: userId,
+          toUser: coachId,
+          link: "/dashboard/athlete-evaluation",
+        });
+      }
 
       const url = new URL(
         "/dashboard/athlete-evaluation",
