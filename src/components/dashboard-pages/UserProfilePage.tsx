@@ -45,6 +45,12 @@ export default function UserProfilePage({
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [countrySearchQuery, setCountrySearchQuery] = useState("");
   const [citySearchQuery, setCitySearchQuery] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState(
+    new Date(user.DOB).getMonth(),
+  );
+  const [selectedYear, setSelectedYear] = useState(
+    new Date(user.DOB).getFullYear(),
+  );
   // const [zoomLoading, setZoomLoading] = useState(false);
   // const [zoomConnected, setZoomConnected] = useState(!!user.zoomRefreshToken);
 
@@ -60,8 +66,6 @@ export default function UserProfilePage({
     experience: user.experience,
     bio: user.bio,
     DOB: new Date(user.DOB).toString(),
-    selectedMonth: new Date(user.DOB).getMonth(),
-    selectedYear: new Date(user.DOB).getFullYear(),
   });
 
   async function handleUpdateUser() {
@@ -108,6 +112,8 @@ export default function UserProfilePage({
         );
       }
     });
+    setSelectedMonth(new Date(user.DOB).getMonth());
+    setSelectedYear(new Date(user.DOB).getFullYear());
     setIsEditing(false);
   }
 
@@ -237,9 +243,14 @@ export default function UserProfilePage({
                     />
                   </div>
                 ) : (
-                  <CardTitle className="text-3xl font-bold text-gray-800">
-                    {userData.firstName} {userData.lastName}
-                  </CardTitle>
+                  <div className="">
+                    <CardTitle className="text-3xl font-bold text-gray-800">
+                      {userData.firstName} {userData.lastName}
+                    </CardTitle>
+                    {isOwnProfile && (
+                      <p className="text-sm text-zinc-500">{userData.email}</p>
+                    )}
+                  </div>
                 )}
                 <p className="font-semibold text-[#14a800]">{userData.role}</p>
                 {user.organization && user.organization._id ? (
@@ -434,7 +445,7 @@ export default function UserProfilePage({
                           !formEntries.DOB && "text-muted-foreground",
                         )}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="mr- h-4 w-4" />
                         {formEntries.DOB ? (
                           format(formEntries.DOB, "PPP")
                         ) : (
@@ -447,12 +458,9 @@ export default function UserProfilePage({
                         <div className="flex justify-between p-3">
                           <select
                             disabled={loading}
-                            value={formEntries.selectedYear}
+                            value={selectedYear}
                             onChange={(e) =>
-                              updateField(
-                                "selectedYear",
-                                parseInt(e.target.value),
-                              )
+                              setSelectedYear(parseInt(e.target.value))
                             }
                             className="rounded border px-2 py-1"
                           >
@@ -467,12 +475,9 @@ export default function UserProfilePage({
                           </select>
                           <select
                             disabled={loading}
-                            value={formEntries.selectedMonth.toString()}
+                            value={selectedMonth.toString()}
                             onChange={(e) =>
-                              updateField(
-                                "selectedMonth",
-                                Number(e.target.value),
-                              )
+                              setSelectedMonth(Number(e.target.value))
                             }
                             className="rounded border px-2 py-1"
                           >
@@ -494,15 +499,10 @@ export default function UserProfilePage({
                             updateField("DOB", value.toString());
                             setCalendarOpen(false);
                           }}
-                          month={
-                            new Date(
-                              formEntries.selectedYear,
-                              formEntries.selectedMonth,
-                            )
-                          }
+                          month={new Date(selectedYear, selectedMonth)}
                           onMonthChange={(date) => {
-                            updateField("selectedMonth", date.getMonth());
-                            updateField("selectedYear", date.getFullYear());
+                            setSelectedMonth(date.getMonth());
+                            setSelectedYear(date.getFullYear());
                           }}
                           initialFocus
                         />

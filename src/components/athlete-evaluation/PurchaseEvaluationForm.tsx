@@ -89,12 +89,12 @@ export default function PurchaseEvaluationForm({
       ? true
       : includeVirtualConsultation;
 
-  const selectedPlanType = selectedProgram?.plan.standardPlans.find(
+  const selectedStandardPlan = selectedProgram?.plan.standardPlans.find(
     (plan) => plan.name === planType,
   );
 
-  const selectedPlanEvaluations = selectedPlanType
-    ? selectedPlanType.evaluations
+  const selectedPlanEvaluations = selectedStandardPlan
+    ? selectedStandardPlan.evaluations
     : evaluations;
 
   const customPlanPrices = selectedProgram?.plan.offerCustomPlan
@@ -108,17 +108,19 @@ export default function PurchaseEvaluationForm({
       )
     : [];
 
+  const selectedCustomPlan = customPlanPrices.find(
+    (plan) => plan.evaluations === selectedPlanEvaluations,
+  );
+
   const maxCustomEvaluations = Math.max(
     ...customPlanPrices.map((plan) => plan.evaluations),
   );
 
   const selectedPlanPrice =
     planType === "custom"
-      ? customPlanPrices.find(
-          (plan) => plan.evaluations === selectedPlanEvaluations,
-        )?.price || 0
-      : selectedPlanType
-        ? selectedPlanType.price
+      ? selectedCustomPlan?.price || 0
+      : selectedStandardPlan
+        ? selectedStandardPlan.price
         : 0;
 
   const virtualConsultationDuration = selectedProgram?.plan
@@ -398,7 +400,7 @@ export default function PurchaseEvaluationForm({
               </label>
               <DatePicker
                 pickerDisabled={
-                  !selectedPlanType && selectedPlanEvaluations <= 0
+                  !selectedStandardPlan && selectedPlanEvaluations <= 0
                 }
                 closeCalendar={() => setCalendarOpen(false)}
                 calendarOpen={calendarOpen}
@@ -446,7 +448,7 @@ export default function PurchaseEvaluationForm({
 
             {selectedProgram &&
               selectedProgram.plan.offerVirtualConsultation &&
-              selectedPlanType && (
+              (selectedStandardPlan || selectedCustomPlan) && (
                 <div className="mt-4 space-y-3 border-t pt-4">
                   <h3 className="text-lg font-semibold">
                     Online Virtual Athlete Evaluation Consultation Session
