@@ -1,7 +1,6 @@
 import connectDB from "@/db/connectDB";
 import GroupClassOrder from "@/db/models/GroupClassOrder";
 import NotificationEntry from "@/db/models/NotificationEntry";
-import User from "@/db/models/User";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -46,10 +45,6 @@ export async function GET(req: NextRequest) {
           user: userId,
           price: amount_total / 100,
           stripeSessionId: sessionId,
-        });
-
-        await User.findByIdAndUpdate(coachId, {
-          $inc: { accountBalance: (amount_total / 100) * 0.8 },
         });
 
         await NotificationEntry.create({

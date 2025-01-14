@@ -11,7 +11,6 @@ import {
 } from "../ui/card";
 import { Button } from "../ui/button";
 import Select from "../Select";
-import { UserType } from "@/db/models/User";
 
 export default function FundsWithdrawalForm() {
   const [selectedBankAccount, setSelectedBankAccount] = useState<string>();
