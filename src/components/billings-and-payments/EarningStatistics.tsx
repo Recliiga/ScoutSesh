@@ -23,7 +23,7 @@ export default function EarningStatistics({
         <CardTitle>Earnings Statistics</CardTitle>
         <CardDescription>Your earnings over the past 12 months</CardDescription>
       </CardHeader>
-      <CardContent className="p-4 pt-0 sm:p-6">
+      <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
         <div className="w-full">
           {monthlyEarnings.map((earning, index) => (
             <div key={index} className="mb-2 flex items-center">

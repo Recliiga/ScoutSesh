@@ -27,7 +27,7 @@ function calculateLastYearsEarnings(transactions: TransactionType[]) {
 }
 
 function calculateThisMonthsEarnings(transactions: TransactionType[]) {
-  const currentMonth = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
   return calculateMonthlyEarnings(transactions, currentMonth, currentYear);
 }
@@ -39,6 +39,16 @@ function calculateLastMonthsEarnings(transactions: TransactionType[]) {
   const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
 
   return calculateMonthlyEarnings(transactions, lastMonth, lastMonthYear);
+}
+
+function calculateUserBalance(transactions: TransactionType[]) {
+  return transactions.reduce(
+    (total, transaction) =>
+      total +
+      (transaction.price * (100 - (transaction.platformPercentage || 20))) /
+        100,
+    0,
+  );
 }
 
 export default function EarningsSummary({
@@ -62,10 +72,7 @@ export default function EarningsSummary({
       ? ((thisYearsEarnings - lastYearsEarnings) / lastYearsEarnings) * 100
       : 100;
 
-  const userAccountBalance = allOrders.reduce(
-    (total, transaction) => total + transaction.price,
-    0,
-  );
+  const userAccountBalance = calculateUserBalance(allOrders);
 
   return (
     <div className="grid gap-6 md:grid-cols-3">
@@ -74,7 +81,7 @@ export default function EarningsSummary({
           <CardTitle className="text-sm font-medium">Account Balance</CardTitle>
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
-        <CardContent className="p-4 pt-0 sm:p-6">
+        <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
           <div className="text-2xl font-bold">
             ${userAccountBalance.toFixed(2)}
           </div>
@@ -88,7 +95,7 @@ export default function EarningsSummary({
           </CardTitle>
           <BarChart className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
-        <CardContent className="p-4 pt-0 sm:p-6">
+        <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
           <div className="text-2xl font-bold">
             ${thisMonthsEarnings.toFixed(2)}
           </div>
@@ -102,7 +109,7 @@ export default function EarningsSummary({
           <CardTitle className="text-sm font-medium">Yearly Earnings</CardTitle>
           <PiggyBank className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
-        <CardContent className="p-4 pt-0 sm:p-6">
+        <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
           <div className="text-2xl font-bold">
             ${thisYearsEarnings.toFixed(2)}
           </div>

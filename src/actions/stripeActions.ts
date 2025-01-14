@@ -78,6 +78,7 @@ export async function createStripeCheckoutSession<
         ...productItem,
         coach: coachId,
         athlete: user._id,
+        platformPercentage: 20,
       });
 
       const successUrl = `${process.env.BASE_URL}/api/payment-success/athlete-evaluation?evaluation_order_id=${newOrder._id}&user_id=${user._id}&coach_id=${coachId}&session_id={CHECKOUT_SESSION_ID}`;

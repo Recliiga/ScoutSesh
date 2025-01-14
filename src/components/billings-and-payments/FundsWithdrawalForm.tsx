@@ -23,7 +23,7 @@ export default function FundsWithdrawalForm() {
           Transfer your earnings to your bank account
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-4 pt-0 sm:p-6">
+      <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
         <form className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="amount">Amount to Withdraw</Label>

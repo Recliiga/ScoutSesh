@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Card,
   CardTitle,
@@ -43,8 +43,18 @@ export default function MonthlyStatements({
     },
   ).length;
 
-  const platFormFees = (20 / 100) * currentMonthEarnings;
-  const netEarnings = currentMonthEarnings - platFormFees;
+  const platFormFees = useMemo(() => {
+    transactions.reduce(
+      (prev, curr) =>
+        prev + ((curr.platformPercentage || 20) * curr.price) / 100,
+      0,
+    );
+    return 0.8 * currentMonthEarnings;
+  }, [currentMonthEarnings, transactions]);
+
+  const netEarnings = useMemo(() => {
+    return currentMonthEarnings - platFormFees;
+  }, [currentMonthEarnings, platFormFees]);
 
   return (
     <Card className="mt-24">
@@ -54,7 +64,7 @@ export default function MonthlyStatements({
           View and download your monthly statements
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-4 pt-0 sm:p-6">
+      <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
         <div className="mb-4 flex flex-col gap-2 sm:flex-row">
           <Select
             value={selectedMonth}

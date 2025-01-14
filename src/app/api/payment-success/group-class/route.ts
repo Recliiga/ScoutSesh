@@ -45,6 +45,7 @@ export async function GET(req: NextRequest) {
           user: userId,
           price: amount_total / 100,
           stripeSessionId: sessionId,
+          platformPercentage: 20,
         });
 
         await NotificationEntry.create({

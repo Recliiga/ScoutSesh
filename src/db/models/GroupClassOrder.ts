@@ -10,7 +10,7 @@ export interface GroupClassOrderType extends mongoose.Document {
   price: number;
   stripeSessionId: string;
   platformPercentage: number;
-  referrerPercentage: number;
+  referrerPercentage?: number;
   createdAt: Date;
   updatedAt: Date;
 }

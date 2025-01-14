@@ -14,6 +14,8 @@ export type TransactionType = {
   _id: string;
   price: number;
   purchaseDate: Date;
+  platformPercentage: number;
+  referrerPercentage?: number;
 };
 
 function generateMonthlyEarnings(transactions: TransactionType[]) {
@@ -55,16 +57,20 @@ export default async function BillingsAndPaymentsPage() {
   const evaluationOrders = orders || [];
   const groupClassOrders = coachGroupClassOrders || [];
 
-  const allOrders = [
+  const allOrders: TransactionType[] = [
     ...evaluationOrders.map((order) => ({
       _id: order._id,
       price: order.totalPrice,
       purchaseDate: order.createdAt,
+      platformPercentage: order.platformPercentage,
+      referrerPercentage: order.referrerPercentage,
     })),
     ...groupClassOrders.map((order) => ({
       _id: order._id,
       price: order.price,
       purchaseDate: order.createdAt,
+      platformPercentage: order.platformPercentage,
+      referrerPercentage: order.referrerPercentage,
     })),
   ];
 
