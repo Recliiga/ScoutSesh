@@ -27,7 +27,12 @@ export default function FundsWithdrawalForm() {
         <form className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="amount">Amount to Withdraw</Label>
-            <Input id="amount" placeholder="Enter amount" type="number" />
+            <Input
+              id="amount"
+              placeholder="Enter amount"
+              type="number"
+              min={0}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="bank">Select Bank Account</Label>
@@ -42,21 +47,6 @@ export default function FundsWithdrawalForm() {
                 </Select.Option>
               </Select.Content>
             </Select>
-
-            {/* <Select>
-              <SelectTrigger id="bank2">
-                <SelectValue placeholder="Select bank account" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="bank1">
-                  Bank of America - Checking ****1234
-                </SelectItem>
-                <SelectItem value="bank2">Chase - Savings ****5678</SelectItem>
-                <SelectItem value="bank3">
-                  Wells Fargo - Checking ****9012
-                </SelectItem>
-              </SelectContent>
-            </Select> */}
           </div>
           <Button className="w-full border border-input bg-background text-foreground transition-colors hover:bg-green-600 hover:text-white">
             Withdraw Funds

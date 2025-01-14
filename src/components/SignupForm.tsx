@@ -6,6 +6,54 @@ import { useSearchParams } from "next/navigation";
 import Error from "./AuthError";
 import LoadingIndicator from "./LoadingIndicator";
 import useFormEntries from "@/hooks/useFormEntries";
+import Select from "./Select";
+import { SearchIcon } from "lucide-react";
+
+const stripeSupportedCountries = [
+  { name: "Argentina", iso2: "AR" },
+  { name: "Australia", iso2: "AU" },
+  { name: "Austria", iso2: "AT" },
+  { name: "Belgium", iso2: "BE" },
+  { name: "Brazil", iso2: "BR" },
+  { name: "Canada", iso2: "CA" },
+  { name: "Chile", iso2: "CL" },
+  { name: "Colombia", iso2: "CO" },
+  { name: "Czech Republic", iso2: "CZ" },
+  { name: "Denmark", iso2: "DK" },
+  { name: "Estonia", iso2: "EE" },
+  { name: "Finland", iso2: "FI" },
+  { name: "France", iso2: "FR" },
+  { name: "Germany", iso2: "DE" },
+  { name: "Hong Kong", iso2: "HK" },
+  { name: "Hungary", iso2: "HU" },
+  { name: "India", iso2: "IN" },
+  { name: "Indonesia", iso2: "ID" },
+  { name: "Ireland", iso2: "IE" },
+  { name: "Italy", iso2: "IT" },
+  { name: "Japan", iso2: "JP" },
+  { name: "Latvia", iso2: "LV" },
+  { name: "Lithuania", iso2: "LT" },
+  { name: "Luxembourg", iso2: "LU" },
+  { name: "Malaysia", iso2: "MY" },
+  { name: "Mexico", iso2: "MX" },
+  { name: "Netherlands", iso2: "NL" },
+  { name: "New Zealand", iso2: "NZ" },
+  { name: "Norway", iso2: "NO" },
+  { name: "Philippines", iso2: "PH" },
+  { name: "Poland", iso2: "PL" },
+  { name: "Portugal", iso2: "PT" },
+  { name: "Romania", iso2: "RO" },
+  { name: "Singapore", iso2: "SG" },
+  { name: "Slovakia", iso2: "SK" },
+  { name: "Slovenia", iso2: "SI" },
+  { name: "South Africa", iso2: "ZA" },
+  { name: "Spain", iso2: "ES" },
+  { name: "Sweden", iso2: "SE" },
+  { name: "Switzerland", iso2: "CH" },
+  { name: "United Kingdom", iso2: "GB" },
+  { name: "United States", iso2: "US" },
+  { name: "Vietnam", iso2: "VN" },
+];
 
 export default function SignupForm({ orgId }: { orgId: string }) {
   const searchParams = useSearchParams();
@@ -17,6 +65,9 @@ export default function SignupForm({ orgId }: { orgId: string }) {
   const [signupError, setSignupError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const [country, setCountry] = useState({ name: "", iso2: "" });
+  const [countrySearchQuery, setCountrySearchQuery] = useState("");
+
   const { formEntries, updateField } = useFormEntries({
     firstName: "",
     lastName: "",
@@ -26,12 +77,34 @@ export default function SignupForm({ orgId }: { orgId: string }) {
     role: orgId ? "Athlete" : "",
   });
 
-  const emptyField = Object.entries(formEntries).some(([key, value]) =>
-    key !== "organizationID" ? value.trim() === "" : false,
-  );
+  const emptyField =
+    Object.entries(formEntries).some(([key, value]) =>
+      key !== "organizationID" ? value.trim() === "" : false,
+    ) || !country.iso2.trim();
   const anyError = !!(emailError || passwordError || confirmPasswordError);
 
   const cannotSubmit = emptyField || anyError;
+
+  const filteredCountries = stripeSupportedCountries.filter(
+    (country) =>
+      country.name
+        .toLowerCase()
+        .includes(countrySearchQuery.toLowerCase().trim()) ||
+      country.iso2
+        .toLowerCase()
+        .includes(countrySearchQuery.toLowerCase().trim()),
+  );
+
+  function updateCountryField(countryISO2: string) {
+    const selectedCountry = stripeSupportedCountries.find(
+      (country) => country.iso2 === countryISO2,
+    );
+    if (!selectedCountry) return;
+    setCountry({
+      name: selectedCountry.name,
+      iso2: countryISO2,
+    });
+  }
 
   const runValidationCheck = useCallback(() => {
     if (formEntries.password && formEntries.password.length < 8) {
@@ -70,8 +143,7 @@ export default function SignupForm({ orgId }: { orgId: string }) {
     setSignupError("");
     setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const data = await signup(formData, redirectUrl);
+    const data = await signup({ ...formEntries, country }, redirectUrl);
 
     if (data?.error) {
       setSignupError(data?.error);
@@ -111,6 +183,37 @@ export default function SignupForm({ orgId }: { orgId: string }) {
               value={formEntries["lastName"]}
               onChange={(e) => updateField("lastName", e.target.value)}
             />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium" htmlFor="country">
+            Country
+          </label>
+          <div className="relative">
+            <Select
+              value={country.iso2}
+              onChange={(value) => updateCountryField(value)}
+              placeholder="Select Country"
+            >
+              <Select.Content className="px-0 pt-0">
+                <div className="sticky top-0 flex items-center border-b bg-white px-2">
+                  <SearchIcon className="h-4 w-4 text-zinc-400" />
+                  <input
+                    type="text"
+                    placeholder="Search Countries"
+                    className="w-full p-2"
+                    value={countrySearchQuery}
+                    onChange={(e) => setCountrySearchQuery(e.target.value)}
+                  />
+                </div>
+                {filteredCountries.map((country) => (
+                  <Select.Option value={country.iso2} key={country.iso2}>
+                    {country.name}
+                  </Select.Option>
+                ))}
+              </Select.Content>
+            </Select>
           </div>
         </div>
 

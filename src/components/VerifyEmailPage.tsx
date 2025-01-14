@@ -187,7 +187,7 @@ export default function VerifyEmailPage({ user }: { user: UserType }) {
             >
               {codeLoading ? (
                 <>
-                  <LoadingIndicator /> Getting code...
+                  <LoadingIndicator /> Sending code...
                 </>
               ) : (
                 "Get code"

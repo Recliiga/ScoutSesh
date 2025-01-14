@@ -27,7 +27,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { format } from "date-fns";
-import { scheduleMeeting, updateClass } from "@/actions/groupClassActions";
+import { updateClass } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
 import Image from "next/image";
 import placeholderThumbnail from "@/assets/placeholder-thumbnail.png";
@@ -39,22 +39,16 @@ import {
 } from "@/lib/utils";
 import LoadingIndicator from "../LoadingIndicator";
 import { nanoid } from "nanoid";
-import {
-  GroupClassType,
-  MeetingType,
-  RepeatFrequencyType,
-} from "@/db/models/GroupClass";
+import { GroupClassType, RepeatFrequencyType } from "@/db/models/GroupClass";
 import Error from "../AuthError";
 import BackButton from "../dashboard/BackButton";
 
 export default function EditClassForm({
   course,
   assistantCoaches,
-  user,
 }: {
   course: GroupClassType;
   assistantCoaches: UserType[];
-  user: UserType;
 }) {
   const [title, setTitle] = useState(course.title || "");
   const [description, setDescription] = useState(course.description || "");
@@ -241,46 +235,46 @@ export default function EditClassForm({
     setLoading((prev) => ({ ...prev, status: true }));
     setError("");
 
-    let meetings: MeetingType[] | undefined = undefined;
+    // let meetings: MeetingType[] | undefined = undefined;
 
-    if (courseType === "live") {
-      if (!user.zoomRefreshToken || !startDate || !endDate) return;
+    // if (courseType === "live") {
+    //   if (!startDate || !endDate) return;
 
-      setLoading({ message: "Scheduling Meetings", status: true });
+    //   setLoading({ message: "Scheduling Meetings", status: true });
 
-      const dates = repeatFrequency
-        ? getDatesBetween(startDate, endDate, repeatFrequency)
-        : [startDate];
+    //   const dates = repeatFrequency
+    //     ? getDatesBetween(startDate, endDate, repeatFrequency)
+    //     : [startDate];
 
-      const meetingDates = dates.filter(
-        (meetingDate) =>
-          !course.meetings?.some((meeting) => {
-            meetingDate.setHours(Number(startTime.hours));
-            meetingDate.setMinutes(Number(startTime.mins));
-            return (
-              new Date(meeting.start_time).toLocaleString("en-US", {
-                timeZone: meeting.timezone,
-              }) === meetingDate.toLocaleString("en-US", { timeZone: "GMT" })
-            );
-          }),
-      );
+    //   const meetingDates = dates.filter(
+    //     (meetingDate) =>
+    //       !course.meetings?.some((meeting) => {
+    //         meetingDate.setHours(Number(startTime.hours));
+    //         meetingDate.setMinutes(Number(startTime.mins));
+    //         return (
+    //           new Date(meeting.start_time).toLocaleString("en-US", {
+    //             timeZone: meeting.timezone,
+    //           }) === meetingDate.toLocaleString("en-US", { timeZone: "GMT" })
+    //         );
+    //       }),
+    //   );
 
-      if (meetingDates.length > 0) {
-        const { data, error } = await scheduleMeeting(
-          title,
-          startTime,
-          duration === "custom" ? Number(customDuration) : Number(duration),
-          meetingDates,
-          user.zoomRefreshToken!,
-          user._id,
-        );
-        if (error === null) {
-          meetings = data;
-        }
-      } else {
-        meetings = course.meetings;
-      }
-    }
+    //   if (meetingDates.length > 0) {
+    //     const { data, error } = await scheduleMeeting(
+    //       title,
+    //       startTime,
+    //       duration === "custom" ? Number(customDuration) : Number(duration),
+    //       meetingDates,
+    //       user.zoomRefreshToken!,
+    //       user._id,
+    //     );
+    //     if (error === null) {
+    //       meetings = data;
+    //     }
+    //   } else {
+    //     meetings = course.meetings;
+    //   }
+    // }
 
     const classData = {
       user: course.user,
@@ -298,7 +292,6 @@ export default function EditClassForm({
       repeatFrequency,
       totalSpots: Number(totalSpots) || 0,
       skillLevels,
-      meetings,
       videos: videoLessons.map((vid) => ({
         title: vid.title,
         duration: vid.duration,

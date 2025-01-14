@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import Stripe from "stripe";
 
 const errorMessages = {
   firstName: "Please enter your First name",
@@ -67,26 +68,24 @@ export async function login(formData: FormData, redirectUrl: string) {
   }
 }
 
-export async function signup(formData: FormData, redirectUrl: string) {
-  const cookieStore = await cookies();
-  const role = formData.get("role");
-  let canRedirect = false;
+type UserDataType = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: string;
+  country: { name: string; iso2: string };
+};
 
-  const userData = {
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
-    email: formData.get("email"),
-    password: formData.get("password") as string,
-    role,
-    organization: formData.get("organization"),
-  };
+export async function signup(userData: UserDataType, redirectUrl: string) {
+  const cookieStore = await cookies();
+  let canRedirect = false;
 
   try {
     // Run validation
     Object.entries(userData).forEach(([key, value]) => {
       if (!value) {
-        if (key !== "organization")
-          return { error: errorMessages[key as keyof typeof errorMessages] };
+        return { error: errorMessages[key as keyof typeof errorMessages] };
       }
     });
 
@@ -97,11 +96,34 @@ export async function signup(formData: FormData, redirectUrl: string) {
     // Encrypt password
     const encryptedPassword = await bcrypt.hash(userData.password, 10);
 
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2024-12-18.acacia",
+    });
+
+    let stripeAccount: Stripe.Response<Stripe.Account> | null = null;
+
+    if (userData.role === "Head Coach") {
+      // Create stripe account for user
+      stripeAccount = await stripe.accounts.create({
+        type: "express",
+        country: userData.country.iso2,
+        email: userData.email,
+        capabilities: {
+          card_payments: { requested: true },
+          transfers: { requested: true },
+        },
+      });
+    }
+
+    if (!stripeAccount)
+      return { error: "An error occurred creating stripe account" };
+
     // Create new user
     await connectDB();
     const newUser = await User.create({
       ...userData,
       password: encryptedPassword,
+      stripeAccountId: stripeAccount.id,
     });
 
     // Create access token and store in cookie
@@ -120,7 +142,7 @@ export async function signup(formData: FormData, redirectUrl: string) {
       return { error: "User with email already exists" };
     }
     console.log({ error: error.message });
-    return { error: "An unexpected error occured" };
+    return { error: error.message };
   } finally {
     if (canRedirect)
       redirect(

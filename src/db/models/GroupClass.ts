@@ -147,7 +147,7 @@ const GroupClassSchema = new mongoose.Schema<GroupClassType>(
     duration: { type: Number },
     customDuration: { type: Number },
     videos: { type: [VideoSchema], default: [] },
-    meetings: { type: [MeetingDetailsSchema] },
+    meetings: { type: [MeetingDetailsSchema], default: [] },
   },
   { timestamps: true },
 );
