@@ -13,6 +13,7 @@ import { Button } from "../ui/button";
 import { UserType } from "@/db/models/User";
 import { saveAccountInformation } from "@/actions/userActions";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 const initialAccountInformation = {
   accountName: "",
@@ -21,7 +22,13 @@ const initialAccountInformation = {
   routingNumber: "",
 };
 
-export default function AccountInformationForm({ user }: { user: UserType }) {
+export default function AccountInformationForm({
+  user,
+  stripeAccountVerified,
+}: {
+  user: UserType;
+  stripeAccountVerified: boolean;
+}) {
   const [accountInformation, setAccountInformation] = useState(
     initialAccountInformation,
   );
@@ -57,81 +64,95 @@ export default function AccountInformationForm({ user }: { user: UserType }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <Label htmlFor="accountName">Account Holder Name</Label>
-            <Input
-              id="accountName"
-              value={accountName}
-              onChange={(e) =>
-                setAccountInformation({
-                  ...accountInformation,
-                  accountName: e.target.value,
-                })
-              }
-              placeholder="Enter account holder name"
-              className="text-sm"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="accountNumber">Account Number</Label>
-            <Input
-              id="accountNumber"
-              value={accountNumber}
-              onChange={(e) => {
-                if (isNaN(Number(e.target.value))) return;
-                setAccountInformation({
-                  ...accountInformation,
-                  accountNumber: e.target.value,
-                });
-              }}
-              inputMode="numeric"
-              placeholder="Enter account number"
-              className="text-sm"
-              type="text"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="routingNumber">Routing Number</Label>
-            <Input
-              id="routingNumber"
-              value={routingNumber}
-              onChange={(e) => {
-                if (isNaN(Number(e.target.value))) return;
-                setAccountInformation({
-                  ...accountInformation,
-                  routingNumber: e.target.value,
-                });
-              }}
-              inputMode="numeric"
-              type="text"
-              placeholder="Enter routing number"
-              className="text-sm"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="bankName">Bank Name</Label>
-            <Input
-              id="bankName"
-              value={bankName}
-              onChange={(e) =>
-                setAccountInformation({
-                  ...accountInformation,
-                  bankName: e.target.value,
-                })
-              }
-              placeholder="Enter bank name"
-              className="text-sm"
-              required
-            />
-          </div>
-          <Button className="w-full border border-input bg-background text-foreground transition-colors hover:bg-green-600 hover:text-white">
-            Save Bank Information
-          </Button>
-        </form>
+        {!stripeAccountVerified ? (
+          <p className="text-sm text-muted-foreground">
+            Please complete your KYC onboarding in order to add a withdrawal
+            account. You can do this on your{" "}
+            <Link
+              href="/dashboard/profile"
+              className="text-accent-green-100 hover:underline"
+            >
+              profile page
+            </Link>
+            .
+          </p>
+        ) : (
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <Label htmlFor="accountName">Account Holder Name</Label>
+              <Input
+                id="accountName"
+                value={accountName}
+                onChange={(e) =>
+                  setAccountInformation({
+                    ...accountInformation,
+                    accountName: e.target.value,
+                  })
+                }
+                placeholder="Enter account holder name"
+                className="text-sm"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="accountNumber">Account Number</Label>
+              <Input
+                id="accountNumber"
+                value={accountNumber}
+                onChange={(e) => {
+                  if (isNaN(Number(e.target.value))) return;
+                  setAccountInformation({
+                    ...accountInformation,
+                    accountNumber: e.target.value,
+                  });
+                }}
+                inputMode="numeric"
+                placeholder="Enter account number"
+                className="text-sm"
+                type="text"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="routingNumber">Routing Number</Label>
+              <Input
+                id="routingNumber"
+                value={routingNumber}
+                onChange={(e) => {
+                  if (isNaN(Number(e.target.value))) return;
+                  setAccountInformation({
+                    ...accountInformation,
+                    routingNumber: e.target.value,
+                  });
+                }}
+                inputMode="numeric"
+                type="text"
+                placeholder="Enter routing number"
+                className="text-sm"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="bankName">Bank Name</Label>
+              <Input
+                id="bankName"
+                value={bankName}
+                onChange={(e) =>
+                  setAccountInformation({
+                    ...accountInformation,
+                    bankName: e.target.value,
+                  })
+                }
+                placeholder="Enter bank name"
+                className="text-sm"
+                required
+              />
+            </div>
+            <Button className="w-full border border-input bg-background text-foreground transition-colors hover:bg-green-600 hover:text-white">
+              Save Bank Information
+            </Button>
+          </form>
+        )}
       </CardContent>
     </Card>
   );

@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import Stripe from "stripe";
 
 export async function completeProfile(
   userData: {
@@ -180,5 +181,47 @@ export async function saveAccountInformation(
     const error = err as Error;
     console.log("Error saving account information: ", error.message);
     return { error: error.message };
+  }
+}
+
+export async function createStripeConnectUrl(stripeAccountId: string) {
+  let accountLinkUrl;
+  try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    const accountLink = await stripe.accountLinks.create({
+      account: stripeAccountId,
+      refresh_url: `${process.env.BASE_URL}/dashboard/profile`,
+      return_url: `${process.env.BASE_URL}/dashboard/profile`,
+      type: "account_onboarding",
+    });
+
+    accountLinkUrl = accountLink.url;
+  } catch (err) {
+    const error = err as Error;
+    console.log({ error: error.message });
+    return { error: "An Error occured connecting stripe" };
+  } finally {
+    if (accountLinkUrl) redirect(accountLinkUrl);
+  }
+}
+
+export async function createStripeUpdateUrl(stripeAccountId: string) {
+  let accountLinkUrl;
+  try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    const accountLink = await stripe.accountLinks.create({
+      account: stripeAccountId,
+      refresh_url: `${process.env.BASE_URL}/dashboard/profile`,
+      return_url: `${process.env.BASE_URL}/dashboard/profile`,
+      type: "account_update",
+    });
+
+    accountLinkUrl = accountLink.url;
+  } catch (err) {
+    const error = err as Error;
+    console.log({ error: error.message });
+    return { error: "An Error occured connecting stripe" };
+  } finally {
+    if (accountLinkUrl) redirect(accountLinkUrl);
   }
 }

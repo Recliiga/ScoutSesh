@@ -25,15 +25,16 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import useClickOutside from "@/hooks/useClickOutside";
-import { CountryDataType } from "@/services/userServices";
+import ConnectStripeButton from "../ConnectStripeButton";
 
 export default function UserProfilePage({
   user,
   isOwnProfile,
+  stripeAccountVerified,
 }: {
   user: UserType;
   isOwnProfile: boolean;
-  countries: CountryDataType[];
+  stripeAccountVerified: boolean;
 }) {
   const [userData, setUserData] = useState<UserType>(user);
   const [loading, setLoading] = useState(false);
@@ -211,7 +212,15 @@ export default function UserProfilePage({
                     )}
                   </div>
                 )}
-                <p className="font-semibold text-[#14a800]">{userData.role}</p>
+                <p className="text-sm font-semibold text-[#14a800]">
+                  {userData.role}
+                </p>
+                {isOwnProfile && (
+                  <ConnectStripeButton
+                    stripeAccountId={user.stripeAccountId}
+                    stripeAccountVerified={stripeAccountVerified}
+                  />
+                )}
                 {user.organization && user.organization._id ? (
                   <div className="mt-2 w-fit">
                     <Link

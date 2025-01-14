@@ -9,6 +9,7 @@ import AccountInformationForm from "@/components/billings-and-payments/AccountIn
 import FundsWithdrawalForm from "@/components/billings-and-payments/FundsWithdrawalForm";
 import EarningStatistics from "@/components/billings-and-payments/EarningStatistics";
 import EarningsSummary from "@/components/billings-and-payments/EarningsSummary";
+import { fetchUserStripeAccount } from "@/services/userServices";
 
 export type TransactionType = {
   _id: string;
@@ -45,6 +46,11 @@ function generateMonthlyEarnings(transactions: TransactionType[]) {
 
 export default async function BillingsAndPaymentsPage() {
   const user = await getSessionFromHeaders();
+
+  const { stripeAccount } = await fetchUserStripeAccount(user.stripeAccountId);
+  const stripeAccountVerified = stripeAccount
+    ? stripeAccount.requirements?.currently_due?.length === 0
+    : false;
 
   const { orders, error } = await fetchCoachEvaluationOrders(user._id);
   if (error !== null) toast.error("An error occured fetching data");
@@ -86,9 +92,12 @@ export default async function BillingsAndPaymentsPage() {
 
       <MonthlyStatements transactions={allOrders} />
 
-      <AccountInformationForm user={user} />
+      <AccountInformationForm
+        user={user}
+        stripeAccountVerified={stripeAccountVerified}
+      />
 
-      <FundsWithdrawalForm />
+      <FundsWithdrawalForm stripeAccountVerified={stripeAccountVerified} />
     </main>
   );
 }

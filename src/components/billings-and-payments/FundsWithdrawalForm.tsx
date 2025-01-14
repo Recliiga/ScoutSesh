@@ -11,8 +11,13 @@ import {
 } from "../ui/card";
 import { Button } from "../ui/button";
 import Select from "../Select";
+import Link from "next/link";
 
-export default function FundsWithdrawalForm() {
+export default function FundsWithdrawalForm({
+  stripeAccountVerified,
+}: {
+  stripeAccountVerified: boolean;
+}) {
   const [selectedBankAccount, setSelectedBankAccount] = useState<string>();
 
   return (
@@ -24,34 +29,48 @@ export default function FundsWithdrawalForm() {
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-        <form className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="amount">Amount to Withdraw</Label>
-            <Input
-              id="amount"
-              placeholder="Enter amount"
-              type="number"
-              min={0}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="bank">Select Bank Account</Label>
-            <Select
-              onChange={(value) => setSelectedBankAccount(value)}
-              placeholder="Select bank account"
-              value={selectedBankAccount}
+        {!stripeAccountVerified ? (
+          <p className="text-sm text-muted-foreground">
+            Please complete your KYC onboarding in order to request a
+            withdrawal. You can do this on your{" "}
+            <Link
+              href="/dashboard/profile"
+              className="text-accent-green-100 hover:underline"
             >
-              <Select.Content>
-                <Select.Option value="bank2">
-                  Bank of America - Checking ****1234
-                </Select.Option>
-              </Select.Content>
-            </Select>
-          </div>
-          <Button className="w-full border border-input bg-background text-foreground transition-colors hover:bg-green-600 hover:text-white">
-            Withdraw Funds
-          </Button>
-        </form>
+              profile page
+            </Link>
+            .
+          </p>
+        ) : (
+          <form className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="amount">Amount to Withdraw</Label>
+              <Input
+                id="amount"
+                placeholder="Enter amount"
+                type="number"
+                min={0}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="bank">Select Bank Account</Label>
+              <Select
+                onChange={(value) => setSelectedBankAccount(value)}
+                placeholder="Select bank account"
+                value={selectedBankAccount}
+              >
+                <Select.Content>
+                  <Select.Option value="bank2">
+                    Bank of America - Checking ****1234
+                  </Select.Option>
+                </Select.Content>
+              </Select>
+            </div>
+            <Button className="w-full border border-input bg-background text-foreground transition-colors hover:bg-green-600 hover:text-white">
+              Withdraw Funds
+            </Button>
+          </form>
+        )}
       </CardContent>
     </Card>
   );

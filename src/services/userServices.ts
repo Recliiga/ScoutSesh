@@ -3,6 +3,7 @@ import User, { UserType } from "@/db/models/User";
 import "@/db/models/Organization";
 
 import stripeCountries from "@/data/stripe-countries.json";
+import Stripe from "stripe";
 
 export async function fetchUser(userId: string) {
   try {
@@ -42,6 +43,19 @@ export async function fetchTeamMembers(organizationId: string) {
   } catch (err) {
     const error = err as Error;
     return { teamMembers: null, error: error.message };
+  }
+}
+
+export async function fetchUserStripeAccount(stripeAccountId?: string) {
+  if (!stripeAccountId) throw new Error("Invalid stripe account ID");
+  try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    const stripeAccount = await stripe.accounts.retrieve(stripeAccountId);
+
+    return { stripeAccount, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { stripeAccount: null, error: error.message };
   }
 }
 

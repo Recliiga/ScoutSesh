@@ -1,14 +1,21 @@
 import { getSessionFromHeaders } from "@/services/authServices";
 import React from "react";
 import UserProfilePage from "@/components/dashboard-pages/UserProfilePage";
-import { fetchCountries } from "@/services/userServices";
+import { fetchUserStripeAccount } from "@/services/userServices";
 
 export default async function ProfilePage() {
   const user = await getSessionFromHeaders();
 
-  const countries = await fetchCountries();
+  const { stripeAccount } = await fetchUserStripeAccount(user.stripeAccountId);
+  const stripeAccountVerified = stripeAccount
+    ? stripeAccount.requirements?.currently_due?.length === 0
+    : false;
 
   return (
-    <UserProfilePage user={user} isOwnProfile={true} countries={countries} />
+    <UserProfilePage
+      user={user}
+      isOwnProfile={true}
+      stripeAccountVerified={stripeAccountVerified}
+    />
   );
 }
