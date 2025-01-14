@@ -9,6 +9,8 @@ export interface GroupClassOrderType extends mongoose.Document {
   completedLessons: VideoType[];
   price: number;
   stripeSessionId: string;
+  platformPercentage: number;
+  referrerPercentage: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,6 +34,14 @@ const GroupClassOrderSchema = new mongoose.Schema<GroupClassOrderType>(
     price: {
       type: Number,
       required: [true, "Please provide the amount for the course"],
+    },
+    platformPercentage: {
+      type: Number,
+      required: [true, "Please provide the platform percentage for the course"],
+    },
+    referrerPercentage: {
+      type: Number,
+      default: 0,
     },
     stripeSessionId: {
       type: String,

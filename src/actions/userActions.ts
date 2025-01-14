@@ -121,3 +121,29 @@ export async function disconnectZoom(userId: string) {
     return { error: error.message };
   }
 }
+
+export async function saveAccountInformation(
+  userId: string,
+  accountInformation: {
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
+    routingNumber: string;
+  },
+) {
+  console.log({ userId, accountInformation });
+  try {
+    // await connectDB();
+    // const updatedUser = await User.findByIdAndUpdate(userId, {
+    //   accountInformation,
+    // });
+    // if (!updatedUser) throw new Error("Error updating account information");
+
+    // revalidatePath("/dashboard/billings-and-payments");
+    return { error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error saving account information: ", error.message);
+    return { error: error.message };
+  }
+}

@@ -22,6 +22,7 @@ export type UserRoleType = "Athlete" | "Assistant Coach" | "Head Coach";
 export type UserStatusType = "Active" | "Suspended" | "Banned";
 
 export type BankInformationType = {
+  _id: string;
   accountName: string;
   accountNumber: number;
   routingNumber: number;
@@ -49,34 +50,9 @@ export interface UserType extends mongoose.Document {
   profileCompleted: boolean;
   emailVerified: boolean;
   zoomRefreshToken?: string;
-  accountBalance: number;
-  bankInformations: BankInformationType[];
   createdAt: Date;
   updatedAt: Date;
 }
-
-const BankInformationSchema: mongoose.Schema =
-  new mongoose.Schema<BankInformationType>(
-    {
-      accountName: {
-        type: String,
-        required: [true, "Please provide the account name"],
-      },
-      accountNumber: {
-        type: Number,
-        required: [true, "Please provide the account number"],
-      },
-      routingNumber: {
-        type: Number,
-        required: [true, "Please provide the routing number"],
-      },
-      bankName: {
-        type: String,
-        required: [true, "Please provide the bank name"],
-      },
-    },
-    { timestamps: true },
-  );
 
 const UserSchema: mongoose.Schema = new mongoose.Schema<UserType>(
   {
@@ -110,8 +86,6 @@ const UserSchema: mongoose.Schema = new mongoose.Schema<UserType>(
     profileCompleted: { type: Boolean, default: false },
     emailVerified: { type: Boolean, default: false },
     zoomRefreshToken: { type: String },
-    accountBalance: { type: Number, default: 0 },
-    bankInformations: { type: [BankInformationSchema], default: [] },
     organization: { type: mongoose.SchemaTypes.ObjectId, ref: "Organization" },
   },
   { timestamps: true },

@@ -23,7 +23,7 @@ export default function MonthlyStatements({
     format(new Date().toDateString(), "LLLL yyyy"),
   );
 
-  const last12Months = [...getLast12Months()].reverse();
+  const last12Months = getLast12Months();
 
   const currentSelectedMonth = new Date(selectedMonth).getMonth();
   const currentSelectedYear = new Date(selectedMonth).getFullYear();
@@ -48,18 +48,18 @@ export default function MonthlyStatements({
 
   return (
     <Card className="mt-24">
-      <CardHeader>
+      <CardHeader className="p-4 sm:p-6">
         <CardTitle>Monthly Statements</CardTitle>
         <CardDescription>
           View and download your monthly statements
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="mb-4 flex space-x-2">
+      <CardContent className="p-4 pt-0 sm:p-6">
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row">
           <Select
             value={selectedMonth}
             onChange={setSelectedMonth}
-            containerClassName="w-[180px]"
+            containerClassName="min-w-[180px]"
             placeholder="Select month"
           >
             <Select.Content>
@@ -75,14 +75,31 @@ export default function MonthlyStatements({
           </Select>
           <Button>Download Statement</Button>
         </div>
-        <div className="rounded border p-4">
+        <div className="rounded border p-3 text-sm sm:p-4 sm:text-base">
           <h3 className="mb-2 font-semibold">
             Statement Summary for {selectedMonth}
           </h3>
-          <p>Total Earnings: ${currentMonthEarnings.toFixed(2)}</p>
-          <p>Number of Transactions: {totalTransactionsOnSelectedMonth}</p>
-          <p>Platform Fees: ${platFormFees.toFixed(2)}</p>
-          <p>Net Earnings: ${netEarnings.toFixed(2)}</p>
+          <p>
+            Total Earnings:{" "}
+            <span className="font-semibold">
+              ${currentMonthEarnings.toFixed(2)}
+            </span>
+          </p>
+
+          <p>
+            Number of Transactions:{" "}
+            <span className="font-semibold">
+              {totalTransactionsOnSelectedMonth}
+            </span>
+          </p>
+          <p>
+            Platform Fees:{" "}
+            <span className="font-semibold">${platFormFees.toFixed(2)}</span>
+          </p>
+          <p>
+            Net Earnings:{" "}
+            <span className="font-semibold">${netEarnings.toFixed(2)}</span>
+          </p>
         </div>
       </CardContent>
     </Card>

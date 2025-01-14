@@ -61,7 +61,7 @@ export default function Select({
         <div
           tabIndex={0}
           onClick={toggleShowOptions}
-          className={`line-clamp-1 w-full rounded-md border px-3 py-2 pr-8 ring-accent-black duration-200 hover:bg-accent-gray-100 focus-visible:ring-1 ${disabled ? "bg-accent-gray-100" : ""} ${Boolean(childComponent || value) ? "" : "text-accent-gray-300"} ${className}`}
+          className={`w-full overflow-hidden overflow-ellipsis whitespace-nowrap rounded-md border px-3 py-2 pr-8 ring-accent-black duration-200 hover:bg-accent-gray-100 focus-visible:ring-1 ${disabled ? "bg-accent-gray-100" : ""} ${Boolean(childComponent || value) ? "" : "text-accent-gray-300"} ${className}`}
           style={{ cursor: disabled ? "default" : "pointer" }}
           onKeyDown={(e) => {
             if (e.code === "Enter" || e.code === "Space") {

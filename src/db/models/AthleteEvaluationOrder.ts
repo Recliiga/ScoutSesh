@@ -27,6 +27,8 @@ export type AthleteEvaluationOrderType = {
   athlete: UserType;
   coach: UserType;
   stripeSessionId?: string;
+  platformPercentage: number;
+  referrerPercentage: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -65,6 +67,17 @@ const AthleteEvaluationOrderSchema =
         required: [true, "Please select the evaluation date"],
       },
       totalPrice: { type: Number, required: [true, "Invalid price"] },
+      platformPercentage: {
+        type: Number,
+        required: [
+          true,
+          "Please provide the platform percentage for the course",
+        ],
+      },
+      referrerPercentage: {
+        type: Number,
+        default: 0,
+      },
       athlete: {
         type: mongoose.SchemaTypes.ObjectId,
         required: [true, "Please provide a valid athlete ID"],
