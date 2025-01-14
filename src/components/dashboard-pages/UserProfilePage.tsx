@@ -14,7 +14,6 @@ import {
   CheckCircle,
   CalendarIcon,
   CameraIcon,
-  SearchIcon,
 } from "lucide-react";
 import { PrimarySportType, UserType } from "@/db/models/User";
 import { cn, getFullname, uploadImageClient } from "@/lib/utils";
@@ -26,13 +25,11 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import useClickOutside from "@/hooks/useClickOutside";
-import Select from "../Select";
 import { CountryDataType } from "@/services/userServices";
 
 export default function UserProfilePage({
   user,
   isOwnProfile,
-  countries,
 }: {
   user: UserType;
   isOwnProfile: boolean;
@@ -43,8 +40,6 @@ export default function UserProfilePage({
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [countrySearchQuery, setCountrySearchQuery] = useState("");
-  const [citySearchQuery, setCitySearchQuery] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(
     new Date(user.DOB).getMonth(),
   );
@@ -103,14 +98,10 @@ export default function UserProfilePage({
 
   function cancelEditing() {
     Object.keys(formEntries).forEach((key) => {
-      if (key === "country") {
-        updateCountryField(userData.country.iso2);
-      } else {
-        updateField(
-          key as keyof typeof formEntries,
-          userData[key as keyof UserType],
-        );
-      }
+      updateField(
+        key as keyof typeof formEntries,
+        userData[key as keyof UserType],
+      );
     });
     setSelectedMonth(new Date(user.DOB).getMonth());
     setSelectedYear(new Date(user.DOB).getFullYear());
@@ -145,38 +136,6 @@ export default function UserProfilePage({
   //   }
   //   setZoomLoading(false);
   // }
-
-  const filteredCountries = countries.filter(
-    (country) =>
-      country.country
-        .toLowerCase()
-        .includes(countrySearchQuery.toLowerCase().trim()) ||
-      country.iso2
-        .toLowerCase()
-        .includes(countrySearchQuery.toLowerCase().trim()),
-  );
-
-  const cities =
-    countries.find((country) => country.iso2 === formEntries.country.iso2)
-      ?.cities || [];
-
-  const filteredCities = cities
-    .filter((city) =>
-      city.toLowerCase().includes(citySearchQuery.toLowerCase().trim()),
-    )
-    .slice(0, 100);
-
-  function updateCountryField(countryISO2: string) {
-    const countryName = countries.find(
-      (country) => country.iso2 === countryISO2,
-    );
-    updateField("country", {
-      name: countryName?.country || "",
-      iso2: countryISO2,
-    });
-    updateField("city", "");
-    setCountrySearchQuery("");
-  }
 
   return (
     <main className="flex-1 bg-gray-50 py-4">
@@ -311,73 +270,23 @@ export default function UserProfilePage({
               <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                 <MapPinIcon className="h-5 w-5 text-[#14a800]" />
                 <span className="text-sm text-gray-600">Country:</span>
-                {isEditing ? (
-                  <Select
-                    value={formEntries.country.iso2}
-                    defaultChild={formEntries.country.name}
-                    onChange={(value) => updateCountryField(value)}
-                    placeholder="Select Country"
-                    containerClassName="w-full"
-                  >
-                    <Select.Content className="px-0 pt-0">
-                      <div className="sticky top-0 flex items-center border-b px-2">
-                        <SearchIcon className="h-4 w-4 text-zinc-400" />
-                        <input
-                          type="text"
-                          placeholder="Search Countries"
-                          className="w-full p-2"
-                          value={countrySearchQuery}
-                          onChange={(e) =>
-                            setCountrySearchQuery(e.target.value)
-                          }
-                        />
-                      </div>
-                      {filteredCountries.map((country) => (
-                        <Select.Option value={country.iso2} key={country.iso2}>
-                          {country.country}
-                        </Select.Option>
-                      ))}
-                    </Select.Content>
-                  </Select>
-                ) : (
-                  <span className="font-medium text-gray-800">
-                    {userData.country.name}
-                  </span>
-                )}
+                <span className="font-medium text-gray-800">
+                  {userData.country.name}
+                </span>
               </div>
               <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                 <MapPinIcon className="h-5 w-5 text-[#14a800]" />
                 <span className="text-sm text-gray-600">City:</span>
                 {isEditing ? (
-                  <Select
+                  <input
+                    type="text"
+                    disabled={loading}
+                    placeholder="e.g New York"
+                    name="city"
                     value={formEntries.city}
-                    defaultChild={formEntries.city}
-                    onChange={(value) => {
-                      updateField("city", value);
-                      setCitySearchQuery("");
-                    }}
-                    placeholder="Select City"
-                    containerClassName="w-full"
-                    key={formEntries.country.iso2}
-                  >
-                    <Select.Content className="px-0 pt-0">
-                      <div className="flex items-center border-b px-2">
-                        <SearchIcon className="h-4 w-4 text-zinc-400" />
-                        <input
-                          type="text"
-                          placeholder="Search Cities"
-                          className="sticky top-0 w-full p-2"
-                          value={citySearchQuery}
-                          onChange={(e) => setCitySearchQuery(e.target.value)}
-                        />
-                      </div>
-                      {filteredCities.map((city, index) => (
-                        <Select.Option value={city} key={index}>
-                          {city}
-                        </Select.Option>
-                      ))}
-                    </Select.Content>
-                  </Select>
+                    onChange={(e) => updateField("city", e.target.value)}
+                    className="w-full flex-1 rounded-md border px-4 py-2 text-sm disabled:bg-accent-gray-100"
+                  />
                 ) : (
                   <span className="font-medium text-gray-800">
                     {userData.city}

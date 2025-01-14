@@ -10,7 +10,7 @@ export default async function SignupPage({
 }) {
   const orgId = (await searchParams).orgId || "";
 
-  const { countries } = await fetchCountries();
+  const countries = await fetchCountries();
 
   return (
     <Suspense fallback={<SignupFormFallback />}>

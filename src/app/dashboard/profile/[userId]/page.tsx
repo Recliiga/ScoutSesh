@@ -16,7 +16,7 @@ export default async function ProfilePage({
   const { user: profileUser, error } = await fetchUser(userId);
   if (error !== null) notFound();
 
-  const { countries } = await fetchCountries();
+  const countries = await fetchCountries();
 
   return (
     <UserProfilePage

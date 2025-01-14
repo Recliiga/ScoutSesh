@@ -1,50 +1,38 @@
-import mongoose, { Connection } from "mongoose";
+import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI as string;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error(
-    "Please define the MONGODB_URI environment variable in .env.local",
-  );
+  throw new Error("Please define the MONGODB_URI environment variable");
 }
 
-// Define the global type for caching the connection
-declare global {
-  const mongoose: {
-    conn: Connection | null;
-    promise: Promise<typeof mongoose> | null;
-  };
-}
-
-// Use a global variable to store the connection
-// @ts-expect-error Property 'mongoose' does not exist on type 'typeof globalThis'
+// @ts-expect-error typeof globalThis' has no index signature
 let cached = global.mongoose;
 
 if (!cached) {
-  // @ts-expect-error Property 'mongoose' does not exist on type 'typeof globalThis'
+  // @ts-expect-error typeof globalThis' has no index signature
   cached = global.mongoose = { conn: null, promise: null };
 }
 
-export default async function connectDB(): Promise<typeof mongoose> {
+async function dbConnect() {
   if (cached.conn) {
-    // Use the cached connection if it exists
     return cached.conn;
   }
 
   if (!cached.promise) {
-    const options = {
+    const opts = {
       bufferCommands: false,
     };
 
-    // Create a new connection promise
     cached.promise = mongoose
-      .connect(MONGODB_URI, options)
-      .then((mongooseInstance) => {
-        return mongooseInstance;
+      .connect(process.env.MONGODB_URI!, opts)
+      .then((mongoose) => {
+        return mongoose;
       });
   }
 
-  // Await the promise and cache the connection
   cached.conn = await cached.promise;
   return cached.conn;
 }
+
+export default dbConnect;

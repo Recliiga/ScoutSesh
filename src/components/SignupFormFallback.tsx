@@ -4,24 +4,24 @@ export default function SignupFormFallback() {
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       <div className="flex flex-col gap-4">
-        <div className="gap-4 grid grid-cols-2">
+        <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-2">
-            <label className="font-medium text-sm" htmlFor="firstName">
+            <label className="text-sm font-medium" htmlFor="firstName">
               First name
             </label>
             <input
-              className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
+              className="rounded-md border px-3 py-2 text-sm ring-accent-gray-200 ring-offset-2 focus-visible:ring-2"
               id="firstName"
               name="firstName"
               required
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label className="font-medium text-sm" htmlFor="lastName">
+            <label className="text-sm font-medium" htmlFor="lastName">
               Last name
             </label>
             <input
-              className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
+              className="rounded-md border px-3 py-2 text-sm ring-accent-gray-200 ring-offset-2 focus-visible:ring-2"
               id="lastName"
               name="lastName"
               required
@@ -29,11 +29,11 @@ export default function SignupFormFallback() {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <label className="font-medium text-sm" htmlFor="email">
+          <label className="text-sm font-medium" htmlFor="email">
             Email
           </label>
           <input
-            className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
+            className="rounded-md border px-3 py-2 text-sm ring-accent-gray-200 ring-offset-2 focus-visible:ring-2"
             id="email"
             name="email"
             placeholder="name@example.com"
@@ -42,11 +42,11 @@ export default function SignupFormFallback() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label className="font-medium text-sm" htmlFor="password">
+          <label className="text-sm font-medium" htmlFor="password">
             Password (8+ characters)
           </label>
           <input
-            className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
+            className="rounded-md border px-3 py-2 text-sm ring-accent-gray-200 ring-offset-2 focus-visible:ring-2"
             id="password"
             name="password"
             required
@@ -55,11 +55,11 @@ export default function SignupFormFallback() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label className="font-medium text-sm" htmlFor="confirmPassword">
+          <label className="text-sm font-medium" htmlFor="confirmPassword">
             Confirm Password
           </label>
           <input
-            className="px-3 py-2 border rounded-md ring-accent-gray-200 focus-visible:ring-2 ring-offset-2 text-sm"
+            className="rounded-md border px-3 py-2 text-sm ring-accent-gray-200 ring-offset-2 focus-visible:ring-2"
             id="confirmPassword"
             required
             type="password"
@@ -67,22 +67,22 @@ export default function SignupFormFallback() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label className="font-medium text-sm" htmlFor="role">
+          <label className="text-sm font-medium" htmlFor="role">
             Role
           </label>
           <div className="relative">
             <select
               id="role"
               name="role"
-              className="border-gray-300 bg-white py-2 pr-10 pl-3 border focus:border-blue-500 rounded-md focus:ring-1 focus:ring-blue-500 w-full text-sm leading-5 appearance-none focus:outline-none"
+              className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               required
             >
               <option disabled>Select a role</option>
               <option value={"Athlete"}>Athlete</option>
               <option value={"Head Coach"}>Head Coach</option>
-              <option value={"Assistant Coach"}>Assistant Coach</option>
+              {/* <option value={"Assistant Coach"}>Assistant Coach</option> */}
             </select>
-            <div className="right-0 absolute inset-y-0 flex items-center px-2 text-gray-700 pointer-events-none">
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
               <svg
                 height={20}
                 width={20}
@@ -111,7 +111,7 @@ export default function SignupFormFallback() {
           </div>
         </div>
         <button
-          className="flex-center bg-accent-green-100 hover:bg-accent-green-100/90 disabled:bg-accent-green-100/50 px-4 py-2 rounded-md w-full font-medium text-sm text-white disabled:cursor-not-allowed"
+          className="flex-center w-full rounded-md bg-accent-green-100 px-4 py-2 text-sm font-medium text-white hover:bg-accent-green-100/90 disabled:cursor-not-allowed disabled:bg-accent-green-100/50"
           type="submit"
           disabled
         >

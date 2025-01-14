@@ -22,7 +22,7 @@ export default async function TeamMembersPage() {
   if (error !== null) throw new Error(error);
   if (journalError !== null) throw new Error(journalError);
 
-  if (user.role === "Athlete" || user.role === "Assistant Coach") {
+  if (user.role !== "Head Coach") {
     return (
       <AthleteTeamMembersPage
         organizationMembers={teamMembers}

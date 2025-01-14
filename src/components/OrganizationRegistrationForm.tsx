@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2, SearchIcon } from "lucide-react";
 import { resizeImage, uploadImageClient } from "@/lib/utils";
 import Image from "next/image";
-import { createOrganization } from "@/actions/authActions";
-import { useRouter, useSearchParams } from "next/navigation";
+import { createOrganization } from "@/actions/organizationActions";
+import { useSearchParams } from "next/navigation";
 import Error from "./AuthError";
 import useFormEntries from "@/hooks/useFormEntries";
 import Select from "./Select";
@@ -39,13 +39,10 @@ export default function OrganizationRegistrationForm({
   userId: string;
   countries: CountryDataType[];
 }) {
-  const router = useRouter();
-
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>();
   const [imageError, setImageError] = useState<string | null>(null);
   const [countrySearchQuery, setCountrySearchQuery] = useState("");
-  const [citySearchQuery, setCitySearchQuery] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -64,7 +61,7 @@ export default function OrganizationRegistrationForm({
 
   const filteredCountries = countries.filter(
     (country) =>
-      country.country
+      country.name
         .toLowerCase()
         .includes(countrySearchQuery.toLowerCase().trim()) ||
       country.iso2
@@ -72,20 +69,14 @@ export default function OrganizationRegistrationForm({
         .includes(countrySearchQuery.toLowerCase().trim()),
   );
 
-  const cities =
-    countries.find((country) => country.iso2 === formEntries.country.iso2)
-      ?.cities || [];
-
-  const filteredCities = cities.filter((city) =>
-    city.toLowerCase().includes(citySearchQuery.toLowerCase().trim()),
-  );
-
   function updateCountryField(countryISO2: string) {
-    const countryName = countries.find(
+    const selectedCountry = countries.find(
       (country) => country.iso2 === countryISO2,
     );
+    if (!selectedCountry) return;
+
     updateField("country", {
-      name: countryName?.country || "",
+      name: selectedCountry.name || "",
       iso2: countryISO2,
     });
     updateField("city", "");
@@ -150,12 +141,11 @@ export default function OrganizationRegistrationForm({
     }
     organizationData.logo = url;
 
-    const { error } = await createOrganization(organizationData);
-    setError(error);
-    if (!error) {
-      router.replace(redirectUrl);
+    const data = await createOrganization(organizationData, redirectUrl);
+    if (data?.error) {
+      setError(error);
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
@@ -285,7 +275,7 @@ export default function OrganizationRegistrationForm({
               placeholder="Select Country"
             >
               <Select.Content className="px-0 pt-0">
-                <div className="sticky top-0 flex items-center border-b px-2">
+                <div className="sticky top-0 flex items-center border-b bg-white px-2">
                   <SearchIcon className="h-4 w-4 text-zinc-400" />
                   <input
                     type="text"
@@ -297,7 +287,7 @@ export default function OrganizationRegistrationForm({
                 </div>
                 {filteredCountries.map((country) => (
                   <Select.Option value={country.iso2} key={country.iso2}>
-                    {country.country}
+                    {country.name}
                   </Select.Option>
                 ))}
               </Select.Content>
@@ -306,33 +296,11 @@ export default function OrganizationRegistrationForm({
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="city">City</Label>
-          <div className="relative">
-            <Select
-              value={formEntries.city}
-              onChange={(value) => updateField("city", value)}
-              placeholder="Select City"
-              disabled={!formEntries.country}
-              key={formEntries.country.name}
-            >
-              <Select.Content>
-                <div className="flex items-center border-b px-2">
-                  <SearchIcon className="h-4 w-4 text-zinc-400" />
-                  <input
-                    type="text"
-                    placeholder="Search Cities"
-                    className="sticky top-0 w-full p-2"
-                    value={citySearchQuery}
-                    onChange={(e) => setCitySearchQuery(e.target.value)}
-                  />
-                </div>
-                {filteredCities.map((city, index) => (
-                  <Select.Option value={city} key={index}>
-                    {city}
-                  </Select.Option>
-                ))}
-              </Select.Content>
-            </Select>
-          </div>
+          <Input
+            value={formEntries.city}
+            placeholder="e.g. New York"
+            onChange={(e) => updateField("city", e.target.value)}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="primarySport">Primary Sport</Label>

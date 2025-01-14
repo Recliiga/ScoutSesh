@@ -1,7 +1,8 @@
 import connectDB from "@/db/connectDB";
 import User, { UserType } from "@/db/models/User";
 import "@/db/models/Organization";
-import countriesData from "@/data/countries.json";
+
+import stripeCountries from "@/data/stripe-countries.json";
 
 export async function fetchUser(userId: string) {
   try {
@@ -46,17 +47,9 @@ export async function fetchTeamMembers(organizationId: string) {
 
 export type CountryDataType = {
   iso2: string;
-  iso3: string;
-  country: string;
-  cities: string[];
+  name: string;
 };
 
 export async function fetchCountries() {
-  try {
-    return { countries: countriesData.data, error: null };
-  } catch (err) {
-    const error = err as Error;
-    console.log("Error fetching countries: ", error.message);
-    return { countries: [], error: error.message };
-  }
+  return stripeCountries;
 }

@@ -8,6 +8,41 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+export async function completeProfile(
+  userData: {
+    firstName: string;
+    lastName: string;
+    role: string;
+    DOB: string;
+    profilePicture: string;
+    city: string;
+    primarySport: string;
+    experience: string;
+    bio: string;
+  },
+  redirectUrl: string,
+) {
+  let canRedirect = false;
+  try {
+    const cookieStore = await cookies();
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) throw new Error(authError);
+
+    // Update user's profile
+    await connectDB();
+    const data = await User.findByIdAndUpdate(userId, {
+      ...userData,
+      profileCompleted: true,
+    });
+    if (!data) throw new Error("An error occured");
+    canRedirect = true;
+  } catch (error) {
+    return { error: (error as Error).message };
+  } finally {
+    if (canRedirect) redirect(redirectUrl);
+  }
+}
+
 export async function joinTeam(organizationId: string, coachId: string) {
   let redirectUrl;
   try {

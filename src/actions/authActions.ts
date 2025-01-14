@@ -1,9 +1,7 @@
 "use server";
 
 import connectDB from "@/db/connectDB";
-import Organization from "@/db/models/Organization";
 import User, { UserType } from "@/db/models/User";
-import { getUserIdFromCookies } from "@/lib/utils";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { revalidatePath } from "next/cache";
@@ -102,6 +100,10 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
 
     let stripeAccount: Stripe.Response<Stripe.Account> | null = null;
 
+    // Check if user exists
+    const userExists = await User.find({ email: userData.email });
+    if (userExists) return { error: "User with email already exists" };
+
     if (userData.role === "Head Coach") {
       // Create stripe account for user
       stripeAccount = await stripe.accounts.create({
@@ -137,11 +139,6 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
   } catch (err) {
     const error = err as Error;
 
-    // Handle Error for duplicate Email
-    if (error.name === "MongoServerError" && error.message.includes("E11000")) {
-      return { error: "User with email already exists" };
-    }
-    console.log({ error: error.message });
     return { error: error.message };
   } finally {
     if (canRedirect)
@@ -150,70 +147,6 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
           ? "/verify-email"
           : `/verify-email?redirect=${redirectUrl}`,
       );
-  }
-}
-
-export async function createOrganization(organizationData: {
-  name: string;
-  logo: string;
-  type: string;
-  memberCount: string;
-  city: string;
-  country: { name: string; iso2: string };
-  primarySport: string;
-  yearFounded: string;
-  bio: string;
-}) {
-  try {
-    const cookieStore = await cookies();
-
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
-    if (authError !== null) throw new Error(authError);
-
-    // Create new organization and bind to user's profile
-    await connectDB();
-    const newOrganization = await Organization.create({
-      ...organizationData,
-      user: userId,
-    });
-    const data = await User.findByIdAndUpdate(userId, {
-      organization: newOrganization._id,
-    });
-    if (!data) throw new Error("An error occured");
-
-    return { error: null };
-  } catch (error) {
-    return { error: (error as Error).message };
-  }
-}
-
-export async function completeProfile(userData: {
-  firstName: string;
-  lastName: string;
-  role: string;
-  DOB: string;
-  profilePicture: string;
-  city: string;
-  country: { name: string; iso2: string };
-  primarySport: string;
-  experience: string;
-  bio: string;
-}) {
-  try {
-    const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
-    if (authError !== null) throw new Error(authError);
-
-    // Update user's profile
-    await connectDB();
-    const data = await User.findByIdAndUpdate(userId, {
-      ...userData,
-      profileCompleted: true,
-    });
-    if (!data) throw new Error("An error occured");
-    return { error: null };
-  } catch (error) {
-    return { error: (error as Error).message };
   }
 }
 

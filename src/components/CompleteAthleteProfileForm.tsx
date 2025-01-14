@@ -10,8 +10,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn, resizeImage, uploadImageClient } from "@/lib/utils";
 import Image from "next/image";
-import { completeProfile } from "@/actions/authActions";
-import { useRouter, useSearchParams } from "next/navigation";
+import { completeProfile } from "@/actions/userActions";
+import { useSearchParams } from "next/navigation";
 import Error from "./AuthError";
 import useFormEntries from "@/hooks/useFormEntries";
 import Select from "./Select";
@@ -44,13 +44,13 @@ export default function CompleteAthleteProfileForm({
   user: UserType;
   countries: CountryDataType[];
 }) {
-  const router = useRouter();
-
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>();
   const [calendarRef] = useClickOutside(() => setCalendarOpen(false));
   const [imageError, setImageError] = useState<string | null>(null);
+
+  const [countrySearchQuery, setCountrySearchQuery] = useState("");
 
   const { formEntries, updateField } = useFormEntries({
     userId: user._id,
@@ -58,46 +58,39 @@ export default function CompleteAthleteProfileForm({
     firstName: user.firstName,
     lastName: user.lastName,
     role: user.role,
-    selectedMonth: new Date().getMonth(),
-    selectedYear: new Date().getFullYear(),
-    DOB: "",
+    selectedMonth: user.DOB
+      ? new Date(user.DOB).getMonth()
+      : new Date().getMonth(),
+    selectedYear: user.DOB
+      ? new Date(user.DOB).getFullYear()
+      : new Date().getFullYear(),
+    DOB: user.DOB ? new Date(user.DOB).toDateString() : "",
     profilePicture: user.profilePicture || "",
     city: user.city || "",
     country: user.country || { name: "", iso2: "" },
     primarySport: user.primarySport || "",
-    experience: user.experience.toString() || "",
+    experience: user.experience?.toString() || "",
     bio: user.bio || "",
-
-    countrySearchQuery: "",
-    citySearchQuery: "",
   });
 
   const filteredCountries = countries.filter(
     (country) =>
-      country.country
+      country.name
         .toLowerCase()
-        .includes(formEntries.countrySearchQuery.toLowerCase().trim()) ||
+        .includes(countrySearchQuery.toLowerCase().trim()) ||
       country.iso2
         .toLowerCase()
-        .includes(formEntries.countrySearchQuery.toLowerCase().trim()),
-  );
-
-  const cities =
-    countries.find((country) => country.iso2 === formEntries.country.iso2)
-      ?.cities || [];
-
-  const filteredCities = cities.filter((city) =>
-    city
-      .toLowerCase()
-      .includes(formEntries.citySearchQuery.toLowerCase().trim()),
+        .includes(countrySearchQuery.toLowerCase().trim()),
   );
 
   function updateCountryField(countryISO2: string) {
-    const countryName = countries.find(
+    const selectedCountry = countries.find(
       (country) => country.iso2 === countryISO2,
     );
+    if (!selectedCountry) return;
+
     updateField("country", {
-      name: countryName?.country || "",
+      name: selectedCountry.name || "",
       iso2: countryISO2,
     });
     updateField("city", "");
@@ -111,7 +104,7 @@ export default function CompleteAthleteProfileForm({
   const cannotSubmit =
     Object.values(formEntries).some(
       (value) => value.toString().trim() === "",
-    ) || formEntries.country.name.trim() === "";
+    ) || formEntries.country.iso2.trim() === "";
 
   async function handleChangeImage(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -142,7 +135,6 @@ export default function CompleteAthleteProfileForm({
       DOB: formEntries.DOB,
       profilePicture: formEntries.profilePicture,
       city: formEntries.city,
-      country: formEntries.country,
       primarySport: formEntries.primarySport,
       experience: formEntries.experience,
       bio: formEntries.bio,
@@ -159,13 +151,11 @@ export default function CompleteAthleteProfileForm({
     }
     userData.profilePicture = url;
 
-    const { error } = await completeProfile(userData);
-    if (!error) {
-      router.replace(redirectUrl);
+    const data = await completeProfile(userData, redirectUrl);
+    if (data?.error) {
+      setError(error);
+      setLoading(false);
     }
-
-    setError(error);
-    setLoading(false);
   }
 
   return (
@@ -179,7 +169,8 @@ export default function CompleteAthleteProfileForm({
             <Image
               src={formEntries.profilePicture}
               alt="Profile"
-              layout="fill"
+              fill
+              sizes="128px"
               className="object-cover"
             />
           ) : (
@@ -272,7 +263,7 @@ export default function CompleteAthleteProfileForm({
               ) : (
                 <>
                   <option value={"Athlete"}>Athlete</option>
-                  <option value={"Assistant Coach"}>Assistant Coach</option>
+                  {/* <option value={"Assistant Coach"}>Assistant Coach</option> */}
                 </>
               )}
             </select>
@@ -361,23 +352,23 @@ export default function CompleteAthleteProfileForm({
               value={formEntries.country.iso2}
               onChange={(value) => updateCountryField(value)}
               placeholder="Select Country"
+              defaultChild={formEntries.country.name}
+              disabled
             >
               <Select.Content className="px-0 pt-0">
-                <div className="sticky top-0 flex items-center border-b px-2">
+                <div className="sticky top-0 flex items-center border-b bg-white px-2">
                   <SearchIcon className="h-4 w-4 text-zinc-400" />
                   <input
                     type="text"
                     placeholder="Search Countries"
                     className="w-full p-2"
-                    value={formEntries.countrySearchQuery}
-                    onChange={(e) =>
-                      updateField("countrySearchQuery", e.target.value)
-                    }
+                    value={countrySearchQuery}
+                    onChange={(e) => setCountrySearchQuery(e.target.value)}
                   />
                 </div>
                 {filteredCountries.map((country) => (
                   <Select.Option value={country.iso2} key={country.iso2}>
-                    {country.country}
+                    {country.name}
                   </Select.Option>
                 ))}
               </Select.Content>
@@ -386,35 +377,11 @@ export default function CompleteAthleteProfileForm({
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="city">City</Label>
-          <div className="relative">
-            <Select
-              value={formEntries.city}
-              onChange={(value) => updateField("city", value)}
-              placeholder="Select City"
-              disabled={!formEntries.country}
-              key={formEntries.country.name}
-            >
-              <Select.Content>
-                <div className="flex items-center border-b px-2">
-                  <SearchIcon className="h-4 w-4 text-zinc-400" />
-                  <input
-                    type="text"
-                    placeholder="Search Cities"
-                    className="sticky top-0 w-full p-2"
-                    value={formEntries.citySearchQuery}
-                    onChange={(e) =>
-                      updateField("citySearchQuery", e.target.value)
-                    }
-                  />
-                </div>
-                {filteredCities.map((city, index) => (
-                  <Select.Option value={city} key={index}>
-                    {city}
-                  </Select.Option>
-                ))}
-              </Select.Content>
-            </Select>
-          </div>
+          <Input
+            value={formEntries.city}
+            placeholder="e.g. New York"
+            onChange={(e) => updateField("city", e.target.value)}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="primarySport">Primary Sport</Label>

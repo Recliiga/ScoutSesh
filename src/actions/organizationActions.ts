@@ -4,6 +4,46 @@ import Organization, { OrganizationType } from "@/db/models/Organization";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
 
+export async function createOrganization(
+  organizationData: {
+    name: string;
+    logo: string;
+    type: string;
+    memberCount: string;
+    city: string;
+    country: { name: string; iso2: string };
+    primarySport: string;
+    yearFounded: string;
+    bio: string;
+  },
+  redirectUrl: string,
+) {
+  let canRedirect = false;
+  try {
+    const cookieStore = await cookies();
+
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) throw new Error(authError);
+
+    // Create new organization and bind to user's profile
+    await connectDB();
+    const newOrganization = await Organization.create({
+      ...organizationData,
+      user: userId,
+    });
+    const data = await User.findByIdAndUpdate(userId, {
+      organization: newOrganization._id,
+    });
+    if (!data) throw new Error("An error occured");
+
+    canRedirect = true;
+  } catch (error) {
+    return { error: (error as Error).message };
+  } finally {
+    if (canRedirect) redirect(redirectUrl);
+  }
+}
+
 export async function fetchOrganization(organizationId?: string) {
   if (!organizationId) return { organization: null, error: null };
   try {
