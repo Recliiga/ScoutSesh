@@ -12,13 +12,51 @@ import {
 import { Button } from "../ui/button";
 import Select from "../Select";
 import Link from "next/link";
+import { requestWithdrawal } from "@/actions/stripeActions";
+import toast from "react-hot-toast";
+import Error from "../AuthError";
 
 export default function FundsWithdrawalForm({
+  stripeAccountId,
   stripeAccountVerified,
+  accountInformationList,
+  accountBalance,
 }: {
+  stripeAccountId?: string;
   stripeAccountVerified: boolean;
+  accountInformationList: {
+    id: string;
+    bankName: string;
+    accountNumber: string;
+  }[];
+  accountBalance: number;
 }) {
   const [selectedBankAccount, setSelectedBankAccount] = useState<string>();
+  const [amount, setAmount] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleRequestWithdrawal(e: React.FormEvent) {
+    e.preventDefault();
+    if (isNaN(Number(amount)) || !stripeAccountId) return;
+
+    if (Number(amount) > accountBalance) {
+      setError("Withdrawal amount exceeds account balance.");
+      return;
+    }
+
+    if (!selectedBankAccount) {
+      setError("Please select a bank account to withdraw funds.");
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await requestWithdrawal(Number(amount), stripeAccountId);
+    if (error) {
+      toast.error(error);
+    }
+    setLoading(false);
+  }
 
   return (
     <Card>
@@ -42,14 +80,17 @@ export default function FundsWithdrawalForm({
             .
           </p>
         ) : (
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleRequestWithdrawal}>
             <div className="space-y-2">
               <Label htmlFor="amount">Amount to Withdraw</Label>
               <Input
                 id="amount"
                 placeholder="Enter amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
                 type="number"
                 min={0}
+                autoComplete="off"
               />
             </div>
             <div className="space-y-2">
@@ -60,14 +101,20 @@ export default function FundsWithdrawalForm({
                 value={selectedBankAccount}
               >
                 <Select.Content>
-                  <Select.Option value="bank2">
-                    Bank of America - Checking ****1234
-                  </Select.Option>
+                  {accountInformationList.map((accountInfo) => (
+                    <Select.Option value="bank2" key={accountInfo.id}>
+                      {accountInfo.bankName} {accountInfo.accountNumber}
+                    </Select.Option>
+                  ))}
                 </Select.Content>
               </Select>
             </div>
-            <Button className="w-full border border-input bg-background text-foreground transition-colors hover:bg-green-600 hover:text-white">
-              Withdraw Funds
+            {error && <Error error={error} />}
+            <Button
+              disabled={loading || !amount}
+              className="w-full border border-input bg-background text-foreground transition-colors hover:bg-green-600 hover:text-white"
+            >
+              {loading ? "Processing..." : "Withdraw Funds"}
             </Button>
           </form>
         )}

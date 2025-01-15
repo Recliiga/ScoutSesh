@@ -368,7 +368,7 @@ export default function CreateClassForm({
           <Textarea
             id="description"
             name="description"
-            rows={4}
+            rows={6}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe your course..."
@@ -534,7 +534,7 @@ export default function CreateClassForm({
               <Input
                 id="startTime"
                 name="startTime"
-                min={"10:00"}
+                // min={"10:00"}
                 value={`${startTime.hours}:${startTime.mins}`}
                 onChange={(e) => {
                   const hours = e.target.value.split(":")[0];

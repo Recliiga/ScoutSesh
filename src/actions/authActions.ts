@@ -101,7 +101,7 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
     let stripeAccount: Stripe.Response<Stripe.Account> | null = null;
 
     // Check if user exists
-    const userExists = await User.find({ email: userData.email });
+    const userExists = await User.findOne({ email: userData.email });
     if (userExists) return { error: "User with email already exists" };
 
     if (userData.role === "Head Coach") {
@@ -115,17 +115,17 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
           transfers: { requested: true },
         },
       });
-    }
 
-    if (!stripeAccount)
-      return { error: "An error occurred creating stripe account" };
+      if (!stripeAccount)
+        return { error: "An error occurred creating stripe account" };
+    }
 
     // Create new user
     await connectDB();
     const newUser = await User.create({
       ...userData,
       password: encryptedPassword,
-      stripeAccountId: stripeAccount.id,
+      stripeAccountId: stripeAccount?.id,
     });
 
     // Create access token and store in cookie

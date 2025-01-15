@@ -9,7 +9,7 @@ import GroupClassOrder from "@/db/models/GroupClassOrder";
 import { getSession } from "@/services/authServices";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-12-18.acacia",
 });
 
@@ -110,5 +110,25 @@ export async function createStripeCheckoutSession<
     const error = err as Error;
     console.error("Error creating checkout session:", error.message);
     return { sessionId: null, error: error.message };
+  }
+}
+
+export async function requestWithdrawal(
+  amount: number,
+  stripeAccountId: string,
+) {
+  try {
+    // const transfer = await stripe.transfers.create({
+    //   amount: amount * 100, // Amount in the smallest currency unit (e.g., cents for USD)
+    //   currency: "usd",
+    //   destination: stripeAccountId, // Connected account ID
+    //   description: "Vendor payout for order #1234",
+    // });
+    // console.log(await stripe.balance.retrieve());
+    return { error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.error("Error creating checkout session:", error.message);
+    return { error: error.message };
   }
 }

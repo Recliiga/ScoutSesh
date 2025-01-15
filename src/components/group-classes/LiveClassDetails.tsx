@@ -107,8 +107,8 @@ export default function LiveClassDetails({
         </Button>
       </div>
       <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col gap-6 md:flex-row">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col gap-4 sm:gap-6 md:flex-row">
             <div className="relative aspect-video w-full md:h-auto md:w-1/3">
               <Image
                 src={liveClass.thumbnail}
@@ -185,26 +185,41 @@ export default function LiveClassDetails({
       </Card>
       <Card className="mt-6 p-4 text-accent-black sm:p-6">
         <CardHeader className="mb-4 p-0">
-          <CardTitle>All Sessions</CardTitle>
+          <CardTitle>Class Details</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <ul className="space-y-2 text-sm">
-            {courseSessions.map((session, index) => (
-              <li
-                key={index}
-                className={`flex items-center gap-2 ${sessionIsPast(session) ? "text-gray-400" : ""}`}
-              >
-                <CalendarIcon className="h-4 w-4" />
-                <span>
-                  {format(session, "MMMM d")}
-                  <sup>{getOrdinalSuffix(session.getDate())}</sup>
-                  {", "}
-                  {format(session, "yyyy")}
-                  {sessionIsPast(session) ? "(Past)" : ""}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <div className="flex flex-col gap-2 text-sm">
+            <div>
+              <h4 className="text-base font-medium">Title</h4>
+              <p className="leading-[22px] text-zinc-600">{liveClass.title}</p>
+            </div>
+            <div>
+              <h4 className="text-base font-medium">Description</h4>
+              <p className="leading-[22px] text-zinc-600">
+                {liveClass.description}
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-col gap-2">
+            <h3 className="font-medium">All Sessions</h3>
+            <ul className="space-y-2 text-sm">
+              {courseSessions.map((session, index) => (
+                <li
+                  key={index}
+                  className={`flex items-center gap-2 ${sessionIsPast(session) ? "text-gray-400" : ""}`}
+                >
+                  <CalendarIcon className="h-4 w-4" />
+                  <span>
+                    {format(session, "MMMM d")}
+                    <sup>{getOrdinalSuffix(session.getDate())}</sup>
+                    {", "}
+                    {format(session, "yyyy")}
+                    {sessionIsPast(session) ? "(Past)" : ""}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </CardContent>
       </Card>
     </main>

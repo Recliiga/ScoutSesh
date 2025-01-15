@@ -1,15 +1,19 @@
 import React from "react";
 import MonthlyStatements from "@/components/billings-and-payments/MonthlyStatements";
 import { getSessionFromHeaders } from "@/services/authServices";
-import { fetchCoachEvaluationOrders } from "@/services/AthleteEvaluationServices";
-import { fetchCoachGroupClassOrders } from "@/services/groupClassOrderServices";
-import toast from "react-hot-toast";
 import { getLast12Months } from "@/lib/utils";
 import AccountInformationForm from "@/components/billings-and-payments/AccountInformationForm";
 import FundsWithdrawalForm from "@/components/billings-and-payments/FundsWithdrawalForm";
 import EarningStatistics from "@/components/billings-and-payments/EarningStatistics";
 import EarningsSummary from "@/components/billings-and-payments/EarningsSummary";
-import { fetchUserStripeAccount } from "@/services/userServices";
+import {
+  fetchUserStripeAccount,
+  fetchUserStripeExternalAccount,
+} from "@/services/stripeServices";
+import {
+  fetchAccountBalance,
+  fetchTransactions,
+} from "@/services/userServices";
 
 export type TransactionType = {
   _id: string;
@@ -47,57 +51,60 @@ function generateMonthlyEarnings(transactions: TransactionType[]) {
 export default async function BillingsAndPaymentsPage() {
   const user = await getSessionFromHeaders();
 
+  const {
+    accountBalance,
+    pendingBalance,
+    error: accountBalanceError,
+  } = await fetchAccountBalance(user._id);
+
   const { stripeAccount } = await fetchUserStripeAccount(user.stripeAccountId);
   const stripeAccountVerified = stripeAccount
     ? stripeAccount.requirements?.currently_due?.length === 0
     : false;
 
-  const { orders, error } = await fetchCoachEvaluationOrders(user._id);
-  if (error !== null) toast.error("An error occured fetching data");
+  const { externalAccounts } = await fetchUserStripeExternalAccount(
+    user.stripeAccountId,
+  );
 
-  const { coachGroupClassOrders, error: groupClassOrderError } =
-    await fetchCoachGroupClassOrders(user._id);
-  if (groupClassOrderError !== null)
-    toast.error("An error occured fetching data");
+  const accountInformationList = externalAccounts
+    ? externalAccounts.data.map((account) => ({
+        id: account.id,
+        //@ts-expect-error bank_name does not exist
+        bankName: account.bank_name,
+        accountNumber: `******${account.last4}`,
+      }))
+    : [];
 
-  const evaluationOrders = orders || [];
-  const groupClassOrders = coachGroupClassOrders || [];
+  const { transactions } = await fetchTransactions(user._id);
 
-  const allOrders: TransactionType[] = [
-    ...evaluationOrders.map((order) => ({
-      _id: order._id,
-      price: order.totalPrice,
-      purchaseDate: order.createdAt,
-      platformPercentage: order.platformPercentage,
-      referrerPercentage: order.referrerPercentage,
-    })),
-    ...groupClassOrders.map((order) => ({
-      _id: order._id,
-      price: order.price,
-      purchaseDate: order.createdAt,
-      platformPercentage: order.platformPercentage,
-      referrerPercentage: order.referrerPercentage,
-    })),
-  ];
-
-  const monthlyEarnings = generateMonthlyEarnings(allOrders);
+  const monthlyEarnings = generateMonthlyEarnings(transactions);
 
   return (
-    <main className="mx-auto w-[90%] max-w-7xl flex-1 space-y-8 py-4">
+    <main className="mx-auto w-[90%] max-w-7xl flex-1 space-y-8 py-4 text-accent-black">
       <h1 className="text-2xl font-bold sm:text-3xl">Billing & Payments</h1>
 
-      <EarningsSummary allOrders={allOrders} />
+      <EarningsSummary
+        transactions={transactions}
+        accountBalance={accountBalance}
+        pendingBalance={pendingBalance}
+        accountBalanceError={accountBalanceError}
+      />
 
       <EarningStatistics monthlyEarnings={monthlyEarnings} />
 
-      <MonthlyStatements transactions={allOrders} />
+      <MonthlyStatements transactions={transactions} />
 
       <AccountInformationForm
         user={user}
         stripeAccountVerified={stripeAccountVerified}
       />
 
-      <FundsWithdrawalForm stripeAccountVerified={stripeAccountVerified} />
+      <FundsWithdrawalForm
+        accountBalance={accountBalance}
+        stripeAccountId={user.stripeAccountId}
+        stripeAccountVerified={stripeAccountVerified}
+        accountInformationList={accountInformationList}
+      />
     </main>
   );
 }

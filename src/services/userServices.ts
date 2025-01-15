@@ -3,7 +3,13 @@ import User, { UserType } from "@/db/models/User";
 import "@/db/models/Organization";
 
 import stripeCountries from "@/data/stripe-countries.json";
-import Stripe from "stripe";
+import AthleteEvaluationOrder, {
+  AthleteEvaluationOrderType,
+} from "@/db/models/AthleteEvaluationOrder";
+import GroupClassOrder, {
+  GroupClassOrderType,
+} from "@/db/models/GroupClassOrder";
+import { TransactionType } from "@/app/dashboard/billings-and-payments/page";
 
 export async function fetchUser(userId: string) {
   try {
@@ -46,16 +52,96 @@ export async function fetchTeamMembers(organizationId: string) {
   }
 }
 
-export async function fetchUserStripeAccount(stripeAccountId?: string) {
-  if (!stripeAccountId) throw new Error("Invalid stripe account ID");
+export async function fetchTransactions(userId: string) {
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-    const stripeAccount = await stripe.accounts.retrieve(stripeAccountId);
+    await connectDB();
+    const allEvaluationOrders: AthleteEvaluationOrderType[] = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluationOrder.find({ coach: userId })
+          .populate({
+            path: "athlete",
+            select: "firstName lastName profilePicture",
+          })
+          .sort({
+            createdAt: -1,
+          }),
+      ),
+    );
 
-    return { stripeAccount, error: null };
+    const evaluationOrders = allEvaluationOrders.filter(
+      (order) => order.stripeSessionId,
+    );
+
+    const allGroupClassOrders: GroupClassOrderType[] = JSON.parse(
+      JSON.stringify(
+        await GroupClassOrder.find().populate({
+          path: "course",
+          select: "_id coaches",
+          populate: { path: "coaches", select: "_id" },
+        }),
+      ),
+    );
+
+    const groupClassOrders = allGroupClassOrders.filter((order) =>
+      order.course?.coaches.some((coach) => coach._id === userId),
+    );
+
+    const transactions: TransactionType[] = [
+      ...evaluationOrders.map((order) => ({
+        _id: order._id,
+        price: order.totalPrice,
+        purchaseDate: order.createdAt,
+        platformPercentage: order.platformPercentage,
+        referrerPercentage: order.referrerPercentage,
+      })),
+      ...groupClassOrders.map((order) => ({
+        _id: order._id,
+        price: order.price,
+        purchaseDate: order.createdAt,
+        platformPercentage: order.platformPercentage,
+        referrerPercentage: order.referrerPercentage,
+      })),
+    ];
+
+    return { transactions, error: null };
   } catch (err) {
     const error = err as Error;
-    return { stripeAccount: null, error: error.message };
+    return { transactions: [], error: error.message };
+  }
+}
+
+export async function fetchAccountBalance(userId: string) {
+  try {
+    const { transactions, error } = await fetchTransactions(userId);
+    if (error) throw new Error("An error occured fetching balance");
+
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const accountBalance = transactions
+      .filter((transaction) => new Date(transaction.purchaseDate) <= oneWeekAgo)
+      .reduce(
+        (total, transaction) =>
+          total +
+          (transaction.price * (100 - (transaction.platformPercentage || 20))) /
+            100,
+        0,
+      );
+
+    const pendingBalance = transactions
+      .filter((transaction) => new Date(transaction.purchaseDate) > oneWeekAgo)
+      .reduce(
+        (total, transaction) =>
+          total +
+          (transaction.price * (100 - (transaction.platformPercentage || 20))) /
+            100,
+        0,
+      );
+
+    return { accountBalance, pendingBalance, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { accountBalance: 0, pendingBalance: 0, error: error.message };
   }
 }
 

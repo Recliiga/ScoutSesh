@@ -1,8 +1,11 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { BarChart, DollarSign, PiggyBank } from "lucide-react";
 import { TransactionType } from "@/app/dashboard/billings-and-payments/page";
 import { calculateMonthlyEarnings } from "@/lib/utils";
+import toast from "react-hot-toast";
 
 function calculateYearlyEarnings(
   transactions: TransactionType[],
@@ -41,51 +44,60 @@ function calculateLastMonthsEarnings(transactions: TransactionType[]) {
   return calculateMonthlyEarnings(transactions, lastMonth, lastMonthYear);
 }
 
-function calculateUserBalance(transactions: TransactionType[]) {
-  return transactions.reduce(
-    (total, transaction) =>
-      total +
-      (transaction.price * (100 - (transaction.platformPercentage || 20))) /
-        100,
-    0,
-  );
-}
-
 export default function EarningsSummary({
-  allOrders,
+  transactions,
+  accountBalance,
+  pendingBalance,
+  accountBalanceError,
 }: {
-  allOrders: TransactionType[];
+  transactions: TransactionType[];
+  accountBalance: number;
+  pendingBalance: number;
+  accountBalanceError: string | null;
 }) {
-  const thisMonthsEarnings = calculateThisMonthsEarnings(allOrders);
-  const lastMonthsEarnings = calculateLastMonthsEarnings(allOrders);
+  useEffect(() => {
+    if (accountBalanceError) toast.error(accountBalanceError);
+  }, [accountBalanceError]);
+
+  const thisMonthsEarnings = calculateThisMonthsEarnings(transactions);
+  const lastMonthsEarnings = calculateLastMonthsEarnings(transactions);
 
   const monthlyPercentageIncrease =
     lastMonthsEarnings > 0
       ? ((thisMonthsEarnings - lastMonthsEarnings) / lastMonthsEarnings) * 100
       : 100;
 
-  const thisYearsEarnings = calculateThisYearsEarnings(allOrders);
-  const lastYearsEarnings = calculateLastYearsEarnings(allOrders);
+  const thisYearsEarnings = calculateThisYearsEarnings(transactions);
+  const lastYearsEarnings = calculateLastYearsEarnings(transactions);
 
   const yearlyPercentageIncrease =
     lastYearsEarnings > 0
       ? ((thisYearsEarnings - lastYearsEarnings) / lastYearsEarnings) * 100
       : 100;
 
-  const userAccountBalance = calculateUserBalance(allOrders);
-
   return (
-    <div className="grid gap-6 md:grid-cols-3">
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6">
           <CardTitle className="text-sm font-medium">Account Balance</CardTitle>
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-          <div className="text-2xl font-bold">
-            ${userAccountBalance.toFixed(2)}
-          </div>
+          <div className="text-2xl font-bold">${accountBalance.toFixed(2)}</div>
           <p className="text-xs text-muted-foreground">+2.5% from last month</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6">
+          <CardTitle className="text-sm font-medium">Pending Balance</CardTitle>
+          <DollarSign className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+          <div className="text-2xl font-bold">${pendingBalance.toFixed(2)}</div>
+          {/* <p className="text-xs text-muted-foreground">+2.5% from last month</p> */}
+          <p className="text-xs text-muted-foreground">
+            Pending transactions to be processed
+          </p>
         </CardContent>
       </Card>
       <Card>

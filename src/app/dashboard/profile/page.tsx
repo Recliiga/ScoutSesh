@@ -1,7 +1,7 @@
 import { getSessionFromHeaders } from "@/services/authServices";
 import React from "react";
 import UserProfilePage from "@/components/dashboard-pages/UserProfilePage";
-import { fetchUserStripeAccount } from "@/services/userServices";
+import { fetchUserStripeAccount } from "@/services/stripeServices";
 
 export default async function ProfilePage() {
   const user = await getSessionFromHeaders();

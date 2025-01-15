@@ -157,12 +157,16 @@ export default function LiveClassCard({
         <div className="flex flex-1 flex-col justify-between">
           <div className="space-y-2">
             <div className="flex flex-col items-start justify-between gap-2 md:flex-row">
-              <Link
-                href={`/dashboard/group-classes/live-classes/${liveClass._id}`}
-                className="text-xl font-bold hover:underline"
-              >
-                {liveClass.title}
-              </Link>
+              {forAthlete ? (
+                <h3 className="text-xl font-bold">{liveClass.title}</h3>
+              ) : (
+                <Link
+                  href={`/dashboard/group-classes/live-classes/${liveClass._id}`}
+                  className="text-xl font-bold hover:underline"
+                >
+                  {liveClass.title}
+                </Link>
+              )}
               <Badge
                 variant="secondary"
                 className="whitespace-nowrap bg-red-500 px-2 text-white hover:bg-red-500"

@@ -44,13 +44,12 @@ export default function MonthlyStatements({
   ).length;
 
   const platFormFees = useMemo(() => {
-    transactions.reduce(
+    return transactions.reduce(
       (prev, curr) =>
         prev + ((curr.platformPercentage || 20) * curr.price) / 100,
       0,
     );
-    return 0.8 * currentMonthEarnings;
-  }, [currentMonthEarnings, transactions]);
+  }, [transactions]);
 
   const netEarnings = useMemo(() => {
     return currentMonthEarnings - platFormFees;

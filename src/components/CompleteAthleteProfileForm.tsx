@@ -65,7 +65,11 @@ export default function CompleteAthleteProfileForm({
       ? new Date(user.DOB).getFullYear()
       : new Date().getFullYear(),
     DOB: user.DOB ? new Date(user.DOB).toDateString() : "",
-    profilePicture: user.profilePicture || "",
+    profilePicture:
+      !user.profilePicture ||
+      user.profilePicture === "/placeholder-profile-picture.png"
+        ? ""
+        : user.profilePicture,
     city: user.city || "",
     country: user.country || { name: "", iso2: "" },
     primarySport: user.primarySport || "",
@@ -174,22 +178,13 @@ export default function CompleteAthleteProfileForm({
               className="object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-gray-400">
-              <svg
-                className="h-16 w-16"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </div>
+            <Image
+              src={"/placeholder-profile-picture.png"}
+              alt="Profile"
+              fill
+              sizes="128px"
+              className="object-cover"
+            />
           )}
         </div>
         <Button
@@ -253,6 +248,7 @@ export default function CompleteAthleteProfileForm({
               name="role"
               className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               value={formEntries.role}
+              disabled
               onChange={(e) =>
                 updateField("role", e.target.value as UserRoleType)
               }
