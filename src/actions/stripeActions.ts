@@ -154,6 +154,35 @@ export async function createStripeUpdateUrl(stripeAccountId: string) {
   }
 }
 
+export async function generateStatement(
+  accountId: string,
+  fromDate: Date,
+  toDate: Date,
+  paymentIntentList: string[],
+) {
+  try {
+    const chargesResponse: Stripe.Response<Stripe.ApiList<Stripe.Charge>> =
+      JSON.parse(
+        JSON.stringify(
+          await stripe.charges.list({
+            created: {
+              gte: Math.floor(fromDate.getTime() / 1000), // From date
+              lt: Math.floor(toDate.getTime() / 1000), // To date
+            },
+          }),
+        ),
+      );
+    const statement = chargesResponse.data.filter((charge) =>
+      paymentIntentList.some((intent) => intent === charge.payment_intent),
+    );
+    return { statement, error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error generating statement: ", error.message);
+    return { statement: null, error: "Error generating statement" };
+  }
+}
+
 export async function saveAccountInformation(
   accountId: string,
   accountInformation: {

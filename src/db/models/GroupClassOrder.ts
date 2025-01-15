@@ -9,6 +9,7 @@ export interface GroupClassOrderType extends mongoose.Document {
   completedLessons: VideoType[];
   price: number;
   stripeSessionId: string;
+  stripePaymentIntent: string;
   platformPercentage: number;
   referrerPercentage?: number;
   createdAt: Date;

@@ -21,6 +21,7 @@ export type TransactionType = {
   purchaseDate: Date;
   platformPercentage: number;
   referrerPercentage?: number;
+  stripePaymentIntent?: string;
 };
 
 function generateMonthlyEarnings(transactions: TransactionType[]) {
@@ -83,7 +84,11 @@ export default async function BillingsAndPaymentsPage() {
 
       <EarningStatistics monthlyEarnings={monthlyEarnings} />
 
-      <MonthlyStatements transactions={transactions} />
+      <MonthlyStatements
+        transactions={transactions}
+        stripeAccountId={user.stripeAccountId}
+        user={user}
+      />
 
       <AccountInformationForm
         user={user}

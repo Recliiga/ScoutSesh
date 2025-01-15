@@ -1,11 +1,11 @@
 import connectDB from "@/db/connectDB";
 import User, { UserType } from "@/db/models/User";
 import "@/db/models/Organization";
-
 import stripeCountries from "@/data/stripe-countries.json";
 import AthleteEvaluationOrder, {
   AthleteEvaluationOrderType,
 } from "@/db/models/AthleteEvaluationOrder";
+import "@/db/models/GroupClass";
 import GroupClassOrder, {
   GroupClassOrderType,
 } from "@/db/models/GroupClassOrder";
@@ -93,6 +93,7 @@ export async function fetchTransactions(userId: string) {
         purchaseDate: order.createdAt,
         platformPercentage: order.platformPercentage,
         referrerPercentage: order.referrerPercentage,
+        stripePaymentIntent: order.stripePaymentIntent,
       })),
       ...groupClassOrders.map((order) => ({
         _id: order._id,
@@ -100,6 +101,7 @@ export async function fetchTransactions(userId: string) {
         purchaseDate: order.createdAt,
         platformPercentage: order.platformPercentage,
         referrerPercentage: order.referrerPercentage,
+        stripePaymentIntent: order.stripePaymentIntent,
       })),
     ];
 

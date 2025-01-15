@@ -205,7 +205,7 @@ export async function uploadImageClient(
     });
     const { url, error } = await res.json();
 
-    return { url, error };
+    return { url, error: error || null };
   } catch (error) {
     return { url: null, error: (error as Error).message };
   }

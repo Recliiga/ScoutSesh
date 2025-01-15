@@ -1,8 +1,10 @@
 "use server";
 import connectDB from "@/db/connectDB";
 import Organization, { OrganizationType } from "@/db/models/Organization";
+import User from "@/db/models/User";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function createOrganization(
   organizationData: {

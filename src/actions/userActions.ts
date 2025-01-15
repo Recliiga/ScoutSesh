@@ -1,5 +1,13 @@
 "use server";
+import { TransactionType } from "@/app/dashboard/billings-and-payments/page";
 import connectDB from "@/db/connectDB";
+import AthleteEvaluationOrder, {
+  AthleteEvaluationOrderType,
+} from "@/db/models/AthleteEvaluationOrder";
+import GroupClassOrder, {
+  GroupClassOrderType,
+} from "@/db/models/GroupClassOrder";
+import "@/db/models/GroupClass";
 import NotificationEntry from "@/db/models/NotificationEntry";
 import User, { PrimarySportType, UserType } from "@/db/models/User";
 import { getUserIdFromCookies } from "@/lib/utils";
@@ -154,5 +162,65 @@ export async function disconnectZoom(userId: string) {
     const error = err as Error;
     console.log("Error disconnecting zoom: ", error.message);
     return { error: error.message };
+  }
+}
+
+export async function fetchAllTransactions(userId: string) {
+  try {
+    await connectDB();
+    const allEvaluationOrders: AthleteEvaluationOrderType[] = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluationOrder.find({ coach: userId })
+          .populate({
+            path: "athlete",
+            select: "firstName lastName profilePicture",
+          })
+          .sort({
+            createdAt: -1,
+          }),
+      ),
+    );
+
+    const evaluationOrders = allEvaluationOrders.filter(
+      (order) => order.stripeSessionId,
+    );
+
+    const allGroupClassOrders: GroupClassOrderType[] = JSON.parse(
+      JSON.stringify(
+        await GroupClassOrder.find().populate({
+          path: "course",
+          select: "_id coaches",
+          populate: { path: "coaches", select: "_id" },
+        }),
+      ),
+    );
+
+    const groupClassOrders = allGroupClassOrders.filter((order) =>
+      order.course?.coaches.some((coach) => coach._id === userId),
+    );
+
+    const transactions: TransactionType[] = [
+      ...evaluationOrders.map((order) => ({
+        _id: order._id,
+        price: order.totalPrice,
+        purchaseDate: order.createdAt,
+        platformPercentage: order.platformPercentage,
+        referrerPercentage: order.referrerPercentage,
+        stripePaymentIntent: order.stripePaymentIntent,
+      })),
+      ...groupClassOrders.map((order) => ({
+        _id: order._id,
+        price: order.price,
+        purchaseDate: order.createdAt,
+        platformPercentage: order.platformPercentage,
+        referrerPercentage: order.referrerPercentage,
+        stripePaymentIntent: order.stripePaymentIntent,
+      })),
+    ];
+
+    return { transactions, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { transactions: [], error: error.message };
   }
 }

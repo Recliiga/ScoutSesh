@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import {
   createStripeConnectUrl,
   createStripeUpdateUrl,
-} from "@/actions/userActions";
+} from "@/actions/stripeActions";
 import toast from "react-hot-toast";
 
 export default function ConnectStripeButton({

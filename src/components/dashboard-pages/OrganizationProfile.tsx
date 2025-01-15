@@ -88,8 +88,9 @@ export default function OrganizationProfile({
     let newLogo;
     if (!formEntries.logo.startsWith("http")) {
       const { url, error } = await uploadImageClient(formEntries.logo);
-      if (error !== null) {
+      if (!error && error !== null) {
         setError("An error occured uploading profile picture");
+        setLoading(false);
         return;
       }
       newLogo = url;

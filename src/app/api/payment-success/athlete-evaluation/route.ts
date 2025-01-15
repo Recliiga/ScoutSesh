@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     // Perform actions based on session details
-    const { payment_status, amount_total } = session;
+    const { payment_status, amount_total, payment_intent } = session;
 
     if (payment_status === "paid" && amount_total) {
       // Update database and create notification for purchase
@@ -40,6 +40,7 @@ export async function GET(req: NextRequest) {
       if (!hasOrder) {
         await AthleteEvaluationOrder.findByIdAndUpdate(evaluationOrderId, {
           stripeSessionId: sessionId,
+          stripePaymentIntent: payment_intent,
         });
 
         await NotificationEntry.create({

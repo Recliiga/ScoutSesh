@@ -27,6 +27,7 @@ export type AthleteEvaluationOrderType = {
   athlete: UserType;
   coach: UserType;
   stripeSessionId?: string;
+  stripePaymentIntent?: string;
   platformPercentage: number;
   referrerPercentage?: number;
   createdAt: Date;
