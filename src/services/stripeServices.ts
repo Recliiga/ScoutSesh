@@ -16,14 +16,22 @@ export async function fetchUserStripeAccount(stripeAccountId?: string) {
 export async function fetchUserStripeExternalAccount(stripeAccountId?: string) {
   if (!stripeAccountId) throw new Error("Invalid stripe account ID");
   try {
-    const externalAccounts = await stripe.accounts.listExternalAccounts(
+    const externalAccountData = await stripe.accounts.listExternalAccounts(
       stripeAccountId,
       { object: "bank_account" },
     );
 
+    const externalAccounts = externalAccountData.data.map((account) => ({
+      id: account.id,
+      //@ts-expect-error bank_name attribute does not exist
+      bankName: account.bank_name,
+      accountNumber: `******${account.last4}`,
+      verified: account.status === "verified",
+    }));
+
     return { externalAccounts, error: null };
   } catch (err) {
     const error = err as Error;
-    return { externalAccounts: null, error: error.message };
+    return { externalAccounts: [], error: error.message };
   }
 }

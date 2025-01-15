@@ -66,15 +66,6 @@ export default async function BillingsAndPaymentsPage() {
     user.stripeAccountId,
   );
 
-  const accountInformationList = externalAccounts
-    ? externalAccounts.data.map((account) => ({
-        id: account.id,
-        //@ts-expect-error bank_name does not exist
-        bankName: account.bank_name,
-        accountNumber: `******${account.last4}`,
-      }))
-    : [];
-
   const { transactions } = await fetchTransactions(user._id);
 
   const monthlyEarnings = generateMonthlyEarnings(transactions);
@@ -103,7 +94,7 @@ export default async function BillingsAndPaymentsPage() {
         accountBalance={accountBalance}
         stripeAccountId={user.stripeAccountId}
         stripeAccountVerified={stripeAccountVerified}
-        accountInformationList={accountInformationList}
+        accountInformationList={externalAccounts}
       />
     </main>
   );
