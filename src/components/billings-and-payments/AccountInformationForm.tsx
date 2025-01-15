@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -11,9 +12,10 @@ import {
 } from "../ui/card";
 import { Button } from "../ui/button";
 import { UserType } from "@/db/models/User";
-import { saveAccountInformation } from "@/actions/userActions";
+import { saveAccountInformation } from "@/actions/stripeActions";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import Error from "../AuthError";
 
 const initialAccountInformation = {
   accountName: "",
@@ -32,27 +34,38 @@ export default function AccountInformationForm({
   const [accountInformation, setAccountInformation] = useState(
     initialAccountInformation,
   );
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const { accountName, accountNumber, bankName, routingNumber } =
     accountInformation;
 
+  const cannotSubmit = Object.values(accountInformation).some(
+    (value) => value.trim() === "",
+  );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const cannotSubmit = Object.values(accountInformation).some(
-      (value) => value.trim() === "",
-    );
 
     if (cannotSubmit) return;
 
-    const { error } = await saveAccountInformation(
-      user._id,
-      accountInformation,
-    );
+    if (!user.stripeAccountId) {
+      setError("Invalid account ID");
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await saveAccountInformation(user.stripeAccountId, {
+      ...accountInformation,
+      country: user.country.iso2,
+    });
     if (error) {
       toast.error("Failed to save account information.");
     } else {
       setAccountInformation(initialAccountInformation);
       toast.success("Account information saved successfully.");
     }
+    setLoading(false);
   }
 
   return (
@@ -92,6 +105,7 @@ export default function AccountInformationForm({
                 placeholder="Enter account holder name"
                 className="text-sm"
                 required
+                autoComplete="off"
               />
             </div>
             <div className="space-y-2">
@@ -111,6 +125,7 @@ export default function AccountInformationForm({
                 className="text-sm"
                 type="text"
                 required
+                autoComplete="off"
               />
             </div>
             <div className="space-y-2">
@@ -130,6 +145,7 @@ export default function AccountInformationForm({
                 placeholder="Enter routing number"
                 className="text-sm"
                 required
+                autoComplete="off"
               />
             </div>
             <div className="space-y-2">
@@ -146,9 +162,14 @@ export default function AccountInformationForm({
                 placeholder="Enter bank name"
                 className="text-sm"
                 required
+                autoComplete="off"
               />
             </div>
-            <Button className="w-full border border-input bg-background text-foreground transition-colors hover:bg-green-600 hover:text-white">
+            {error && <Error error={error} />}
+            <Button
+              disabled={loading || cannotSubmit}
+              className="w-full border border-input bg-background text-foreground transition-colors hover:bg-green-600 hover:text-white"
+            >
               Save Bank Information
             </Button>
           </form>

@@ -7,6 +7,7 @@ import AthleteEvaluationOrder, {
 import { GroupClassType } from "@/db/models/GroupClass";
 import GroupClassOrder from "@/db/models/GroupClassOrder";
 import { getSession } from "@/services/authServices";
+import { redirect } from "next/navigation";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -110,6 +111,80 @@ export async function createStripeCheckoutSession<
     const error = err as Error;
     console.error("Error creating checkout session:", error.message);
     return { sessionId: null, error: error.message };
+  }
+}
+
+export async function createStripeConnectUrl(stripeAccountId: string) {
+  let accountLinkUrl;
+  try {
+    const accountLink = await stripe.accountLinks.create({
+      account: stripeAccountId,
+      refresh_url: `${process.env.BASE_URL}/dashboard/profile`,
+      return_url: `${process.env.BASE_URL}/dashboard/profile`,
+      type: "account_onboarding",
+    });
+
+    accountLinkUrl = accountLink.url;
+  } catch (err) {
+    const error = err as Error;
+    console.log({ error: error.message });
+    return { error: "An Error occured connecting stripe" };
+  } finally {
+    if (accountLinkUrl) redirect(accountLinkUrl);
+  }
+}
+
+export async function createStripeUpdateUrl(stripeAccountId: string) {
+  let accountLinkUrl;
+  try {
+    const accountLink = await stripe.accountLinks.create({
+      account: stripeAccountId,
+      refresh_url: `${process.env.BASE_URL}/dashboard/profile`,
+      return_url: `${process.env.BASE_URL}/dashboard/profile`,
+      type: "account_update",
+    });
+
+    accountLinkUrl = accountLink.url;
+  } catch (err) {
+    const error = err as Error;
+    console.log({ error: error.message });
+    return { error: "An Error occured connecting stripe" };
+  } finally {
+    if (accountLinkUrl) redirect(accountLinkUrl);
+  }
+}
+
+export async function saveAccountInformation(
+  accountId: string,
+  accountInformation: {
+    country: string;
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
+    routingNumber: string;
+  },
+) {
+  try {
+    // const updatedAccount = stripe.accounts.update(accountId, {
+    //   external_account: {
+    //     object: "bank_account",
+    //     country: accountInformation.country,
+    //     currency: "usd",
+    //     account_holder_name: accountInformation.accountName,
+    //     account_holder_type: "individual",
+    //     routing_number: accountInformation.routingNumber,
+    //     account_number: accountInformation.accountNumber,
+    //   },
+    // });
+    // if (!updatedAccount) return { error: "An unexpected error occured" };
+    //
+    // return { error: null };
+
+    return { error: "Error saving account information" };
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error saving account information: ", error.message);
+    return { error: error.message };
   }
 }
 

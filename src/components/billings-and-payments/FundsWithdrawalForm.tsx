@@ -28,7 +28,7 @@ export default function FundsWithdrawalForm({
     id: string;
     bankName: string;
     accountNumber: string;
-    verified: boolean;
+    isVerified: boolean;
   }[];
   accountBalance: number;
 }) {
@@ -54,7 +54,7 @@ export default function FundsWithdrawalForm({
       return;
     }
 
-    if (!selectedAccount.verified) {
+    if (!selectedAccount.isVerified) {
       setError(
         "The selected bank account is not verified. Please select a verified bank account.",
       );
@@ -98,10 +98,14 @@ export default function FundsWithdrawalForm({
                 id="amount"
                 placeholder="Enter amount"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                type="number"
+                onChange={(e) => {
+                  if (isNaN(Number(e.target.value))) return;
+                  setAmount(e.target.value);
+                }}
+                type="text"
                 min={0}
                 autoComplete="off"
+                inputMode="numeric"
               />
             </div>
             <div className="space-y-2">
@@ -116,9 +120,9 @@ export default function FundsWithdrawalForm({
                     <Select.Option value={accountInfo.id} key={accountInfo.id}>
                       {accountInfo.bankName} {accountInfo.accountNumber}{" "}
                       <span
-                        className={`ml-2 rounded-full px-2 py-1 text-xs font-medium ${accountInfo.verified ? "bg-green-100 text-green-500" : "bg-red-100 text-red-500"}`}
+                        className={`ml-2 rounded-full px-2 py-1 text-xs font-medium ${accountInfo.isVerified ? "bg-green-100 text-green-500" : "bg-red-100 text-red-500"}`}
                       >
-                        {accountInfo.verified ? "verified" : "unverified"}
+                        {accountInfo.isVerified ? "verified" : "unverified"}
                       </span>
                     </Select.Option>
                   ))}

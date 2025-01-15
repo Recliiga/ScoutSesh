@@ -26,7 +26,7 @@ export async function fetchUserStripeExternalAccount(stripeAccountId?: string) {
       //@ts-expect-error bank_name attribute does not exist
       bankName: account.bank_name,
       accountNumber: `******${account.last4}`,
-      verified: account.status === "verified",
+      isVerified: account.status === "verified",
     }));
 
     return { externalAccounts, error: null };
