@@ -7,7 +7,6 @@ import AthleteEvaluationOrder, {
 import { GroupClassType } from "@/db/models/GroupClass";
 import GroupClassOrder from "@/db/models/GroupClassOrder";
 import { getSession } from "@/services/authServices";
-import { redirect } from "next/navigation";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -115,7 +114,6 @@ export async function createStripeCheckoutSession<
 }
 
 export async function createStripeConnectUrl(stripeAccountId: string) {
-  let accountLinkUrl;
   try {
     const accountLink = await stripe.accountLinks.create({
       account: stripeAccountId,
@@ -124,33 +122,11 @@ export async function createStripeConnectUrl(stripeAccountId: string) {
       type: "account_onboarding",
     });
 
-    accountLinkUrl = accountLink.url;
+    return { url: accountLink.url, error: null };
   } catch (err) {
     const error = err as Error;
-    console.log({ error: error.message });
-    return { error: "An Error occured connecting stripe" };
-  } finally {
-    if (accountLinkUrl) redirect(accountLinkUrl);
-  }
-}
-
-export async function createStripeUpdateUrl(stripeAccountId: string) {
-  let accountLinkUrl;
-  try {
-    const accountLink = await stripe.accountLinks.create({
-      account: stripeAccountId,
-      refresh_url: `${process.env.BASE_URL}/dashboard/profile`,
-      return_url: `${process.env.BASE_URL}/dashboard/profile`,
-      type: "account_update",
-    });
-
-    accountLinkUrl = accountLink.url;
-  } catch (err) {
-    const error = err as Error;
-    console.log({ error: error.message });
-    return { error: "An Error occured connecting stripe" };
-  } finally {
-    if (accountLinkUrl) redirect(accountLinkUrl);
+    console.log("Connect Stripe Error: ", error.message);
+    return { url: null, error: "An Error occured connecting stripe" };
   }
 }
 
@@ -183,56 +159,31 @@ export async function generateStatement(
   }
 }
 
-export async function saveAccountInformation(
+export async function addAccountInformation(
   accountId: string,
-  accountInformation: {
-    country: string;
-    bankName: string;
-    accountName: string;
+  accountInfo: {
     accountNumber: string;
+    country: string;
+    accountName: string;
     routingNumber: string;
   },
 ) {
   try {
-    // const updatedAccount = stripe.accounts.update(accountId, {
+    // stripe.accounts.createExternalAccount(accountId, {
     //   external_account: {
     //     object: "bank_account",
-    //     country: accountInformation.country,
-    //     currency: "usd",
-    //     account_holder_name: accountInformation.accountName,
+    //     account_number: accountInfo.accountNumber,
+    //     country: accountInfo.country,
+    //     account_holder_name: accountInfo.accountName,
     //     account_holder_type: "individual",
-    //     routing_number: accountInformation.routingNumber,
-    //     account_number: accountInformation.accountNumber,
+    //     routing_number: accountInfo.routingNumber,
     //   },
     // });
-    // if (!updatedAccount) return { error: "An unexpected error occured" };
-    //
     // return { error: null };
-
-    return { error: "Error saving account information" };
+    return { error: "Error adding new payout account" };
   } catch (err) {
     const error = err as Error;
-    console.log("Error saving account information: ", error.message);
-    return { error: error.message };
-  }
-}
-
-export async function requestWithdrawal(
-  amount: number,
-  stripeAccountId: string,
-) {
-  try {
-    // const transfer = await stripe.transfers.create({
-    //   amount: amount * 100, // Amount in the smallest currency unit (e.g., cents for USD)
-    //   currency: "usd",
-    //   destination: stripeAccountId, // Connected account ID
-    //   description: "Vendor payout for order #1234",
-    // });
-    // console.log(await stripe.balance.retrieve());
-    return { error: null };
-  } catch (err) {
-    const error = err as Error;
-    console.error("Error creating checkout session:", error.message);
-    return { error: error.message };
+    console.log("Error adding new payout account: ", error.message);
+    return { error: "Error adding new payout account" };
   }
 }

@@ -96,7 +96,6 @@ export default async function BillingsAndPaymentsPage() {
       />
 
       <FundsWithdrawalForm
-        accountBalance={accountBalance}
         stripeAccountId={user.stripeAccountId}
         stripeAccountVerified={stripeAccountVerified}
         accountInformationList={externalAccounts}

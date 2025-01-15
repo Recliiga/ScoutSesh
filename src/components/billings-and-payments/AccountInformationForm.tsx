@@ -12,8 +12,6 @@ import {
 } from "../ui/card";
 import { Button } from "../ui/button";
 import { UserType } from "@/db/models/User";
-import { saveAccountInformation } from "@/actions/stripeActions";
-import toast from "react-hot-toast";
 import Link from "next/link";
 import Error from "../AuthError";
 
@@ -46,26 +44,23 @@ export default function AccountInformationForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    // if (!user.stripeAccountId) {
+    //   setError(
+    //     "An error occured while adding new payout account. Please contact support for assistance.",
+    //   );
+    //   return;
+    // }
 
-    if (cannotSubmit) return;
-
-    if (!user.stripeAccountId) {
-      setError("Invalid account ID");
-      return;
-    }
-
-    setLoading(true);
-    const { error } = await saveAccountInformation(user.stripeAccountId, {
-      ...accountInformation,
-      country: user.country.iso2,
-    });
-    if (error) {
-      toast.error("Failed to save account information.");
-    } else {
-      setAccountInformation(initialAccountInformation);
-      toast.success("Account information saved successfully.");
-    }
-    setLoading(false);
+    // setLoading(true);
+    // const { error: accountInfoError } = await addAccountInformation(
+    //   user.stripeAccountId,
+    //   {
+    //     ...accountInformation,
+    //     country: user.country.iso2,
+    //   },
+    // );
+    // if (accountInfoError) setError(accountInfoError);
+    // setLoading(false);
   }
 
   return (
@@ -125,6 +120,7 @@ export default function AccountInformationForm({
                 className="text-sm"
                 type="text"
                 required
+                maxLength={10}
                 autoComplete="off"
               />
             </div>
@@ -142,6 +138,7 @@ export default function AccountInformationForm({
                 }}
                 inputMode="numeric"
                 type="text"
+                maxLength={9}
                 placeholder="Enter routing number"
                 className="text-sm"
                 required

@@ -52,7 +52,7 @@ export default function Statement({
 
       doc.addImage(imgData, "PNG", 20, 20, imgWidth, imgHeight);
       doc.save(
-        `${userName.toLowerCase().split(" ").join("_")}_scoutsesh_statement.pdf`,
+        `${userName.toLowerCase().split(" ").join("_")}_scoutsesh_account_statement.pdf`,
       );
     });
   }

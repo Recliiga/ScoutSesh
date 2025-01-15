@@ -217,7 +217,6 @@ export default function UserProfilePage({
                 </p>
                 {isOwnProfile && (
                   <ConnectStripeButton
-                    stripeAccountId={user.stripeAccountId}
                     stripeAccountVerified={stripeAccountVerified}
                   />
                 )}

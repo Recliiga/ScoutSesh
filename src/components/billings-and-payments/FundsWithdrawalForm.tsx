@@ -12,15 +12,12 @@ import {
 import { Button } from "../ui/button";
 import Select from "../Select";
 import Link from "next/link";
-import { requestWithdrawal } from "@/actions/stripeActions";
-import toast from "react-hot-toast";
 import Error from "../AuthError";
 
 export default function FundsWithdrawalForm({
   stripeAccountId,
   stripeAccountVerified,
   accountInformationList,
-  accountBalance,
 }: {
   stripeAccountId?: string;
   stripeAccountVerified: boolean;
@@ -30,7 +27,6 @@ export default function FundsWithdrawalForm({
     accountNumber: string;
     isVerified: boolean;
   }[];
-  accountBalance: number;
 }) {
   const [selectedAccountId, setSelectedAccountId] = useState<string>();
   const [amount, setAmount] = useState("");
@@ -39,34 +35,6 @@ export default function FundsWithdrawalForm({
 
   async function handleRequestWithdrawal(e: React.FormEvent) {
     e.preventDefault();
-    if (isNaN(Number(amount)) || !stripeAccountId) return;
-
-    if (Number(amount) > accountBalance) {
-      setError("Withdrawal amount exceeds account balance.");
-      return;
-    }
-
-    const selectedAccount = accountInformationList.find(
-      (account) => account.id === selectedAccountId,
-    );
-    if (!selectedAccount) {
-      setError("Please select a bank account to withdraw funds.");
-      return;
-    }
-
-    if (!selectedAccount.isVerified) {
-      setError(
-        "The selected bank account is not verified. Please select a verified bank account.",
-      );
-      return;
-    }
-
-    setLoading(true);
-    const { error } = await requestWithdrawal(Number(amount), stripeAccountId);
-    if (error) {
-      toast.error(error);
-    }
-    setLoading(false);
   }
 
   return (

@@ -2,8 +2,8 @@ import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function fetchUserStripeAccount(stripeAccountId?: string) {
-  if (!stripeAccountId) throw new Error("Invalid stripe account ID");
   try {
+    if (!stripeAccountId) throw new Error("Invalid stripe account ID");
     const stripeAccount = await stripe.accounts.retrieve(stripeAccountId);
 
     return { stripeAccount, error: null };
@@ -14,8 +14,8 @@ export async function fetchUserStripeAccount(stripeAccountId?: string) {
 }
 
 export async function fetchUserStripeExternalAccount(stripeAccountId?: string) {
-  if (!stripeAccountId) throw new Error("Invalid stripe account ID");
   try {
+    if (!stripeAccountId) throw new Error("Invalid stripe account ID");
     const externalAccountData = await stripe.accounts.listExternalAccounts(
       stripeAccountId,
       { object: "bank_account" },

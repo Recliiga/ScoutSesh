@@ -96,8 +96,7 @@ export default function CreateClassForm({
       const resizedImage = await resizeImage(imageFile, 800);
       if (!resizedImage) return;
       setThumbnail(resizedImage);
-    } catch (error) {
-      console.log((error as Error).message);
+    } catch {
       setThumbnailError("Error resizing image");
     }
   }
