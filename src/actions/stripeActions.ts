@@ -67,6 +67,13 @@ export async function createStripeCheckoutSession<
         success_url: successUrl,
         cancel_url: cancelUrl,
         customer_email: user.email,
+        metadata: {
+          coachId: String(productItem.coaches[0]),
+          customerId: user._id,
+          productType: `${productItem.courseType}-group-class`,
+          productName: productItem.title,
+          productId: productItem._id,
+        },
       });
 
       return { sessionId: session.id, error: null };
@@ -105,6 +112,13 @@ export async function createStripeCheckoutSession<
         success_url: successUrl,
         cancel_url: cancelUrl,
         customer_email: user.email,
+        metadata: {
+          coachId,
+          userId: user._id,
+          productType: "athlete-evaluation",
+          productName: "Athlete Evaluation",
+          productId: productItem._id,
+        },
       });
 
       return { sessionId: session.id, error: null };
