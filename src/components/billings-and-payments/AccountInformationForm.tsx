@@ -99,7 +99,7 @@ export default function AccountInformationForm({
           </p>
         ) : (
           <Button disabled={loading} onClick={handleRedirectToStripeDashboard}>
-            Add new payout account
+            Manage payout accounts
           </Button>
           // <form className="space-y-4" onSubmit={handleSubmit}>
           //   <div className="space-y-2">

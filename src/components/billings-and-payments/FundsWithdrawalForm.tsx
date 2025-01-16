@@ -10,31 +10,51 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "../ui/button";
-import Select from "../Select";
 import Link from "next/link";
 import Error from "../AuthError";
+import { InfoIcon } from "lucide-react";
+import { requestWithdrawal } from "@/actions/stripeActions";
 
 export default function FundsWithdrawalForm({
   stripeAccountId,
   stripeAccountVerified,
-  accountInformationList,
+  userId,
 }: {
   stripeAccountId?: string;
+  userId: string;
   stripeAccountVerified: boolean;
-  accountInformationList: {
-    id: string;
-    bankName: string;
-    accountNumber: string;
-    isVerified: boolean;
-  }[];
 }) {
-  const [selectedAccountId, setSelectedAccountId] = useState<string>();
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function handleRequestWithdrawal(e: React.FormEvent) {
     e.preventDefault();
+    if (isNaN(Number(amount))) {
+      setError("Invalid amount!");
+      return;
+    }
+
+    if (!stripeAccountId) {
+      setError("Invalid account please complete your KYC!");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    const { error } = await requestWithdrawal(
+      userId,
+      stripeAccountId,
+      Number(amount),
+    );
+
+    if (error) {
+      setError(error);
+    } else {
+      setAmount("");
+    }
+    setLoading(false);
   }
 
   return (
@@ -74,9 +94,18 @@ export default function FundsWithdrawalForm({
                 min={0}
                 autoComplete="off"
                 inputMode="numeric"
+                className="mt-0"
               />
+              <div className="flex gap-2">
+                <InfoIcon className="mt-0.5 h-4 w-4 text-amber-500" />
+                <p className="flex-1 text-sm text-muted-foreground">
+                  The payout will go to your default payout account. To
+                  configure this, click on manage payout accounts.
+                </p>
+              </div>
             </div>
-            <div className="space-y-2">
+
+            {/* <div className="space-y-2">
               <Label htmlFor="bank">Select Bank Account</Label>
               <Select
                 onChange={(value) => setSelectedAccountId(value)}
@@ -96,7 +125,8 @@ export default function FundsWithdrawalForm({
                   ))}
                 </Select.Content>
               </Select>
-            </div>
+            </div> */}
+
             {error && <Error error={error} />}
             <Button
               disabled={loading || !amount}

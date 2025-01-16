@@ -7,7 +7,9 @@ import AthleteEvaluationOrder, {
 import { GroupClassType } from "@/db/models/GroupClass";
 import GroupClassOrder from "@/db/models/GroupClassOrder";
 import User, { UserType } from "@/db/models/User";
+import Withdrawal from "@/db/models/Withdrawal";
 import { getSession } from "@/services/authServices";
+import { fetchAccountBalance } from "@/services/userServices";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -180,42 +182,6 @@ export async function generateStatement(
   }
 }
 
-export async function addAccountInformation(
-  user: UserType,
-  accountInfo: {
-    accountNumber: string;
-    accountName: string;
-    routingNumber: string;
-  },
-) {
-  try {
-    if (!user.stripeAccountId) throw new Error("Invalid Stripe Acount ID");
-
-    const newPayoutAccount = await stripe.accounts.createExternalAccount(
-      user.stripeAccountId,
-      {
-        external_account: {
-          object: "bank_account",
-          account_number: accountInfo.accountNumber,
-          country: user.country.iso2,
-          account_holder_name: accountInfo.accountName,
-          account_holder_type: "individual",
-          routing_number: accountInfo.routingNumber,
-        },
-      },
-    );
-
-    if (!newPayoutAccount)
-      throw new Error("Unable to create new payout account");
-
-    return { error: null };
-  } catch (err) {
-    const error = err as Error;
-    console.log("Error adding new payout account: ", error.message);
-    return { error: "Error adding new payout account" };
-  }
-}
-
 export async function createStripeLoginLink(stripeAccountId: string) {
   try {
     const loginLink = await stripe.accounts.createLoginLink(stripeAccountId);
@@ -224,5 +190,38 @@ export async function createStripeLoginLink(stripeAccountId: string) {
     const error = err as Error;
     console.log("Error creating stripe login link: ", error.message);
     return { url: null, error: "Error: Unable to create stripe login link" };
+  }
+}
+
+export async function requestWithdrawal(
+  userId: string,
+  stripeAccountId: string,
+  amount: number,
+) {
+  try {
+    const { accountBalance, error } = await fetchAccountBalance(userId);
+    if (error !== null)
+      return { error: "An error occurred fetching account balance" };
+
+    if (accountBalance < amount + 0.99) return { error: "Insufficient funds!" };
+
+    const transfer = await stripe.transfers.create({
+      destination: stripeAccountId,
+      amount: amount * 100,
+      currency: "usd",
+    });
+
+    await Withdrawal.create({
+      amount,
+      user: userId,
+      stripeAccountId,
+      stripeTransferId: transfer.id,
+    });
+
+    return { error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error requesting withdrawal: ", error.message);
+    return { error: "An unexpected error occured" };
   }
 }
