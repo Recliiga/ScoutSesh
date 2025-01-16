@@ -97,15 +97,14 @@ export default function MonthlyStatements({
     },
   ).length;
 
-  const platFormFees = calculateMonthlyPlatformFees(
+  const currentMonthPlatformFees = calculateMonthlyPlatformFees(
     transactions,
     currentSelectedMonth,
     currentSelectedYear,
   );
+  console.log(currentMonthPlatformFees);
 
-  const netEarnings = useMemo(() => {
-    return currentMonthEarnings - platFormFees;
-  }, [currentMonthEarnings, platFormFees]);
+  const netEarnings = currentMonthEarnings - currentMonthPlatformFees;
 
   async function handleGenerateStatement() {
     setLoading(true);
@@ -191,7 +190,9 @@ export default function MonthlyStatements({
             </p>
             <p>
               Platform Fees:{" "}
-              <span className="font-semibold">${platFormFees.toFixed(2)}</span>
+              <span className="font-semibold">
+                ${currentMonthPlatformFees.toFixed(2)}
+              </span>
             </p>
             <p>
               Net Earnings:{" "}

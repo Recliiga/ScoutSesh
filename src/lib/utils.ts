@@ -457,8 +457,7 @@ export function calculateMonthlyPlatformFees(
     })
     .reduce(
       (total, transaction) =>
-        total +
-        (transaction.price * (100 - transaction.platformPercentage)) / 100,
+        total + (transaction.price * transaction.platformPercentage) / 100,
       0,
     );
 }
