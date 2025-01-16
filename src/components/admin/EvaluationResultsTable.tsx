@@ -116,7 +116,7 @@ export default function EvaluationResultsTable({
                 <Select
                   value={statusFilter}
                   onChange={setStatusFilter}
-                  defaultChild={"All"}
+                  displayValue={"All"}
                   containerClassName="flex-1 sm:w-40"
                 >
                   <Select.Content className="z-20">

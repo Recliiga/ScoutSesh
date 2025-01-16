@@ -19,7 +19,7 @@ export default function Select({
   containerClassName,
   children,
   disabled = false,
-  defaultChild,
+  displayValue,
 }: {
   className?: string;
   containerClassName?: string;
@@ -28,11 +28,11 @@ export default function Select({
   onChange(value: string): void;
   children?: React.ReactNode;
   disabled?: boolean;
-  defaultChild?: React.ReactNode;
+  displayValue?: React.ReactNode;
 }) {
   const [showOptions, setShowOptions] = useState(false);
   const [childComponent, setChildComponent] = useState<React.ReactNode | null>(
-    defaultChild || null,
+    displayValue || null,
   );
 
   function closeDropdown() {

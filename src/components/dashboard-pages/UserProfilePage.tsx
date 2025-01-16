@@ -26,6 +26,8 @@ import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import useClickOutside from "@/hooks/useClickOutside";
 import ConnectStripeButton from "../ConnectStripeButton";
+import Select from "../Select";
+import stripeCountries from "@/data/stripe-countries.json";
 
 export default function UserProfilePage({
   user,
@@ -129,14 +131,16 @@ export default function UserProfilePage({
   const dayOfBirth = dateOfBirth.getDate();
   const formattedDOB = `${dateOfBirth.getFullYear()}-${monthOfBirth < 10 ? "0" : ""}${monthOfBirth}-${dayOfBirth < 10 ? "0" : ""}${dayOfBirth}`;
 
-  // async function handleDisconnectZoom() {
-  //   setZoomLoading(true);
-  //   const { error } = await disconnectZoom(user._id);
-  //   if (!error) {
-  //     setZoomConnected(false);
-  //   }
-  //   setZoomLoading(false);
-  // }
+  function handleChangeCountry(countryISO2: string) {
+    const selectedCountry = stripeCountries.find(
+      (country) => country.iso2 === countryISO2,
+    );
+    if (!selectedCountry) return;
+    updateField("country", {
+      iso2: selectedCountry.iso2,
+      name: selectedCountry.name,
+    });
+  }
 
   return (
     <main className="flex-1 bg-gray-50 py-4">
@@ -279,9 +283,27 @@ export default function UserProfilePage({
               <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                 <MapPinIcon className="h-5 w-5 text-[#14a800]" />
                 <span className="text-sm text-gray-600">Country:</span>
-                <span className="font-medium text-gray-800">
-                  {userData.country.name}
-                </span>
+                {isEditing ? (
+                  <Select
+                    value={formEntries.country.iso2}
+                    displayValue={formEntries.country.name}
+                    onChange={handleChangeCountry}
+                    containerClassName="w-full"
+                    disabled={loading}
+                  >
+                    <Select.Content>
+                      {stripeCountries.map((country) => (
+                        <Select.Option value={country.iso2} key={country.iso2}>
+                          {country.name}
+                        </Select.Option>
+                      ))}
+                    </Select.Content>
+                  </Select>
+                ) : (
+                  <span className="font-medium text-gray-800">
+                    {userData.country.name}
+                  </span>
+                )}
               </div>
               <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                 <MapPinIcon className="h-5 w-5 text-[#14a800]" />

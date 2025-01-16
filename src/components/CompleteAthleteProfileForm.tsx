@@ -348,8 +348,7 @@ export default function CompleteAthleteProfileForm({
               value={formEntries.country.iso2}
               onChange={(value) => updateCountryField(value)}
               placeholder="Select Country"
-              defaultChild={formEntries.country.name}
-              disabled
+              displayValue={formEntries.country.name}
             >
               <Select.Content className="px-0 pt-0">
                 <div className="sticky top-0 flex items-center border-b bg-white px-2">

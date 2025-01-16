@@ -27,6 +27,8 @@ import useFormEntries from "@/hooks/useFormEntries";
 import Error from "../AuthError";
 import { uploadImageClient } from "@/lib/utils";
 import { updateOrganization } from "@/actions/organizationActions";
+import Select from "../Select";
+import stripeCountries from "@/data/stripe-countries.json";
 
 const sportList = [
   "volleyball",
@@ -94,6 +96,7 @@ export default function OrganizationProfile({
         return;
       }
       newLogo = url;
+      if (url) updateField("logo", url);
     }
 
     const { updatedOrganization, error } = newLogo
@@ -143,6 +146,17 @@ export default function OrganizationProfile({
 
       updateField("logo", imageDataUrl as string);
     };
+  }
+
+  function handleChangeCountry(countryISO2: string) {
+    const selectedCountry = stripeCountries.find(
+      (country) => country.iso2 === countryISO2,
+    );
+    if (!selectedCountry) return;
+    updateField("country", {
+      iso2: selectedCountry.iso2,
+      name: selectedCountry.name,
+    });
   }
 
   return (
@@ -295,9 +309,30 @@ export default function OrganizationProfile({
                 <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                   <MapPinIcon className="h-5 w-5 text-[#14a800]" />
                   <span className="text-sm text-gray-600">Country:</span>
-                  <span className="font-medium text-gray-800">
-                    {organizationData.country.name}
-                  </span>
+                  {isEditing ? (
+                    <Select
+                      value={formEntries.country.iso2}
+                      displayValue={formEntries.country.name}
+                      onChange={handleChangeCountry}
+                      containerClassName="w-full"
+                      disabled={loading}
+                    >
+                      <Select.Content>
+                        {stripeCountries.map((country) => (
+                          <Select.Option
+                            value={country.iso2}
+                            key={country.iso2}
+                          >
+                            {country.name}
+                          </Select.Option>
+                        ))}
+                      </Select.Content>
+                    </Select>
+                  ) : (
+                    <span className="font-medium text-gray-800">
+                      {organizationData.country.name}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                   <MapPinIcon className="h-5 w-5 text-[#14a800]" />
@@ -393,7 +428,7 @@ export default function OrganizationProfile({
                         onChange={(e) =>
                           updateField("yearFounded", Number(e.target.value))
                         }
-                        className="w-0 max-w-fit flex-1 cursor-pointer truncate rounded-md border bg-white p-2 text-sm leading-5 duration-200 disabled:bg-accent-gray-100"
+                        className="w-0 max-w-fit flex-1 cursor-pointer truncate rounded-md border bg-white p-2 text-sm leading-5 text-accent-black duration-200 disabled:bg-accent-gray-100"
                       >
                         <option value="" hidden>
                           Select year
@@ -429,7 +464,7 @@ export default function OrganizationProfile({
                         onChange={(e) =>
                           updateField("memberCount", e.target.value)
                         }
-                        className="w-0 max-w-fit flex-1 cursor-pointer truncate rounded-md border bg-white p-2 text-sm leading-5 duration-200 disabled:bg-accent-gray-100"
+                        className="w-0 max-w-fit flex-1 cursor-pointer truncate rounded-md border bg-white p-2 text-sm leading-5 text-accent-black duration-200 disabled:bg-accent-gray-100"
                         required
                       >
                         <option hidden>Select member count</option>
@@ -472,7 +507,7 @@ export default function OrganizationProfile({
                         name="type"
                         value={formEntries["type"]}
                         onChange={(e) => updateField("type", e.target.value)}
-                        className="w-0 max-w-fit flex-1 cursor-pointer truncate rounded-md border bg-white p-2 text-sm leading-5 duration-200 disabled:bg-accent-gray-100"
+                        className="w-0 max-w-fit flex-1 cursor-pointer truncate rounded-md border bg-white p-2 text-sm leading-5 text-accent-black duration-200 disabled:bg-accent-gray-100"
                         required
                       >
                         <option hidden>Organization Type</option>

@@ -309,7 +309,7 @@ export default function AthleteEvaluationPricingForm({
                     )
                   }
                   value={tier.type}
-                  defaultChild={tier.type[0].toUpperCase() + tier.type.slice(1)}
+                  displayValue={tier.type[0].toUpperCase() + tier.type.slice(1)}
                 >
                   <Select.Content>
                     <Select.Option value={"single"}>Single</Select.Option>
