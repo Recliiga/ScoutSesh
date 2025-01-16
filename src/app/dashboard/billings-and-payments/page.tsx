@@ -6,10 +6,7 @@ import AccountInformationForm from "@/components/billings-and-payments/AccountIn
 import FundsWithdrawalForm from "@/components/billings-and-payments/FundsWithdrawalForm";
 import EarningStatistics from "@/components/billings-and-payments/EarningStatistics";
 import EarningsSummary from "@/components/billings-and-payments/EarningsSummary";
-import {
-  fetchUserStripeAccount,
-  fetchUserStripeExternalAccount,
-} from "@/services/stripeServices";
+import { fetchUserStripeAccount } from "@/services/stripeServices";
 import {
   fetchAccountBalance,
   fetchTransactions,
@@ -62,9 +59,9 @@ export default async function BillingsAndPaymentsPage() {
     ? stripeAccount.requirements?.currently_due?.length === 0
     : false;
 
-  const { externalAccounts } = await fetchUserStripeExternalAccount(
-    user.stripeAccountId,
-  );
+  // const { externalAccounts } = await fetchUserStripeExternalAccount(
+  //   user.stripeAccountId,
+  // );
 
   const { transactions } = await fetchTransactions(user._id);
 

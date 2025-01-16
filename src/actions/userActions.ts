@@ -206,7 +206,6 @@ export async function fetchAllTransactions(userId: string) {
         purchaseDate: order.createdAt,
         platformPercentage: order.platformPercentage,
         referrerPercentage: order.referrerPercentage,
-        stripePaymentIntent: order.stripePaymentIntent,
       })),
       ...groupClassOrders.map((order) => ({
         _id: order._id,
@@ -214,7 +213,6 @@ export async function fetchAllTransactions(userId: string) {
         purchaseDate: order.createdAt,
         platformPercentage: order.platformPercentage,
         referrerPercentage: order.referrerPercentage,
-        stripePaymentIntent: order.stripePaymentIntent,
       })),
     ];
 
