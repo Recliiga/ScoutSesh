@@ -12,23 +12,23 @@ import Select from "../Select";
 import { Button } from "../ui/button";
 import {
   calculateMonthlyEarnings,
+  calculateMonthlyPlatformFees,
   getFullname,
   getLast12Months,
 } from "@/lib/utils";
 import { format } from "date-fns";
 import { TransactionType } from "@/app/dashboard/billings-and-payments/page";
-import Statement from "./Statement";
+import AccountStatement from "./AccountStatement";
 import { UserType } from "@/db/models/User";
 import { fetchAllTransactions } from "@/actions/userActions";
 import LoadingIndicator from "../LoadingIndicator";
+import toast from "react-hot-toast";
 
 export default function MonthlyStatements({
   transactions,
-  stripeAccountId,
   user,
 }: {
   transactions: TransactionType[];
-  stripeAccountId?: string;
   user: UserType;
 }) {
   const [selectedMonth, setSelectedMonth] = React.useState(
@@ -80,6 +80,7 @@ export default function MonthlyStatements({
 
   const currentSelectedMonth = new Date(selectedMonth).getMonth();
   const currentSelectedYear = new Date(selectedMonth).getFullYear();
+
   const currentMonthEarnings = calculateMonthlyEarnings(
     transactions,
     currentSelectedMonth,
@@ -96,35 +97,36 @@ export default function MonthlyStatements({
     },
   ).length;
 
-  const platFormFees = useMemo(() => {
-    return transactions.reduce(
-      (prev, curr) =>
-        prev + ((curr.platformPercentage || 20) * curr.price) / 100,
-      0,
-    );
-  }, [transactions]);
+  const platFormFees = calculateMonthlyPlatformFees(
+    transactions,
+    currentSelectedMonth,
+    currentSelectedYear,
+  );
 
   const netEarnings = useMemo(() => {
     return currentMonthEarnings - platFormFees;
   }, [currentMonthEarnings, platFormFees]);
 
   async function handleGenerateStatement() {
-    if (!stripeAccountId) return;
-
     setLoading(true);
     const startDate = new Date(currentSelectedYear, currentSelectedMonth, 1);
     const endDate = new Date(currentSelectedYear, currentSelectedMonth + 1, 0);
 
-    const { transactions: allTransactions } = await fetchAllTransactions(
+    const { transactions: allTransactions, error } = await fetchAllTransactions(
       user._id,
     );
+    if (error !== null) {
+      toast.error("Failed to fetch transactions. Please try again later.");
+    } else {
+      const selectedMonthTransactions = allTransactions.filter(
+        (transaction) => {
+          const transactionDate = new Date(transaction.purchaseDate);
+          return transactionDate >= startDate && transactionDate <= endDate;
+        },
+      );
 
-    const selectedMonthTransactions = allTransactions.filter((transaction) => {
-      const transactionDate = new Date(transaction.purchaseDate);
-      return transactionDate >= startDate && transactionDate <= endDate;
-    });
-
-    setStatement(selectedMonthTransactions);
+      setStatement(selectedMonthTransactions);
+    }
     setLoading(false);
   }
 
@@ -141,7 +143,10 @@ export default function MonthlyStatements({
           <div className="mb-4 flex flex-col gap-2 sm:flex-row">
             <Select
               value={selectedMonth}
-              onChange={setSelectedMonth}
+              onChange={(value) => {
+                setSelectedMonth(value);
+                setStatement(null);
+              }}
               containerClassName="min-w-[180px]"
               placeholder="Select month"
             >
@@ -196,7 +201,7 @@ export default function MonthlyStatements({
         </CardContent>
       </Card>
       {statement && (
-        <Statement
+        <AccountStatement
           userName={getFullname(user)}
           organizationName={user.organization!.name}
           date={format(new Date(selectedMonth), "MMMM yyyy")}

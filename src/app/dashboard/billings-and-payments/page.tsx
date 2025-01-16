@@ -1,7 +1,6 @@
 import React from "react";
 import MonthlyStatements from "@/components/billings-and-payments/MonthlyStatements";
 import { getSessionFromHeaders } from "@/services/authServices";
-import { getLast12Months } from "@/lib/utils";
 import AccountInformationForm from "@/components/billings-and-payments/AccountInformationForm";
 import FundsWithdrawalForm from "@/components/billings-and-payments/FundsWithdrawalForm";
 import EarningStatistics from "@/components/billings-and-payments/EarningStatistics";
@@ -11,6 +10,7 @@ import {
   fetchAccountBalance,
   fetchTransactions,
 } from "@/services/userServices";
+import { notFound } from "next/navigation";
 
 export type TransactionType = {
   _id: string;
@@ -20,33 +20,10 @@ export type TransactionType = {
   referrerPercentage?: number;
 };
 
-function generateMonthlyEarnings(transactions: TransactionType[]) {
-  const last12Months = getLast12Months();
-  const monthlyEarnings = last12Months.map((month) => ({
-    month: month.toLocaleString("default", { month: "short" }),
-    amount: 0,
-  }));
-
-  transactions.forEach((transaction) => {
-    const transactionDate = new Date(transaction.purchaseDate);
-    const transactionYear = transactionDate.getFullYear();
-
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
-    const monthIndex =
-      transactionYear === currentYear
-        ? currentMonth - transactionDate.getMonth()
-        : 11 - transactionDate.getMonth();
-    if (monthIndex >= 0 && monthIndex < 12) {
-      monthlyEarnings[monthIndex].amount += transaction.price;
-    }
-  });
-  return monthlyEarnings.reverse();
-}
-
 export default async function BillingsAndPaymentsPage() {
   const user = await getSessionFromHeaders();
+
+  if (user.role !== "Head Coach") notFound();
 
   const {
     accountBalance,
@@ -59,13 +36,7 @@ export default async function BillingsAndPaymentsPage() {
     ? stripeAccount.requirements?.currently_due?.length === 0
     : false;
 
-  // const { externalAccounts } = await fetchUserStripeExternalAccount(
-  //   user.stripeAccountId,
-  // );
-
   const { transactions } = await fetchTransactions(user._id);
-
-  const monthlyEarnings = generateMonthlyEarnings(transactions);
 
   return (
     <main className="mx-auto w-[90%] max-w-7xl flex-1 space-y-8 py-4 text-accent-black">
@@ -78,13 +49,9 @@ export default async function BillingsAndPaymentsPage() {
         accountBalanceError={accountBalanceError}
       />
 
-      <EarningStatistics monthlyEarnings={monthlyEarnings} />
+      <EarningStatistics transactions={transactions} />
 
-      <MonthlyStatements
-        transactions={transactions}
-        stripeAccountId={user.stripeAccountId}
-        user={user}
-      />
+      <MonthlyStatements transactions={transactions} user={user} />
 
       <AccountInformationForm
         user={user}

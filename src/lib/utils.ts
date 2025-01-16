@@ -441,3 +441,24 @@ export function calculateMonthlyEarnings(
     })
     .reduce((total, transaction) => total + transaction.price, 0);
 }
+
+export function calculateMonthlyPlatformFees(
+  transactions: TransactionType[],
+  month: number,
+  year: number,
+) {
+  return transactions
+    .filter((transaction) => {
+      const transactionDate = new Date(transaction.purchaseDate);
+      return (
+        transactionDate.getMonth() === month &&
+        transactionDate.getFullYear() === year
+      );
+    })
+    .reduce(
+      (total, transaction) =>
+        total +
+        (transaction.price * (100 - transaction.platformPercentage)) / 100,
+      0,
+    );
+}

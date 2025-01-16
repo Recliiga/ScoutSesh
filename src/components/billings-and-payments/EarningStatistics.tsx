@@ -1,4 +1,6 @@
 import React from "react";
+import { getLast12Months } from "@/lib/utils";
+
 import {
   Card,
   CardContent,
@@ -6,15 +8,40 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import { TransactionType } from "@/app/dashboard/billings-and-payments/page";
+
+function generateMonthlyEarnings(transactions: TransactionType[]) {
+  const last12Months = getLast12Months();
+  const monthlyEarnings = last12Months.map((month) => ({
+    month: month.toLocaleString("default", { month: "short" }),
+    amount: 0,
+  }));
+
+  transactions.forEach((transaction) => {
+    const transactionDate = new Date(transaction.purchaseDate);
+    const transactionYear = transactionDate.getFullYear();
+
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const monthIndex =
+      transactionYear === currentYear
+        ? currentMonth - transactionDate.getMonth()
+        : 11 - transactionDate.getMonth();
+    if (monthIndex >= 0 && monthIndex < 12) {
+      monthlyEarnings[monthIndex].amount += transaction.price;
+    }
+  });
+  return monthlyEarnings.reverse();
+}
 
 export default function EarningStatistics({
-  monthlyEarnings,
+  transactions,
 }: {
-  monthlyEarnings: {
-    month: string;
-    amount: number;
-  }[];
+  transactions: TransactionType[];
 }) {
+  const monthlyEarnings = generateMonthlyEarnings(transactions);
+
   const maxEarning = Math.max(...monthlyEarnings.map((e) => e.amount));
 
   return (

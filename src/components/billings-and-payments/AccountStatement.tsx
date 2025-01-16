@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
-export default function Statement({
+export default function AccountStatement({
   userName,
   organizationName,
   date,
@@ -43,14 +43,22 @@ export default function Statement({
     return newStatement;
   }, [openingBalance, statementTransactions]);
 
+  const closingBalance = useMemo(() => {
+    return statementTransactions.reduce(
+      (prev, curr) =>
+        prev + (curr.price * (100 - curr.platformPercentage)) / 100,
+      0,
+    );
+  }, [statementTransactions]);
+
   function handleDownload() {
     if (!statementRef.current) return;
     html2canvas(statementRef.current).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
       const doc = new jsPDF();
 
-      const imgWidth = doc.internal.pageSize.width - 40; // Set width with a small margin
-      const imgHeight = (canvas.height * imgWidth) / canvas.width; // M
+      const imgWidth = doc.internal.pageSize.width - 40;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
       doc.addImage(imgData, "PNG", 20, 20, imgWidth, imgHeight);
       doc.save(
@@ -60,7 +68,7 @@ export default function Statement({
   }
 
   return (
-    <div className="mx-auto max-w-4xl rounded-lg bg-white p-6 text-sm shadow-[0_0_6px_2px_#eee]">
+    <div className="mx-auto rounded-lg bg-white p-6 text-sm shadow-[0_0_6px_2px_#eee]">
       <div ref={statementRef}>
         <div className="flex items-end justify-between">
           <h2 className="text-xl font-bold text-accent-green-100">ScoutSesh</h2>
@@ -112,7 +120,7 @@ export default function Statement({
             <p className="font-medium text-zinc-600">
               Closing Balance:{" "}
               <span className="font-semibold text-accent-black">
-                {openingBalance}
+                {closingBalance.toFixed(2)}
               </span>
             </p>
           </div>
