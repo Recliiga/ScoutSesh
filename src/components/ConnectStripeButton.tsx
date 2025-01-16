@@ -15,11 +15,7 @@ export default function ConnectStripeButton({
 
   async function handleConnect() {
     setLoading(true);
-    const { url, error } = await createStripeConnectUrl(
-      user.stripeAccountId || null,
-      user.email,
-      user.country.iso2,
-    );
+    const { url, error } = await createStripeConnectUrl(user);
     if (error === null) {
       window.location.href = url;
     } else {
@@ -37,7 +33,13 @@ export default function ConnectStripeButton({
       disabled={loading}
       className="border-accent-green-100 text-accent-green-100 hover:bg-accent-green-100/10 hover:text-accent-green-100 focus-visible:ring focus-visible:ring-accent-green-100/50"
     >
-      {loading ? "Onboarding..." : "Onboard with stripe"}
+      {user.stripeAccountId
+        ? loading
+          ? "Redirecting..."
+          : "Complete account KYC"
+        : loading
+          ? "Onboarding..."
+          : "Onboard with stripe"}
     </Button>
   );
 }

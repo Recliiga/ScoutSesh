@@ -6,6 +6,7 @@ import AthleteEvaluationOrder, {
 } from "@/db/models/AthleteEvaluationOrder";
 import { GroupClassType } from "@/db/models/GroupClass";
 import GroupClassOrder from "@/db/models/GroupClassOrder";
+import User, { UserType } from "@/db/models/User";
 import { getSession } from "@/services/authServices";
 import Stripe from "stripe";
 
@@ -113,18 +114,14 @@ export async function createStripeCheckoutSession<
   }
 }
 
-export async function createStripeConnectUrl(
-  stripeAccountId: string | null,
-  email: string,
-  country: string,
-) {
+export async function createStripeConnectUrl(user: UserType) {
   try {
-    let accountId = stripeAccountId;
+    let accountId = user.stripeAccountId;
     if (!accountId) {
       const account = await stripe.accounts.create({
         type: "express",
-        country,
-        email,
+        country: user.country.iso2,
+        email: user.email,
         capabilities: {
           card_payments: { requested: true },
           transfers: { requested: true },
@@ -132,6 +129,12 @@ export async function createStripeConnectUrl(
       });
       accountId = account.id;
     }
+
+    const updatedUser = await User.findByIdAndUpdate(user._id, {
+      stripeAccountId: accountId,
+    });
+    if (!updatedUser)
+      throw new Error("An error occured saving stripe account to database");
 
     const accountLink = await stripe.accountLinks.create({
       account: accountId,

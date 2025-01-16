@@ -7,7 +7,6 @@ import jwt from "jsonwebtoken";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import Stripe from "stripe";
 
 const errorMessages = {
   firstName: "Please enter your First name",
@@ -94,38 +93,15 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
     // Encrypt password
     const encryptedPassword = await bcrypt.hash(userData.password, 10);
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2024-12-18.acacia",
-    });
-
-    let stripeAccount: Stripe.Response<Stripe.Account> | null = null;
-
     // Check if user exists
     const userExists = await User.findOne({ email: userData.email });
     if (userExists) return { error: "User with email already exists" };
-
-    if (userData.role === "Head Coach") {
-      // Create stripe account for user
-      stripeAccount = await stripe.accounts.create({
-        type: "express",
-        country: userData.country.iso2,
-        email: userData.email,
-        capabilities: {
-          card_payments: { requested: true },
-          transfers: { requested: true },
-        },
-      });
-
-      if (!stripeAccount)
-        return { error: "An error occurred creating stripe account" };
-    }
 
     // Create new user
     await connectDB();
     const newUser = await User.create({
       ...userData,
       password: encryptedPassword,
-      stripeAccountId: stripeAccount?.id,
     });
 
     // Create access token and store in cookie
