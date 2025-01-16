@@ -32,11 +32,9 @@ import stripeCountries from "@/data/stripe-countries.json";
 export default function UserProfilePage({
   user,
   isOwnProfile,
-  stripeAccountVerified,
 }: {
   user: UserType;
   isOwnProfile: boolean;
-  stripeAccountVerified: boolean;
 }) {
   const [userData, setUserData] = useState<UserType>(user);
   const [loading, setLoading] = useState(false);
@@ -219,12 +217,7 @@ export default function UserProfilePage({
                 <p className="text-sm font-semibold text-[#14a800]">
                   {userData.role}
                 </p>
-                {isOwnProfile && (
-                  <ConnectStripeButton
-                    stripeAccountVerified={stripeAccountVerified}
-                    user={user}
-                  />
-                )}
+                {isOwnProfile && <ConnectStripeButton user={user} />}
                 {user.organization && user.organization._id ? (
                   <div className="mt-2 w-fit">
                     <Link

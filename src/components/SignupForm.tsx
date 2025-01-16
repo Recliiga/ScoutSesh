@@ -7,16 +7,8 @@ import Error from "./AuthError";
 import LoadingIndicator from "./LoadingIndicator";
 import useFormEntries from "@/hooks/useFormEntries";
 import Select from "./Select";
-import { SearchIcon } from "lucide-react";
-import { CountryDataType } from "@/services/userServices";
 
-export default function SignupForm({
-  orgId,
-  countries,
-}: {
-  orgId: string;
-  countries: CountryDataType[];
-}) {
+export default function SignupForm({ orgId }: { orgId: string }) {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
@@ -25,9 +17,6 @@ export default function SignupForm({
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [signupError, setSignupError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const [country, setCountry] = useState({ name: "", iso2: "" });
-  const [countrySearchQuery, setCountrySearchQuery] = useState("");
 
   const { formEntries, updateField } = useFormEntries({
     firstName: "",
@@ -38,34 +27,12 @@ export default function SignupForm({
     role: orgId ? "Athlete" : "",
   });
 
-  const emptyField =
-    Object.entries(formEntries).some(([key, value]) =>
-      key !== "organizationID" ? value.trim() === "" : false,
-    ) || !country.iso2.trim();
+  const emptyField = Object.entries(formEntries).some(([key, value]) =>
+    key !== "organizationID" ? value.trim() === "" : false,
+  );
   const anyError = !!(emailError || passwordError || confirmPasswordError);
 
   const cannotSubmit = emptyField || anyError;
-
-  const filteredCountries = countries.filter(
-    (country) =>
-      country.name
-        .toLowerCase()
-        .includes(countrySearchQuery.toLowerCase().trim()) ||
-      country.iso2
-        .toLowerCase()
-        .includes(countrySearchQuery.toLowerCase().trim()),
-  );
-
-  function updateCountryField(countryISO2: string) {
-    const selectedCountry = countries.find(
-      (country) => country.iso2 === countryISO2,
-    );
-    if (!selectedCountry) return;
-    setCountry({
-      name: selectedCountry.name,
-      iso2: countryISO2,
-    });
-  }
 
   const runValidationCheck = useCallback(() => {
     if (formEntries.password && formEntries.password.length < 8) {
@@ -104,7 +71,7 @@ export default function SignupForm({
     setSignupError("");
     setLoading(true);
 
-    const data = await signup({ ...formEntries, country }, redirectUrl);
+    const data = await signup(formEntries, redirectUrl);
 
     if (data?.error) {
       setSignupError(data?.error);
@@ -144,37 +111,6 @@ export default function SignupForm({
               value={formEntries["lastName"]}
               onChange={(e) => updateField("lastName", e.target.value)}
             />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium" htmlFor="country">
-            Country
-          </label>
-          <div className="relative">
-            <Select
-              value={country.iso2}
-              onChange={(value) => updateCountryField(value)}
-              placeholder="Select Country"
-            >
-              <Select.Content className="px-0 pt-0">
-                <div className="sticky top-0 flex items-center border-b bg-white px-2">
-                  <SearchIcon className="h-4 w-4 text-zinc-400" />
-                  <input
-                    type="text"
-                    placeholder="Search Countries"
-                    className="w-full p-2"
-                    value={countrySearchQuery}
-                    onChange={(e) => setCountrySearchQuery(e.target.value)}
-                  />
-                </div>
-                {filteredCountries.map((country) => (
-                  <Select.Option value={country.iso2} key={country.iso2}>
-                    {country.name}
-                  </Select.Option>
-                ))}
-              </Select.Content>
-            </Select>
           </div>
         </div>
 

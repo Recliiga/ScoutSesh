@@ -181,30 +181,48 @@ export async function generateStatement(
 }
 
 export async function addAccountInformation(
-  accountId: string,
+  user: UserType,
   accountInfo: {
     accountNumber: string;
-    country: string;
     accountName: string;
     routingNumber: string;
   },
 ) {
   try {
-    stripe.accounts.createExternalAccount(accountId, {
-      external_account: {
-        object: "bank_account",
-        account_number: accountInfo.accountNumber,
-        country: accountInfo.country,
-        account_holder_name: accountInfo.accountName,
-        account_holder_type: "individual",
-        routing_number: accountInfo.routingNumber,
+    if (!user.stripeAccountId) throw new Error("Invalid Stripe Acount ID");
+
+    const newPayoutAccount = await stripe.accounts.createExternalAccount(
+      user.stripeAccountId,
+      {
+        external_account: {
+          object: "bank_account",
+          account_number: accountInfo.accountNumber,
+          country: user.country.iso2,
+          account_holder_name: accountInfo.accountName,
+          account_holder_type: "individual",
+          routing_number: accountInfo.routingNumber,
+        },
       },
-    });
+    );
+
+    if (!newPayoutAccount)
+      throw new Error("Unable to create new payout account");
+
     return { error: null };
-    return { error: "Error adding new payout account" };
   } catch (err) {
     const error = err as Error;
     console.log("Error adding new payout account: ", error.message);
     return { error: "Error adding new payout account" };
+  }
+}
+
+export async function createStripeLoginLink(stripeAccountId: string) {
+  try {
+    const loginLink = await stripe.accounts.createLoginLink(stripeAccountId);
+    return { url: loginLink.url, error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error creating stripe login link: ", error.message);
+    return { url: null, error: "Error: Unable to create stripe login link" };
   }
 }

@@ -71,7 +71,6 @@ type UserDataType = {
   email: string;
   password: string;
   role: string;
-  country: { name: string; iso2: string };
 };
 
 export async function signup(userData: UserDataType, redirectUrl: string) {

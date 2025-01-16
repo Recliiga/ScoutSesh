@@ -200,7 +200,7 @@ export default function MonthlyStatements({
           userName={getFullname(user)}
           organizationName={user.organization!.name}
           date={format(new Date(selectedMonth), "MMMM yyyy")}
-          statement={statement}
+          statementTransactions={statement}
           openingBalance={openingBalance}
         />
       )}

@@ -10,13 +10,13 @@ export default function Statement({
   userName,
   organizationName,
   date,
-  statement,
+  statementTransactions,
   openingBalance,
 }: {
   userName: string;
   organizationName: string;
   date: string;
-  statement: TransactionType[];
+  statementTransactions: TransactionType[];
   openingBalance: number;
 }) {
   const statementRef = useRef<HTMLDivElement | null>(null);
@@ -29,17 +29,19 @@ export default function Statement({
       description: string;
     }[] = [];
     let currentBalance = openingBalance;
-    statement.forEach((charge) => {
-      currentBalance = currentBalance + charge.price;
+    statementTransactions.forEach((transaction) => {
+      const netPrice =
+        (transaction.price * (100 - transaction.platformPercentage)) / 100;
+      currentBalance = currentBalance + netPrice;
       newStatement.push({
-        amount: charge.price,
-        date: format(new Date(charge.purchaseDate), "yyyy-MM-dd"),
+        amount: netPrice,
+        date: format(new Date(transaction.purchaseDate), "yyyy-MM-dd"),
         balance: currentBalance,
         description: "Payment Received",
       });
     });
     return newStatement;
-  }, [openingBalance, statement]);
+  }, [openingBalance, statementTransactions]);
 
   function handleDownload() {
     if (!statementRef.current) return;
@@ -52,7 +54,7 @@ export default function Statement({
 
       doc.addImage(imgData, "PNG", 20, 20, imgWidth, imgHeight);
       doc.save(
-        `${userName.toLowerCase().split(" ").join("_")}_scoutsesh_account_statement.pdf`,
+        `${date.toLowerCase().split(" ").join("_")}_scoutsesh_account_statement.pdf`,
       );
     });
   }
@@ -93,7 +95,14 @@ export default function Statement({
             <p className="font-medium text-zinc-600">
               Total Credit:{" "}
               <span className="font-semibold text-accent-black">
-                {statement.reduce((prev, curr) => prev + curr.price, 0)}
+                {statementTransactions
+                  .reduce(
+                    (prev, curr) =>
+                      prev +
+                      (curr.price * (100 - curr.platformPercentage)) / 100,
+                    0,
+                  )
+                  .toFixed(2)}
               </span>
             </p>
             <p className="font-medium text-zinc-600">
