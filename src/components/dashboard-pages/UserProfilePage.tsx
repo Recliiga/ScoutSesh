@@ -218,6 +218,7 @@ export default function UserProfilePage({
                 {isOwnProfile && (
                   <ConnectStripeButton
                     stripeAccountVerified={stripeAccountVerified}
+                    user={user}
                   />
                 )}
                 {user.organization && user.organization._id ? (

@@ -113,10 +113,28 @@ export async function createStripeCheckoutSession<
   }
 }
 
-export async function createStripeConnectUrl(stripeAccountId: string) {
+export async function createStripeConnectUrl(
+  stripeAccountId: string | null,
+  email: string,
+  country: string,
+) {
   try {
+    let accountId = stripeAccountId;
+    if (!accountId) {
+      const account = await stripe.accounts.create({
+        type: "express",
+        country,
+        email,
+        capabilities: {
+          card_payments: { requested: true },
+          transfers: { requested: true },
+        },
+      });
+      accountId = account.id;
+    }
+
     const accountLink = await stripe.accountLinks.create({
-      account: stripeAccountId,
+      account: accountId,
       refresh_url: `${process.env.BASE_URL}/dashboard/profile`,
       return_url: `${process.env.BASE_URL}/dashboard/profile`,
       type: "account_onboarding",
@@ -169,17 +187,17 @@ export async function addAccountInformation(
   },
 ) {
   try {
-    // stripe.accounts.createExternalAccount(accountId, {
-    //   external_account: {
-    //     object: "bank_account",
-    //     account_number: accountInfo.accountNumber,
-    //     country: accountInfo.country,
-    //     account_holder_name: accountInfo.accountName,
-    //     account_holder_type: "individual",
-    //     routing_number: accountInfo.routingNumber,
-    //   },
-    // });
-    // return { error: null };
+    stripe.accounts.createExternalAccount(accountId, {
+      external_account: {
+        object: "bank_account",
+        account_number: accountInfo.accountNumber,
+        country: accountInfo.country,
+        account_holder_name: accountInfo.accountName,
+        account_holder_type: "individual",
+        routing_number: accountInfo.routingNumber,
+      },
+    });
+    return { error: null };
     return { error: "Error adding new payout account" };
   } catch (err) {
     const error = err as Error;

@@ -2,24 +2,24 @@ import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { createStripeConnectUrl } from "@/actions/stripeActions";
 import toast from "react-hot-toast";
+import { UserType } from "@/db/models/User";
 
 export default function ConnectStripeButton({
-  stripeAccountId,
   stripeAccountVerified,
+  user,
 }: {
-  stripeAccountId?: string;
   stripeAccountVerified: boolean;
+  user: UserType;
 }) {
   const [loading, setLoading] = useState(false);
 
   async function handleConnect() {
-    if (!stripeAccountId)
-      return toast.error(
-        "Failed to initiate Stripe onboarding. Please contact support for assistance.",
-      );
-
     setLoading(true);
-    const { url, error } = await createStripeConnectUrl(stripeAccountId);
+    const { url, error } = await createStripeConnectUrl(
+      user.stripeAccountId || null,
+      user.email,
+      user.country.iso2,
+    );
     if (error === null) {
       window.location.href = url;
     } else {
