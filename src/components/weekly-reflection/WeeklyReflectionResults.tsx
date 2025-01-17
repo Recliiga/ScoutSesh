@@ -21,13 +21,15 @@ import { getFullname } from "@/lib/utils";
 
 export default function WeeklyReflectionResults({
   goalData,
-  comments: goalComments,
+  goalComments,
+  forAthlete,
 }: {
   goalData: GoalDataSchemaType;
-  comments: GoalCommentType[];
+  goalComments: GoalCommentType[];
+  forAthlete: boolean;
 }) {
   const [activeComment, setActiveComment] = useState<GoalCommentType | null>(
-    null
+    null,
   );
   const [loading, setLoading] = useState(false);
   const [activeSection, setActiveSection] = useState("");
@@ -54,7 +56,7 @@ export default function WeeklyReflectionResults({
     const { newComment, error } = await postGoalComment(
       text,
       goalData._id,
-      activeSection
+      activeSection,
     );
 
     if (error === null) {
@@ -70,12 +72,12 @@ export default function WeeklyReflectionResults({
   return (
     <>
       <ScrollArea className="flex-1">
-        <div className="mx-auto py-4 w-[90%] max-w-6xl">
-          <h2 className="mb-2 font-semibold text-2xl">
+        <div className="mx-auto w-[90%] max-w-6xl py-4">
+          <h2 className="mb-2 text-2xl font-semibold">
             Weekly Reflection Results
           </h2>
-          <h1 className="mb-2 font-bold text-3xl">{goalData.name}</h1>
-          <div className="mb-6 text-muted-foreground text-sm">
+          <h1 className="mb-2 text-3xl font-bold">{goalData.name}</h1>
+          <div className="mb-6 text-sm text-muted-foreground">
             {new Date(goalData.createdAt).toDateString()}
           </div>
           <Card className="mb-8">
@@ -84,7 +86,7 @@ export default function WeeklyReflectionResults({
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-4">
-                <Avatar className="w-16 h-16">
+                <Avatar className="h-16 w-16">
                   <AvatarImage
                     src={goalData.user.profilePicture}
                     alt={reflectionDataUserName}
@@ -98,7 +100,7 @@ export default function WeeklyReflectionResults({
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h2 className="font-semibold text-xl">
+                  <h2 className="text-xl font-semibold">
                     {reflectionDataUserName}
                   </h2>
                   <p className="text-muted-foreground">{goalData.user.role}</p>
@@ -107,13 +109,13 @@ export default function WeeklyReflectionResults({
             </CardContent>
           </Card>
           <Card className="mb-8">
-            <CardHeader className="p-4 sm:p-6 pb-0">
+            <CardHeader className="p-4 pb-0 sm:p-6">
               <CardTitle>Goal Overview</CardTitle>
             </CardHeader>
-            <CardContent className="p-4 sm:p-6 pt-0">
+            <CardContent className="p-4 pt-0 sm:p-6">
               <div className="space-y-4">
                 <div>
-                  <h3 className="mb-2 font-semibold text-lg">
+                  <h3 className="mb-2 text-lg font-semibold">
                     What is your Aspiration?
                   </h3>
                   <Popover>
@@ -128,14 +130,14 @@ export default function WeeklyReflectionResults({
                       </div>
                     </PopoverTrigger>
                     <PopoverContent className="w-80">
-                      <div className="flex justify-between items-center mb-2">
+                      <div className="mb-2 flex items-center justify-between">
                         <h4 className="font-semibold">Comments</h4>
                         <button
                           onClick={closePopover}
                           className="text-gray-500 hover:text-gray-700"
                           aria-label="Close comments"
                         >
-                          <XIcon className="w-4 h-4" />
+                          <XIcon className="h-4 w-4" />
                         </button>
                       </div>
                       <WeeklyReflectionCommentableText
@@ -148,7 +150,7 @@ export default function WeeklyReflectionResults({
                   </Popover>
                 </div>
                 <div>
-                  <h3 className="mb-2 font-semibold text-lg">
+                  <h3 className="mb-2 text-lg font-semibold">
                     What are your Strengths?
                   </h3>
                   <Popover>
@@ -163,14 +165,14 @@ export default function WeeklyReflectionResults({
                       </div>
                     </PopoverTrigger>
                     <PopoverContent className="w-80">
-                      <div className="flex justify-between items-center mb-2">
+                      <div className="mb-2 flex items-center justify-between">
                         <h4 className="font-semibold">Comments</h4>
                         <button
                           onClick={closePopover}
                           className="text-gray-500 hover:text-gray-700"
                           aria-label="Close comments"
                         >
-                          <XIcon className="w-4 h-4" />
+                          <XIcon className="h-4 w-4" />
                         </button>
                       </div>
                       <WeeklyReflectionCommentableText
@@ -183,7 +185,7 @@ export default function WeeklyReflectionResults({
                   </Popover>
                 </div>
                 <div>
-                  <h3 className="mb-2 font-semibold text-lg">
+                  <h3 className="mb-2 text-lg font-semibold">
                     What are your Weaknesses?
                   </h3>
                   <Popover>
@@ -198,14 +200,14 @@ export default function WeeklyReflectionResults({
                       </div>
                     </PopoverTrigger>
                     <PopoverContent className="w-80">
-                      <div className="flex justify-between items-center mb-2">
+                      <div className="mb-2 flex items-center justify-between">
                         <h4 className="font-semibold">Comments</h4>
                         <button
                           onClick={closePopover}
                           className="text-gray-500 hover:text-gray-700"
                           aria-label="Close comments"
                         >
-                          <XIcon className="w-4 h-4" />
+                          <XIcon className="h-4 w-4" />
                         </button>
                       </div>
                       <WeeklyReflectionCommentableText
@@ -220,20 +222,23 @@ export default function WeeklyReflectionResults({
               </div>
             </CardContent>
           </Card>
-          <Card className="mb-8">
-            <CardHeader>
+          <Card className="mb-8 flex flex-col gap-4 p-4 sm:gap-6 sm:p-6">
+            <CardHeader className="p-0">
               <CardTitle>Goal Reflections</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               <div className="space-y-6">
                 {goalData.goals.map((goal, index) => (
-                  <Card key={index} className="bg-green-50">
-                    <CardHeader>
+                  <Card
+                    key={index}
+                    className="flex flex-col gap-4 bg-green-50 p-4 sm:gap-6 sm:p-6"
+                  >
+                    <CardHeader className="p-0">
                       <CardTitle className="text-lg">
                         Goal #{index + 1}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-0">
                       <div className="space-y-4">
                         <div>
                           <h4 className="mb-1 font-medium">Goal:</h4>
@@ -249,14 +254,14 @@ export default function WeeklyReflectionResults({
                               </div>
                             </PopoverTrigger>
                             <PopoverContent className="w-80">
-                              <div className="flex justify-between items-center mb-2">
+                              <div className="mb-2 flex items-center justify-between">
                                 <h4 className="font-semibold">Comments</h4>
                                 <button
                                   onClick={closePopover}
                                   className="text-gray-500 hover:text-gray-700"
                                   aria-label="Close comments"
                                 >
-                                  <XIcon className="w-4 h-4" />
+                                  <XIcon className="h-4 w-4" />
                                 </button>
                               </div>
                               <WeeklyReflectionCommentableText
@@ -268,7 +273,7 @@ export default function WeeklyReflectionResults({
                             </PopoverContent>
                           </Popover>
                         </div>
-                        <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                           <div>
                             <h4 className="mb-1 font-medium">
                               What will I need to do to achieve this?
@@ -285,14 +290,14 @@ export default function WeeklyReflectionResults({
                                 </div>
                               </PopoverTrigger>
                               <PopoverContent className="w-80">
-                                <div className="flex justify-between items-center mb-2">
+                                <div className="mb-2 flex items-center justify-between">
                                   <h4 className="font-semibold">Comments</h4>
                                   <button
                                     onClick={closePopover}
                                     className="text-gray-500 hover:text-gray-700"
                                     aria-label="Close comments"
                                   >
-                                    <XIcon className="w-4 h-4" />
+                                    <XIcon className="h-4 w-4" />
                                   </button>
                                 </div>
                                 <WeeklyReflectionCommentableText
@@ -320,14 +325,14 @@ export default function WeeklyReflectionResults({
                                 </div>
                               </PopoverTrigger>
                               <PopoverContent className="w-80">
-                                <div className="flex justify-between items-center mb-2">
+                                <div className="mb-2 flex items-center justify-between">
                                   <h4 className="font-semibold">Comments</h4>
                                   <button
                                     onClick={closePopover}
                                     className="text-gray-500 hover:text-gray-700"
                                     aria-label="Close comments"
                                   >
-                                    <XIcon className="w-4 h-4" />
+                                    <XIcon className="h-4 w-4" />
                                   </button>
                                 </div>
                                 <WeeklyReflectionCommentableText
@@ -355,14 +360,14 @@ export default function WeeklyReflectionResults({
                                 </div>
                               </PopoverTrigger>
                               <PopoverContent className="w-80">
-                                <div className="flex justify-between items-center mb-2">
+                                <div className="mb-2 flex items-center justify-between">
                                   <h4 className="font-semibold">Comments</h4>
                                   <button
                                     onClick={closePopover}
                                     className="text-gray-500 hover:text-gray-700"
                                     aria-label="Close comments"
                                   >
-                                    <XIcon className="w-4 h-4" />
+                                    <XIcon className="h-4 w-4" />
                                   </button>
                                 </div>
                                 <WeeklyReflectionCommentableText
@@ -379,24 +384,24 @@ export default function WeeklyReflectionResults({
                               Initial Confidence:
                             </h4>
                             <ConfidenceMeter score={goal.confidence} />
-                            <p className="mt-1 text-gray-600 text-sm">
+                            <p className="mt-1 text-sm text-gray-600">
                               {goal.confidence}/10
                             </p>
                           </div>
                         </div>
-                        <div className="flex flex-col gap-4 border-gray-200 bg-gray-100 p-4 border rounded-lg">
+                        <div className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-gray-100 p-4">
                           <h4 className="font-medium text-gray-800">
                             Weekly Reflections:
                           </h4>
                           {goal.weeklyReflections.map((weeklyReflection, i) => (
                             <div
                               key={weeklyReflection._id}
-                              className="flex flex-col gap-2 bg-white px-4 p-2 rounded-md"
+                              className="flex flex-col gap-2 rounded-md bg-white p-2 px-4"
                             >
                               <h5 className="font-semibold text-accent-black">
                                 Week #{i + 1}
                               </h5>
-                              <div className="bg-white rounded">
+                              <div className="rounded bg-white">
                                 <h5 className="font-medium text-gray-700">
                                   Is this strategy servicing my goal?
                                 </h5>
@@ -412,7 +417,7 @@ export default function WeeklyReflectionResults({
                                     </div>
                                   </PopoverTrigger>
                                   <PopoverContent className="w-80">
-                                    <div className="flex justify-between items-center mb-2">
+                                    <div className="mb-2 flex items-center justify-between">
                                       <h4 className="font-semibold">
                                         Comments
                                       </h4>
@@ -421,7 +426,7 @@ export default function WeeklyReflectionResults({
                                         className="text-gray-500 hover:text-gray-700"
                                         aria-label="Close comments"
                                       >
-                                        <XIcon className="w-4 h-4" />
+                                        <XIcon className="h-4 w-4" />
                                       </button>
                                     </div>
                                     <WeeklyReflectionCommentableText
@@ -433,7 +438,7 @@ export default function WeeklyReflectionResults({
                                   </PopoverContent>
                                 </Popover>
                               </div>
-                              <div className="bg-white rounded">
+                              <div className="rounded bg-white">
                                 <h5 className="font-medium text-gray-700">
                                   Did I complete this goal?
                                 </h5>
@@ -449,7 +454,7 @@ export default function WeeklyReflectionResults({
                                     </div>
                                   </PopoverTrigger>
                                   <PopoverContent className="w-80">
-                                    <div className="flex justify-between items-center mb-2">
+                                    <div className="mb-2 flex items-center justify-between">
                                       <h4 className="font-semibold">
                                         Comments
                                       </h4>
@@ -458,7 +463,7 @@ export default function WeeklyReflectionResults({
                                         className="text-gray-500 hover:text-gray-700"
                                         aria-label="Close comments"
                                       >
-                                        <XIcon className="w-4 h-4" />
+                                        <XIcon className="h-4 w-4" />
                                       </button>
                                     </div>
                                     <WeeklyReflectionCommentableText
@@ -480,21 +485,25 @@ export default function WeeklyReflectionResults({
               </div>
             </CardContent>
           </Card>
-          <div className="flex justify-between mt-8 mb-4 w-full">
+          <div className="mb-4 mt-8 flex w-full justify-between">
             <Button variant={"outline"} className="px-0 py-0">
               <Link
                 href={"/dashboard/goal-setting/submissions"}
-                className="px-2 sm:px-4 py-2 w-full h-full"
+                className="h-full w-full px-2 py-2 sm:px-4"
               >
                 Back to Submissions
               </Link>
             </Button>
             <Button className="bg-green-500 px-0 py-0 text-white">
               <Link
-                href={"/dashboard/goal-setting"}
-                className="px-2 sm:px-4 py-2 w-full h-full"
+                href={
+                  forAthlete
+                    ? `/dashboard/goal-setting/submissions/${goalData._id}/edit`
+                    : "/dashboard/goal-setting"
+                }
+                className="h-full w-full px-2 py-2 sm:px-4"
               >
-                Go to Home Page
+                {forAthlete ? "Edit" : "Go to Home Page"}
               </Link>
             </Button>
           </div>

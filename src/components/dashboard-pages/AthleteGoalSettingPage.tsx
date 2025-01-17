@@ -7,8 +7,8 @@ import { getGoalDueDate, getWeeklyReflectionStatus } from "@/lib/utils";
 import { notFound } from "next/navigation";
 
 export default async function AthleteGoalSettingPage() {
-  const { goalData, error } = await fetchAthleteLatestGoalData();
-  if (error !== null) notFound();
+  const { goalData } = await fetchAthleteLatestGoalData();
+  if (!goalData) notFound();
 
   const status = await getWeeklyReflectionStatus(goalData);
 
@@ -26,7 +26,7 @@ export default async function AthleteGoalSettingPage() {
         </p>
         <GoalSettingNotificationSign
           status={status}
-          dueDate={goalData && getGoalDueDate(goalData)}
+          dueDate={getGoalDueDate(goalData)}
         />
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {canCreateNewGoals ? (
@@ -43,12 +43,16 @@ export default async function AthleteGoalSettingPage() {
               description="You cannot create new goals until you have completed your current ones. Stay focused and finish your existing goals to make room for new challenges and achievements."
               icon={<Target className="h-6 w-6 text-green-600" />}
               actionText="View Latest Goal"
-              href={`/dashboard/goal-setting/submissions/${goalData?._id}`}
+              href={`/dashboard/goal-setting/submissions/${goalData._id}`}
             />
           )}
           <GoalCard
             title="Complete Weekly Reflection"
-            description="Reflect on your progress, identify challenges, and adjust your goals as needed. Regular reflection helps you stay on track and make necessary improvements."
+            description={
+              status === "needs_reflection"
+                ? "Reflect on your progress, identify challenges, and adjust your goals as needed. Regular reflection helps you stay on track and make necessary improvements."
+                : `Weekly reflection isn't quite due yet. Please hold off until ${getGoalDueDate(goalData)} to assess your progress. Stay focused and keep pushing forward until then!`
+            }
             icon={<ClipboardCheck className="h-6 w-6 text-green-600" />}
             actionText="Start Reflection"
             href={"/dashboard/goal-setting/weekly-reflection"}
