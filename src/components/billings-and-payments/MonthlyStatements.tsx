@@ -102,7 +102,6 @@ export default function MonthlyStatements({
     currentSelectedMonth,
     currentSelectedYear,
   );
-  console.log(currentMonthPlatformFees);
 
   const netEarnings = currentMonthEarnings - currentMonthPlatformFees;
 
