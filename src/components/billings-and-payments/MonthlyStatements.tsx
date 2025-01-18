@@ -107,26 +107,34 @@ export default function MonthlyStatements({
   const netEarnings = currentMonthEarnings - currentMonthPlatformFees;
 
   async function handleGenerateStatement() {
-    setLoading(true);
-    const startDate = new Date(currentSelectedYear, currentSelectedMonth, 1);
-    const endDate = new Date(currentSelectedYear, currentSelectedMonth + 1, 0);
-
-    const { transactions: allTransactions, error } = await fetchAllTransactions(
-      user._id,
-    );
-    if (error !== null) {
-      toast.error("Failed to fetch transactions. Please try again later.");
-    } else {
-      const selectedMonthTransactions = allTransactions.filter(
-        (transaction) => {
-          const transactionDate = new Date(transaction.purchaseDate);
-          return transactionDate >= startDate && transactionDate <= endDate;
-        },
+    try {
+      setLoading(true);
+      const startDate = new Date(currentSelectedYear, currentSelectedMonth, 1);
+      const endDate = new Date(
+        currentSelectedYear,
+        currentSelectedMonth + 1,
+        0,
       );
 
-      setStatement(selectedMonthTransactions);
+      const { transactions: allTransactions, error } =
+        await fetchAllTransactions(user._id);
+      if (error !== null) {
+        toast.error("Failed to fetch transactions. Please try again later.");
+      } else {
+        const selectedMonthTransactions = allTransactions.filter(
+          (transaction) => {
+            const transactionDate = new Date(transaction.purchaseDate);
+            return transactionDate >= startDate && transactionDate <= endDate;
+          },
+        );
+
+        setStatement(selectedMonthTransactions);
+      }
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
