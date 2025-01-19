@@ -28,6 +28,7 @@ import useClickOutside from "@/hooks/useClickOutside";
 import ConnectStripeButton from "../ConnectStripeButton";
 import Select from "../Select";
 import stripeCountries from "@/data/stripe-countries.json";
+import ConnectGoogleButton from "../ConnectGoogleButton";
 
 export default function UserProfilePage({
   user,
@@ -217,7 +218,10 @@ export default function UserProfilePage({
                 <p className="text-sm font-semibold text-[#14a800]">
                   {userData.role}
                 </p>
-                {isOwnProfile && <ConnectStripeButton user={user} />}
+                <div className="flex items-center gap-4">
+                  {isOwnProfile && <ConnectStripeButton user={user} />}
+                  {isOwnProfile && <ConnectGoogleButton user={user} />}
+                </div>
                 {user.organization && user.organization._id ? (
                   <div className="mt-2 w-fit">
                     <Link
