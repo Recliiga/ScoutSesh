@@ -2,8 +2,8 @@
 
 import connectDB from "@/db/connectDB";
 import User, { UserType } from "@/db/models/User";
+import { signToken } from "@/lib/utils";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -50,7 +50,9 @@ export async function login(formData: FormData, redirectUrl: string) {
       return { error: "Invalid email and password combination" };
 
     // Create access token and store in cookie
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!);
+    const { token, error } = signToken({ userId: user._id });
+    if (error !== null) throw new Error(error);
+
     cookieStore.set("token", token, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
@@ -104,7 +106,9 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
     });
 
     // Create access token and store in cookie
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET!);
+    const { token, error } = signToken({ userId: newUser._id });
+    if (error !== null) throw new Error(error);
+
     cookieStore.set("token", token, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,

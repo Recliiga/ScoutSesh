@@ -1,6 +1,6 @@
 import { UserType } from "@/db/models/User";
 import { cookies, headers } from "next/headers";
-import jwt from "jsonwebtoken";
+import { verifyToken } from "@/lib/utils";
 
 export async function getSession(): Promise<
   | {
@@ -26,6 +26,8 @@ export async function getSession(): Promise<
     return { user, error };
   } catch (err) {
     const error = err as Error;
+    console.log("Get Session Error: ", error.message);
+
     return { user: null, error: error.message };
   }
 }
@@ -41,10 +43,12 @@ export async function getSessionFromHeaders(): Promise<UserType> {
 export async function getAdminSession() {
   try {
     const cookieStore = await cookies();
+
     const token = cookieStore.get("adminToken")?.value;
     if (!token) throw new Error("Invalid token");
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("Invalid token");
+
+    const { payload, error } = verifyToken(token);
+    if (error !== null) throw new Error(error);
 
     const isAuthenticated: true | undefined = payload.isAuthenticated;
 

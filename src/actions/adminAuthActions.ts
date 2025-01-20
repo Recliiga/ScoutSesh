@@ -1,6 +1,6 @@
 "use server";
 
-import jwt from "jsonwebtoken";
+import { signToken } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -19,7 +19,9 @@ export async function loginAdmin(email: string, password: string) {
     )
       return { error: "Invalid email and password combination" };
 
-    const token = jwt.sign({ isAuthenticated: true }, process.env.JWT_SECRET!);
+    const { token, error } = signToken({ isAuthenticated: true });
+    if (error !== null) throw new Error(error);
+
     cookieStore.set("adminToken", token, {
       httpOnly: true,
       maxAge: 60 * 60 * 24,

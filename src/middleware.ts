@@ -127,26 +127,28 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
-export const config: MiddlewareConfig = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     */
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
-  ],
-};
-
 // export const config: MiddlewareConfig = {
 //   matcher: [
-//     "/login",
-//     "/signup",
-//     "/dashboard/:path*",
-//     "/invite/:path*",
-//     "/complete-profile",
-//     "/create-organization",
+//     /*
+//      * Match all request paths except for the ones starting with:
+//      * - api (API routes)
+//      * - _next/static (static files)
+//      * - _next/image (image optimization files)
+//      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+//      */
+//     "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
 //   ],
 // };
+
+export const config: MiddlewareConfig = {
+  matcher: [
+    "/login",
+    "/signup",
+    "/forgot-password",
+    "/dashboard/:path*",
+    "/verify-email",
+    "/invite/:path*",
+    "/complete-profile",
+    "/create-organization",
+  ],
+};
