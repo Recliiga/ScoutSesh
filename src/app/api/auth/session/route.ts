@@ -21,9 +21,11 @@ export async function GET(request: NextRequest) {
     if (user.status !== "Active") throw new Error("User account not active");
 
     return NextResponse.json({ user, error: null });
-  } catch (error) {
+  } catch (err) {
+    const error = err as Error;
+    console.log("Get Session Error: ", error.message);
     return NextResponse.json(
-      { user: null, error: (error as Error).message },
+      { user: null, error: error.message },
       { status: 401 },
     );
   }
