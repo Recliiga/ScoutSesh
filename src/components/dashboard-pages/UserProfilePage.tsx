@@ -25,6 +25,9 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import useClickOutside from "@/hooks/useClickOutside";
+import ConnectStripeButton from "../ConnectStripeButton";
+import Select from "../Select";
+import stripeCountries from "@/data/stripe-countries.json";
 
 export default function UserProfilePage({
   user,
@@ -38,6 +41,14 @@ export default function UserProfilePage({
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(
+    new Date(user.DOB).getMonth(),
+  );
+  const [selectedYear, setSelectedYear] = useState(
+    new Date(user.DOB).getFullYear(),
+  );
+  // const [zoomLoading, setZoomLoading] = useState(false);
+  // const [zoomConnected, setZoomConnected] = useState(!!user.zoomRefreshToken);
 
   const [calendarRef] = useClickOutside(() => setCalendarOpen(false));
 
@@ -45,17 +56,17 @@ export default function UserProfilePage({
     firstName: user.firstName,
     lastName: user.lastName,
     profilePicture: user.profilePicture,
-    location: user.location,
+    city: user.city,
+    country: user.country,
     primarySport: user.primarySport,
     experience: user.experience,
     bio: user.bio,
     DOB: new Date(user.DOB).toString(),
-    selectedMonth: new Date(user.DOB).getMonth(),
-    selectedYear: new Date(user.DOB).getFullYear(),
   });
 
   async function handleUpdateUser() {
     if (!isOwnProfile) return;
+    if (!formEntries.country.iso2 || !formEntries.city) return;
     setError(null);
     setLoading(true);
     let newProfilePicture;
@@ -93,6 +104,8 @@ export default function UserProfilePage({
         userData[key as keyof UserType],
       );
     });
+    setSelectedMonth(new Date(user.DOB).getMonth());
+    setSelectedYear(new Date(user.DOB).getFullYear());
     setIsEditing(false);
   }
 
@@ -115,6 +128,17 @@ export default function UserProfilePage({
   const monthOfBirth = dateOfBirth.getMonth() + 1;
   const dayOfBirth = dateOfBirth.getDate();
   const formattedDOB = `${dateOfBirth.getFullYear()}-${monthOfBirth < 10 ? "0" : ""}${monthOfBirth}-${dayOfBirth < 10 ? "0" : ""}${dayOfBirth}`;
+
+  function handleChangeCountry(countryISO2: string) {
+    const selectedCountry = stripeCountries.find(
+      (country) => country.iso2 === countryISO2,
+    );
+    if (!selectedCountry) return;
+    updateField("country", {
+      iso2: selectedCountry.iso2,
+      name: selectedCountry.name,
+    });
+  }
 
   return (
     <main className="flex-1 bg-gray-50 py-4">
@@ -181,16 +205,24 @@ export default function UserProfilePage({
                     />
                   </div>
                 ) : (
-                  <CardTitle className="text-3xl font-bold text-gray-800">
-                    {userData.firstName} {userData.lastName}
-                  </CardTitle>
+                  <div className="">
+                    <CardTitle className="text-3xl font-bold text-gray-800">
+                      {userData.firstName} {userData.lastName}
+                    </CardTitle>
+                    {isOwnProfile && (
+                      <p className="text-sm text-zinc-500">{userData.email}</p>
+                    )}
+                  </div>
                 )}
-                <p className="font-semibold text-[#14a800]">{userData.role}</p>
+                <p className="text-sm font-semibold text-[#14a800]">
+                  {userData.role}
+                </p>
+                {isOwnProfile && <ConnectStripeButton user={user} />}
                 {user.organization && user.organization._id ? (
                   <div className="mt-2 w-fit">
                     <Link
                       href={`/dashboard/organization/${user.organization._id}`}
-                      className="flex items-center space-x-2 rounded-md border border-gray-200 bg-white px-4 py-2 text-gray-800 hover:bg-gray-50"
+                      className="flex items-center space-x-2 rounded-md border border-gray-200 bg-white px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
                     >
                       <Avatar className="h-6 w-6">
                         <AvatarImage
@@ -239,24 +271,49 @@ export default function UserProfilePage({
           </CardHeader>
           <CardContent className="space-y-6 p-4 sm:p-6">
             <div
-              className={`grid grid-cols-1 gap-4 ${user.role === "Athlete" ? "sm:grid-cols-2" : "md:grid-cols-3"}`}
+              className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${user.role === "Athlete" ? "lg:grid-cols-3" : ""}`}
             >
               <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                 <MapPinIcon className="h-5 w-5 text-[#14a800]" />
-                <span className="text-sm text-gray-600">Location:</span>
+                <span className="text-sm text-gray-600">Country:</span>
+                {isEditing ? (
+                  <Select
+                    value={formEntries.country.iso2}
+                    displayValue={formEntries.country.name}
+                    onChange={handleChangeCountry}
+                    containerClassName="w-full"
+                    disabled={loading}
+                  >
+                    <Select.Content>
+                      {stripeCountries.map((country) => (
+                        <Select.Option value={country.iso2} key={country.iso2}>
+                          {country.name}
+                        </Select.Option>
+                      ))}
+                    </Select.Content>
+                  </Select>
+                ) : (
+                  <span className="font-medium text-gray-800">
+                    {userData.country.name}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
+                <MapPinIcon className="h-5 w-5 text-[#14a800]" />
+                <span className="text-sm text-gray-600">City:</span>
                 {isEditing ? (
                   <input
                     type="text"
                     disabled={loading}
-                    name="location"
-                    placeholder="Location"
-                    value={formEntries.location}
-                    onChange={(e) => updateField("location", e.target.value)}
-                    className="w-0 flex-1 rounded-md border px-4 py-2 text-sm disabled:bg-accent-gray-100"
+                    placeholder="e.g New York"
+                    name="city"
+                    value={formEntries.city}
+                    onChange={(e) => updateField("city", e.target.value)}
+                    className="w-full flex-1 rounded-md border px-4 py-2 text-sm disabled:bg-accent-gray-100"
                   />
                 ) : (
                   <span className="font-medium text-gray-800">
-                    {userData.location}
+                    {userData.city}
                   </span>
                 )}
               </div>
@@ -321,7 +378,7 @@ export default function UserProfilePage({
                           !formEntries.DOB && "text-muted-foreground",
                         )}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="mr- h-4 w-4" />
                         {formEntries.DOB ? (
                           format(formEntries.DOB, "PPP")
                         ) : (
@@ -334,12 +391,9 @@ export default function UserProfilePage({
                         <div className="flex justify-between p-3">
                           <select
                             disabled={loading}
-                            value={formEntries.selectedYear}
+                            value={selectedYear}
                             onChange={(e) =>
-                              updateField(
-                                "selectedYear",
-                                parseInt(e.target.value),
-                              )
+                              setSelectedYear(parseInt(e.target.value))
                             }
                             className="rounded border px-2 py-1"
                           >
@@ -354,12 +408,9 @@ export default function UserProfilePage({
                           </select>
                           <select
                             disabled={loading}
-                            value={formEntries.selectedMonth.toString()}
+                            value={selectedMonth.toString()}
                             onChange={(e) =>
-                              updateField(
-                                "selectedMonth",
-                                Number(e.target.value),
-                              )
+                              setSelectedMonth(Number(e.target.value))
                             }
                             className="rounded border px-2 py-1"
                           >
@@ -381,15 +432,10 @@ export default function UserProfilePage({
                             updateField("DOB", value.toString());
                             setCalendarOpen(false);
                           }}
-                          month={
-                            new Date(
-                              formEntries.selectedYear,
-                              formEntries.selectedMonth,
-                            )
-                          }
+                          month={new Date(selectedYear, selectedMonth)}
                           onMonthChange={(date) => {
-                            updateField("selectedMonth", date.getMonth());
-                            updateField("selectedYear", date.getFullYear());
+                            setSelectedMonth(date.getMonth());
+                            setSelectedYear(date.getFullYear());
                           }}
                           initialFocus
                         />
@@ -457,3 +503,75 @@ export default function UserProfilePage({
     </main>
   );
 }
+
+/*
+{
+  user.role === "Head Coach" && isOwnProfile ? (
+    !zoomConnected ? (
+      <Link href={"/api/zoom/auth"} className="mt-2 block" prefetch={false}>
+        <Button
+          variant={"outline"}
+          className="border-[#2D8CFF] text-[#2D8CFF] hover:bg-[#2D8CFF]/10 hover:text-[#2D8CFF]"
+        >
+          <svg
+            width={24}
+            height={24}
+            viewBox="0 0 192 192"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+          >
+            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                stroke="#2D8CFF"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="12"
+                d="M16.869 60.973v53.832c.048 12.173 10.87 21.965 24.072 21.925h85.406c2.42 0 4.385-1.797 4.385-3.978V78.92c-.064-12.164-10.887-21.965-24.073-21.917H21.237c-2.412 0-4.368 1.79-4.368 3.97zm119.294 21.006 35.27-23.666c3.06-2.332 5.432-1.749 5.432 2.468v72.171c0 4.8-2.9 4.217-5.432 2.468l-35.27-23.618V81.98z"
+              ></path>
+            </g>
+          </svg>
+          Connect Zoom
+        </Button>
+      </Link>
+    ) : (
+      <Button
+        variant={"outline"}
+        className="flex-center mt-2"
+        onClick={handleDisconnectZoom}
+        disabled={zoomLoading}
+      >
+        <svg
+          width={24}
+          height={24}
+          viewBox="0 0 192 192"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+        >
+          <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              stroke="#000"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="12"
+              d="M16.869 60.973v53.832c.048 12.173 10.87 21.965 24.072 21.925h85.406c2.42 0 4.385-1.797 4.385-3.978V78.92c-.064-12.164-10.887-21.965-24.073-21.917H21.237c-2.412 0-4.368 1.79-4.368 3.97zm119.294 21.006 35.27-23.666c3.06-2.332 5.432-1.749 5.432 2.468v72.171c0 4.8-2.9 4.217-5.432 2.468l-35.27-23.618V81.98z"
+            ></path>
+          </g>
+        </svg>
+        {zoomLoading ? "Disconnecting..." : "Disconnect Zoom"}
+      </Button>
+    )
+  ) : null;
+}
+*/

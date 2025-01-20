@@ -4,15 +4,15 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, Loader2 } from "lucide-react";
-import { MapPinIcon } from "lucide-react";
+import { ArrowRight, Loader2, SearchIcon } from "lucide-react";
 import { resizeImage, uploadImageClient } from "@/lib/utils";
 import Image from "next/image";
-import { createOrganization } from "@/actions/authActions";
-import { useRouter, useSearchParams } from "next/navigation";
+import { createOrganization } from "@/actions/organizationActions";
+import { useSearchParams } from "next/navigation";
 import Error from "./AuthError";
 import useFormEntries from "@/hooks/useFormEntries";
 import Select from "./Select";
+import { CountryDataType } from "@/services/userServices";
 
 const sportList = [
   "volleyball",
@@ -34,14 +34,15 @@ const sportList = [
 
 export default function OrganizationRegistrationForm({
   userId,
+  countries,
 }: {
   userId: string;
+  countries: CountryDataType[];
 }) {
-  const router = useRouter();
-
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>();
   const [imageError, setImageError] = useState<string | null>(null);
+  const [countrySearchQuery, setCountrySearchQuery] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -51,18 +52,49 @@ export default function OrganizationRegistrationForm({
     organizationType: "",
     organizationName: "",
     memberCount: "",
-    location: "",
+    city: "",
+    country: { name: "", iso2: "" },
     primarySport: "",
     yearFounded: "",
     bio: "",
   });
 
+  const filteredCountries = countries.filter(
+    (country) =>
+      country.name
+        .toLowerCase()
+        .includes(countrySearchQuery.toLowerCase().trim()) ||
+      country.iso2
+        .toLowerCase()
+        .includes(countrySearchQuery.toLowerCase().trim()),
+  );
+
+  function updateCountryField(countryISO2: string) {
+    const selectedCountry = countries.find(
+      (country) => country.iso2 === countryISO2,
+    );
+    if (!selectedCountry) return;
+
+    updateField("country", {
+      name: selectedCountry.name || "",
+      iso2: countryISO2,
+    });
+    updateField("city", "");
+  }
+
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
-  const cannotSubmit = Object.entries(formEntries).some(([key, value]) =>
-    key !== "organizationID" ? value.trim() === "" : false,
-  );
+  const cannotSubmit = Object.entries(formEntries).some(([key, value]) => {
+    if (key !== "organizationID") {
+      if (typeof value === "string") {
+        return value.trim() === "";
+      }
+      return value.iso2.trim() === "";
+    } else {
+      return false;
+    }
+  });
 
   async function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -91,7 +123,8 @@ export default function OrganizationRegistrationForm({
       logo: formEntries.logo,
       type: formEntries.organizationType,
       memberCount: formEntries.memberCount,
-      location: formEntries.location,
+      city: formEntries.city,
+      country: formEntries.country,
       primarySport: formEntries.primarySport,
       yearFounded: formEntries.yearFounded,
       bio: formEntries.bio,
@@ -108,12 +141,11 @@ export default function OrganizationRegistrationForm({
     }
     organizationData.logo = url;
 
-    const { error } = await createOrganization(organizationData);
-    setError(error);
-    if (!error) {
-      router.replace(redirectUrl);
+    const data = await createOrganization(organizationData, redirectUrl);
+    if (data?.error) {
+      setError(error);
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
@@ -235,19 +267,40 @@ export default function OrganizationRegistrationForm({
           <ArrowRight className="absolute bottom-3 right-2 h-4 w-4" />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="location">Location</Label>
+          <Label htmlFor="country">Country</Label>
           <div className="relative">
-            <MapPinIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-            <Input
-              id="location"
-              name="location"
-              value={formEntries["location"]}
-              onChange={(e) => updateField("location", e.target.value)}
-              className="pl-10"
-              placeholder="City, Country"
-              required
-            />
+            <Select
+              value={formEntries.country.iso2}
+              onChange={(value) => updateCountryField(value)}
+              placeholder="Select Country"
+            >
+              <Select.Content className="px-0 pt-0">
+                <div className="sticky top-0 flex items-center border-b bg-white px-2">
+                  <SearchIcon className="h-4 w-4 text-zinc-400" />
+                  <input
+                    type="text"
+                    placeholder="Search Countries"
+                    className="w-full p-2"
+                    value={countrySearchQuery}
+                    onChange={(e) => setCountrySearchQuery(e.target.value)}
+                  />
+                </div>
+                {filteredCountries.map((country) => (
+                  <Select.Option value={country.iso2} key={country.iso2}>
+                    {country.name}
+                  </Select.Option>
+                ))}
+              </Select.Content>
+            </Select>
           </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="city">City</Label>
+          <Input
+            value={formEntries.city}
+            placeholder="e.g. New York"
+            onChange={(e) => updateField("city", e.target.value)}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="primarySport">Primary Sport</Label>

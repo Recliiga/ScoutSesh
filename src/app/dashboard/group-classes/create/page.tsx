@@ -9,13 +9,13 @@ export default async function CreateClassPage() {
   if (user.role !== "Head Coach") notFound();
 
   const { teamMembers, error } = await fetchTeamMembers(user.organization!._id);
-
   if (error !== null) throw new Error(error);
 
   return (
     <CreateClassForm
+      user={user}
       assistantCoaches={teamMembers.filter(
-        (member) => member.role !== "Athlete"
+        (member) => member.role !== "Athlete",
       )}
     />
   );

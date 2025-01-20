@@ -10,19 +10,21 @@ export default async function WeeklyReflectionResultsPage({
   params: Promise<{ goalSubmissionId: string }>;
 }) {
   const { goalSubmissionId } = await params;
-  const { goalData, error: goalError } = await fetchAthleteGoalData(
-    goalSubmissionId
-  );
-  const { goalComments, error: commentError } = await fetchGoalComments(
-    goalSubmissionId
-  );
-
+  const { goalData, error: goalError } =
+    await fetchAthleteGoalData(goalSubmissionId);
   if (goalError !== null) throw new Error(goalError);
+
+  const { goalComments, error: commentError } =
+    await fetchGoalComments(goalSubmissionId);
   if (commentError !== null) throw new Error(commentError);
 
   if (!goalData) notFound();
 
   return (
-    <WeeklyReflectionResults goalData={goalData} comments={goalComments} />
+    <WeeklyReflectionResults
+      goalData={goalData}
+      goalComments={goalComments}
+      forAthlete={false}
+    />
   );
 }

@@ -31,7 +31,7 @@ export default async function InvitationPage({
             <>
               <div className="flex-center flex-col gap-3">
                 <div className="flex-center flex-col gap-1.5">
-                  <div className="relative h-28 w-28 overflow-hidden rounded-full">
+                  <div className="relative h-28 w-28 overflow-hidden rounded-full bg-zinc-100">
                     <Image
                       src={invitationData.organization.logo}
                       alt={invitationData.organization.name}

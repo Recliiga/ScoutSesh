@@ -10,6 +10,7 @@ import { RepeatFrequencyType } from "@/db/models/GroupClass";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
 import { AthleteEvaluationType } from "@/db/models/AthleteEvaluation";
 import { NotificationEntryType } from "@/db/models/NotificationEntry";
+import { TransactionType } from "@/app/dashboard/billings-and-payments/page";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -204,7 +205,7 @@ export async function uploadImageClient(
     });
     const { url, error } = await res.json();
 
-    return { url, error };
+    return { url, error: error || null };
   } catch (error) {
     return { url: null, error: (error as Error).message };
   }
@@ -393,33 +394,70 @@ export function getNotificationMessage(
   }
 }
 
-export function getDuration(fromDate: Date, toDate: Date = new Date()) {
+export function getDuration(fromDate: Date, toDate: Date = new Date()): string {
   const fromTime = new Date(fromDate).getTime();
-  const toTime = new Date(toDate).getTime();
+  const toTime = toDate.getTime();
+  const seconds = Math.floor((toTime - fromTime) / 1000);
 
-  let duration = Math.floor((toTime - fromTime) / 1000);
-  let suffix = duration > 1 ? " secs ago" : " sec ago";
+  const intervals = [
+    { label: "year", seconds: 31536000 },
+    { label: "month", seconds: 2592000 },
+    { label: "day", seconds: 86400 },
+    { label: "hour", seconds: 3600 },
+    { label: "minute", seconds: 60 },
+    { label: "second", seconds: 1 },
+  ];
 
-  if (duration > 60) {
-    duration = Math.floor(duration / 60);
-    suffix = duration > 1 ? " mins ago" : " min ago";
-  }
-  if (duration > 60) {
-    duration = Math.floor(duration / 60);
-    suffix = duration > 1 ? " hours ago" : " hour ago";
-  }
-  if (duration > 24) {
-    duration = Math.floor(duration / 24);
-    suffix = duration > 1 ? " days ago" : " day ago";
-  }
-  if (duration > 30) {
-    duration = Math.floor(duration / 30);
-    suffix = duration > 1 ? " months ago" : " month ago";
-  }
-  if (duration > 18) {
-    duration = Math.round(duration / 12);
-    suffix = duration > 1 ? " years ago" : " year ago";
+  for (const interval of intervals) {
+    const count = Math.floor(seconds / interval.seconds);
+    if (count >= 1) {
+      return `${count} ${interval.label}${count > 1 ? "s" : ""} ago`;
+    }
   }
 
-  return duration + suffix;
+  return "just now";
+}
+
+export function getLast12Months() {
+  return Array.from({ length: 12 }, (_, i) => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - i);
+    return date;
+  });
+}
+
+export function calculateMonthlyEarnings(
+  transactions: TransactionType[],
+  month: number,
+  year: number,
+) {
+  return transactions
+    .filter((transaction) => {
+      const transactionDate = new Date(transaction.purchaseDate);
+      return (
+        transactionDate.getMonth() === month &&
+        transactionDate.getFullYear() === year
+      );
+    })
+    .reduce((total, transaction) => total + transaction.price, 0);
+}
+
+export function calculateMonthlyPlatformFees(
+  transactions: TransactionType[],
+  month: number,
+  year: number,
+) {
+  return transactions
+    .filter((transaction) => {
+      const transactionDate = new Date(transaction.purchaseDate);
+      return (
+        transactionDate.getMonth() === month &&
+        transactionDate.getFullYear() === year
+      );
+    })
+    .reduce(
+      (total, transaction) =>
+        total + (transaction.price * transaction.platformPercentage) / 100,
+      0,
+    );
 }

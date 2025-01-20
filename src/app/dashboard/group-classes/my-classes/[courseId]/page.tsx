@@ -1,6 +1,6 @@
 import CourseVideoPage from "@/components/group-classes/CourseVideoPage";
 import { getSessionFromHeaders } from "@/services/authServices";
-import { fetchUserOrderCourse } from "@/services/orderServices";
+import { fetchUserOrderCourse } from "@/services/groupClassOrderServices";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -15,7 +15,7 @@ export default async function CourseViewPage({
   const { courseId } = await params;
   const { userOrder, error: orderError } = await fetchUserOrderCourse(
     user._id,
-    courseId
+    courseId,
   );
   if (orderError !== null) throw new Error(orderError);
 

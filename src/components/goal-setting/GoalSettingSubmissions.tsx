@@ -24,15 +24,15 @@ export default function GoalSettingSubmissions({
   const mostRecentSubmission = goalSettingSubmissions.reduce(
     (prev, current) =>
       new Date(current.createdAt) > new Date(prev.createdAt) ? current : prev,
-    goalSettingSubmissions[0]
+    goalSettingSubmissions[0],
   );
 
   const [openSubmission, setOpenSubmission] = useState<string | null>(
-    mostRecentSubmission?._id
+    mostRecentSubmission?._id,
   );
 
   const sortedSubmissions = [...goalSettingSubmissions].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
   const athleteName = getFullname(user);
@@ -46,15 +46,15 @@ export default function GoalSettingSubmissions({
             open={openSubmission === submission._id}
             onOpenChange={() =>
               setOpenSubmission(
-                openSubmission === submission._id ? null : submission._id
+                openSubmission === submission._id ? null : submission._id,
               )
             }
           >
             <CollapsibleTrigger asChild>
-              <div className="bg-gray-50 hover:bg-gray-100 p-4 rounded-md transition-colors cursor-pointer">
-                <div className="flex justify-between items-center">
+              <div className="cursor-pointer rounded-md bg-gray-50 p-4 transition-colors hover:bg-gray-100">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <Avatar className="w-12 h-12">
+                    <Avatar className="h-12 w-12">
                       <AvatarImage
                         src={user.profilePicture}
                         alt={athleteName}
@@ -68,9 +68,9 @@ export default function GoalSettingSubmissions({
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <h3 className="sm:block hidden">{submission.goal}</h3>
-                      <div className="flex items-center space-x-2 text-gray-500 text-sm">
-                        <CalendarIcon className="w-4 h-4" />
+                      <h3 className="hidden sm:block">{submission.goal}</h3>
+                      <div className="flex items-center space-x-2 text-sm text-gray-500">
+                        <CalendarIcon className="h-4 w-4" />
                         <span>
                           {new Date(submission.createdAt).toLocaleDateString(
                             "en-US",
@@ -78,7 +78,7 @@ export default function GoalSettingSubmissions({
                               year: "numeric",
                               month: "long",
                               day: "numeric",
-                            }
+                            },
                           )}
                         </span>
                       </div>
@@ -91,15 +91,15 @@ export default function GoalSettingSubmissions({
                     <Button variant={"outline"} className="px-0 py-0">
                       <Link
                         href={`/dashboard/goal-setting/submissions/${submission.goalDataId}`}
-                        className="px-4 py-2 w-full h-full"
+                        className="h-full w-full px-4 py-2"
                       >
                         View
                       </Link>
                     </Button>
                     {openSubmission === submission._id ? (
-                      <ChevronDownIcon className="w-5 h-5 text-gray-400" />
+                      <ChevronDownIcon className="h-5 w-5 text-gray-400" />
                     ) : (
-                      <ChevronRightIcon className="w-5 h-5 text-gray-400" />
+                      <ChevronRightIcon className="h-5 w-5 text-gray-400" />
                     )}
                   </div>
                 </div>
@@ -108,7 +108,7 @@ export default function GoalSettingSubmissions({
             <CollapsibleContent className="mt-2">
               <Card>
                 <CardContent className="p-4">
-                  <h3 className="mb-4 font-medium text-gray-900 text-lg">
+                  <h3 className="mb-4 text-lg font-medium text-gray-900">
                     Weekly Reflections
                   </h3>
                   {submission.weeklyReflections.length ? (
@@ -116,15 +116,15 @@ export default function GoalSettingSubmissions({
                       {submission.weeklyReflections.map((reflection, index) => (
                         <li
                           key={reflection._id}
-                          className="flex justify-between items-center bg-white shadow-sm p-3 rounded-md"
+                          className="flex items-center justify-between rounded-md bg-white p-3 shadow-sm"
                         >
-                          <span className="font-medium text-gray-900 text-sm">
+                          <span className="text-sm font-medium text-gray-900">
                             {`Week${index + 1} Reflection`}
                           </span>
                           <div className="flex items-center space-x-4">
-                            <span className="text-gray-500 text-sm">
+                            <span className="text-sm text-gray-500">
                               {new Date(
-                                reflection.createdAt
+                                reflection.createdAt,
                               ).toLocaleDateString("en-US", {
                                 year: "numeric",
                                 month: "long",
@@ -133,8 +133,8 @@ export default function GoalSettingSubmissions({
                             </span>
                             <Button variant={"outline"} className="px-0 py-0">
                               <Link
-                                href={`/dashboard/goal-setting/weekly-reflection/${submission.goalDataId}`}
-                                className="px-4 py-2 w-full h-full"
+                                href={`/dashboard/goal-setting/submissions/${submission.goalDataId}`}
+                                className="h-full w-full px-4 py-2"
                               >
                                 View
                               </Link>
@@ -155,7 +155,7 @@ export default function GoalSettingSubmissions({
           </Collapsible>
         ))
       ) : (
-        <p className="text-accent-gray-300 text-center">
+        <p className="text-center text-accent-gray-300">
           You currently have no Goal setting submissions
         </p>
       )}

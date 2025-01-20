@@ -49,7 +49,7 @@ export default function GoalDetailsScreen({
   function handleChange(
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
     index: number,
-    fieldName: keyof GoalType
+    fieldName: keyof GoalType,
   ) {
     setGoals((prevGoals) => {
       const updatedGoal = [...prevGoals];
@@ -67,15 +67,15 @@ export default function GoalDetailsScreen({
   const lastGoal = goals.at(-1);
 
   return (
-    <div className="flex flex-col mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
-      <div className="flex lg:flex-row flex-col gap-8">
-        <div className="flex flex-col flex-1 gap-4">
-          <div className="mb-4 text-muted-foreground text-sm">
+    <div className="mx-auto flex w-[90%] max-w-6xl flex-col py-6 sm:py-8">
+      <div className="flex flex-col gap-8 lg:flex-row">
+        <div className="flex flex-1 flex-col gap-4">
+          <div className="mb-4 text-sm text-muted-foreground">
             2/4 Goal Setting
           </div>
-          <h1 className="font-bold text-3xl">Define your goals</h1>
-          <p className="text-lg">A good goal should be:</p>
-          <ul className="space-y-2 pl-5 list-disc">
+          <h1 className="text-3xl font-bold">Define your goals</h1>
+          <p className="text-base sm:text-lg">A good goal should be:</p>
+          <ul className="list-disc space-y-2 pl-5">
             <li>Specific and clear</li>
             <li>Measurable</li>
             <li>Achievable yet challenging</li>
@@ -83,10 +83,13 @@ export default function GoalDetailsScreen({
             <li>Time-bound</li>
           </ul>
         </div>
-        <div className="flex flex-col flex-1 gap-4 sm:gap-6">
+        <div className="flex flex-1 flex-col gap-4 sm:gap-6">
           {goals.map((goal, index) => (
-            <Card key={index}>
-              <CardHeader className="flex flex-row justify-between items-center">
+            <Card
+              key={index}
+              className="flex flex-col gap-4 p-4 sm:gap-6 sm:p-6"
+            >
+              <CardHeader className="flex flex-row items-center justify-between p-0">
                 <CardTitle>Goal #{index + 1}</CardTitle>
                 {index > 0 && (
                   <button className="p-1" onClick={() => removeGoal(index)}>
@@ -94,11 +97,11 @@ export default function GoalDetailsScreen({
                   </button>
                 )}
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-0">
                 <div>
                   <Label
                     htmlFor={`goal-${index}`}
-                    className="font-bold text-lg"
+                    className="text-base font-bold sm:text-lg"
                   >
                     Goal:
                   </Label>
@@ -112,7 +115,7 @@ export default function GoalDetailsScreen({
                 <div>
                   <Label
                     htmlFor={`actions-${index}`}
-                    className="font-bold text-lg"
+                    className="text-base font-bold sm:text-lg"
                   >
                     What will I need to do to achieve this?
                   </Label>
@@ -126,7 +129,7 @@ export default function GoalDetailsScreen({
                 <div>
                   <Label
                     htmlFor={`location-${index}`}
-                    className="font-bold text-lg"
+                    className="text-base font-bold sm:text-lg"
                   >
                     Where will I be doing it?
                   </Label>
@@ -140,7 +143,7 @@ export default function GoalDetailsScreen({
                 <div>
                   <Label
                     htmlFor={`frequency-${index}`}
-                    className="font-bold text-lg"
+                    className="text-base font-bold sm:text-lg"
                   >
                     How regularly will I do it?
                   </Label>
@@ -154,7 +157,7 @@ export default function GoalDetailsScreen({
                 <div>
                   <Label
                     htmlFor={`confidence-${index}`}
-                    className="font-bold text-lg"
+                    className="text-base font-bold sm:text-lg"
                   >
                     What is your current belief that you can complete this goal?
                   </Label>
@@ -190,7 +193,7 @@ export default function GoalDetailsScreen({
           )}
         </div>
       </div>
-      <div className="flex justify-between mt-6 p-4 border-t">
+      <div className="mt-6 flex justify-between border-t p-4">
         <Button
           variant="outline"
           onClick={() => setCurrentScreen("goal-overview")}

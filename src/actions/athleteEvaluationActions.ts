@@ -253,36 +253,3 @@ export async function updatePricingPlan(
     if (redirectUrl) redirect(redirectUrl, RedirectType.replace);
   }
 }
-
-export async function purchaseEvaluation(
-  evaluationPurchaseData: Partial<AthleteEvaluationOrderType>,
-  coachId: string,
-) {
-  let redirectUrl;
-  try {
-    const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
-    if (authError !== null) return { error: "User unauthenticated" };
-
-    await connectDB();
-    await AthleteEvaluationOrder.create({
-      ...evaluationPurchaseData,
-      coach: coachId,
-      athlete: userId,
-    });
-
-    await NotificationEntry.create({
-      type: "evaluation",
-      fromUser: userId,
-      toUser: coachId,
-      link: "/dashboard/athlete-evaluation",
-    });
-
-    redirectUrl = "/dashboard/athlete-evaluation";
-  } catch (err) {
-    console.log((err as Error).message);
-    return { error: "Something went wrong. Unable to complete purchase" };
-  } finally {
-    if (redirectUrl) redirect(redirectUrl, RedirectType.replace);
-  }
-}

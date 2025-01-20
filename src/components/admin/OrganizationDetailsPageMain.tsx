@@ -130,11 +130,20 @@ export default function OrganizationDetailsPageMain({
                       </div>
                       <div>
                         <dt className="text-sm font-medium text-gray-500">
-                          Location
+                          City
                         </dt>
                         <dd className="mt-1 flex items-center text-sm text-gray-900">
                           <MapPin className="mr-2 h-4 w-4" />
-                          {organizationData.organization.location}
+                          {organizationData.organization.city}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm font-medium text-gray-500">
+                          Country
+                        </dt>
+                        <dd className="mt-1 flex items-center text-sm text-gray-900">
+                          <MapPin className="mr-2 h-4 w-4" />
+                          {organizationData.organization.country.name}
                         </dd>
                       </div>
                       <div>

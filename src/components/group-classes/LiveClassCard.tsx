@@ -9,10 +9,12 @@ import { GroupClassType } from "@/db/models/GroupClass";
 import Link from "next/link";
 import ModalContainer from "../ModalContainer";
 import DeleteGroupClassModal from "../DeleteGroupClassModal";
-import { purchaseCourse } from "@/actions/groupClassOrderActions";
 import { TvMinimalPlay } from "lucide-react";
 import { UserType } from "@/db/models/User";
 import { getDatesBetween, getFullname } from "@/lib/utils";
+import { createStripeCheckoutSession } from "@/actions/stripeActions";
+import toast from "react-hot-toast";
+import { stripePromise } from "@/lib/stripe";
 
 const daysOfTheWeek = [
   "Sunday",
@@ -116,15 +118,19 @@ export default function LiveClassCard({
   async function handlePurchaseCourse(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const data = await purchaseCourse(
-      liveClass._id,
-      liveClass.price,
-      true,
-      liveClass.user._id,
+
+    const { sessionId, error } = await createStripeCheckoutSession(
+      "group-class",
+      liveClass,
     );
-    if (data?.error) {
-      console.log(data?.error);
+
+    if (sessionId) {
+      const stripe = await stripePromise;
+      await stripe?.redirectToCheckout({ sessionId });
+    } else {
+      toast.error(`Error: ${error}`);
     }
+
     setLoading(false);
   }
 
@@ -151,7 +157,16 @@ export default function LiveClassCard({
         <div className="flex flex-1 flex-col justify-between">
           <div className="space-y-2">
             <div className="flex flex-col items-start justify-between gap-2 md:flex-row">
-              <h2 className="text-xl font-bold">{liveClass.title}</h2>
+              {forAthlete ? (
+                <h3 className="text-xl font-bold">{liveClass.title}</h3>
+              ) : (
+                <Link
+                  href={`/dashboard/group-classes/live-classes/${liveClass._id}`}
+                  className="text-xl font-bold hover:underline"
+                >
+                  {liveClass.title}
+                </Link>
+              )}
               <Badge
                 variant="secondary"
                 className="whitespace-nowrap bg-red-500 px-2 text-white hover:bg-red-500"

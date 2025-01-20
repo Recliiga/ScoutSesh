@@ -53,18 +53,18 @@ export default function EditClassForm({
   const [title, setTitle] = useState(course.title || "");
   const [description, setDescription] = useState(course.description || "");
   const [startDate, setStartDate] = useState<Date | undefined>(
-    course.startDate
+    course.startDate,
   );
   const [endDate, setEndDate] = useState<Date | undefined>(course.endDate);
   const [startTime, setStartTime] = useState<{ hours: string; mins: string }>(
     course.startTime || {
       hours: "10",
       mins: "00",
-    }
+    },
   );
   const [duration, setDuration] = useState(course.duration.toString() || "");
   const [customDuration, setCustomDuration] = useState(
-    course.customDuration.toString() || ""
+    course.customDuration.toString() || "",
   );
   const [isRecurring, setIsRecurring] = useState(course.isRecurring || false);
   const [repeatFrequency, setRepeatFrequency] = useState<
@@ -78,17 +78,17 @@ export default function EditClassForm({
     course.coaches.map((coach) => coach._id) ||
       assistantCoaches
         .filter((user) => user.role === "Head Coach")
-        .map((user) => user._id)
+        .map((user) => user._id),
   );
   const [thumbnail, setThumbnail] = useState(course.thumbnail || "");
   const [videoLessons, setVideoLessons] = useState<
     { _id: string; title: string; url: string; duration: number }[]
   >(course.videos || []);
   const [skillLevels, setSkillLevels] = useState<string[]>(
-    course.skillLevels || []
+    course.skillLevels || [],
   );
   const [totalSpots, setTotalSpots] = useState(
-    course.totalSpots.toString() || ""
+    course.totalSpots.toString() || "",
   );
   const [price, setPrice] = useState(course.price.toString() || "");
 
@@ -103,7 +103,7 @@ export default function EditClassForm({
 
     if (imageFile.size > 5242880) {
       setThumbnailError(
-        "File too large: Please select an image less than 4mb in size"
+        "File too large: Please select an image less than 4mb in size",
       );
       return;
     }
@@ -114,7 +114,7 @@ export default function EditClassForm({
 
   async function handleChangeVideo(
     e: React.ChangeEvent<HTMLInputElement>,
-    id: string
+    id: string,
   ) {
     if (!(e.target.files && e.target.files.length)) {
       return;
@@ -122,7 +122,7 @@ export default function EditClassForm({
     const videoFile = e.target.files[0];
     if (videoFile.size > 4194304) {
       setVideoError(
-        "File too large: Please select a video less than 4mb in size"
+        "File too large: Please select a video less than 4mb in size",
       );
       return;
     }
@@ -133,27 +133,27 @@ export default function EditClassForm({
       const videoDataUrl = e.target.result as string;
       setVideoLessons((prev) =>
         prev.map((vid) =>
-          vid._id === id ? { ...vid, url: videoDataUrl } : vid
-        )
+          vid._id === id ? { ...vid, url: videoDataUrl } : vid,
+        ),
       );
     };
   }
 
   function handleLoadedMetadata(
     e: React.SyntheticEvent<HTMLVideoElement, Event>,
-    id: string
+    id: string,
   ) {
     const duration = e.currentTarget?.duration;
     if (duration) {
       setVideoLessons((prev) =>
-        prev.map((vid) => (vid._id === id ? { ...vid, duration } : vid))
+        prev.map((vid) => (vid._id === id ? { ...vid, duration } : vid)),
       );
     }
   }
 
   function handleUpdateVideoLessonTitle(value: string, id: string) {
     setVideoLessons((prev) =>
-      prev.map((vid) => (vid._id === id ? { ...vid, title: value } : vid))
+      prev.map((vid) => (vid._id === id ? { ...vid, title: value } : vid)),
     );
   }
 
@@ -163,7 +163,7 @@ export default function EditClassForm({
 
   function moveVideoLessonUp(id: string) {
     const videoLessonIndex = videoLessons.findIndex(
-      (video) => video._id === id
+      (video) => video._id === id,
     );
     if (videoLessonIndex <= 0) return;
     const newVideoLessons = [...videoLessons];
@@ -174,7 +174,7 @@ export default function EditClassForm({
 
   function moveVideoLessonDown(id: string) {
     const videoLessonIndex = videoLessons.findIndex(
-      (video) => video._id === id
+      (video) => video._id === id,
     );
     if (videoLessonIndex >= videoLessons.length - 1) return;
     const newVideoLessons = [...videoLessons];
@@ -208,7 +208,7 @@ export default function EditClassForm({
 
   const videoFieldVacant = !Boolean(
     videoLessons.length &&
-      videoLessons.some((vid) => vid.url.trim() && vid.title.trim())
+      videoLessons.some((vid) => vid.url.trim() && vid.title.trim()),
   );
   const liveClassFieldVacant =
     !Boolean(startDate) ||
@@ -227,11 +227,54 @@ export default function EditClassForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     const isLiveClass = courseType === "live";
     if (isLiveClass && (!startDate || !endDate)) return;
+    if (cannotSubmit) return;
+
     setLoading((prev) => ({ ...prev, status: true }));
     setError("");
-    if (cannotSubmit) return;
+
+    // let meetings: MeetingType[] | undefined = undefined;
+
+    // if (courseType === "live") {
+    //   if (!startDate || !endDate) return;
+
+    //   setLoading({ message: "Scheduling Meetings", status: true });
+
+    //   const dates = repeatFrequency
+    //     ? getDatesBetween(startDate, endDate, repeatFrequency)
+    //     : [startDate];
+
+    //   const meetingDates = dates.filter(
+    //     (meetingDate) =>
+    //       !course.meetings?.some((meeting) => {
+    //         meetingDate.setHours(Number(startTime.hours));
+    //         meetingDate.setMinutes(Number(startTime.mins));
+    //         return (
+    //           new Date(meeting.start_time).toLocaleString("en-US", {
+    //             timeZone: meeting.timezone,
+    //           }) === meetingDate.toLocaleString("en-US", { timeZone: "GMT" })
+    //         );
+    //       }),
+    //   );
+
+    //   if (meetingDates.length > 0) {
+    //     const { data, error } = await scheduleMeeting(
+    //       title,
+    //       startTime,
+    //       duration === "custom" ? Number(customDuration) : Number(duration),
+    //       meetingDates,
+    //       user.zoomRefreshToken!,
+    //       user._id,
+    //     );
+    //     if (error === null) {
+    //       meetings = data;
+    //     }
+    //   } else {
+    //     meetings = course.meetings;
+    //   }
+    // }
 
     const classData = {
       user: course.user,
@@ -265,7 +308,7 @@ export default function EditClassForm({
     }
 
     const { url, error: uploadThumbnailError } = await uploadImageClient(
-      classData.thumbnail
+      classData.thumbnail,
     );
     if (uploadThumbnailError !== null) {
       setError(uploadThumbnailError);
@@ -297,8 +340,8 @@ export default function EditClassForm({
   }
 
   return (
-    <div className="max-w-3xl w-[90%] mx-auto py-4">
-      <div className="flex gap-4 items-center mb-4 justify-between">
+    <div className="mx-auto w-[90%] max-w-3xl py-4">
+      <div className="mb-4 flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Edit Class</h1>
         <BackButton />
       </div>
@@ -316,14 +359,14 @@ export default function EditClassForm({
 
         <div className="flex flex-col gap-2">
           <h3 className="text-sm font-medium">Thumbnail</h3>
-          <div className="aspect-video flex-center relative w-full overflow-hidden border rounded-md">
+          <div className="flex-center relative aspect-video w-full overflow-hidden rounded-md border">
             <Image
               src={thumbnail || placeholderThumbnail}
               alt="Thumbnail"
               fill
               sizes="1024px"
               priority
-              className="absolute w-full h-full object-cover"
+              className="absolute h-full w-full object-cover"
             />
           </div>
           <Input
@@ -352,7 +395,7 @@ export default function EditClassForm({
 
         <div className="flex flex-col gap-2">
           <Label>Coach(es)</Label>
-          <div className="flex gap-x-8 gap-y-4 flex-wrap mt-2">
+          <div className="mt-2 flex flex-wrap gap-x-8 gap-y-4">
             {assistantCoaches.map((user) => (
               <div
                 onClick={() => {
@@ -360,12 +403,12 @@ export default function EditClassForm({
                   toggleCoaches(user._id);
                 }}
                 key={user._id}
-                className={`flex gap-2 p-2 px-4 cursor-pointer duration-200 rounded-md items-center ${
+                className={`flex cursor-pointer items-center gap-2 rounded-md p-2 px-4 duration-200 ${
                   coaches.includes(user._id) ? "bg-green-50" : "grayscale"
                 }`}
               >
-                <div className="w-10 h-10 font-medium relative rounded-full overflow-hidden">
-                  <div className="absolute flex-center w-full h-full bg-accent-gray-100">
+                <div className="relative h-10 w-10 overflow-hidden rounded-full font-medium">
+                  <div className="flex-center absolute h-full w-full bg-accent-gray-100">
                     {user.firstName[0] + user.lastName[0]}
                   </div>
                   <Image
@@ -373,7 +416,7 @@ export default function EditClassForm({
                     alt={user.firstName}
                     fill
                     sizes="160px"
-                    className="object-cover absolute w-full h-full"
+                    className="absolute h-full w-full object-cover"
                   />
                 </div>
                 <div className="flex flex-col">
@@ -389,10 +432,10 @@ export default function EditClassForm({
 
         <div className="flex flex-col gap-2">
           <Label>Skill Level</Label>
-          <div className="flex flex-col space-y-2 mt-2">
+          <div className="mt-2 flex flex-col space-y-2">
             <Label
               htmlFor={"beginner"}
-              className="capitalize flex items-center gap-2"
+              className="flex items-center gap-2 capitalize"
             >
               <Checkbox
                 id={"beginner"}
@@ -414,7 +457,7 @@ export default function EditClassForm({
             </Label>
             <Label
               htmlFor={"advanced"}
-              className="capitalize flex items-center gap-2"
+              className="flex items-center gap-2 capitalize"
             >
               <Checkbox
                 id={"advanced"}
@@ -430,10 +473,10 @@ export default function EditClassForm({
           <>
             <div className="space-y-2">
               <Label>Course Dates</Label>
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex flex-wrap gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
-                    <div className="flex gap-2 items-center">
+                    <div className="flex items-center gap-2">
                       Start Date:
                       <Button variant="outline" type="button">
                         {startDate ? format(startDate, "PPP") : "Select Date"}
@@ -453,7 +496,7 @@ export default function EditClassForm({
                 </Popover>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <div className="flex gap-2 items-center">
+                    <div className="flex items-center gap-2">
                       End Date:
                       <Button
                         variant="outline"
@@ -585,17 +628,17 @@ export default function EditClassForm({
                 </div>
                 {startDate && endDate && repeatFrequency && (
                   <div>
-                    <h3 className="font-medium mb-2">Class Sessions</h3>
-                    <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 gap-y-2 text-sm">
+                    <h3 className="mb-2 font-medium">Class Sessions</h3>
+                    <ul className="grid grid-cols-2 gap-4 gap-y-2 text-sm sm:grid-cols-3 md:grid-cols-4">
                       {getDatesBetween(startDate, endDate, repeatFrequency).map(
                         (date) => (
                           <li
                             key={date.getTime()}
-                            className="list-disc list-inside text-zinc-700"
+                            className="list-inside list-disc text-zinc-700"
                           >
                             {date.toDateString()}
                           </li>
-                        )
+                        ),
                       )}
                     </ul>
                   </div>
@@ -623,11 +666,11 @@ export default function EditClassForm({
             {videoLessons.map((videoLesson) => (
               <div
                 key={videoLesson._id}
-                className="flex gap-2 sm:items-center flex-col sm:flex-row"
+                className="flex flex-col gap-2 sm:flex-row sm:items-center"
               >
                 <Label
                   htmlFor={`video-upload-${videoLesson._id}`}
-                  className="aspect-video relative flex-center cursor-pointer border w-full sm:w-40 rounded-sm overflow-hidden bg-zinc-50 hover:bg-zinc-100 duration-200"
+                  className="flex-center relative aspect-video w-full cursor-pointer overflow-hidden rounded-sm border bg-zinc-50 duration-200 hover:bg-zinc-100 sm:w-40"
                 >
                   {videoLesson.url ? (
                     <>
@@ -637,17 +680,17 @@ export default function EditClassForm({
                           handleLoadedMetadata(e, videoLesson._id)
                         }
                       />
-                      <span className="text-white bg-black/50 text-xs p-1 px-2 rounded-sm absolute bottom-1 right-1">
+                      <span className="absolute bottom-1 right-1 rounded-sm bg-black/50 p-1 px-2 text-xs text-white">
                         Change video
                       </span>
                     </>
                   ) : (
-                    <span className="text-accent-gray-300 text-xs">
+                    <span className="text-xs text-accent-gray-300">
                       Select a video
                     </span>
                   )}
                 </Label>
-                <div className="flex-1 flex flex-col gap-2">
+                <div className="flex flex-1 flex-col gap-2">
                   <Input
                     type="text"
                     placeholder="Video title"
@@ -656,7 +699,7 @@ export default function EditClassForm({
                     onChange={(e) =>
                       handleUpdateVideoLessonTitle(
                         e.target.value,
-                        videoLesson._id
+                        videoLesson._id,
                       )
                     }
                   />
@@ -666,34 +709,34 @@ export default function EditClassForm({
                     onChange={(e) => handleChangeVideo(e, videoLesson._id)}
                     type="file"
                     accept="video/*"
-                    className="text-sm hidden"
+                    className="hidden text-sm"
                   />
                   <div className="flex gap-4">
-                    <div className="flex-1 gap-4 flex">
+                    <div className="flex flex-1 gap-4">
                       <Button
                         type="button"
                         variant={"outline"}
-                        className="p-1.5 flex-1 sm:flex-0"
+                        className="sm:flex-0 flex-1 p-1.5"
                         onClick={() => moveVideoLessonUp(videoLesson._id)}
                       >
-                        <ArrowBigUp className="w-4 h-4" />
+                        <ArrowBigUp className="h-4 w-4" />
                       </Button>
                       <Button
                         type="button"
                         variant={"outline"}
-                        className="p-1.5 flex-1 sm:flex-0"
+                        className="sm:flex-0 flex-1 p-1.5"
                         onClick={() => moveVideoLessonDown(videoLesson._id)}
                       >
-                        <ArrowBigDown className="w-4 h-4" />
+                        <ArrowBigDown className="h-4 w-4" />
                       </Button>
                     </div>
                     <Button
                       type="button"
                       variant={"outline"}
-                      className="p-1.5 flex-1 sm:flex-0"
+                      className="sm:flex-0 flex-1 p-1.5"
                       onClick={() => deleteVideoLesson(videoLesson._id)}
                     >
-                      <Trash2Icon className="w-4 h-4" />
+                      <Trash2Icon className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -734,7 +777,7 @@ export default function EditClassForm({
         <Button
           disabled={cannotSubmit}
           type="submit"
-          className="bg-green-500 flex-center hover:bg-green-600 text-white"
+          className="flex-center bg-green-500 text-white hover:bg-green-600"
         >
           {loading.status ? (
             <>

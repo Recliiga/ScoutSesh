@@ -1,6 +1,6 @@
 import connectDB from "@/db/connectDB";
 import GroupClass, { GroupClassType } from "@/db/models/GroupClass";
-import { fetchUserOrders } from "./orderServices";
+import { fetchUserOrders } from "./groupClassOrderServices";
 
 export async function fetchGroupClassesByCoach(coachId: string) {
   try {
@@ -59,7 +59,7 @@ export async function fetchAthleteLiveClasses(athleteId: string) {
     );
 
     const liveClasses = allLiveClasses.filter((liveClass) =>
-      userOrders.some((order) => order.course._id === liveClass._id),
+      userOrders.some((order) => order.course?._id === liveClass._id),
     );
 
     return { liveClasses, error: null };

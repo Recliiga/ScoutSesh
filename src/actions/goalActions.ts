@@ -86,7 +86,7 @@ export async function performWeeklyReflection(
           type: "evaluation",
           fromUser: userId,
           toUser: coachId,
-          link: `/dashboard/goal-setting/weekly-reflection/${goalId}`,
+          link: `/dashboard/goal-setting/submissions/${goalId}`,
         });
       }
     });

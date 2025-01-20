@@ -4,7 +4,10 @@ import { getSessionFromHeaders } from "@/services/authServices";
 import { fetchGroupClassesByCoach } from "@/services/groupClassServices";
 import { notFound } from "next/navigation";
 import AthleteCoursesView from "@/components/group-classes/AthleteCoursesViewPage";
-import { fetchCourseOrders, fetchUserOrders } from "@/services/orderServices";
+import {
+  fetchCourseOrders,
+  fetchUserOrders,
+} from "@/services/groupClassOrderServices";
 
 export default async function CourseViewPage() {
   const user = await getSessionFromHeaders();
@@ -12,6 +15,7 @@ export default async function CourseViewPage() {
   if (user.role === "Head Coach") {
     const { groupClasses, error } = await fetchGroupClassesByCoach(user._id);
     if (error !== null) notFound();
+
     const { groupClassOrders, error: orderError } =
       await fetchCourseOrders(groupClasses);
     if (orderError !== null) notFound();

@@ -21,6 +21,16 @@ export type PrimarySportType =
 export type UserRoleType = "Athlete" | "Assistant Coach" | "Head Coach";
 export type UserStatusType = "Active" | "Suspended" | "Banned";
 
+export type BankInformationType = {
+  _id: string;
+  accountName: string;
+  accountNumber: number;
+  routingNumber: number;
+  bankName: string;
+  createdAt: Date;
+  updatedAt: Date;
+} & mongoose.Document;
+
 export interface UserType extends mongoose.Document {
   _id: string;
   firstName: string;
@@ -30,7 +40,8 @@ export interface UserType extends mongoose.Document {
   profilePicture: string;
   role: UserRoleType;
   DOB: Date;
-  location: string;
+  city: string;
+  country: { name: string; iso2: string };
   primarySport: PrimarySportType;
   experience: number;
   bio: string;
@@ -38,11 +49,13 @@ export interface UserType extends mongoose.Document {
   status: UserStatusType;
   profileCompleted: boolean;
   emailVerified: boolean;
+  zoomRefreshToken?: string;
+  stripeAccountId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const UserSchema: mongoose.Schema = new mongoose.Schema(
+const UserSchema: mongoose.Schema = new mongoose.Schema<UserType>(
   {
     firstName: {
       type: String,
@@ -64,14 +77,17 @@ const UserSchema: mongoose.Schema = new mongoose.Schema(
       default: "/placeholder-profile-picture.png",
     },
     role: { type: String, required: [true, "Please select a valid role"] },
-    DOB: { type: String },
-    location: { type: String },
+    DOB: { type: Date },
+    city: { type: String },
+    country: { name: String, iso2: String },
     primarySport: { type: String },
     experience: { type: Number },
     bio: { type: String },
     status: { type: String, default: "Active" },
     profileCompleted: { type: Boolean, default: false },
     emailVerified: { type: Boolean, default: false },
+    zoomRefreshToken: { type: String },
+    stripeAccountId: { type: String },
     organization: { type: mongoose.SchemaTypes.ObjectId, ref: "Organization" },
   },
   { timestamps: true },

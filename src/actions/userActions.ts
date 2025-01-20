@@ -1,5 +1,13 @@
 "use server";
+import { TransactionType } from "@/app/dashboard/billings-and-payments/page";
 import connectDB from "@/db/connectDB";
+import AthleteEvaluationOrder, {
+  AthleteEvaluationOrderType,
+} from "@/db/models/AthleteEvaluationOrder";
+import GroupClassOrder, {
+  GroupClassOrderType,
+} from "@/db/models/GroupClassOrder";
+import "@/db/models/GroupClass";
 import NotificationEntry from "@/db/models/NotificationEntry";
 import User, { PrimarySportType, UserType } from "@/db/models/User";
 import { getUserIdFromCookies } from "@/lib/utils";
@@ -7,6 +15,41 @@ import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
+export async function completeProfile(
+  userData: {
+    firstName: string;
+    lastName: string;
+    role: string;
+    DOB: string;
+    profilePicture: string;
+    city: string;
+    primarySport: string;
+    experience: string;
+    bio: string;
+  },
+  redirectUrl: string,
+) {
+  let canRedirect = false;
+  try {
+    const cookieStore = await cookies();
+    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    if (authError !== null) throw new Error(authError);
+
+    // Update user's profile
+    await connectDB();
+    const data = await User.findByIdAndUpdate(userId, {
+      ...userData,
+      profileCompleted: true,
+    });
+    if (!data) throw new Error("An error occured");
+    canRedirect = true;
+  } catch (error) {
+    return { error: (error as Error).message };
+  } finally {
+    if (canRedirect) redirect(redirectUrl);
+  }
+}
 
 export async function joinTeam(organizationId: string, coachId: string) {
   let redirectUrl;
@@ -41,7 +84,8 @@ export async function updateUser(
   userData: {
     firstName: string;
     lastName: string;
-    location: string;
+    city: string;
+    country: { name: string; iso2: string };
     primarySport: PrimarySportType;
     profilePicture: string;
     experience: number;
@@ -101,5 +145,80 @@ export async function updatePassword(
     const error = err as Error;
     console.log("Update password error", error.message);
     return { error: "Something went wrong: Unable to update password" };
+  }
+}
+
+export async function disconnectZoom(userId: string) {
+  try {
+    await connectDB();
+    const updatedUser = await User.findByIdAndUpdate(userId, {
+      zoomRefreshToken: null,
+    });
+    if (!updatedUser) throw new Error("Error updating user ");
+
+    revalidatePath("/dashboard", "layout");
+    return { error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error disconnecting zoom: ", error.message);
+    return { error: error.message };
+  }
+}
+
+export async function fetchAllTransactions(userId: string) {
+  try {
+    await connectDB();
+    const allEvaluationOrders: AthleteEvaluationOrderType[] = JSON.parse(
+      JSON.stringify(
+        await AthleteEvaluationOrder.find({ coach: userId })
+          .populate({
+            path: "athlete",
+            select: "firstName lastName profilePicture",
+          })
+          .sort({
+            createdAt: -1,
+          }),
+      ),
+    );
+
+    const evaluationOrders = allEvaluationOrders.filter(
+      (order) => order.stripeSessionId,
+    );
+
+    const allGroupClassOrders: GroupClassOrderType[] = JSON.parse(
+      JSON.stringify(
+        await GroupClassOrder.find().populate({
+          path: "course",
+          select: "_id coaches",
+          populate: { path: "coaches", select: "_id" },
+        }),
+      ),
+    );
+
+    const groupClassOrders = allGroupClassOrders.filter((order) =>
+      order.course?.coaches.some((coach) => coach._id === userId),
+    );
+
+    const transactions: TransactionType[] = [
+      ...evaluationOrders.map((order) => ({
+        _id: order._id,
+        price: order.totalPrice,
+        purchaseDate: order.createdAt,
+        platformPercentage: order.platformPercentage,
+        referrerPercentage: order.referrerPercentage,
+      })),
+      ...groupClassOrders.map((order) => ({
+        _id: order._id,
+        price: order.price,
+        purchaseDate: order.createdAt,
+        platformPercentage: order.platformPercentage,
+        referrerPercentage: order.referrerPercentage,
+      })),
+    ];
+
+    return { transactions, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { transactions: [], error: error.message };
   }
 }

@@ -25,7 +25,7 @@ export default function CoachCoursesView({
                 key={liveClass._id}
                 liveClass={liveClass}
                 students={groupClassOrders
-                  .filter((order) => order.course._id === liveClass._id)
+                  .filter((order) => order.course?._id === liveClass._id)
                   .map((order) => order.user)}
               />
             ))
@@ -46,7 +46,7 @@ export default function CoachCoursesView({
                 key={course._id}
                 course={course}
                 students={groupClassOrders
-                  .filter((order) => order.course._id === course._id)
+                  .filter((order) => order.course?._id === course._id)
                   .map((order) => order.user)}
               />
             ))

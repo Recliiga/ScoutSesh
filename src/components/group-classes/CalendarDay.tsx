@@ -30,32 +30,37 @@ export default function CalendarDay({
   const isFutureOrToday =
     day.toDateString() === today.toDateString() ||
     day.getTime() === today.getTime();
+
   const dayCourses = courses.flatMap((course) =>
     course.sessions
       .filter((session) => session.toDateString() === day.toDateString())
-      .map((session) => ({ ...course, session }))
+      .map((session) => ({ ...course, session })),
   );
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div className="p-2 border h-32 cursor-pointer overflow-hidden">
-          <div className="font-bold">{day.getDate()}</div>
-          {dayCourses.map((course, index) => {
-            return (
-              <div
-                key={`${course._id}-${index}`}
-                className={`text-[10px] leading-tight mt-1 p-1 rounded ${
-                  isFutureOrToday ? "bg-green-100" : ""
-                }`}
-              >
-                {getCourseTimeString(course.time)}
-                <div className="line-clamp-2 text-ellipsis overflow-hidden">
-                  {course.title}
-                </div>
+        <div
+          className={`h-32 cursor-pointer overflow-hidden border p-2 ${dayCourses.length > 0 ? "bg-green-50" : ""} ${isFutureOrToday ? "border-green-300" : ""}`}
+        >
+          <div
+            className={`text-sm font-bold sm:text-base ${dayCourses.length > 0 ? "text-green-500" : ""}`}
+          >
+            {day.getDate()}
+          </div>
+          {dayCourses.map((course, index) => (
+            <div
+              key={`${course._id}-${index}`}
+              className={`mt-1 hidden rounded p-1 text-[10px] leading-tight sm:block ${
+                isFutureOrToday ? "bg-green-100" : ""
+              }`}
+            >
+              {getCourseTimeString(course.time)}
+              <div className="line-clamp-2 overflow-hidden text-ellipsis">
+                {course.title}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-80">

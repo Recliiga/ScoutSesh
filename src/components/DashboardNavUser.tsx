@@ -103,7 +103,7 @@ export default function DashboardNavUser({
                       className="w-full justify-start px-2 text-left sm:px-4"
                       asChild
                     >
-                      <Link href={`/dashboard/profile/${user._id}`}>
+                      <Link href={"/dashboard/profile"}>
                         <UserIcon className="h-4 w-4 sm:mr-2" />
                         View/Edit Profile
                       </Link>

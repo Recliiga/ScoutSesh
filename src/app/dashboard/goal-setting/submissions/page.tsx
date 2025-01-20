@@ -8,12 +8,12 @@ import { fetchTeamGoalData } from "@/services/goalServices";
 export default async function GoalSettingSubmissionsPage() {
   const user = await getSessionFromHeaders();
 
-  if (user.role === "Athlete" || user.role === "Assistant Coach") {
+  if (user.role !== "Head Coach") {
     return <AthleteGoalSettingSubmissionsPage />;
   }
 
   const { teamGoalData, error } = await fetchTeamGoalData(
-    user.organization!._id
+    user.organization!._id,
   );
   if (error !== null) notFound();
 

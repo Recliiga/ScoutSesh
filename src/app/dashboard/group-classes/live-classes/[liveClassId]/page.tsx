@@ -1,7 +1,7 @@
 import LiveClassDetails from "@/components/group-classes/LiveClassDetails";
 import { getSessionFromHeaders } from "@/services/authServices";
 import { fetchGroupClass } from "@/services/groupClassServices";
-import { fetchUserOrders } from "@/services/orderServices";
+import { fetchUserOrders } from "@/services/groupClassOrderServices";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -23,7 +23,7 @@ export default async function LiveClassDetailsPage({
   if (orderError !== null) throw new Error(orderError);
 
   if (
-    !userOrders.some((order) => order.course._id === groupClass._id) &&
+    !userOrders.some((order) => order.course?._id === groupClass._id) &&
     groupClass.coaches[0]._id !== user._id
   )
     notFound();

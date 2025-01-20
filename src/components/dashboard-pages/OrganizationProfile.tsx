@@ -27,6 +27,8 @@ import useFormEntries from "@/hooks/useFormEntries";
 import Error from "../AuthError";
 import { uploadImageClient } from "@/lib/utils";
 import { updateOrganization } from "@/actions/organizationActions";
+import Select from "../Select";
+import stripeCountries from "@/data/stripe-countries.json";
 
 const sportList = [
   "volleyball",
@@ -73,7 +75,8 @@ export default function OrganizationProfile({
     name: organizationData.name,
     logo: organizationData.logo,
     memberCount: organizationData.memberCount,
-    location: organizationData.location,
+    city: organizationData.city,
+    country: organizationData.country,
     primarySport: organizationData.primarySport,
     bio: organizationData.bio,
     yearFounded: organizationData.yearFounded,
@@ -87,11 +90,13 @@ export default function OrganizationProfile({
     let newLogo;
     if (!formEntries.logo.startsWith("http")) {
       const { url, error } = await uploadImageClient(formEntries.logo);
-      if (error !== null) {
+      if (!error && error !== null) {
         setError("An error occured uploading profile picture");
+        setLoading(false);
         return;
       }
       newLogo = url;
+      if (url) updateField("logo", url);
     }
 
     const { updatedOrganization, error } = newLogo
@@ -141,6 +146,17 @@ export default function OrganizationProfile({
 
       updateField("logo", imageDataUrl as string);
     };
+  }
+
+  function handleChangeCountry(countryISO2: string) {
+    const selectedCountry = stripeCountries.find(
+      (country) => country.iso2 === countryISO2,
+    );
+    if (!selectedCountry) return;
+    updateField("country", {
+      iso2: selectedCountry.iso2,
+      name: selectedCountry.name,
+    });
   }
 
   return (
@@ -262,10 +278,6 @@ export default function OrganizationProfile({
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                {/* <Button className="bg-[#14a800] px-6 py-2 text-lg text-white hover:bg-[#14a800]/90">
-                  <MessageSquareIcon className="mr-2 h-5 w-5" />
-                  Message
-                </Button> */}
                 {isOrganizationHeadCoach ? (
                   <Button
                     variant="outline"
@@ -296,20 +308,48 @@ export default function OrganizationProfile({
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
                   <MapPinIcon className="h-5 w-5 text-[#14a800]" />
-                  <span className="text-sm text-gray-600">Location:</span>
+                  <span className="text-sm text-gray-600">Country:</span>
+                  {isEditing ? (
+                    <Select
+                      value={formEntries.country.iso2}
+                      displayValue={formEntries.country.name}
+                      onChange={handleChangeCountry}
+                      containerClassName="w-full"
+                      disabled={loading}
+                    >
+                      <Select.Content>
+                        {stripeCountries.map((country) => (
+                          <Select.Option
+                            value={country.iso2}
+                            key={country.iso2}
+                          >
+                            {country.name}
+                          </Select.Option>
+                        ))}
+                      </Select.Content>
+                    </Select>
+                  ) : (
+                    <span className="font-medium text-gray-800">
+                      {organizationData.country.name}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white p-3">
+                  <MapPinIcon className="h-5 w-5 text-[#14a800]" />
+                  <span className="text-sm text-gray-600">City:</span>
                   {isEditing ? (
                     <input
                       type="text"
                       disabled={loading}
-                      name="location"
-                      placeholder="Location"
-                      value={formEntries.location}
-                      onChange={(e) => updateField("location", e.target.value)}
-                      className="w-0 flex-1 rounded-md border px-4 py-2 text-sm disabled:bg-accent-gray-100"
+                      placeholder="Organization city"
+                      name="city"
+                      value={formEntries.city}
+                      onChange={(e) => updateField("city", e.target.value)}
+                      className="w-full flex-1 rounded-md border px-4 py-2 text-sm disabled:bg-accent-gray-100"
                     />
                   ) : (
                     <span className="font-medium text-gray-800">
-                      {organizationData.location}
+                      {organizationData.city}
                     </span>
                   )}
                 </div>
@@ -388,7 +428,7 @@ export default function OrganizationProfile({
                         onChange={(e) =>
                           updateField("yearFounded", Number(e.target.value))
                         }
-                        className="w-0 max-w-fit flex-1 cursor-pointer truncate rounded-md border bg-white p-2 text-sm leading-5 duration-200 disabled:bg-accent-gray-100"
+                        className="w-0 max-w-fit flex-1 cursor-pointer truncate rounded-md border bg-white p-2 text-sm leading-5 text-accent-black duration-200 disabled:bg-accent-gray-100"
                       >
                         <option value="" hidden>
                           Select year
@@ -424,7 +464,7 @@ export default function OrganizationProfile({
                         onChange={(e) =>
                           updateField("memberCount", e.target.value)
                         }
-                        className="w-0 max-w-fit flex-1 cursor-pointer truncate rounded-md border bg-white p-2 text-sm leading-5 duration-200 disabled:bg-accent-gray-100"
+                        className="w-0 max-w-fit flex-1 cursor-pointer truncate rounded-md border bg-white p-2 text-sm leading-5 text-accent-black duration-200 disabled:bg-accent-gray-100"
                         required
                       >
                         <option hidden>Select member count</option>
@@ -467,7 +507,7 @@ export default function OrganizationProfile({
                         name="type"
                         value={formEntries["type"]}
                         onChange={(e) => updateField("type", e.target.value)}
-                        className="w-0 max-w-fit flex-1 cursor-pointer truncate rounded-md border bg-white p-2 text-sm leading-5 duration-200 disabled:bg-accent-gray-100"
+                        className="w-0 max-w-fit flex-1 cursor-pointer truncate rounded-md border bg-white p-2 text-sm leading-5 text-accent-black duration-200 disabled:bg-accent-gray-100"
                         required
                       >
                         <option hidden>Organization Type</option>

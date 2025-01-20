@@ -27,7 +27,7 @@ export async function loginAdmin(email: string, password: string) {
 
     return { error: null };
   } catch (error) {
-    console.log({ error: (error as Error).message });
+    console.log("Admin Login Error: ", (error as Error).message);
     return { error: "An unexpected error occured" };
   }
 }

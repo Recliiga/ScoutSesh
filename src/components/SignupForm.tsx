@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import Error from "./AuthError";
 import LoadingIndicator from "./LoadingIndicator";
 import useFormEntries from "@/hooks/useFormEntries";
+import Select from "./Select";
 
 export default function SignupForm({ orgId }: { orgId: string }) {
   const searchParams = useSearchParams();
@@ -70,8 +71,7 @@ export default function SignupForm({ orgId }: { orgId: string }) {
     setSignupError("");
     setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const data = await signup(formData, redirectUrl);
+    const data = await signup(formEntries, redirectUrl);
 
     if (data?.error) {
       setSignupError(data?.error);
@@ -168,49 +168,16 @@ export default function SignupForm({ orgId }: { orgId: string }) {
           <label className="text-sm font-medium" htmlFor="role">
             Role
           </label>
-          <div className="relative">
-            <select
-              id="role"
-              name="role"
-              className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
-              value={formEntries["role"]}
-              onChange={(e) => updateField("role", e.target.value)}
-            >
-              <option value={""} hidden>
-                Select a Role
-              </option>
-              <option value={"Athlete"}>Athlete</option>
-              <option value={"Assistant Coach"}>Assistant Coach</option>
-              <option value={"Head Coach"}>Head Coach</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              <svg
-                height={20}
-                width={20}
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path
-                    d="M6 9L12 15L18 9"
-                    stroke="#000000"
-                    className="stroke-accent-gray-300"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
-                </g>
-              </svg>
-            </div>
-          </div>
+          <Select
+            onChange={(value) => updateField("role", value)}
+            value={formEntries.role}
+            placeholder="Select a Role"
+          >
+            <Select.Content>
+              <Select.Option value="Head Coach">Head Coach</Select.Option>
+              <Select.Option value="Athlete">Athlete</Select.Option>
+            </Select.Content>
+          </Select>
         </div>
 
         {signupError && <Error error={signupError} />}

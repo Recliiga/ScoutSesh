@@ -7,7 +7,8 @@ export interface OrganizationType extends mongoose.Document {
   type: string;
   logo: string;
   memberCount: string;
-  location: string;
+  city: string;
+  country: { name: string; iso2: string };
   primarySport: string;
   yearFounded: number;
   bio: string;
@@ -40,8 +41,12 @@ const OrganizationSchema = new mongoose.Schema(
       required: [true, "User is not authenticated"],
       ref: "User",
     },
-    location: {
+    city: {
       type: String,
+      required: [true, "Please enter your city"],
+    },
+    country: {
+      type: { name: String, iso2: String },
       required: [true, "Please enter your location"],
     },
     primarySport: {

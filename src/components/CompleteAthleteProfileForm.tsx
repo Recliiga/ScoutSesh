@@ -4,26 +4,20 @@ import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, Loader2 } from "lucide-react";
-import { CalendarIcon, MapPinIcon } from "lucide-react";
+import { ArrowRight, Loader2, SearchIcon } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn, resizeImage, uploadImageClient } from "@/lib/utils";
 import Image from "next/image";
-import { completeProfile } from "@/actions/authActions";
-import { useRouter, useSearchParams } from "next/navigation";
+import { completeProfile } from "@/actions/userActions";
+import { useSearchParams } from "next/navigation";
 import Error from "./AuthError";
 import useFormEntries from "@/hooks/useFormEntries";
 import Select from "./Select";
 import useClickOutside from "@/hooks/useClickOutside";
-
-interface ProfileProps {
-  firstName: string;
-  lastName: string;
-  email: string;
-  userId: string;
-  role: string;
-}
+import { PrimarySportType, UserRoleType, UserType } from "@/db/models/User";
+import { CountryDataType } from "@/services/userServices";
 
 const sportList = [
   "volleyball",
@@ -44,44 +38,77 @@ const sportList = [
 ];
 
 export default function CompleteAthleteProfileForm({
-  firstName,
-  lastName,
-  email,
-  userId,
-  role,
-}: ProfileProps) {
-  const router = useRouter();
-
+  user,
+  countries,
+}: {
+  user: UserType;
+  countries: CountryDataType[];
+}) {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>();
   const [calendarRef] = useClickOutside(() => setCalendarOpen(false));
   const [imageError, setImageError] = useState<string | null>(null);
 
+  const [countrySearchQuery, setCountrySearchQuery] = useState("");
+
   const { formEntries, updateField } = useFormEntries({
-    userId,
-    email,
-    firstName,
-    lastName,
-    role,
-    selectedMonth: new Date().getMonth(),
-    selectedYear: new Date().getFullYear(),
-    DOB: "",
-    profilePicture: "",
-    location: "",
-    primarySport: "",
-    experience: "",
-    bio: "",
+    userId: user._id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    role: user.role,
+    selectedMonth: user.DOB
+      ? new Date(user.DOB).getMonth()
+      : new Date().getMonth(),
+    selectedYear: user.DOB
+      ? new Date(user.DOB).getFullYear()
+      : new Date().getFullYear(),
+    DOB: user.DOB ? new Date(user.DOB).toDateString() : "",
+    profilePicture:
+      !user.profilePicture ||
+      user.profilePicture === "/placeholder-profile-picture.png"
+        ? ""
+        : user.profilePicture,
+    city: user.city || "",
+    country: user.country || { name: "", iso2: "" },
+    primarySport: user.primarySport || "",
+    experience: user.experience?.toString() || "",
+    bio: user.bio || "",
   });
+
+  const filteredCountries = countries.filter(
+    (country) =>
+      country.name
+        .toLowerCase()
+        .includes(countrySearchQuery.toLowerCase().trim()) ||
+      country.iso2
+        .toLowerCase()
+        .includes(countrySearchQuery.toLowerCase().trim()),
+  );
+
+  function updateCountryField(countryISO2: string) {
+    const selectedCountry = countries.find(
+      (country) => country.iso2 === countryISO2,
+    );
+    if (!selectedCountry) return;
+
+    updateField("country", {
+      name: selectedCountry.name || "",
+      iso2: countryISO2,
+    });
+    updateField("city", "");
+  }
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
 
-  const cannotSubmit = Object.values(formEntries).some(
-    (value) => value.toString().trim() === "",
-  );
+  const cannotSubmit =
+    Object.values(formEntries).some(
+      (value) => value.toString().trim() === "",
+    ) || formEntries.country.iso2.trim() === "";
 
   async function handleChangeImage(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -111,7 +138,7 @@ export default function CompleteAthleteProfileForm({
       role: formEntries.role,
       DOB: formEntries.DOB,
       profilePicture: formEntries.profilePicture,
-      location: formEntries.location,
+      city: formEntries.city,
       primarySport: formEntries.primarySport,
       experience: formEntries.experience,
       bio: formEntries.bio,
@@ -128,13 +155,11 @@ export default function CompleteAthleteProfileForm({
     }
     userData.profilePicture = url;
 
-    const { error } = await completeProfile(userData);
-    if (!error) {
-      router.replace(redirectUrl);
+    const data = await completeProfile(userData, redirectUrl);
+    if (data?.error) {
+      setError(error);
+      setLoading(false);
     }
-
-    setError(error);
-    setLoading(false);
   }
 
   return (
@@ -148,26 +173,18 @@ export default function CompleteAthleteProfileForm({
             <Image
               src={formEntries.profilePicture}
               alt="Profile"
-              layout="fill"
-              objectFit="cover"
+              fill
+              sizes="128px"
+              className="object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-gray-400">
-              <svg
-                className="h-16 w-16"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </div>
+            <Image
+              src={"/placeholder-profile-picture.png"}
+              alt="Profile"
+              fill
+              sizes="128px"
+              className="object-cover"
+            />
           )}
         </div>
         <Button
@@ -231,15 +248,18 @@ export default function CompleteAthleteProfileForm({
               name="role"
               className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               value={formEntries.role}
-              onChange={(e) => updateField("role", e.target.value)}
+              disabled
+              onChange={(e) =>
+                updateField("role", e.target.value as UserRoleType)
+              }
               required
             >
-              {role === "Head Coach" ? (
+              {formEntries.role === "Head Coach" ? (
                 <option value={"Head Coach"}>Head Coach</option>
               ) : (
                 <>
                   <option value={"Athlete"}>Athlete</option>
-                  <option value={"Assistant Coach"}>Assistant Coach</option>
+                  {/* <option value={"Assistant Coach"}>Assistant Coach</option> */}
                 </>
               )}
             </select>
@@ -322,25 +342,49 @@ export default function CompleteAthleteProfileForm({
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="location">Location</Label>
+          <Label htmlFor="country">Country</Label>
           <div className="relative">
-            <MapPinIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-            <Input
-              id="location"
-              name="location"
-              value={formEntries.location}
-              onChange={(e) => updateField("location", e.target.value)}
-              className="pl-10"
-              placeholder="City, Country"
-              required
-            />
+            <Select
+              value={formEntries.country.iso2}
+              onChange={(value) => updateCountryField(value)}
+              placeholder="Select Country"
+              displayValue={formEntries.country.name}
+            >
+              <Select.Content className="px-0 pt-0">
+                <div className="sticky top-0 flex items-center border-b bg-white px-2">
+                  <SearchIcon className="h-4 w-4 text-zinc-400" />
+                  <input
+                    type="text"
+                    placeholder="Search Countries"
+                    className="w-full p-2"
+                    value={countrySearchQuery}
+                    onChange={(e) => setCountrySearchQuery(e.target.value)}
+                  />
+                </div>
+                {filteredCountries.map((country) => (
+                  <Select.Option value={country.iso2} key={country.iso2}>
+                    {country.name}
+                  </Select.Option>
+                ))}
+              </Select.Content>
+            </Select>
           </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="city">City</Label>
+          <Input
+            value={formEntries.city}
+            placeholder="e.g. New York"
+            onChange={(e) => updateField("city", e.target.value)}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="primarySport">Primary Sport</Label>
           <Select
             value={formEntries.primarySport}
-            onChange={(value) => updateField("primarySport", value)}
+            onChange={(value) =>
+              updateField("primarySport", value as PrimarySportType)
+            }
             placeholder="e.g., Basketball, Soccer, Tennis"
           >
             <Select.Content>

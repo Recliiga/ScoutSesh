@@ -39,15 +39,17 @@ import {
 } from "@/lib/utils";
 import LoadingIndicator from "../LoadingIndicator";
 import { nanoid } from "nanoid";
-import { RepeatFrequencyType } from "@/db/models/GroupClass";
+import { MeetingType, RepeatFrequencyType } from "@/db/models/GroupClass";
 import Error from "../AuthError";
 import BackButton from "../dashboard/BackButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function CreateClassForm({
   assistantCoaches,
+  // user,
 }: {
   assistantCoaches: UserType[];
+  user: UserType;
 }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -94,13 +96,9 @@ export default function CreateClassForm({
       const resizedImage = await resizeImage(imageFile, 800);
       if (!resizedImage) return;
       setThumbnail(resizedImage);
-    } catch (error) {
-      console.log((error as Error).message);
+    } catch {
       setThumbnailError("Error resizing image");
     }
-    // const resizedImage = await resizeImage(imageFile, 800);
-    // if (!resizedImage) return;
-    // setThumbnail(resizedImage);
   }
 
   async function handleChangeVideo(
@@ -238,6 +236,30 @@ export default function CreateClassForm({
     setLoading((prev) => ({ ...prev, status: true }));
     setError("");
 
+    const meetings: MeetingType[] | undefined = [];
+
+    // if (courseType === "live") {
+    //   if (!startDate || !endDate) return;
+
+    //   setLoading({ message: "Scheduling Meetings", status: true });
+
+    //   const meetingDates = repeatFrequency
+    //     ? getDatesBetween(startDate, endDate, repeatFrequency)
+    //     : [startDate];
+
+    //   const { data, error } = await scheduleMeeting(
+    //     title,
+    //     startTime,
+    //     duration === "custom" ? Number(customDuration) : Number(duration),
+    //     meetingDates,
+    //     "",
+    //     user._id,
+    //   );
+    //   if (error === null) {
+    //     meetings = data;
+    //   }
+    // }
+
     const classData = {
       title,
       description,
@@ -253,6 +275,7 @@ export default function CreateClassForm({
       repeatFrequency,
       totalSpots: Number(totalSpots) || 0,
       skillLevels,
+      meetings,
       videos: videoLessons.map((vid) => ({
         title: vid.title,
         duration: vid.duration,
@@ -297,11 +320,12 @@ export default function CreateClassForm({
   }
 
   return (
-    <div className="mx-auto w-[90%] max-w-3xl py-4">
+    <div className="mx-auto w-[90%] max-w-3xl flex-1 py-4">
       <div className="mb-4 flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Create Class</h1>
         <BackButton />
       </div>
+
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Label htmlFor="title">Title</Label>
@@ -343,7 +367,7 @@ export default function CreateClassForm({
           <Textarea
             id="description"
             name="description"
-            rows={4}
+            rows={6}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe your course..."
@@ -366,16 +390,6 @@ export default function CreateClassForm({
                 }`}
               >
                 <div className="relative h-10 w-10 overflow-hidden rounded-full font-medium">
-                  <div className="flex-center absolute h-full w-full bg-accent-gray-100">
-                    {user.firstName[0] + user.lastName[0]}
-                  </div>
-                  {/* <Image
-                    src={user.profilePicture}
-                    alt={user.firstName}
-                    fill
-                    sizes="160px"
-                    className="absolute h-full w-full object-cover"
-                  /> */}
                   <Avatar className="h-10 w-10">
                     <AvatarImage
                       src={user.profilePicture}
@@ -461,7 +475,7 @@ export default function CreateClassForm({
           </RadioGroup>
         </div>
 
-        {courseType === "live" && (
+        {courseType === "live" ? (
           <>
             <div className="space-y-2">
               <Label>Course Dates</Label>
@@ -519,7 +533,7 @@ export default function CreateClassForm({
               <Input
                 id="startTime"
                 name="startTime"
-                min={"10:00"}
+                // min={"10:00"}
                 value={`${startTime.hours}:${startTime.mins}`}
                 onChange={(e) => {
                   const hours = e.target.value.split(":")[0];
@@ -653,7 +667,7 @@ export default function CreateClassForm({
               />
             </div>
           </>
-        )}
+        ) : null}
 
         {courseType === "video" && (
           <div className="flex flex-col gap-2">

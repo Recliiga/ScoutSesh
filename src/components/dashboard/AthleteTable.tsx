@@ -21,35 +21,35 @@ export default function AthleteTable({
   return (
     <div className="overflow-x-auto">
       <div className="max-h-96 overflow-y-auto">
-        <table className="divide-y divide-gray-200 min-w-full">
-          <thead className="top-0 sticky bg-gray-50">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="sticky top-0 bg-gray-50">
             <tr>
-              <th className="px-6 py-3 w-1/5 font-medium text-gray-500 text-left text-xs uppercase tracking-wider">
+              <th className="w-1/5 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Athlete
               </th>
-              <th className="px-6 py-3 w-1/5 font-medium text-gray-500 text-left text-xs uppercase tracking-wider">
+              <th className="w-1/5 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Submission Date
               </th>
-              <th className="px-6 py-3 w-1/12 font-medium text-center text-gray-500 text-xs uppercase tracking-wider">
+              <th className="w-1/12 px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
                 Goals Set
               </th>
-              <th className="px-6 py-3 w-1/12 font-medium text-center text-gray-500 text-xs uppercase tracking-wider">
+              <th className="w-1/12 px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
                 Weekly Reflections
               </th>
-              <th className="px-6 py-3 w-1/5 font-medium text-gray-500 text-left text-xs uppercase tracking-wider">
+              <th className="w-1/5 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Latest Update
               </th>
-              <th className="px-6 py-3 w-1/6 font-medium text-gray-500 text-left text-xs uppercase tracking-wider">
+              <th className="w-1/6 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Action
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-200 bg-white">
             {athletes.map((athlete) => (
               <tr key={athlete._id}>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="whitespace-nowrap px-6 py-4">
                   <div className="flex items-center">
-                    <div className="relative flex-shrink-0 rounded-full w-10 h-10 overflow-hidden">
+                    <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
                       <Image
                         className="object-cover"
                         src={athlete.profilePicture}
@@ -58,32 +58,32 @@ export default function AthleteTable({
                       />
                     </div>
                     <div className="ml-4">
-                      <div className="font-medium text-gray-900 text-sm">
+                      <div className="text-sm font-medium text-gray-900">
                         {athlete.name}
                       </div>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-gray-900 text-sm">
+                <td className="whitespace-nowrap px-6 py-4">
+                  <div className="text-sm text-gray-900">
                     {new Date(athlete.lastGoalDate).toLocaleDateString(
                       "en-US",
-                      { month: "long", day: "numeric", year: "numeric" }
+                      { month: "long", day: "numeric", year: "numeric" },
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4 text-center whitespace-nowrap">
-                  <div className="text-gray-900 text-sm">
+                <td className="whitespace-nowrap px-6 py-4 text-center">
+                  <div className="text-sm text-gray-900">
                     {athlete.totalGoals}
                   </div>
                 </td>
-                <td className="px-6 py-4 text-center whitespace-nowrap">
-                  <div className="text-gray-900 text-sm">
+                <td className="whitespace-nowrap px-6 py-4 text-center">
+                  <div className="text-sm text-gray-900">
                     {athlete.weeklyReflections}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-gray-900 text-sm">
+                <td className="whitespace-nowrap px-6 py-4">
+                  <div className="text-sm text-gray-900">
                     {new Date(athlete.latestUpdate).toLocaleString("en-US", {
                       month: "long",
                       day: "numeric",
@@ -94,15 +94,15 @@ export default function AthleteTable({
                     })}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="whitespace-nowrap px-6 py-4">
                   <div className="flex space-x-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-green-600 bg-white hover:bg-green-600 px-0 py-0 text-green-600 hover:text-white"
+                      className="border-green-600 bg-white px-0 py-0 text-green-600 hover:bg-green-600 hover:text-white"
                     >
                       <Link
-                        href={`/dashboard/goal-setting/weekly-reflection/${athlete.goalId}`}
+                        href={`/dashboard/goal-setting/submissions/${athlete.goalId}`}
                         className="px-4 py-2"
                       >
                         View Goals
@@ -111,7 +111,7 @@ export default function AthleteTable({
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-green-600 bg-white hover:bg-green-600 text-green-600 hover:text-white"
+                      className="border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white"
                     >
                       Message
                     </Button>

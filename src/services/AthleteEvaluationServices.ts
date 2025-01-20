@@ -109,7 +109,11 @@ export async function fetchCoachEvaluationOrders(coachId: string) {
           }),
       ),
     );
-    return { orders, error: null };
+
+    return {
+      orders: orders.filter((order) => order.stripeSessionId),
+      error: null,
+    };
   } catch (err) {
     const error = err as Error;
     return { orders: null, error: error.message };

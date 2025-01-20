@@ -15,8 +15,9 @@ import { OrganizationType } from "@/db/models/Organization";
 import DatePicker from "../DatePicker";
 import Error from "../AuthError";
 import LoadingIndicator from "../LoadingIndicator";
-import { purchaseEvaluation } from "@/actions/athleteEvaluationActions";
 import BackButton from "../dashboard/BackButton";
+import { createStripeCheckoutSession } from "@/actions/stripeActions";
+import { stripePromise } from "@/lib/stripe";
 
 type PlanType =
   | "Monthly"
@@ -88,12 +89,12 @@ export default function PurchaseEvaluationForm({
       ? true
       : includeVirtualConsultation;
 
-  const selectedPlanType = selectedProgram?.plan.standardPlans.find(
+  const selectedStandardPlan = selectedProgram?.plan.standardPlans.find(
     (plan) => plan.name === planType,
   );
 
-  const selectedPlanEvaluations = selectedPlanType
-    ? selectedPlanType.evaluations
+  const selectedPlanEvaluations = selectedStandardPlan
+    ? selectedStandardPlan.evaluations
     : evaluations;
 
   const customPlanPrices = selectedProgram?.plan.offerCustomPlan
@@ -107,17 +108,19 @@ export default function PurchaseEvaluationForm({
       )
     : [];
 
+  const selectedCustomPlan = customPlanPrices.find(
+    (plan) => plan.evaluations === selectedPlanEvaluations,
+  );
+
   const maxCustomEvaluations = Math.max(
     ...customPlanPrices.map((plan) => plan.evaluations),
   );
 
   const selectedPlanPrice =
     planType === "custom"
-      ? customPlanPrices.find(
-          (plan) => plan.evaluations === selectedPlanEvaluations,
-        )?.price || 0
-      : selectedPlanType
-        ? selectedPlanType.price
+      ? selectedCustomPlan?.price || 0
+      : selectedStandardPlan
+        ? selectedStandardPlan.price
         : 0;
 
   const virtualConsultationDuration = selectedProgram?.plan
@@ -235,11 +238,19 @@ export default function PurchaseEvaluationForm({
         totalPrice,
       };
 
-      const data = await purchaseEvaluation(
+      const { sessionId, error } = await createStripeCheckoutSession(
+        "athlete-evaluation",
         evaluationPurchaseData,
         String(selectedProgram.organization.user),
+        selectedProgram.organization.name,
       );
-      if (data?.error) setError(data.error);
+
+      if (sessionId) {
+        const stripe = await stripePromise;
+        await stripe?.redirectToCheckout({ sessionId });
+      } else {
+        setError(error);
+      }
     }
     setLoading(false);
   }
@@ -389,19 +400,21 @@ export default function PurchaseEvaluationForm({
               </label>
               <DatePicker
                 pickerDisabled={
-                  !selectedPlanType && selectedPlanEvaluations <= 0
+                  !selectedStandardPlan && selectedPlanEvaluations <= 0
                 }
                 closeCalendar={() => setCalendarOpen(false)}
                 calendarOpen={calendarOpen}
                 toggleCalendar={() => setCalendarOpen((prev) => !prev)}
                 selected={selectedDates}
                 onSelect={handleDateSelect}
-                disabled={(date) =>
-                  isBefore(date, new Date()) ||
-                  date.getDate() <
-                    new Date().getDate() +
-                      Number(selectedProgram?.plan.firstEvaluationDays)
-                }
+                disabled={(date) => {
+                  const firstEvaluationDate = new Date();
+                  firstEvaluationDate.setDate(
+                    firstEvaluationDate.getDate() +
+                      Number(selectedProgram?.plan.firstEvaluationDays),
+                  );
+                  return isBefore(date, firstEvaluationDate);
+                }}
                 max={
                   planType === "custom" ? selectedPlanEvaluations : undefined
                 }
@@ -435,7 +448,7 @@ export default function PurchaseEvaluationForm({
 
             {selectedProgram &&
               selectedProgram.plan.offerVirtualConsultation &&
-              selectedPlanType && (
+              (selectedStandardPlan || selectedCustomPlan) && (
                 <div className="mt-4 space-y-3 border-t pt-4">
                   <h3 className="text-lg font-semibold">
                     Online Virtual Athlete Evaluation Consultation Session

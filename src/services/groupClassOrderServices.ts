@@ -29,6 +29,31 @@ export async function fetchUserOrders(userId: string) {
   }
 }
 
+export async function fetchCoachGroupClassOrders(coachId: string) {
+  try {
+    await connectDB();
+    const allOrders: GroupClassOrderType[] = JSON.parse(
+      JSON.stringify(
+        await GroupClassOrder.find().populate({
+          path: "course",
+          select: "_id coaches",
+          populate: { path: "coaches", select: "_id" },
+        }),
+      ),
+    );
+
+    const coachGroupClassOrders = allOrders.filter((order) =>
+      order.course?.coaches.some((coach) => coach._id === coachId),
+    );
+
+    return { coachGroupClassOrders, error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error fetching coach group class orders: ", error.message);
+    return { coachGroupClassOrders: null, error: error.message };
+  }
+}
+
 export async function fetchUserLiveClassOrders(userId: string) {
   try {
     await connectDB();
@@ -78,7 +103,7 @@ export async function fetchCourseOrders(courses: GroupClassType[]) {
 
     return {
       groupClassOrders: groupClassOrders.filter((order) =>
-        courses.some((course) => course._id === order.course._id),
+        courses.some((course) => course._id === order.course?._id),
       ),
       error: null,
     };

@@ -31,10 +31,10 @@ export default function AthleteCoursesView({
                 isPurchased={userOrders.some(
                   (order) =>
                     order.user._id === userId &&
-                    order.course._id === liveClass._id,
+                    order.course?._id === liveClass._id,
                 )}
                 students={groupClassOrders
-                  .filter((order) => order.course._id === liveClass._id)
+                  .filter((order) => order.course?._id === liveClass._id)
                   .map((order) => order.user)}
               />
             ))
@@ -59,10 +59,10 @@ export default function AthleteCoursesView({
                 isPurchased={userOrders.some(
                   (order) =>
                     order.user._id === userId &&
-                    order.course._id === course._id,
+                    order.course?._id === course._id,
                 )}
                 students={groupClassOrders
-                  .filter((order) => order.course._id === course._id)
+                  .filter((order) => order.course?._id === course._id)
                   .map((order) => order.user)}
               />
             ))
