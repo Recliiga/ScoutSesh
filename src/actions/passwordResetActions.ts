@@ -3,9 +3,9 @@
 import ResetPasswordEmail from "@/components/emails/ResetPasswordEmail";
 import User, { UserType } from "@/db/models/User";
 import { Resend } from "resend";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import connectDB from "@/db/connectDB";
+import { signToken } from "@/lib/utils";
 
 export async function sendPasswordResetEmail(email: string) {
   try {
@@ -22,9 +22,13 @@ export async function sendPasswordResetEmail(email: string) {
     if (!JWT_SECRET) return { error: "Invalid JWT secret" };
 
     // Sign the user ID to a json web token
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const { token, error: tokenError } = signToken(
+      { userId: user._id },
+      {
+        expiresIn: "1h",
+      },
+    );
+    if (tokenError !== null) throw new Error(tokenError);
 
     const resend = new Resend(process.env.RESEND_API_KEY);
 

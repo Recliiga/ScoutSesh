@@ -249,8 +249,9 @@ export function getUserIdFromCookies(cookieStore: ReadonlyRequestCookies) {
     if (!token) throw new Error("User is unauthorized");
 
     // Get userId from token
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("User is unauthorized");
+    const { payload, error } = verifyToken(token);
+    if (error !== null) throw new Error(error);
+
     const userId: string = payload.userId;
     return { userId, error: null };
   } catch (error) {
@@ -460,4 +461,25 @@ export function calculateMonthlyPlatformFees(
         total + (transaction.price * transaction.platformPercentage) / 100,
       0,
     );
+}
+
+export function signToken(payload: object, options?: jwt.SignOptions) {
+  try {
+    const token = jwt.sign(payload, process.env.JWT_SECRET!, options);
+    return { token, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { token: null, error: error.message };
+  }
+}
+
+export function verifyToken(token: string) {
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET!);
+    if (typeof payload === "string") throw new Error("Invalid token");
+    return { payload, error: null };
+  } catch (err) {
+    const error = err as Error;
+    return { payload: null, error: error.message };
+  }
 }

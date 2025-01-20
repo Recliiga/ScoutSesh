@@ -1,5 +1,5 @@
 import ResetPasswordForm from "@/components/password-and-security/ResetPasswordForm";
-import jwt from "jsonwebtoken";
+import { verifyToken } from "@/lib/utils";
 
 export default async function NewPassword({
   searchParams,
@@ -12,8 +12,8 @@ export default async function NewPassword({
     const JWT_SECRET = process.env.JWT_SECRET;
     if (!JWT_SECRET) return { userId: null };
 
-    const payload = jwt.verify(token, JWT_SECRET);
-    if (typeof payload === "string") return { userId: null };
+    const { payload, error } = verifyToken(token);
+    if (error !== null) throw new Error(error);
 
     return { userId: payload.userId };
   }
