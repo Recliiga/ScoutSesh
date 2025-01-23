@@ -29,6 +29,8 @@ export default function ConnectGoogleButton({ user }: { user: UserType }) {
     }
   }
 
+  if (user.googleTokens) return;
+
   return (
     <Button
       onClick={handleConnect}
@@ -37,7 +39,7 @@ export default function ConnectGoogleButton({ user }: { user: UserType }) {
       className="flex items-center gap-2 rounded-full border text-zinc-700 transition-colors duration-200 hover:bg-neutral-100"
     >
       <Image src={googleIcon} alt="Google Icon" width={16} />
-      Connect Google
+      {loading ? "Connecting..." : "Connect Google"}
     </Button>
   );
 }

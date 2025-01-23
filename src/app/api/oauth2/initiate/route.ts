@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
 
   const { userId } = await req.json();
 
-  const redirectUrl = `${BASE_URL}/api/oauth2/callback?userId=${userId}`;
+  const redirectUrl = `${BASE_URL}/api/oauth2/callback`;
 
   try {
     if (!userId) throw new Error("Invalid user ID");
@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
     const authUrl = oauth2Client.generateAuthUrl({
       access_type: "offline",
       scope: ["https://www.googleapis.com/auth/calendar.events"],
+      state: encodeURIComponent(userId),
     });
 
     return NextResponse.json({ url: authUrl, error: null });
