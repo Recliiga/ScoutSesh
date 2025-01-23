@@ -27,7 +27,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { format } from "date-fns";
-import { createClass } from "@/actions/groupClassActions";
+import { createClass, scheduleMeeting } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
 import Image from "next/image";
 import placeholderThumbnail from "@/assets/placeholder-thumbnail.png";
@@ -39,14 +39,15 @@ import {
 } from "@/lib/utils";
 import LoadingIndicator from "../LoadingIndicator";
 import { nanoid } from "nanoid";
-import { MeetingType, RepeatFrequencyType } from "@/db/models/GroupClass";
+import { RepeatFrequencyType } from "@/db/models/GroupClass";
 import Error from "../AuthError";
 import BackButton from "../dashboard/BackButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { calendar_v3 } from "googleapis";
 
 export default function CreateClassForm({
   assistantCoaches,
-  // user,
+  user,
 }: {
   assistantCoaches: UserType[];
   user: UserType;
@@ -236,29 +237,38 @@ export default function CreateClassForm({
     setLoading((prev) => ({ ...prev, status: true }));
     setError("");
 
-    const meetings: MeetingType[] | undefined = [];
+    let meetingData: calendar_v3.Schema$Event | undefined = undefined;
 
-    // if (courseType === "live") {
-    //   if (!startDate || !endDate) return;
+    if (courseType === "live") {
+      if (!startDate || !endDate) return;
 
-    //   setLoading({ message: "Scheduling Meetings", status: true });
+      setLoading({ message: "Scheduling Meetings", status: true });
 
-    //   const meetingDates = repeatFrequency
-    //     ? getDatesBetween(startDate, endDate, repeatFrequency)
-    //     : [startDate];
+      const meetingStartTime = new Date(startDate);
+      meetingStartTime.setHours(
+        Number(startTime.hours),
+        Number(startTime.mins),
+      );
+      const meetingEndTime = meetingStartTime;
+      meetingEndTime.setMinutes(
+        meetingStartTime.getMinutes() + Number(duration),
+      );
 
-    //   const { data, error } = await scheduleMeeting(
-    //     title,
-    //     startTime,
-    //     duration === "custom" ? Number(customDuration) : Number(duration),
-    //     meetingDates,
-    //     "",
-    //     user._id,
-    //   );
-    //   if (error === null) {
-    //     meetings = data;
-    //   }
-    // }
+      const { event, error } = await scheduleMeeting({
+        title,
+        description,
+        startTime: meetingStartTime,
+        endTime: meetingEndTime,
+        recurring: true,
+        userId: user._id,
+      });
+      if (error !== null) {
+        setLoading({ message: "", status: false });
+        setError(error);
+        return;
+      }
+      meetingData = event;
+    }
 
     const classData = {
       title,
@@ -275,7 +285,7 @@ export default function CreateClassForm({
       repeatFrequency,
       totalSpots: Number(totalSpots) || 0,
       skillLevels,
-      meetings,
+      meetingData,
       videos: videoLessons.map((vid) => ({
         title: vid.title,
         duration: vid.duration,
@@ -313,6 +323,7 @@ export default function CreateClassForm({
     classData.videos = uploadedVideos;
 
     setLoading({ message: "", status: true });
+
     const data = await createClass(classData);
     if (data?.error) setError(data.error);
 

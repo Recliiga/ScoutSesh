@@ -1,6 +1,14 @@
 import mongoose from "mongoose";
 import { OrganizationType } from "./Organization";
 
+export type Credentials = {
+  access_token?: string;
+  refresh_token?: string;
+  scope?: string;
+  token_type?: string;
+  expiry_date?: number;
+};
+
 export type PrimarySportType =
   | "volleyball"
   | "basketball"
@@ -51,7 +59,7 @@ export interface UserType extends mongoose.Document {
   emailVerified: boolean;
   zoomRefreshToken?: string;
   stripeAccountId?: string;
-  googleTokens?: object;
+  googleTokens?: Credentials;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -88,7 +96,15 @@ const UserSchema: mongoose.Schema = new mongoose.Schema<UserType>(
     profileCompleted: { type: Boolean, default: false },
     emailVerified: { type: Boolean, default: false },
     zoomRefreshToken: { type: String },
-    googleTokens: { type: Object },
+    googleTokens: {
+      type: {
+        access_token: String,
+        refresh_token: String,
+        scope: String,
+        token_type: String,
+        expiry_date: Number,
+      },
+    },
     stripeAccountId: { type: String },
     organization: { type: mongoose.SchemaTypes.ObjectId, ref: "Organization" },
   },

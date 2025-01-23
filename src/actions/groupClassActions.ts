@@ -1,12 +1,13 @@
 "use server";
 
+import { google } from "googleapis";
 import connectDB from "@/db/connectDB";
 import GroupClass, {
   GroupClassType,
   MeetingType,
   RepeatFrequencyType,
 } from "@/db/models/GroupClass";
-import User from "@/db/models/User";
+import User, { UserType } from "@/db/models/User";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
@@ -102,78 +103,170 @@ export async function deleteClass(groupClass: GroupClassType) {
   }
 }
 
-export async function scheduleMeeting(
-  title: string,
-  startTime: { hours: string; mins: string },
-  durationInMinutes: number,
-  dates: Date[],
-  refreshToken: string,
-  userId: string,
-): Promise<
-  { data: MeetingType[]; error: null } | { data: null; error: string }
-> {
+// export async function scheduleMeeting(
+//   title: string,
+//   startTime: { hours: string; mins: string },
+//   durationInMinutes: number,
+//   dates: Date[],
+//   refreshToken: string,
+//   userId: string,
+// ): Promise<
+//   { data: MeetingType[]; error: null } | { data: null; error: string }
+// > {
+//   try {
+//     const clientId = process.env.ZOOM_CLIENT_ID;
+//     const clientSecret = process.env.ZOOM_CLIENT_SECRET;
+
+//     // Get access token
+//     const tokenUrl = "https://zoom.us/oauth/token";
+
+//     const tokenHeaders = new Headers({
+//       Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+//       "Content-Type": "application/x-www-form-urlencoded",
+//     });
+
+//     const tokenBody = new URLSearchParams({
+//       refresh_token: refreshToken,
+//       grant_type: "refresh_token",
+//     });
+
+//     const tokenResponse = await fetch(tokenUrl, {
+//       method: "POST",
+//       headers: tokenHeaders,
+//       body: tokenBody,
+//     });
+//     const tokenData = await tokenResponse.json();
+
+//     //Save refresh token to user database
+//     const updatedUser = await User.findByIdAndUpdate(userId, {
+//       zoomRefreshToken: tokenData.refresh_token,
+//     });
+//     if (!updatedUser)
+//       throw new Error("An error occured saving new refresh token to database");
+
+//     // Schedule meeting
+//     const url = "https://api.zoom.us/v2/users/me/meetings";
+
+//     const headers = new Headers({
+//       Authorization: `Bearer ${tokenData.access_token}`,
+//       "Content-Type": "application/json",
+//     });
+
+//     const meetings = await Promise.all(
+//       dates.map(async (date) => {
+//         const classStartTime = new Date(date);
+//         classStartTime.setHours(Number(startTime.hours));
+//         classStartTime.setMinutes(Number(startTime.mins));
+//         const body = JSON.stringify({
+//           topic: title,
+//           start_time: classStartTime,
+//           duration: durationInMinutes,
+//         });
+//         const response = await fetch(url, {
+//           method: "POST",
+//           headers: headers,
+//           body: body,
+//         });
+//         const data: MeetingType = await response.json();
+//         return data;
+//       }),
+//     );
+
+//     return { data: meetings, error: null };
+//   } catch (error) {
+//     console.log("Error scheduling meeting: ", (error as Error).message);
+//     return { data: null, error: "Error scheduling meeting" };
+//   }
+// }
+
+type MeetingDetailsType = {
+  userId: string;
+  title: string;
+  description: string;
+  startTime: Date;
+  endTime: Date;
+  recurring: boolean;
+};
+
+export async function scheduleMeeting(meetingDetails: MeetingDetailsType) {
   try {
-    const clientId = process.env.ZOOM_CLIENT_ID;
-    const clientSecret = process.env.ZOOM_CLIENT_SECRET;
+    const { userId, title, description, startTime, endTime, recurring } =
+      meetingDetails;
+    // Retrieve the user's access and refresh tokens from the database
+    const userTokens = await getUserTokensFromDatabase(userId); // Implement this function
 
-    // Get access token
-    const tokenUrl = "https://zoom.us/oauth/token";
+    if (!userTokens) {
+      throw new Error("User unauthenticated");
+    }
 
-    const tokenHeaders = new Headers({
-      Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    });
+    const { access_token, refresh_token } = userTokens;
 
-    const tokenBody = new URLSearchParams({
-      refresh_token: refreshToken,
-      grant_type: "refresh_token",
-    });
+    // Set up the Google OAuth2 client
+    const redirectUrl = `${process.env.BASE_URL}/api/oauth2/callback`;
 
-    const tokenResponse = await fetch(tokenUrl, {
-      method: "POST",
-      headers: tokenHeaders,
-      body: tokenBody,
-    });
-    const tokenData = await tokenResponse.json();
-
-    //Save refresh token to user database
-    const updatedUser = await User.findByIdAndUpdate(userId, {
-      zoomRefreshToken: tokenData.refresh_token,
-    });
-    if (!updatedUser)
-      throw new Error("An error occured saving new refresh token to database");
-
-    // Schedule meeting
-    const url = "https://api.zoom.us/v2/users/me/meetings";
-
-    const headers = new Headers({
-      Authorization: `Bearer ${tokenData.access_token}`,
-      "Content-Type": "application/json",
-    });
-
-    const meetings = await Promise.all(
-      dates.map(async (date) => {
-        const classStartTime = new Date(date);
-        classStartTime.setHours(Number(startTime.hours));
-        classStartTime.setMinutes(Number(startTime.mins));
-        const body = JSON.stringify({
-          topic: title,
-          start_time: classStartTime,
-          duration: durationInMinutes,
-        });
-        const response = await fetch(url, {
-          method: "POST",
-          headers: headers,
-          body: body,
-        });
-        const data: MeetingType = await response.json();
-        return data;
-      }),
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      redirectUrl,
     );
 
-    return { data: meetings, error: null };
-  } catch (error) {
-    console.log("Error scheduling meeting: ", (error as Error).message);
-    return { data: null, error: "Error scheduling meeting" };
+    oauth2Client.setCredentials({
+      access_token: access_token,
+      refresh_token: refresh_token,
+    });
+
+    // Refresh the access token if needed
+    oauth2Client.on("tokens", (tokens) => {
+      if (tokens.refresh_token) {
+        saveTokensToDatabase(userId, tokens);
+      }
+    });
+
+    // Set up the Calendar API
+    const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+
+    // Create the event
+    const event = {
+      summary: title || "Meeting",
+      description: description || "Google Meet Meeting",
+      start: {
+        dateTime: startTime.toISOString(), // e.g., '2025-01-24T10:00:00-07:00'
+        timeZone: "America/Los_Angeles",
+      },
+      end: {
+        dateTime: endTime.toISOString(), // e.g., '2025-01-24T11:00:00-07:00'
+        timeZone: "America/Los_Angeles",
+      },
+      conferenceData: {
+        createRequest: {
+          requestId: "random-string-or-uuid",
+          conferenceSolutionKey: { type: "hangoutsMeet" },
+        },
+      },
+    };
+
+    // Add the event to the calendar
+    const response = await calendar.events.insert({
+      calendarId: "primary",
+      requestBody: event,
+      conferenceDataVersion: 1,
+    });
+
+    return { event: response.data, error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.error("Error scheduling meeting:", error.message);
+    return { event: null, error: "Error scheduling meeting" };
   }
+}
+
+// Mock function to fetch user tokens from the database
+async function getUserTokensFromDatabase(userId: string) {
+  const user: UserType | null = await User.findById(userId);
+  return user?.googleTokens;
+}
+
+// Mock function to save updated tokens to the database
+async function saveTokensToDatabase(userId: string, tokens: object) {
+  await User.findByIdAndUpdate(userId, { googleTokens: tokens });
 }
