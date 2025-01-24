@@ -80,81 +80,53 @@ export async function deleteClass(groupClass: GroupClassType) {
   }
 }
 
-// export async function scheduleMeeting(
-//   title: string,
-//   startTime: { hours: string; mins: string },
-//   durationInMinutes: number,
-//   dates: Date[],
-//   refreshToken: string,
-//   userId: string,
-// ): Promise<
-//   { data: MeetingType[]; error: null } | { data: null; error: string }
-// > {
-//   try {
-//     const clientId = process.env.ZOOM_CLIENT_ID;
-//     const clientSecret = process.env.ZOOM_CLIENT_SECRET;
+function generateRecurrenceRule(
+  count: number,
+  frequency: RepeatFrequencyType,
+): string[] {
+  let freq: string;
+  let interval: number = 1;
 
-//     // Get access token
-//     const tokenUrl = "https://zoom.us/oauth/token";
+  switch (frequency) {
+    case "daily":
+      freq = "DAILY";
+      break;
+    case "weekly":
+      freq = "WEEKLY";
+      break;
+    case "bi-weekly":
+      freq = "WEEKLY";
+      interval = 2; // Set interval to 2 for bi-weekly
+      break;
+    case "monthly":
+      freq = "MONTHLY";
+      break;
+    case "yearly":
+      freq = "YEARLY";
+      break;
+    default:
+      throw new Error("Invalid frequency type");
+  }
 
-//     const tokenHeaders = new Headers({
-//       Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
-//       "Content-Type": "application/x-www-form-urlencoded",
-//     });
+  const rule = `RRULE:FREQ=${freq};INTERVAL=${interval};COUNT=${count}`;
+  return [rule];
+}
 
-//     const tokenBody = new URLSearchParams({
-//       refresh_token: refreshToken,
-//       grant_type: "refresh_token",
-//     });
+function getTimeZone(date: Date) {
+  const offsetInMinutes = date.getTimezoneOffset();
 
-//     const tokenResponse = await fetch(tokenUrl, {
-//       method: "POST",
-//       headers: tokenHeaders,
-//       body: tokenBody,
-//     });
-//     const tokenData = await tokenResponse.json();
+  // Convert it to hours and minutes
+  const offsetHours = Math.floor(Math.abs(offsetInMinutes) / 60);
+  const offsetMinutes = Math.abs(offsetInMinutes) % 60;
 
-//     //Save refresh token to user database
-//     const updatedUser = await User.findByIdAndUpdate(userId, {
-//       zoomRefreshToken: tokenData.refresh_token,
-//     });
-//     if (!updatedUser)
-//       throw new Error("An error occured saving new refresh token to database");
+  // Determine the sign (UTC+ or UTC-)
+  const sign = offsetInMinutes > 0 ? "-" : "+";
 
-//     // Schedule meeting
-//     const url = "https://api.zoom.us/v2/users/me/meetings";
+  // Format the UTC offset string
+  const offsetString = `UTC${sign}${String(offsetHours).padStart(2, "0")}:${String(offsetMinutes).padStart(2, "0")}`;
 
-//     const headers = new Headers({
-//       Authorization: `Bearer ${tokenData.access_token}`,
-//       "Content-Type": "application/json",
-//     });
-
-//     const meetings = await Promise.all(
-//       dates.map(async (date) => {
-//         const classStartTime = new Date(date);
-//         classStartTime.setHours(Number(startTime.hours));
-//         classStartTime.setMinutes(Number(startTime.mins));
-//         const body = JSON.stringify({
-//           topic: title,
-//           start_time: classStartTime,
-//           duration: durationInMinutes,
-//         });
-//         const response = await fetch(url, {
-//           method: "POST",
-//           headers: headers,
-//           body: body,
-//         });
-//         const data: MeetingType = await response.json();
-//         return data;
-//       }),
-//     );
-
-//     return { data: meetings, error: null };
-//   } catch (error) {
-//     console.log("Error scheduling meeting: ", (error as Error).message);
-//     return { data: null, error: "Error scheduling meeting" };
-//   }
-// }
+  return offsetString;
+}
 
 type MeetingDetailsType = {
   userId: string;
@@ -163,12 +135,20 @@ type MeetingDetailsType = {
   startTime: Date;
   endTime: Date;
   repeatFrequency?: RepeatFrequencyType;
+  repeatCount?: number;
 };
 
 export async function scheduleMeeting(meetingDetails: MeetingDetailsType) {
   try {
-    const { userId, title, description, startTime, endTime, repeatFrequency } =
-      meetingDetails;
+    const {
+      userId,
+      title,
+      description,
+      startTime,
+      endTime,
+      repeatCount,
+      repeatFrequency,
+    } = meetingDetails;
     // Retrieve the user's access and refresh tokens from the database
     const userTokens = await getUserTokensFromDatabase(userId); // Implement this function
 
@@ -202,28 +182,31 @@ export async function scheduleMeeting(meetingDetails: MeetingDetailsType) {
     // Set up the Calendar API
     const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
-    // Create the event
-    const event = {
-      summary: title || "Live Class",
-      description: description || "Scoutsesh Live Class",
-      start: {
-        dateTime: startTime.toISOString(),
-      },
-      end: {
-        dateTime: endTime.toISOString(),
-      },
-      conferenceData: {
-        createRequest: {
-          requestId: uuidv4(),
-          conferenceSolutionKey: { type: "hangoutsMeet" },
-        },
-      },
-    };
-
     // Add the event to the calendar
     const response = await calendar.events.insert({
       calendarId: "primary",
-      requestBody: event,
+      requestBody: {
+        summary: title || "Live Class",
+        description: description || "Scoutsesh Live Class",
+        start: {
+          dateTime: startTime.toISOString(),
+          timeZone: getTimeZone(startTime),
+        },
+        end: {
+          dateTime: endTime.toISOString(),
+          timeZone: getTimeZone(endTime),
+        },
+        recurrence:
+          repeatCount && repeatFrequency
+            ? generateRecurrenceRule(repeatCount, repeatFrequency)
+            : undefined,
+        conferenceData: {
+          createRequest: {
+            requestId: uuidv4(),
+            conferenceSolutionKey: { type: "hangoutsMeet" },
+          },
+        },
+      },
       conferenceDataVersion: 1,
     });
 

@@ -227,6 +227,11 @@ export default function CreateClassForm({
     dispatch({ type: "isRecurring", payload: false });
   }
 
+  function clearRecurringFields() {
+    dispatch({ type: "endDate", payload: undefined });
+    dispatch({ type: "repeatFrequency", payload: "" });
+  }
+
   const formFieldVacant =
     !title.trim() ||
     !description.trim() ||
@@ -314,6 +319,10 @@ export default function CreateClassForm({
         startTime: meetingStartTime,
         endTime: meetingEndTime,
         repeatFrequency,
+        repeatCount:
+          endDate && repeatFrequency
+            ? getDatesBetween(startDate, endDate, repeatFrequency).length
+            : undefined,
         userId: user._id,
       });
       if (error !== null) {
@@ -424,6 +433,7 @@ export default function CreateClassForm({
               <RecurringField
                 isRecurring={isRecurring}
                 setIsRecurring={updateField("isRecurring")}
+                clearRecurringFields={clearRecurringFields}
               />
 
               {isRecurring && (
