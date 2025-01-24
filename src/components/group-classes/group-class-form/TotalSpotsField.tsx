@@ -5,8 +5,8 @@ export default function TotalSpotsField({
   totalSpots,
   setTotalSpots,
 }: {
-  totalSpots: number;
-  setTotalSpots(value: number): void;
+  totalSpots: string;
+  setTotalSpots(value: string): void;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -15,9 +15,12 @@ export default function TotalSpotsField({
         id="totalSpots"
         name="totalSpots"
         value={totalSpots}
-        onChange={(e) => setTotalSpots(Number(e.target.value))}
-        type="number"
-        min="1"
+        onChange={(e) => {
+          if (isNaN(Number(e.target.value))) return;
+          setTotalSpots(e.target.value);
+        }}
+        type="text"
+        inputMode="numeric"
         required
       />
     </div>

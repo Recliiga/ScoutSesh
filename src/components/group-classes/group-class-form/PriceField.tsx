@@ -7,8 +7,8 @@ export default function PriceField({
   setPrice,
   error,
 }: {
-  price: number;
-  setPrice(value: number): void;
+  price: string;
+  setPrice(value: string): void;
   error: string;
 }) {
   return (
@@ -18,10 +18,12 @@ export default function PriceField({
         id="price"
         name="price"
         value={price}
-        onChange={(e) => setPrice(Number(e.target.value))}
-        type="number"
-        min="0"
-        step="0.01"
+        onChange={(e) => {
+          if (isNaN(Number(e.target.value))) return;
+          setPrice(e.target.value);
+        }}
+        type="text"
+        inputMode="numeric"
         required
       />
       {error.trim() !== "" && <Error error={error} />}

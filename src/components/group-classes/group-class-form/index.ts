@@ -4,7 +4,8 @@ import DescriptionField from "./DescriptionField";
 import CoachesField from "./CoachesField";
 import SkillLevelField from "./SkillLevelField";
 import CourseTimeField from "./CourseTimeField";
-import CourseDateField from "./CourseDateField";
+import StartDateField from "./StartDateField";
+import EndDateField from "./EndDateField";
 import CourseTypeField from "./CourseTypeField";
 import RepeatFrequencyField from "./RepeatFrequencyField";
 import RecurringField from "./RecurringField";
@@ -21,7 +22,8 @@ export {
   CoachesField,
   SkillLevelField,
   CourseTimeField,
-  CourseDateField,
+  StartDateField,
+  EndDateField,
   CourseTypeField,
   RepeatFrequencyField,
   RecurringField,

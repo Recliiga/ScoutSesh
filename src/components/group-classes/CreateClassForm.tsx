@@ -1,5 +1,5 @@
 "use client";
-import React, { useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClass, scheduleMeeting } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
@@ -21,15 +21,16 @@ import { calendar_v3 } from "googleapis";
 import {
   ClassSessions,
   CoachesField,
-  CourseDateField,
   CourseDurationField,
   CourseTimeField,
   CourseTypeField,
   DescriptionField,
+  EndDateField,
   PriceField,
   RecurringField,
   RepeatFrequencyField,
   SkillLevelField,
+  StartDateField,
   ThumbnailField,
   TitleField,
   TotalSpotsField,
@@ -59,8 +60,8 @@ export type ClassDataType = {
   videoLessons: VideoDataType[];
   videos: { title: string; duration: number; url: string }[];
   skillLevels: SkillLevelType[];
-  totalSpots: number;
-  price: number;
+  totalSpots: string;
+  price: string;
   meetingData?: calendar_v3.Schema$Event;
 };
 
@@ -80,8 +81,8 @@ const initialState: ClassDataType = {
   videoLessons: [],
   videos: [],
   skillLevels: [],
-  totalSpots: 0,
-  price: 0,
+  totalSpots: "",
+  price: "",
 };
 
 type ActionType<T extends keyof ClassDataType> = {
@@ -122,6 +123,15 @@ export default function CreateClassForm({
     totalSpots,
     price,
   } = state;
+
+  useEffect(() => {
+    dispatch({
+      type: "coaches",
+      payload: assistantCoaches
+        .filter((coach) => coach.role === "Head Coach")
+        .map((coach) => coach._id),
+    });
+  }, [assistantCoaches]);
 
   function updateField<T extends keyof ClassDataType>(field: T) {
     return (value: ClassDataType[T]) => {
@@ -221,7 +231,7 @@ export default function CreateClassForm({
     !description.trim() ||
     skillLevels.length <= 0 ||
     !courseType?.trim() ||
-    price > 0;
+    !price.trim();
 
   const videoFieldVacant = !Boolean(
     videoLessons.length &&
@@ -230,10 +240,10 @@ export default function CreateClassForm({
 
   const liveClassFieldVacant =
     !startDate ||
-    !endDate ||
+    (isRecurring && !endDate) ||
     (isRecurring && !repeatFrequency) ||
     (!duration.trim() && !customDuration.trim()) ||
-    totalSpots > 0;
+    !totalSpots.trim();
 
   const cannotSubmit =
     loading.status ||
@@ -259,10 +269,34 @@ export default function CreateClassForm({
     const meetingDuration =
       duration === "custom" ? Number(customDuration) : Number(duration);
 
-    let meetingData: calendar_v3.Schema$Event | undefined = undefined;
+    type MeetingDataType = calendar_v3.Schema$Event | undefined;
+    const meetingData: MeetingDataType = undefined;
+
+    const classData = {
+      title,
+      description,
+      thumbnail,
+      coaches,
+      courseType,
+      startDate,
+      endDate,
+      startTime,
+      duration: meetingDuration,
+      isRecurring,
+      repeatFrequency,
+      totalSpots: Number(totalSpots),
+      skillLevels,
+      meetingData: meetingData as MeetingDataType,
+      videos: videoLessons.map((vid) => ({
+        title: vid.title,
+        duration: vid.duration,
+        url: vid.url,
+      })) as VideoType[],
+      price: Number(price),
+    };
 
     if (courseType === "live") {
-      if (!startDate || !endDate) return;
+      if (!startDate || (isRecurring && !endDate)) return;
 
       setLoading({ message: "Scheduling Meetings", status: true });
 
@@ -286,31 +320,8 @@ export default function CreateClassForm({
         setLoading({ message: "", status: false });
         return;
       }
-      meetingData = event;
+      classData.meetingData = event;
     }
-
-    const classData = {
-      title,
-      description,
-      thumbnail,
-      coaches,
-      courseType,
-      startDate,
-      endDate,
-      startTime,
-      duration: meetingDuration,
-      isRecurring,
-      repeatFrequency,
-      totalSpots,
-      skillLevels,
-      meetingData,
-      videos: videoLessons.map((vid) => ({
-        title: vid.title,
-        duration: vid.duration,
-        url: vid.url,
-      })) as VideoType[],
-      price: price,
-    };
 
     // Upload thumbnail
     setLoading({ message: "Uploading Thumbnail", status: true });
@@ -391,11 +402,9 @@ export default function CreateClassForm({
 
         {courseType === "live" ? (
           <>
-            <CourseDateField
+            <StartDateField
               startDate={startDate}
               setStartDate={updateField("startDate")}
-              endDate={endDate}
-              setEndDate={updateField("endDate")}
             />
 
             <CourseTimeField
@@ -417,6 +426,12 @@ export default function CreateClassForm({
 
             {isRecurring && (
               <>
+                <EndDateField
+                  startDate={startDate}
+                  endDate={endDate}
+                  setEndDate={updateField("endDate")}
+                />
+
                 <RepeatFrequencyField
                   repeatFrequency={repeatFrequency}
                   setRepeatFrequency={updateField("repeatFrequency")}
