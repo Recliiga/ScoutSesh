@@ -1,8 +1,12 @@
 "use server";
 
+import { v4 as uuidv4 } from "uuid";
 import { google } from "googleapis";
 import connectDB from "@/db/connectDB";
-import GroupClass, { GroupClassType } from "@/db/models/GroupClass";
+import GroupClass, {
+  GroupClassType,
+  RepeatFrequencyType,
+} from "@/db/models/GroupClass";
 import User, { UserType } from "@/db/models/User";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
@@ -158,12 +162,12 @@ type MeetingDetailsType = {
   description: string;
   startTime: Date;
   endTime: Date;
-  recurring: boolean;
+  repeatFrequency?: RepeatFrequencyType;
 };
 
 export async function scheduleMeeting(meetingDetails: MeetingDetailsType) {
   try {
-    const { userId, title, description, startTime, endTime, recurring } =
+    const { userId, title, description, startTime, endTime, repeatFrequency } =
       meetingDetails;
     // Retrieve the user's access and refresh tokens from the database
     const userTokens = await getUserTokensFromDatabase(userId); // Implement this function
@@ -200,19 +204,17 @@ export async function scheduleMeeting(meetingDetails: MeetingDetailsType) {
 
     // Create the event
     const event = {
-      summary: title || "Meeting",
-      description: description || "Google Meet Meeting",
+      summary: title || "Live Class",
+      description: description || "Scoutsesh Live Class",
       start: {
-        dateTime: startTime.toISOString(), // e.g., '2025-01-24T10:00:00-07:00'
-        timeZone: "America/Los_Angeles",
+        dateTime: startTime.toISOString(),
       },
       end: {
-        dateTime: endTime.toISOString(), // e.g., '2025-01-24T11:00:00-07:00'
-        timeZone: "America/Los_Angeles",
+        dateTime: endTime.toISOString(),
       },
       conferenceData: {
         createRequest: {
-          requestId: "random-string-or-uuid",
+          requestId: uuidv4(),
           conferenceSolutionKey: { type: "hangoutsMeet" },
         },
       },

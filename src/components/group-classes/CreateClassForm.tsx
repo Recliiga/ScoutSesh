@@ -36,6 +36,7 @@ import {
   TotalSpotsField,
   VideoLessonsField,
 } from "./group-class-form";
+import Link from "next/link";
 
 export type VideoDataType = {
   _id: string;
@@ -312,7 +313,7 @@ export default function CreateClassForm({
         description,
         startTime: meetingStartTime,
         endTime: meetingEndTime,
-        recurring: true,
+        repeatFrequency,
         userId: user._id,
       });
       if (error !== null) {
@@ -401,54 +402,72 @@ export default function CreateClassForm({
         />
 
         {courseType === "live" ? (
-          <>
-            <StartDateField
-              startDate={startDate}
-              setStartDate={updateField("startDate")}
-            />
+          user.googleTokens ? (
+            <>
+              <StartDateField
+                startDate={startDate}
+                setStartDate={updateField("startDate")}
+              />
 
-            <CourseTimeField
-              startTime={startTime}
-              setStartTime={updateField("startTime")}
-            />
+              <CourseTimeField
+                startTime={startTime}
+                setStartTime={updateField("startTime")}
+              />
 
-            <CourseDurationField
-              customDuration={customDuration}
-              duration={duration}
-              setCustomDuration={updateField("customDuration")}
-              setDuration={updateField("duration")}
-            />
+              <CourseDurationField
+                customDuration={customDuration}
+                duration={duration}
+                setCustomDuration={updateField("customDuration")}
+                setDuration={updateField("duration")}
+              />
 
-            <RecurringField
-              isRecurring={isRecurring}
-              setIsRecurring={updateField("isRecurring")}
-            />
+              <RecurringField
+                isRecurring={isRecurring}
+                setIsRecurring={updateField("isRecurring")}
+              />
 
-            {isRecurring && (
-              <>
-                <EndDateField
-                  startDate={startDate}
-                  endDate={endDate}
-                  setEndDate={updateField("endDate")}
-                />
-
-                <RepeatFrequencyField
-                  repeatFrequency={repeatFrequency}
-                  setRepeatFrequency={updateField("repeatFrequency")}
-                />
-
-                {startDate && endDate && repeatFrequency && (
-                  <ClassSessions
-                    dates={getDatesBetween(startDate, endDate, repeatFrequency)}
+              {isRecurring && (
+                <>
+                  <EndDateField
+                    startDate={startDate}
+                    endDate={endDate}
+                    setEndDate={updateField("endDate")}
                   />
-                )}
-              </>
-            )}
-            <TotalSpotsField
-              totalSpots={totalSpots}
-              setTotalSpots={updateField("totalSpots")}
-            />
-          </>
+
+                  <RepeatFrequencyField
+                    repeatFrequency={repeatFrequency}
+                    setRepeatFrequency={updateField("repeatFrequency")}
+                  />
+
+                  {startDate && endDate && repeatFrequency && (
+                    <ClassSessions
+                      dates={getDatesBetween(
+                        startDate,
+                        endDate,
+                        repeatFrequency,
+                      )}
+                    />
+                  )}
+                </>
+              )}
+              <TotalSpotsField
+                totalSpots={totalSpots}
+                setTotalSpots={updateField("totalSpots")}
+              />
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Please connect your Google account in your profile settings to
+              schedule live classes. Visit your{" "}
+              <Link
+                href="/dashboard/profile"
+                className="text-accent-green-100 underline"
+              >
+                profile
+              </Link>{" "}
+              to set it up.
+            </p>
+          )
         ) : null}
 
         {courseType === "video" && (
