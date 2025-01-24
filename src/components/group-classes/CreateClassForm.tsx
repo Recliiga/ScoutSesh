@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useReducer, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClass, scheduleMeeting } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
@@ -66,26 +66,6 @@ export type ClassDataType = {
   meetingData?: calendar_v3.Schema$Event;
 };
 
-const initialState: ClassDataType = {
-  title: "",
-  description: "",
-  courseType: undefined,
-  startDate: undefined,
-  endDate: undefined,
-  startTime: { hours: 10, mins: 0 },
-  duration: "",
-  customDuration: "",
-  isRecurring: false,
-  repeatFrequency: undefined,
-  coaches: [],
-  thumbnail: "",
-  videoLessons: [],
-  videos: [],
-  skillLevels: [],
-  totalSpots: "",
-  price: "",
-};
-
 type ActionType<T extends keyof ClassDataType> = {
   type: T;
   payload: ClassDataType[T];
@@ -105,6 +85,28 @@ export default function CreateClassForm({
   assistantCoaches: UserType[];
   user: UserType;
 }) {
+  const initialState: ClassDataType = {
+    title: "",
+    description: "",
+    courseType: undefined,
+    startDate: undefined,
+    endDate: undefined,
+    startTime: { hours: 10, mins: 0 },
+    duration: "",
+    customDuration: "",
+    isRecurring: false,
+    repeatFrequency: undefined,
+    coaches: assistantCoaches
+      .filter((coach) => coach.role === "Head Coach")
+      .map((coach) => coach._id),
+    thumbnail: "",
+    videoLessons: [],
+    videos: [],
+    skillLevels: [],
+    totalSpots: "",
+    price: "",
+  };
+
   const [state, dispatch] = useReducer(reducer, initialState);
   const {
     title,
@@ -124,15 +126,6 @@ export default function CreateClassForm({
     totalSpots,
     price,
   } = state;
-
-  useEffect(() => {
-    dispatch({
-      type: "coaches",
-      payload: assistantCoaches
-        .filter((coach) => coach.role === "Head Coach")
-        .map((coach) => coach._id),
-    });
-  }, [assistantCoaches]);
 
   function updateField<T extends keyof ClassDataType>(field: T) {
     return (value: ClassDataType[T]) => {
@@ -308,7 +301,7 @@ export default function CreateClassForm({
 
       const meetingStartTime = new Date(startDate);
       meetingStartTime.setHours(startTime.hours, startTime.mins);
-      const meetingEndTime = meetingStartTime;
+      const meetingEndTime = new Date(meetingStartTime);
       meetingEndTime.setMinutes(
         meetingStartTime.getMinutes() + meetingDuration,
       );
@@ -349,20 +342,22 @@ export default function CreateClassForm({
     classData.thumbnail = url;
 
     // Upload videos
-    setLoading({ message: "Uploading Videos", status: true });
+    if (courseType === "video") {
+      setLoading({ message: "Uploading Videos", status: true });
 
-    if (!classData.thumbnail)
-      setError("Please select an image for the thumbnail");
+      if (!classData.thumbnail)
+        setError("Please select an image for the thumbnail");
 
-    const { uploadedVideos, error: uploadVideoError } =
-      await uploadVideosClient(classData.videos);
+      const { uploadedVideos, error: uploadVideoError } =
+        await uploadVideosClient(classData.videos);
 
-    if (uploadVideoError !== null) {
-      setError(uploadVideoError);
-      setLoading({ message: "", status: false });
-      return;
+      if (uploadVideoError !== null) {
+        setError(uploadVideoError);
+        setLoading({ message: "", status: false });
+        return;
+      }
+      classData.videos = uploadedVideos as VideoType[];
     }
-    classData.videos = uploadedVideos as VideoType[];
 
     setLoading({ message: "", status: true });
 
@@ -387,6 +382,7 @@ export default function CreateClassForm({
           placeholderThumbnail={placeholderThumbnail}
           thumbnail={thumbnail}
           thumbnailError={thumbnailError}
+          required
         />
 
         <DescriptionField
@@ -486,6 +482,7 @@ export default function CreateClassForm({
             setVideoLessons={updateField("videoLessons")}
             videoError={videoError}
             videoLessons={videoLessons}
+            required
           />
         )}
 

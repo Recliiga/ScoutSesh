@@ -194,7 +194,7 @@ export async function uploadImageClient(
   image: string,
 ): Promise<{ url: string; error: null } | { url: null; error: string }> {
   try {
-    if (image.startsWith("http")) return { url: image, error: null };
+    if (image.startsWith("https")) return { url: image, error: null };
 
     const formData = new FormData();
     formData.set("image", image);
@@ -223,7 +223,7 @@ export async function uploadVideosClient(
   try {
     const uploadedVideos = await Promise.all(
       videos.map(async (video) => {
-        if (video.url.startsWith("http")) return video;
+        if (video.url.startsWith("https")) return video;
         const formData = new FormData();
         formData.set("video", video.url);
         const res = await fetch(`/api/upload-video`, {
@@ -493,7 +493,6 @@ export function generateRecurrenceRule(
   const rule = `RRULE:FREQ=${freq};INTERVAL=${interval};COUNT=${count}`;
   return [rule];
 }
-
 
 export function getTimeZone(date: Date) {
   const offsetInMinutes = date.getTimezoneOffset();

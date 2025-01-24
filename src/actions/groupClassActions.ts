@@ -14,7 +14,6 @@ import {
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
-import { ClassDataType } from "@/components/group-classes/CreateClassForm";
 import { getCalendarAPI } from "@/lib/getCalendarAPI";
 
 export async function createClass(
@@ -38,7 +37,10 @@ export async function createClass(
 
 export async function updateClass(
   groupClassId: string,
-  classData: ClassDataType & { user: { _id: string } },
+  classData: Partial<Omit<GroupClassType, "coaches">> & {
+    coaches: string[];
+    userId: string;
+  },
 ) {
   let redirectUrl;
   try {
@@ -46,13 +48,13 @@ export async function updateClass(
     const { userId, error } = getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
 
-    if (classData.user._id !== userId) throw new Error("Unauthorized!");
+    if (classData.userId !== userId) throw new Error("Unauthorized!");
 
     await connectDB();
-    const updatedGroupClass = await GroupClass.findByIdAndUpdate(groupClassId, {
-      ...classData,
-      user: userId,
-    });
+    const updatedGroupClass = await GroupClass.findByIdAndUpdate(
+      groupClassId,
+      classData,
+    );
     if (!updatedGroupClass) throw new Error("An error occured updating course");
     redirectUrl = "/dashboard/group-classes/courses";
   } catch (error) {
@@ -122,7 +124,7 @@ export async function scheduleMeeting(meetingDetails: MeetingDetailsType) {
     if (error !== null) throw new Error(error);
 
     // Add the event to the calendar
-    const response = await calendar.events.insert({
+    const newEvent = await calendar.events.insert({
       calendarId: "primary",
       requestBody: {
         summary: title || "Live Class",
@@ -149,10 +151,65 @@ export async function scheduleMeeting(meetingDetails: MeetingDetailsType) {
       conferenceDataVersion: 1,
     });
 
-    return { event: response.data, error: null };
+    return { event: newEvent.data, error: null };
   } catch (err) {
     const error = err as Error;
     console.error("Error scheduling meeting:", error.message);
     return { event: null, error: "Error scheduling meeting" };
+  }
+}
+
+export async function updateMeeting(
+  eventId: string,
+  meetingDetails: MeetingDetailsType,
+) {
+  try {
+    const {
+      userId,
+      title,
+      description,
+      startTime,
+      endTime,
+      repeatCount,
+      repeatFrequency,
+    } = meetingDetails;
+
+    const { calendar, error } = await getCalendarAPI(userId);
+    if (error !== null) throw new Error(error);
+
+    // Update the calendar event
+    const updatedEvent = await calendar.events.update({
+      calendarId: "primary",
+      eventId: eventId,
+      requestBody: {
+        summary: title || "Live Class",
+        description: description || "Scoutsesh Live Class",
+        start: {
+          dateTime: startTime.toISOString(),
+          timeZone: getTimeZone(startTime),
+        },
+        end: {
+          dateTime: endTime.toISOString(),
+          timeZone: getTimeZone(endTime),
+        },
+        recurrence:
+          repeatCount && repeatFrequency
+            ? generateRecurrenceRule(repeatCount, repeatFrequency)
+            : undefined,
+        conferenceData: {
+          createRequest: {
+            requestId: uuidv4(),
+            conferenceSolutionKey: { type: "hangoutsMeet" },
+          },
+        },
+      },
+      conferenceDataVersion: 1,
+    });
+
+    return { event: updatedEvent.data, error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.error("Error updating meeting:", error.message);
+    return { event: null, error: "Error updating meeting" };
   }
 }

@@ -7,11 +7,13 @@ export default function ThumbnailField({
   placeholderThumbnail,
   handleChangeThumbnail,
   thumbnailError,
+  required,
 }: {
   thumbnail: string;
   placeholderThumbnail: StaticImageData;
   handleChangeThumbnail(e: React.ChangeEvent<HTMLInputElement>): Promise<void>;
   thumbnailError: string;
+  required?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -32,7 +34,7 @@ export default function ThumbnailField({
         onChange={handleChangeThumbnail}
         type="file"
         accept="image/*"
-        required
+        required={required}
         className="text-sm"
       />
       {thumbnailError && <Error error={thumbnailError} />}

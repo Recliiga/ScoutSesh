@@ -1,6 +1,9 @@
+import Error from "@/components/AuthError";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+const durationList = ["15", "30", "45", "custom"];
 
 export default function CourseDurationField({
   duration,
@@ -18,9 +21,9 @@ export default function CourseDurationField({
       <Label>Lesson Duration (minutes)</Label>
       <RadioGroup
         name="lessonDuration"
-        value={String(duration)}
+        value={duration}
         onValueChange={(value) => {
-          if (value === "custom") return;
+          // if (value === "custom") return;
           setDuration(value);
         }}
         className="grid grid-cols-2 gap-4"
@@ -36,7 +39,7 @@ export default function CourseDurationField({
           ))}
         </div> */}
         <div className="space-y-2">
-          {["15", "30", "45", "custom"].map((duration) => (
+          {durationList.map((duration) => (
             <div key={duration} className="flex items-center space-x-2">
               <RadioGroupItem value={duration} id={`duration-${duration}`} />
               <Label htmlFor={`duration-${duration}`}>
@@ -49,7 +52,8 @@ export default function CourseDurationField({
       {duration === "custom" && (
         <Input
           type="number"
-          min="1"
+          min={1}
+          max={45}
           name="customDuration"
           value={customDuration}
           onChange={(e) => setCustomDuration(e.target.value)}
@@ -57,6 +61,9 @@ export default function CourseDurationField({
           className="mt-2 w-full"
           required
         />
+      )}
+      {Number(customDuration) > 45 && (
+        <Error error={"Please enter a number between 1 and 45"} />
       )}
     </div>
   );

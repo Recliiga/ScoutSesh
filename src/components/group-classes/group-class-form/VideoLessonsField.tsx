@@ -11,6 +11,7 @@ export default function VideoLessonsField({
   setVideoLessons,
   videoError,
   handleChangeVideo,
+  required,
 }: {
   videoLessons: VideoDataType[];
   setVideoLessons(value: VideoDataType[]): void;
@@ -19,6 +20,7 @@ export default function VideoLessonsField({
     e: React.ChangeEvent<HTMLInputElement>,
     id: string,
   ): Promise<void>;
+  required?: boolean;
 }) {
   function handleLoadedMetadata(
     e: React.SyntheticEvent<HTMLVideoElement, Event>,
@@ -102,7 +104,7 @@ export default function VideoLessonsField({
             <Input
               type="text"
               placeholder="Video title"
-              required
+              required={required}
               value={videoLesson.title}
               onChange={(e) =>
                 handleUpdateVideoLessonTitle(e.target.value, videoLesson._id)
@@ -114,7 +116,7 @@ export default function VideoLessonsField({
               onChange={(e) => handleChangeVideo(e, videoLesson._id)}
               type="file"
               accept="video/*"
-              required
+              required={required}
               className="hidden text-sm"
             />
             <div className="flex gap-4">

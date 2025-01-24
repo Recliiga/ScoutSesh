@@ -28,6 +28,7 @@ export default async function EditClassPage({
       assistantCoaches={teamMembers.filter(
         (member) => member.role !== "Athlete",
       )}
+      user={user}
     />
   );
 }
