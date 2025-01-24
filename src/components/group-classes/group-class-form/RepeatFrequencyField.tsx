@@ -13,9 +13,7 @@ export default function RepeatFrequencyField({
   setRepeatFrequency,
 }: {
   repeatFrequency?: RepeatFrequencyType;
-  setRepeatFrequency: React.Dispatch<
-    React.SetStateAction<RepeatFrequencyType | undefined>
-  >;
+  setRepeatFrequency: (value: RepeatFrequencyType | undefined) => void;
 }) {
   return (
     <div className="flex flex-col gap-2">

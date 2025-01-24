@@ -6,16 +6,14 @@ export default function CourseTimeField({
   setStartTime,
 }: {
   startTime: {
-    hours: string;
-    mins: string;
+    hours: number;
+    mins: number;
   };
-  setStartTime: React.Dispatch<
-    React.SetStateAction<{
-      hours: string;
-      mins: string;
-    }>
-  >;
+  setStartTime(value: { hours: number; mins: number }): void;
 }) {
+  const hours = String(startTime.hours).padStart(2, "0");
+  const mins = String(startTime.mins).padStart(2, "0");
+
   return (
     <div className="flex items-center gap-2">
       <Label htmlFor="startTime">Start Time</Label>
@@ -23,10 +21,10 @@ export default function CourseTimeField({
         id="startTime"
         name="startTime"
         // min={"10:00"}
-        value={`${startTime.hours}:${startTime.mins}`}
+        value={`${hours}:${mins}`}
         onChange={(e) => {
-          const hours = e.target.value.split(":")[0];
-          const mins = e.target.value.split(":")[1];
+          const hours = Number(e.target.value.split(":")[0]) || 0;
+          const mins = Number(e.target.value.split(":")[1]) || 0;
           setStartTime({
             hours,
             mins,

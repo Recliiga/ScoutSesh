@@ -13,7 +13,7 @@ export default function VideoLessonsField({
   handleChangeVideo,
 }: {
   videoLessons: VideoDataType[];
-  setVideoLessons: React.Dispatch<React.SetStateAction<VideoDataType[]>>;
+  setVideoLessons(value: VideoDataType[]): void;
   videoError: string;
   handleChangeVideo(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -26,20 +26,24 @@ export default function VideoLessonsField({
   ) {
     const duration = e.currentTarget?.duration;
     if (duration) {
-      setVideoLessons((prev) =>
-        prev.map((vid) => (vid._id === id ? { ...vid, duration } : vid)),
+      setVideoLessons(
+        videoLessons.map((vid) =>
+          vid._id === id ? { ...vid, duration } : vid,
+        ),
       );
     }
   }
 
   function handleUpdateVideoLessonTitle(value: string, id: string) {
-    setVideoLessons((prev) =>
-      prev.map((vid) => (vid._id === id ? { ...vid, title: value } : vid)),
+    setVideoLessons(
+      videoLessons.map((vid) =>
+        vid._id === id ? { ...vid, title: value } : vid,
+      ),
     );
   }
 
   function deleteVideoLesson(id: string) {
-    setVideoLessons((prev) => prev.filter((vid) => vid._id !== id));
+    setVideoLessons(videoLessons.filter((vid) => vid._id !== id));
   }
 
   function moveVideoLessonUp(id: string) {
@@ -150,8 +154,8 @@ export default function VideoLessonsField({
         variant={"outline"}
         className="mt-4"
         onClick={() =>
-          setVideoLessons((prev) => [
-            ...prev,
+          setVideoLessons([
+            ...videoLessons,
             { _id: nanoid(8), title: "", url: "", duration: 0 },
           ])
         }

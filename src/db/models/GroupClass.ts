@@ -9,7 +9,7 @@ export type RepeatFrequencyType =
   | "monthly"
   | "yearly";
 
-type SkillLevelType = "beginner" | "intermediate" | "advanced";
+export type SkillLevelType = "beginner" | "intermediate" | "advanced";
 
 export interface VideoType extends mongoose.Document {
   _id: string;
@@ -54,7 +54,7 @@ export interface GroupClassType extends mongoose.Document {
   repeatFrequency: RepeatFrequencyType;
   startDate: Date;
   endDate: Date;
-  startTime: { hours: string; mins: string };
+  startTime: { hours: number; mins: number };
   duration: number;
   customDuration: number;
   videos: VideoType[];
@@ -124,7 +124,7 @@ const GroupClassSchema = new mongoose.Schema<GroupClassType>(
     repeatFrequency: { type: String },
     startDate: { type: Date },
     endDate: { type: Date },
-    startTime: { hours: { type: String }, mins: { type: String } },
+    startTime: { hours: { type: Number }, mins: { type: Number } },
     duration: { type: Number },
     customDuration: { type: Number },
     videos: { type: [VideoSchema], default: [] },

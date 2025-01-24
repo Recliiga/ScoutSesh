@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClass, scheduleMeeting } from "@/actions/groupClassActions";
 import { UserType } from "@/db/models/User";
@@ -11,7 +11,11 @@ import {
   uploadVideosClient,
 } from "@/lib/utils";
 import LoadingIndicator from "../LoadingIndicator";
-import { RepeatFrequencyType } from "@/db/models/GroupClass";
+import {
+  RepeatFrequencyType,
+  SkillLevelType,
+  VideoType,
+} from "@/db/models/GroupClass";
 import BackButton from "../dashboard/BackButton";
 import { calendar_v3 } from "googleapis";
 import {
@@ -39,6 +43,59 @@ export type VideoDataType = {
   duration: number;
 };
 
+export type ClassDataType = {
+  title: string;
+  description: string;
+  courseType?: "live" | "video";
+  startDate?: Date;
+  endDate?: Date;
+  startTime: { hours: number; mins: number };
+  duration: string;
+  customDuration: string;
+  isRecurring: boolean;
+  repeatFrequency?: RepeatFrequencyType;
+  coaches: string[];
+  thumbnail: string;
+  videoLessons: VideoDataType[];
+  videos: { title: string; duration: number; url: string }[];
+  skillLevels: SkillLevelType[];
+  totalSpots: number;
+  price: number;
+  meetingData?: calendar_v3.Schema$Event;
+};
+
+const initialState: ClassDataType = {
+  title: "",
+  description: "",
+  courseType: undefined,
+  startDate: undefined,
+  endDate: undefined,
+  startTime: { hours: 10, mins: 0 },
+  duration: "",
+  customDuration: "",
+  isRecurring: false,
+  repeatFrequency: undefined,
+  coaches: [],
+  thumbnail: "",
+  videoLessons: [],
+  videos: [],
+  skillLevels: [],
+  totalSpots: 0,
+  price: 0,
+};
+
+type ActionType<T extends keyof ClassDataType> = {
+  type: T;
+  payload: ClassDataType[T];
+};
+
+function reducer<K extends keyof ClassDataType>(
+  state: ClassDataType,
+  action: ActionType<K>,
+): ClassDataType {
+  return { ...state, [action.type]: action.payload };
+}
+
 export default function CreateClassForm({
   assistantCoaches,
   user,
@@ -46,33 +103,36 @@ export default function CreateClassForm({
   assistantCoaches: UserType[];
   user: UserType;
 }) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [courseType, setCourseType] = useState<"live" | "video" | undefined>();
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
-  const [startTime, setStartTime] = useState<{ hours: string; mins: string }>({
-    hours: "10",
-    mins: "00",
-  });
-  const [duration, setDuration] = useState("");
-  const [customDuration, setCustomDuration] = useState("");
-  const [isRecurring, setIsRecurring] = useState(false);
-  const [repeatFrequency, setRepeatFrequency] = useState<RepeatFrequencyType>();
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    title,
+    description,
+    courseType,
+    startDate,
+    endDate,
+    startTime,
+    duration,
+    customDuration,
+    isRecurring,
+    repeatFrequency,
+    coaches,
+    thumbnail,
+    videoLessons,
+    skillLevels,
+    totalSpots,
+    price,
+  } = state;
+
+  function updateField<T extends keyof ClassDataType>(field: T) {
+    return (value: ClassDataType[T]) => {
+      dispatch({ type: field, payload: value });
+    };
+  }
+
   const [loading, setLoading] = useState({ status: false, message: "" });
   const [error, setError] = useState("");
   const [videoError, setVideoError] = useState("");
   const [thumbnailError, setThumbnailError] = useState("");
-  const [coaches, setCoaches] = useState<string[]>(
-    assistantCoaches
-      .filter((user) => user.role === "Head Coach")
-      .map((user) => user._id),
-  );
-  const [thumbnail, setThumbnail] = useState("");
-  const [videoLessons, setVideoLessons] = useState<VideoDataType[]>([]);
-  const [skillLevels, setSkillLevels] = useState<string[]>([]);
-  const [totalSpots, setTotalSpots] = useState("");
-  const [price, setPrice] = useState("");
 
   async function handleChangeThumbnail(e: React.ChangeEvent<HTMLInputElement>) {
     if (!(e.target.files && e.target.files.length)) {
@@ -88,7 +148,7 @@ export default function CreateClassForm({
     try {
       const resizedImage = await resizeImage(imageFile, 800);
       if (!resizedImage) return;
-      setThumbnail(resizedImage);
+      dispatch({ type: "thumbnail", payload: resizedImage });
     } catch {
       setThumbnailError("Error resizing image");
     }
@@ -114,82 +174,90 @@ export default function CreateClassForm({
     fileReader.onload = async (e) => {
       if (!(e.target && e.target.result)) return;
       const videoDataUrl = e.target.result as string;
-      setVideoLessons((prev) =>
-        prev.map((vid) =>
+      dispatch({
+        type: "videoLessons",
+        payload: videoLessons.map((vid) =>
           vid._id === id ? { ...vid, url: videoDataUrl } : vid,
         ),
-      );
+      });
     };
   }
 
   function toggleCoaches(coachId: string) {
     if (coaches.includes(coachId)) {
-      setCoaches(coaches.filter((coach) => coach !== coachId));
+      dispatch({
+        type: "coaches",
+        payload: coaches.filter((coach) => coach !== coachId),
+      });
     } else {
-      setCoaches([...coaches, coachId]);
+      dispatch({ type: "coaches", payload: [...coaches, coachId] });
     }
   }
 
   function toggleSkillLevel(level: "beginner" | "intermediate" | "advanced") {
     if (skillLevels.includes(level)) {
-      setSkillLevels(skillLevels.filter((skillLevel) => skillLevel !== level));
+      dispatch({
+        type: "skillLevels",
+        payload: skillLevels.filter((skillLevel) => skillLevel !== level),
+      });
     } else {
-      setSkillLevels([...skillLevels, level]);
+      dispatch({ type: "skillLevels", payload: [...skillLevels, level] });
     }
   }
 
   function clearLiveClassFields() {
-    setStartDate(undefined);
-    setEndDate(undefined);
-    setStartTime({ hours: "10", mins: "00" });
-    setDuration("");
-    setCustomDuration("");
-    setRepeatFrequency(undefined);
-    setTotalSpots("");
-    setIsRecurring(false);
+    dispatch({ type: "startDate", payload: undefined });
+    dispatch({ type: "endDate", payload: undefined });
+    dispatch({ type: "startTime", payload: { hours: 10, mins: 0 } });
+    dispatch({ type: "duration", payload: "" });
+    dispatch({ type: "customDuration", payload: "" });
+    dispatch({ type: "repeatFrequency", payload: "" });
+    dispatch({ type: "totalSpots", payload: "" });
+    dispatch({ type: "isRecurring", payload: false });
   }
 
   const formFieldVacant =
-    !Boolean(title.trim()) ||
-    !Boolean(description.trim()) ||
-    !Boolean(skillLevels.length) ||
-    !Boolean(courseType?.trim()) ||
-    !Boolean(price.trim());
+    !title.trim() ||
+    !description.trim() ||
+    skillLevels.length <= 0 ||
+    !courseType?.trim() ||
+    price > 0;
+
   const videoFieldVacant = !Boolean(
     videoLessons.length &&
       videoLessons.some((vid) => vid.url.trim() && vid.title.trim()),
   );
+
   const liveClassFieldVacant =
-    !Boolean(startDate) ||
-    !Boolean(endDate) ||
-    !Boolean(startTime.hours) ||
-    !Boolean(startTime.mins) ||
-    (isRecurring && !Boolean(repeatFrequency?.trim())) ||
-    (!Boolean(duration.trim()) && !Boolean(customDuration.trim())) ||
-    !Boolean(totalSpots.trim());
+    !startDate ||
+    !endDate ||
+    (isRecurring && !repeatFrequency) ||
+    (!duration.trim() && !customDuration.trim()) ||
+    totalSpots > 0;
 
   const cannotSubmit =
     loading.status ||
     formFieldVacant ||
     (courseType === "video" && videoFieldVacant) ||
-    (courseType === "live" && liveClassFieldVacant);
+    (courseType === "live" && liveClassFieldVacant) ||
+    (!duration && !customDuration);
 
   function handleChangeCourseType(value: "live" | "video") {
-    if (value === "live") setVideoLessons([]);
+    if (value === "live") dispatch({ type: "videoLessons", payload: [] });
     if (value === "video") clearLiveClassFields();
-    setCourseType(value);
+    dispatch({ type: "courseType", payload: value });
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const isLiveClass = courseType === "live";
-    if (isLiveClass && (!startDate || !endDate)) return;
-
     if (cannotSubmit) return;
 
     setLoading((prev) => ({ ...prev, status: true }));
     setError("");
+
+    const meetingDuration =
+      duration === "custom" ? Number(customDuration) : Number(duration);
 
     let meetingData: calendar_v3.Schema$Event | undefined = undefined;
 
@@ -199,13 +267,10 @@ export default function CreateClassForm({
       setLoading({ message: "Scheduling Meetings", status: true });
 
       const meetingStartTime = new Date(startDate);
-      meetingStartTime.setHours(
-        Number(startTime.hours),
-        Number(startTime.mins),
-      );
+      meetingStartTime.setHours(startTime.hours, startTime.mins);
       const meetingEndTime = meetingStartTime;
       meetingEndTime.setMinutes(
-        meetingStartTime.getMinutes() + Number(duration),
+        meetingStartTime.getMinutes() + meetingDuration,
       );
 
       const { event, error } = await scheduleMeeting({
@@ -217,8 +282,8 @@ export default function CreateClassForm({
         userId: user._id,
       });
       if (error !== null) {
-        setLoading({ message: "", status: false });
         setError(error);
+        setLoading({ message: "", status: false });
         return;
       }
       meetingData = event;
@@ -233,19 +298,18 @@ export default function CreateClassForm({
       startDate,
       endDate,
       startTime,
-      duration: Number(duration) || 0,
-      customDuration: Number(customDuration) || 0,
+      duration: meetingDuration,
       isRecurring,
       repeatFrequency,
-      totalSpots: Number(totalSpots) || 0,
+      totalSpots,
       skillLevels,
       meetingData,
       videos: videoLessons.map((vid) => ({
         title: vid.title,
         duration: vid.duration,
         url: vid.url,
-      })),
-      price: Number(price),
+      })) as VideoType[],
+      price: price,
     };
 
     // Upload thumbnail
@@ -258,12 +322,14 @@ export default function CreateClassForm({
     );
     if (uploadThumbnailError !== null) {
       setError(uploadThumbnailError);
+      setLoading({ message: "", status: false });
       return;
     }
     classData.thumbnail = url;
 
     // Upload videos
     setLoading({ message: "Uploading Videos", status: true });
+
     if (!classData.thumbnail)
       setError("Please select an image for the thumbnail");
 
@@ -272,9 +338,10 @@ export default function CreateClassForm({
 
     if (uploadVideoError !== null) {
       setError(uploadVideoError);
+      setLoading({ message: "", status: false });
       return;
     }
-    classData.videos = uploadedVideos;
+    classData.videos = uploadedVideos as VideoType[];
 
     setLoading({ message: "", status: true });
 
@@ -292,7 +359,7 @@ export default function CreateClassForm({
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <TitleField title={title} setTitle={setTitle} />
+        <TitleField title={title} setTitle={updateField("title")} />
 
         <ThumbnailField
           handleChangeThumbnail={handleChangeThumbnail}
@@ -303,7 +370,7 @@ export default function CreateClassForm({
 
         <DescriptionField
           description={description}
-          setDescription={setDescription}
+          setDescription={updateField("description")}
         />
 
         <CoachesField
@@ -326,33 +393,33 @@ export default function CreateClassForm({
           <>
             <CourseDateField
               startDate={startDate}
-              setStartDate={setStartDate}
+              setStartDate={updateField("startDate")}
               endDate={endDate}
-              setEndDate={setEndDate}
+              setEndDate={updateField("endDate")}
             />
 
             <CourseTimeField
               startTime={startTime}
-              setStartTime={setStartTime}
+              setStartTime={updateField("startTime")}
             />
 
             <CourseDurationField
               customDuration={customDuration}
               duration={duration}
-              setCustomDuration={setCustomDuration}
-              setDuration={setDuration}
+              setCustomDuration={updateField("customDuration")}
+              setDuration={updateField("duration")}
             />
 
             <RecurringField
               isRecurring={isRecurring}
-              setIsRecurring={setIsRecurring}
+              setIsRecurring={updateField("isRecurring")}
             />
 
             {isRecurring && (
               <>
                 <RepeatFrequencyField
                   repeatFrequency={repeatFrequency}
-                  setRepeatFrequency={setRepeatFrequency}
+                  setRepeatFrequency={updateField("repeatFrequency")}
                 />
 
                 {startDate && endDate && repeatFrequency && (
@@ -364,7 +431,7 @@ export default function CreateClassForm({
             )}
             <TotalSpotsField
               totalSpots={totalSpots}
-              setTotalSpots={setTotalSpots}
+              setTotalSpots={updateField("totalSpots")}
             />
           </>
         ) : null}
@@ -372,13 +439,17 @@ export default function CreateClassForm({
         {courseType === "video" && (
           <VideoLessonsField
             handleChangeVideo={handleChangeVideo}
-            setVideoLessons={setVideoLessons}
+            setVideoLessons={updateField("videoLessons")}
             videoError={videoError}
             videoLessons={videoLessons}
           />
         )}
 
-        <PriceField price={price} setPrice={setPrice} error={error} />
+        <PriceField
+          price={price}
+          setPrice={updateField("price")}
+          error={error}
+        />
 
         <Button
           disabled={cannotSubmit}

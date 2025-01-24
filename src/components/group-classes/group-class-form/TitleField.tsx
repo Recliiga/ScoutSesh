@@ -6,7 +6,7 @@ export default function TitleField({
   setTitle,
 }: {
   title: string;
-  setTitle: React.Dispatch<React.SetStateAction<string>>;
+  setTitle(value: string): void;
 }) {
   return (
     <div className="flex flex-col gap-2">

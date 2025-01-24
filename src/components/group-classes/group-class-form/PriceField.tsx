@@ -7,8 +7,8 @@ export default function PriceField({
   setPrice,
   error,
 }: {
-  price: string;
-  setPrice: React.Dispatch<React.SetStateAction<string>>;
+  price: number;
+  setPrice(value: number): void;
   error: string;
 }) {
   return (
@@ -18,7 +18,7 @@ export default function PriceField({
         id="price"
         name="price"
         value={price}
-        onChange={(e) => setPrice(e.target.value)}
+        onChange={(e) => setPrice(Number(e.target.value))}
         type="number"
         min="0"
         step="0.01"

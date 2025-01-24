@@ -16,9 +16,9 @@ export default function CourseDateField({
   setEndDate,
 }: {
   startDate?: Date;
-  setStartDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
+  setStartDate(date?: Date): void;
   endDate?: Date;
-  setEndDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
+  setEndDate(date?: Date): void;
 }) {
   return (
     <div className="space-y-2">

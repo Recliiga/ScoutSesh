@@ -9,23 +9,23 @@ export default function CourseDurationField({
   setCustomDuration,
 }: {
   duration: string;
-  setDuration: React.Dispatch<React.SetStateAction<string>>;
+  setDuration(value: string): void;
   customDuration: string;
-  setCustomDuration: React.Dispatch<React.SetStateAction<string>>;
+  setCustomDuration(value: string): void;
 }) {
   return (
     <div className="flex flex-col gap-2">
       <Label>Lesson Duration (minutes)</Label>
       <RadioGroup
         name="lessonDuration"
-        value={duration}
+        value={String(duration)}
         onValueChange={(value) => {
+          if (value === "custom") return;
           setDuration(value);
-          if (value !== "custom") setCustomDuration("");
         }}
         className="grid grid-cols-2 gap-4"
       >
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           {["15", "30", "45", "60"].map((duration) => (
             <div key={duration} className="flex items-center space-x-2">
               <RadioGroupItem value={duration} id={`duration-${duration}`} />
@@ -34,9 +34,9 @@ export default function CourseDurationField({
               >{`${duration} minutes`}</Label>
             </div>
           ))}
-        </div>
+        </div> */}
         <div className="space-y-2">
-          {["75", "90", "120", "custom"].map((duration) => (
+          {["15", "30", "45", "custom"].map((duration) => (
             <div key={duration} className="flex items-center space-x-2">
               <RadioGroupItem value={duration} id={`duration-${duration}`} />
               <Label htmlFor={`duration-${duration}`}>

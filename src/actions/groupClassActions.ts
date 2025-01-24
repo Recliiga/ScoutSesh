@@ -2,44 +2,17 @@
 
 import { google } from "googleapis";
 import connectDB from "@/db/connectDB";
-import GroupClass, {
-  GroupClassType,
-  MeetingType,
-  RepeatFrequencyType,
-} from "@/db/models/GroupClass";
+import GroupClass, { GroupClassType } from "@/db/models/GroupClass";
 import User, { UserType } from "@/db/models/User";
 import { getUserIdFromCookies } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
+import { ClassDataType } from "@/components/group-classes/CreateClassForm";
 
-type ClassDataVideoType = {
-  title: string;
-  duration: number;
-  url: string;
-};
-
-type ClassDataType = {
-  title: string;
-  description: string;
-  thumbnail: string;
-  coaches: string[];
-  courseType?: "live" | "video";
-  startDate?: Date;
-  endDate?: Date;
-  startTime: { hours: string; mins: string };
-  duration: number;
-  customDuration: number;
-  isRecurring: boolean;
-  repeatFrequency?: RepeatFrequencyType;
-  totalSpots: number;
-  skillLevels: string[];
-  videos: ClassDataVideoType[];
-  price: number;
-  meetings?: MeetingType[];
-};
-
-export async function createClass(classData: ClassDataType) {
+export async function createClass(
+  classData: Partial<Omit<GroupClassType, "coaches"> & { coaches: string[] }>,
+) {
   let redirectUrl;
   try {
     const cookieStore = await cookies();

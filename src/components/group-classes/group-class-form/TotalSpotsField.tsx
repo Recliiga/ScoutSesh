@@ -5,8 +5,8 @@ export default function TotalSpotsField({
   totalSpots,
   setTotalSpots,
 }: {
-  totalSpots: string;
-  setTotalSpots: React.Dispatch<React.SetStateAction<string>>;
+  totalSpots: number;
+  setTotalSpots(value: number): void;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -15,7 +15,7 @@ export default function TotalSpotsField({
         id="totalSpots"
         name="totalSpots"
         value={totalSpots}
-        onChange={(e) => setTotalSpots(e.target.value)}
+        onChange={(e) => setTotalSpots(Number(e.target.value))}
         type="number"
         min="1"
         required

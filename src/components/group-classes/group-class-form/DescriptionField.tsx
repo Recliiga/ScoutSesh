@@ -6,7 +6,7 @@ export default function DescriptionField({
   setDescription,
 }: {
   description: string;
-  setDescription: React.Dispatch<React.SetStateAction<string>>;
+  setDescription(value: string): void;
 }) {
   return (
     <div className="flex flex-col gap-2">

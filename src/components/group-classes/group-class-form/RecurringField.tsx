@@ -6,7 +6,7 @@ export default function RecurringField({
   setIsRecurring,
 }: {
   isRecurring: boolean;
-  setIsRecurring: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsRecurring(value: boolean): void;
 }) {
   return (
     <div className="flex items-center space-x-2">

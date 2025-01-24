@@ -1,4 +1,4 @@
-import { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { UserType } from "@/db/models/User";
 
@@ -27,7 +27,7 @@ export default function CoachesField({
             }`}
           >
             <div className="relative h-10 w-10 overflow-hidden rounded-full font-medium">
-              <AvatarImage className="h-10 w-10">
+              <Avatar className="h-10 w-10">
                 <AvatarImage
                   src={user.profilePicture}
                   alt={user.firstName}
@@ -37,7 +37,7 @@ export default function CoachesField({
                   {user.firstName[0]}
                   {user.lastName[0]}
                 </AvatarFallback>
-              </AvatarImage>
+              </Avatar>
             </div>
             <div className="flex flex-col">
               <h4 className="text-accent-black">
