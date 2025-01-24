@@ -461,3 +461,52 @@ export function calculateMonthlyPlatformFees(
       0,
     );
 }
+
+export function generateRecurrenceRule(
+  count: number,
+  frequency: RepeatFrequencyType,
+): string[] {
+  let freq: string;
+  let interval: number = 1;
+
+  switch (frequency) {
+    case "daily":
+      freq = "DAILY";
+      break;
+    case "weekly":
+      freq = "WEEKLY";
+      break;
+    case "bi-weekly":
+      freq = "WEEKLY";
+      interval = 2; // Set interval to 2 for bi-weekly
+      break;
+    case "monthly":
+      freq = "MONTHLY";
+      break;
+    case "yearly":
+      freq = "YEARLY";
+      break;
+    default:
+      throw new Error("Invalid frequency type");
+  }
+
+  const rule = `RRULE:FREQ=${freq};INTERVAL=${interval};COUNT=${count}`;
+  return [rule];
+}
+
+
+export function getTimeZone(date: Date) {
+  const offsetInMinutes = date.getTimezoneOffset();
+
+  // Convert it to hours and minutes
+  const offsetHours = Math.floor(Math.abs(offsetInMinutes) / 60);
+  const offsetMinutes = Math.abs(offsetInMinutes) % 60;
+
+  // Determine the sign (UTC+ or UTC-)
+  const sign = offsetInMinutes > 0 ? "-" : "+";
+
+  // Format the UTC offset string
+  const offsetString = `UTC${sign}${String(offsetHours).padStart(2, "0")}:${String(offsetMinutes).padStart(2, "0")}`;
+
+  return offsetString;
+}

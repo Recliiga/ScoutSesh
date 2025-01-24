@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { LogOutIcon, XIcon } from "lucide-react";
+import { Trash2Icon, XIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { GroupClassType } from "@/db/models/GroupClass";
 import { deleteClass } from "@/actions/groupClassActions";
+import toast from "react-hot-toast";
 
 export default function DeleteGroupClassModal({
   open,
@@ -18,8 +19,10 @@ export default function DeleteGroupClassModal({
     setLoading(true);
     const { error } = await deleteClass(course);
     if (error) {
+      toast.error(error);
       setLoading(false);
     } else {
+      toast.success("Group class deleted successfully");
       closeModal();
     }
   }
@@ -32,7 +35,7 @@ export default function DeleteGroupClassModal({
     >
       <div className="flex flex-col items-center gap-4 text-center">
         <div className="rounded-full bg-green-100 p-3">
-          <LogOutIcon className="h-6 w-6 text-green-600" />
+          <Trash2Icon className="h-6 w-6 text-green-600" />
         </div>
         <h4 className="text-xl">
           Delete {course.courseType === "video" ? "Course" : "Live Class"}

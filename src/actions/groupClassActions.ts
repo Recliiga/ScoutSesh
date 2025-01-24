@@ -1,18 +1,21 @@
 "use server";
 
 import { v4 as uuidv4 } from "uuid";
-import { google } from "googleapis";
 import connectDB from "@/db/connectDB";
 import GroupClass, {
   GroupClassType,
   RepeatFrequencyType,
 } from "@/db/models/GroupClass";
-import User, { UserType } from "@/db/models/User";
-import { getUserIdFromCookies } from "@/lib/utils";
+import {
+  generateRecurrenceRule,
+  getTimeZone,
+  getUserIdFromCookies,
+} from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 import { ClassDataType } from "@/components/group-classes/CreateClassForm";
+import { getCalendarAPI } from "@/lib/getCalendarAPI";
 
 export async function createClass(
   classData: Partial<Omit<GroupClassType, "coaches"> & { coaches: string[] }>,
@@ -61,6 +64,18 @@ export async function updateClass(
 
 export async function deleteClass(groupClass: GroupClassType) {
   try {
+    if (groupClass.meetingData?.id) {
+      const { calendar, error } = await getCalendarAPI(
+        groupClass.coaches[0]._id,
+      );
+      if (error !== null) throw new Error(error);
+
+      await calendar.events.delete({
+        eventId: groupClass.meetingData.id,
+        calendarId: "primary",
+      });
+    }
+
     const cookieStore = await cookies();
     const { userId, error } = getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
@@ -74,58 +89,11 @@ export async function deleteClass(groupClass: GroupClassType) {
     if (!deletedGroupClass) throw new Error("An error occured deleting course");
     revalidatePath("/dashboard/group-classes/courses");
     return { error: null };
-  } catch (error) {
-    return { error: (error as Error).message };
-  } finally {
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error deleting group class: ", error.message);
+    return { error: "An error occured deleting group class" };
   }
-}
-
-function generateRecurrenceRule(
-  count: number,
-  frequency: RepeatFrequencyType,
-): string[] {
-  let freq: string;
-  let interval: number = 1;
-
-  switch (frequency) {
-    case "daily":
-      freq = "DAILY";
-      break;
-    case "weekly":
-      freq = "WEEKLY";
-      break;
-    case "bi-weekly":
-      freq = "WEEKLY";
-      interval = 2; // Set interval to 2 for bi-weekly
-      break;
-    case "monthly":
-      freq = "MONTHLY";
-      break;
-    case "yearly":
-      freq = "YEARLY";
-      break;
-    default:
-      throw new Error("Invalid frequency type");
-  }
-
-  const rule = `RRULE:FREQ=${freq};INTERVAL=${interval};COUNT=${count}`;
-  return [rule];
-}
-
-function getTimeZone(date: Date) {
-  const offsetInMinutes = date.getTimezoneOffset();
-
-  // Convert it to hours and minutes
-  const offsetHours = Math.floor(Math.abs(offsetInMinutes) / 60);
-  const offsetMinutes = Math.abs(offsetInMinutes) % 60;
-
-  // Determine the sign (UTC+ or UTC-)
-  const sign = offsetInMinutes > 0 ? "-" : "+";
-
-  // Format the UTC offset string
-  const offsetString = `UTC${sign}${String(offsetHours).padStart(2, "0")}:${String(offsetMinutes).padStart(2, "0")}`;
-
-  return offsetString;
 }
 
 type MeetingDetailsType = {
@@ -149,38 +117,9 @@ export async function scheduleMeeting(meetingDetails: MeetingDetailsType) {
       repeatCount,
       repeatFrequency,
     } = meetingDetails;
-    // Retrieve the user's access and refresh tokens from the database
-    const userTokens = await getUserTokensFromDatabase(userId); // Implement this function
 
-    if (!userTokens) {
-      throw new Error("User unauthenticated");
-    }
-
-    const { access_token, refresh_token } = userTokens;
-
-    // Set up the Google OAuth2 client
-    const redirectUrl = `${process.env.BASE_URL}/api/oauth2/callback`;
-
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      redirectUrl,
-    );
-
-    oauth2Client.setCredentials({
-      access_token: access_token,
-      refresh_token: refresh_token,
-    });
-
-    // Refresh the access token if needed
-    oauth2Client.on("tokens", (tokens) => {
-      if (tokens.refresh_token) {
-        saveTokensToDatabase(userId, tokens);
-      }
-    });
-
-    // Set up the Calendar API
-    const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+    const { calendar, error } = await getCalendarAPI(userId);
+    if (error !== null) throw new Error(error);
 
     // Add the event to the calendar
     const response = await calendar.events.insert({
@@ -216,15 +155,4 @@ export async function scheduleMeeting(meetingDetails: MeetingDetailsType) {
     console.error("Error scheduling meeting:", error.message);
     return { event: null, error: "Error scheduling meeting" };
   }
-}
-
-// Mock function to fetch user tokens from the database
-async function getUserTokensFromDatabase(userId: string) {
-  const user: UserType | null = await User.findById(userId);
-  return user?.googleTokens;
-}
-
-// Mock function to save updated tokens to the database
-async function saveTokensToDatabase(userId: string, tokens: object) {
-  await User.findByIdAndUpdate(userId, { googleTokens: tokens });
 }
