@@ -340,7 +340,7 @@ export function getCourseTimeString(courseTime: {
   return `${hours}:${mins} ${suffix}`;
 }
 
-export function formatDate(dateString: string): string {
+export function formatDate(dateString: string) {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-US", {
     month: "long",
@@ -485,6 +485,8 @@ export function verifyToken(token: string) {
     const error = err as Error;
     return { payload: null, error: error.message };
   }
+}
+
 export function generateRecurrenceRule(
   count: number,
   frequency: RepeatFrequencyType,
