@@ -130,7 +130,7 @@ export default function OrganizationRegistrationForm({
       bio: formEntries.bio,
     };
 
-    // Upload organization profile picture
+    // Upload organization logo
     const { url, error: uploadError } = await uploadImageClient(
       formEntries.logo,
     );
@@ -152,13 +152,13 @@ export default function OrganizationRegistrationForm({
     <form onSubmit={handleSubmit}>
       <div className="mb-6 flex flex-col items-center gap-4">
         <Label htmlFor="logo" className="text-center">
-          Organization Profile Photo
+          Organization Logo
         </Label>
         <div className="relative h-32 w-32 overflow-hidden rounded-full bg-gray-100">
           {formEntries.logo ? (
             <Image
               src={formEntries.logo}
-              alt="Profile"
+              alt="Logo Preview"
               layout="fill"
               objectFit="cover"
             />
@@ -351,7 +351,7 @@ export default function OrganizationRegistrationForm({
           disabled={loading || cannotSubmit}
         >
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {loading ? "Saving..." : "Complete Profile"}
+          {loading ? "Creating..." : "Create Organization"}
         </Button>
       </div>
     </form>

@@ -97,7 +97,6 @@ export default function CompleteAthleteProfileForm({
       name: selectedCountry.name || "",
       iso2: countryISO2,
     });
-    updateField("city", "");
   }
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -139,6 +138,7 @@ export default function CompleteAthleteProfileForm({
       DOB: formEntries.DOB,
       profilePicture: formEntries.profilePicture,
       city: formEntries.city,
+      country: formEntries.country,
       primarySport: formEntries.primarySport,
       experience: formEntries.experience,
       bio: formEntries.bio,

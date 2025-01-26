@@ -11,9 +11,9 @@ import {
   BookOpenIcon,
   TrophyIcon,
   MessageSquareIcon,
-  CheckCircle,
   CalendarIcon,
   CameraIcon,
+  XIcon,
 } from "lucide-react";
 import { PrimarySportType, UserType } from "@/db/models/User";
 import { cn, getFullname, uploadImageClient } from "@/lib/utils";
@@ -254,15 +254,15 @@ export default function UserProfilePage({
                     size="icon"
                     disabled={isEditing && loading}
                     onClick={() =>
-                      isEditing ? handleUpdateUser() : setIsEditing(true)
+                      isEditing ? cancelEditing() : setIsEditing(true)
                     }
-                    className={`order-[#14a800] text-[#14a800] hover:text-white ${isEditing ? "bg-[#14a800] hover:bg-[#14a800]/90" : "bg-white hover:bg-[#14a800]"}`}
+                    className="order-[#14a800] bg-white text-[#14a800] hover:bg-[#14a800] hover:text-white"
                   >
                     {isEditing ? (
                       loading ? (
                         <LoadingIndicator />
                       ) : (
-                        <CheckCircle className="h-4 w-4 text-white" />
+                        <XIcon className="h-4 w-4" />
                       )
                     ) : (
                       <PenIcon className="h-4 w-4" />
