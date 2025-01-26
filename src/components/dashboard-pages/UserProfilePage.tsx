@@ -28,6 +28,7 @@ import useClickOutside from "@/hooks/useClickOutside";
 import ConnectStripeButton from "../ConnectStripeButton";
 import Select from "../Select";
 import stripeCountries from "@/data/stripe-countries.json";
+import ConnectGoogleButton from "../ConnectGoogleButton";
 
 export default function UserProfilePage({
   user,
@@ -181,7 +182,7 @@ export default function UserProfilePage({
             </div>
           </div>
           <CardHeader className="px-4 pb-0 pt-20 sm:px-6">
-            <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
               <div className="flex-1">
                 {isEditing ? (
                   <div className="flex w-full gap-2">
@@ -217,7 +218,6 @@ export default function UserProfilePage({
                 <p className="text-sm font-semibold text-[#14a800]">
                   {userData.role}
                 </p>
-                {isOwnProfile && <ConnectStripeButton user={user} />}
                 {user.organization && user.organization._id ? (
                   <div className="mt-2 w-fit">
                     <Link
@@ -238,6 +238,10 @@ export default function UserProfilePage({
                     </Link>
                   </div>
                 ) : null}
+                <div className="mt-3 flex flex-wrap items-center gap-4">
+                  {isOwnProfile && <ConnectStripeButton user={user} />}
+                  {isOwnProfile && <ConnectGoogleButton user={user} />}
+                </div>
               </div>
               <div className="flex items-center space-x-2">
                 <Button className="bg-[#14a800] px-6 py-2 text-base text-white hover:bg-[#14a800]/90 sm:text-lg">

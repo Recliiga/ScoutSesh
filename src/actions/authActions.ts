@@ -55,6 +55,7 @@ export async function login(formData: FormData, redirectUrl: string) {
 
     cookieStore.set("token", token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7,
     });
 
@@ -111,6 +112,7 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
 
     cookieStore.set("token", token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7,
     });
 

@@ -194,7 +194,7 @@ export async function uploadImageClient(
   image: string,
 ): Promise<{ url: string; error: null } | { url: null; error: string }> {
   try {
-    if (image.startsWith("http")) return { url: image, error: null };
+    if (image.startsWith("https")) return { url: image, error: null };
 
     const formData = new FormData();
     formData.set("image", image);
@@ -223,7 +223,7 @@ export async function uploadVideosClient(
   try {
     const uploadedVideos = await Promise.all(
       videos.map(async (video) => {
-        if (video.url.startsWith("http")) return video;
+        if (video.url.startsWith("https")) return video;
         const formData = new FormData();
         formData.set("video", video.url);
         const res = await fetch(`/api/upload-video`, {
@@ -289,7 +289,7 @@ export function calculateStreak(journalEntries: DailyJournalType[]) {
 export function getDatesBetween(
   startDate: Date,
   endDate: Date,
-  frequency: RepeatFrequencyType,
+  frequency?: RepeatFrequencyType,
 ) {
   const dates = [];
   const currentDate = new Date(startDate);
@@ -310,20 +310,23 @@ export function getDatesBetween(
       frequency === "bi-weekly"
     )
       currentDate.setDate(currentDate.getDate() + intervalDays[frequency]);
-    if (frequency === "monthly")
+    else if (frequency === "monthly")
       currentDate.setMonth(currentDate.getMonth() + intervalDays[frequency]);
-    if (frequency === "yearly")
+    else if (frequency === "yearly")
       currentDate.setFullYear(
         currentDate.getFullYear() + intervalDays[frequency],
       );
+    else {
+      return dates;
+    }
   }
 
   return dates;
 }
 
 export function getCourseTimeString(courseTime: {
-  hours: string;
-  mins: string;
+  hours: number;
+  mins: number;
 }) {
   let hours = Number(courseTime.hours);
   const mins = courseTime.mins;
@@ -482,4 +485,50 @@ export function verifyToken(token: string) {
     const error = err as Error;
     return { payload: null, error: error.message };
   }
+export function generateRecurrenceRule(
+  count: number,
+  frequency: RepeatFrequencyType,
+): string[] {
+  let freq: string;
+  let interval: number = 1;
+
+  switch (frequency) {
+    case "daily":
+      freq = "DAILY";
+      break;
+    case "weekly":
+      freq = "WEEKLY";
+      break;
+    case "bi-weekly":
+      freq = "WEEKLY";
+      interval = 2; // Set interval to 2 for bi-weekly
+      break;
+    case "monthly":
+      freq = "MONTHLY";
+      break;
+    case "yearly":
+      freq = "YEARLY";
+      break;
+    default:
+      throw new Error("Invalid frequency type");
+  }
+
+  const rule = `RRULE:FREQ=${freq};INTERVAL=${interval};COUNT=${count}`;
+  return [rule];
+}
+
+export function getTimeZone(date: Date) {
+  const offsetInMinutes = date.getTimezoneOffset();
+
+  // Convert it to hours and minutes
+  const offsetHours = Math.floor(Math.abs(offsetInMinutes) / 60);
+  const offsetMinutes = Math.abs(offsetInMinutes) % 60;
+
+  // Determine the sign (UTC+ or UTC-)
+  const sign = offsetInMinutes > 0 ? "-" : "+";
+
+  // Format the UTC offset string
+  const offsetString = `UTC${sign}${String(offsetHours).padStart(2, "0")}:${String(offsetMinutes).padStart(2, "0")}`;
+
+  return offsetString;
 }

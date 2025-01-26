@@ -5,13 +5,14 @@ import { format, isToday } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, Clock, EditIcon } from "lucide-react";
+import { ArrowLeftIcon, CalendarIcon, Clock, EditIcon } from "lucide-react";
 import Image from "next/image";
 import { PersonIcon } from "@/components/group-classes/CardIcons";
 import { GroupClassType } from "@/db/models/GroupClass";
 import { getDatesBetween, getFullname } from "@/lib/utils";
 import { UserType } from "@/db/models/User";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 function getOrdinalSuffix(day: number): string {
   if (day > 3 && day < 21) return "th";
@@ -34,14 +35,16 @@ export default function LiveClassDetails({
   liveClass: GroupClassType;
   user: UserType;
 }) {
+  const router = useRouter();
+
   const courseSessions = getDatesBetween(
     liveClass.startDate,
     liveClass.isRecurring ? liveClass.endDate : liveClass.startDate,
     liveClass.repeatFrequency,
   ).map((session) => {
     const date = new Date(session);
-    date.setHours(Number(liveClass.startTime.hours));
-    date.setMinutes(Number(liveClass.startTime.mins));
+    date.setHours(liveClass.startTime.hours);
+    date.setMinutes(liveClass.startTime.mins);
     return date;
   });
 
@@ -89,22 +92,23 @@ export default function LiveClassDetails({
   return (
     <main className="mx-auto w-[90%] max-w-5xl flex-1 py-6">
       <div className="mb-4 flex justify-between">
+        <Button
+          variant="outline"
+          className="text-black hover:bg-gray-100"
+          onClick={() => router.back()}
+        >
+          <ArrowLeftIcon className="h-4 w-4" />
+          Back
+        </Button>
         {user._id === liveClass.user._id ? (
           <Link
             href={`/dashboard/group-classes/courses/${liveClass._id}/edit`}
             className="flex w-fit items-center gap-2 whitespace-nowrap rounded-md border px-4 py-2 text-sm font-medium duration-200 hover:bg-accent-gray-100"
           >
             <EditIcon className="h-4 w-4" />
-            Edit Course
+            Edit Class
           </Link>
         ) : null}
-        <Button
-          variant="outline"
-          className="ml-auto text-black hover:bg-gray-100"
-          onClick={() => window.history.back()}
-        >
-          Back
-        </Button>
       </div>
       <Card>
         <CardContent className="p-4 sm:p-6">
@@ -214,7 +218,7 @@ export default function LiveClassDetails({
                     <sup>{getOrdinalSuffix(session.getDate())}</sup>
                     {", "}
                     {format(session, "yyyy")}
-                    {sessionIsPast(session) ? "(Past)" : ""}
+                    {sessionIsPast(session) && " (Past)"}
                   </span>
                 </li>
               ))}

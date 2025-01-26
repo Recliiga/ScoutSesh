@@ -13,8 +13,8 @@ export type CourseType = {
   coach: UserType;
   sessions: Date[];
   time: {
-    hours: string;
-    mins: string;
+    hours: number;
+    mins: number;
   };
 };
 

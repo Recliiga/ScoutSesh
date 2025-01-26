@@ -19,13 +19,13 @@ export default function LogoutModal({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className={`bg-white rounded-md font-semibold duration-300 max-w-[19rem] flex flex-col gap-8 sm:max-w-[425px] w-[90%] p-8 absolute top-[50%] -translate-x-[50%] -translate-y-[50%] left-[50%] ${
-        open ? "visible opacity-100 scale-100" : "invisible opacity-0 scale-90"
+      className={`absolute left-[50%] top-[50%] flex w-[90%] max-w-[19rem] -translate-x-[50%] -translate-y-[50%] flex-col gap-8 rounded-md bg-white p-8 font-semibold duration-300 sm:max-w-[425px] ${
+        open ? "visible scale-100 opacity-100" : "invisible scale-90 opacity-0"
       }`}
     >
       <div className="flex flex-col items-center gap-4 text-center">
-        <div className="bg-green-100 p-3 rounded-full">
-          <LogOutIcon className="w-6 h-6 text-green-600" />
+        <div className="rounded-full bg-green-100 p-3">
+          <LogOutIcon className="h-6 w-6 text-green-600" />
         </div>
         <h4 className="text-xl">Log out</h4>
         <p className="text-gray-600">Are you sure you want to Log out?</p>
@@ -37,7 +37,7 @@ export default function LogoutModal({
           variant="default"
           className="flex-1 bg-green-600 hover:bg-green-700"
         >
-          Confirm
+          {loading ? "Logging out..." : "Confirm"}
         </Button>
         <Button onClick={closeModal} variant="outline" className="flex-1">
           Cancel
@@ -45,7 +45,7 @@ export default function LogoutModal({
       </div>
       <button
         onClick={closeModal}
-        className="top-2 right-2 absolute p-2 text-accent-gray-300 hover:text-accent-black duration-300"
+        className="absolute right-2 top-2 p-2 text-accent-gray-300 duration-300 hover:text-accent-black"
       >
         <XIcon width={16} height={16} />
       </button>

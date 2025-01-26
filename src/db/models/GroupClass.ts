@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { UserType } from "./User";
+import { calendar_v3 } from "googleapis";
 
 export type RepeatFrequencyType =
   | "daily"
@@ -8,7 +9,7 @@ export type RepeatFrequencyType =
   | "monthly"
   | "yearly";
 
-type SkillLevelType = "beginner" | "intermediate" | "advanced";
+export type SkillLevelType = "beginner" | "intermediate" | "advanced";
 
 export interface VideoType extends mongoose.Document {
   _id: string;
@@ -53,13 +54,13 @@ export interface GroupClassType extends mongoose.Document {
   repeatFrequency: RepeatFrequencyType;
   startDate: Date;
   endDate: Date;
-  startTime: { hours: string; mins: string };
+  startTime: { hours: number; mins: number };
   duration: number;
   customDuration: number;
   videos: VideoType[];
   coaches: UserType[];
   user: UserType;
-  meetings?: MeetingType[];
+  meetingData?: calendar_v3.Schema$Event;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -81,26 +82,6 @@ const VideoSchema = new mongoose.Schema<VideoType>(
   },
   { timestamps: true },
 );
-
-const MeetingDetailsSchema = new mongoose.Schema<MeetingType>({
-  uuid: { type: String, required: true },
-  id: { type: Number, required: true },
-  host_id: { type: String, required: true },
-  host_email: { type: String, required: true },
-  topic: { type: String, required: true },
-  type: { type: Number, required: true },
-  status: { type: String, required: true },
-  start_time: { type: String, required: true },
-  duration: { type: Number, required: true },
-  timezone: { type: String, required: true },
-  created_at: { type: String, required: true },
-  start_url: { type: String, required: true },
-  join_url: { type: String, required: true },
-  password: { type: String, required: true },
-  h323_password: { type: String, required: true },
-  pstn_password: { type: String, required: true },
-  encrypted_password: { type: String, required: true },
-});
 
 const GroupClassSchema = new mongoose.Schema<GroupClassType>(
   {
@@ -143,11 +124,11 @@ const GroupClassSchema = new mongoose.Schema<GroupClassType>(
     repeatFrequency: { type: String },
     startDate: { type: Date },
     endDate: { type: Date },
-    startTime: { hours: { type: String }, mins: { type: String } },
+    startTime: { hours: { type: Number }, mins: { type: Number } },
     duration: { type: Number },
     customDuration: { type: Number },
     videos: { type: [VideoSchema], default: [] },
-    meetings: { type: [MeetingDetailsSchema], default: [] },
+    meetingData: { type: Object },
   },
   { timestamps: true },
 );
