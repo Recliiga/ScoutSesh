@@ -288,7 +288,7 @@ export function calculateStreak(journalEntries: DailyJournalType[]) {
 export function getDatesBetween(
   startDate: Date,
   endDate: Date,
-  frequency: RepeatFrequencyType,
+  frequency?: RepeatFrequencyType,
 ) {
   const dates = [];
   const currentDate = new Date(startDate);
@@ -309,20 +309,23 @@ export function getDatesBetween(
       frequency === "bi-weekly"
     )
       currentDate.setDate(currentDate.getDate() + intervalDays[frequency]);
-    if (frequency === "monthly")
+    else if (frequency === "monthly")
       currentDate.setMonth(currentDate.getMonth() + intervalDays[frequency]);
-    if (frequency === "yearly")
+    else if (frequency === "yearly")
       currentDate.setFullYear(
         currentDate.getFullYear() + intervalDays[frequency],
       );
+    else {
+      return dates;
+    }
   }
 
   return dates;
 }
 
 export function getCourseTimeString(courseTime: {
-  hours: string;
-  mins: string;
+  hours: number;
+  mins: number;
 }) {
   let hours = Number(courseTime.hours);
   const mins = courseTime.mins;
