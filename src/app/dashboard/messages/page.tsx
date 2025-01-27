@@ -1,6 +1,6 @@
 import ChatContainer from "@/components/messages/ChatContainer";
 import { getSessionFromHeaders } from "@/services/authServices";
-import { fetchChatUsers, fetchMessages } from "@/services/MessageServices";
+import { fetchChatUsers, fetchMessages } from "@/services/messageServices";
 import React from "react";
 
 export default async function MessagesPage() {
@@ -42,6 +42,6 @@ export default async function MessagesPage() {
     );
 
   return (
-    <ChatContainer user={user} messages={messages} chatUsers={chatUsers} />
+    <ChatContainer user={user} allMessages={messages} chatUsers={chatUsers} />
   );
 }

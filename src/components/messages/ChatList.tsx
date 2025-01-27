@@ -49,7 +49,7 @@ export default function ChatList({
                 {chat.user.name}
               </p>
               <p className="line-clamp-1 text-sm text-muted-foreground">
-                {chat.messages[0]?.message}
+                {chat.lastMessage?.message || chat.user.role}
               </p>
               <p className="text-xs text-muted-foreground">
                 {chat.lastMessageTime}

@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Input } from "../ui/input";
 import { ChatType } from "./ChatContainer";
 import {
   Tooltip,
@@ -8,29 +7,69 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import {
-  CalendarIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ImageIcon,
-  SendIcon,
-  VideoIcon,
-} from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, SendIcon } from "lucide-react";
+import { MessageType } from "@/db/models/Message";
+import { UserType } from "@/db/models/User";
+import { Input } from "../ui/input";
+import { format } from "date-fns";
+import { sendMessage } from "@/actions/messageActions";
+import toast from "react-hot-toast";
 
 export default function MessagesView({
   selectedChatId,
   selectedChat,
   isProfileVisible,
   setIsProfileVisible,
+  user,
+  updateMessages,
 }: {
-  selectedChatId: string;
+  selectedChatId?: string;
   selectedChat: ChatType;
   isProfileVisible: boolean;
   setIsProfileVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  user: UserType;
+  updateMessages(newMessage: MessageType): void;
 }) {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const messageViewRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messageViewRef.current?.scroll({
+      top: messageViewRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [selectedChat.messages]);
+
+  async function handleSendMessage(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (loading) return;
+
+    if (!message.trim()) return;
+
+    setLoading(true);
+
+    const { newMessage, error } = await sendMessage({
+      fromUserId: user._id,
+      toUserId: selectedChat.user._id,
+      message,
+    });
+
+    if (error) {
+      toast.error(error);
+      setLoading(false);
+      return;
+    }
+
+    updateMessages(newMessage);
+    setMessage("");
+    setLoading(false);
+  }
+
   return (
     <section
-      className={`flex flex-1 flex-col gap-4 rounded-lg border border-muted`}
+      className={`flex h-[calc(100vh-10.5rem)] flex-1 flex-col gap-4 rounded-lg border border-muted`}
     >
       {selectedChatId && (
         <>
@@ -41,7 +80,7 @@ export default function MessagesView({
             </div>
             <TooltipProvider>
               <div className="flex items-center space-x-4">
-                <Tooltip>
+                {/* <Tooltip>
                   <TooltipTrigger asChild>
                     <button className="rounded-full p-1 transition-colors duration-200 hover:bg-gray-100">
                       <VideoIcon className="h-6 w-6 text-muted-foreground" />
@@ -56,7 +95,7 @@ export default function MessagesView({
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>Schedule a Meeting</TooltipContent>
-                </Tooltip>
+                </Tooltip> */}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
@@ -77,7 +116,10 @@ export default function MessagesView({
               </div>
             </TooltipProvider>
           </div>
-          <div className="flex-1 space-y-4">
+          <div
+            className="flex-1 space-y-4 overflow-y-auto px-4"
+            ref={messageViewRef}
+          >
             {selectedChat.messages.map((message, index) => (
               <div key={index} className="flex items-start space-x-2">
                 <Avatar>
@@ -87,14 +129,14 @@ export default function MessagesView({
                   />
                   <AvatarFallback>
                     {message.fromUser.firstName[0]}
-                    {message.toUser.lastName[0]}
+                    {message.fromUser.lastName[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="text-base font-medium">
                     {message.fromUser.firstName} {message.fromUser.lastName}{" "}
                     <span className="text-xs font-normal text-muted-foreground">
-                      {message.createdAt.toLocaleTimeString("en-US")}
+                      {format(new Date(message.createdAt), "h:mm a")}
                     </span>
                   </p>
                   <p className="text-sm">{message.message}</p>
@@ -102,17 +144,30 @@ export default function MessagesView({
               </div>
             ))}
           </div>
-          <div className="flex items-center rounded-md bg-white p-4 shadow">
+          <form
+            className="flex items-center rounded-md bg-white p-4 shadow"
+            onSubmit={handleSendMessage}
+          >
             <Input
               type="text"
               placeholder="Send a message..."
-              className="flex-1"
+              className="max-h-10 flex-1 resize-none"
+              name="message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
             />
             <div className="ml-2 flex items-center space-x-2">
-              <ImageIcon className="h-6 w-6 text-muted-foreground" />
-              <SendIcon className="h-6 w-6 text-muted-foreground" />
+              {/* <ImageIcon className="h-6 w-6 text-muted-foreground" /> */}
+              <button
+                disabled={loading}
+                className={`rounded-md p-2 duration-300 ${loading ? "cursor-not-allowed" : "cursor-pointer hover:bg-muted"}`}
+              >
+                <SendIcon
+                  className={`h-6 w-6 ${loading ? "text-muted-foreground" : "text-accent-black"}`}
+                />
+              </button>
             </div>
-          </div>
+          </form>
         </>
       )}
     </section>

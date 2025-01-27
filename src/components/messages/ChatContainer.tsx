@@ -6,16 +6,19 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { MessageType } from "@/db/models/Message";
 import AboutUser from "./AboutUser";
 import MessagesView from "./MessagesView";
+import { format } from "date-fns";
 
 export type ChatType = {
   _id: string;
   user: {
+    _id: string;
     name: string;
     role: string;
     profilePicture: string;
     initials: string;
   };
   lastMessageTime: string | null;
+  lastMessage: MessageType;
   messages: MessageType[];
 };
 
@@ -32,18 +35,19 @@ function transformMessagesToChats(
     return {
       _id: chatUser._id,
       user: {
+        _id: chatUser._id,
         name: `${chatUser.firstName} ${chatUser.lastName}`,
         role: chatUser.role,
         profilePicture: chatUser.profilePicture,
         initials: `${chatUser.firstName[0]}${chatUser.lastName[0]}`,
       },
       lastMessageTime: chatMessages.length
-        ? new Date(chatMessages[0].createdAt).toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-          })
+        ? format(
+            new Date(chatMessages[chatMessages.length - 1].createdAt),
+            "h:mm a",
+          )
         : null,
+      lastMessage: chatMessages[chatMessages.length - 1],
       messages: chatMessages,
     };
   });
@@ -51,17 +55,23 @@ function transformMessagesToChats(
 
 export default function ChatContainer({
   user,
-  messages,
+  allMessages,
   chatUsers,
 }: {
   user: UserType;
   chatUsers: UserType[];
-  messages: MessageType[];
+  allMessages: MessageType[];
 }) {
+  const [messages, setMessages] = useState(allMessages);
+
+  function updateMessages(newMessage: MessageType) {
+    setMessages((currentMessages) => [...currentMessages, newMessage]);
+  }
+
   const chats = transformMessagesToChats(messages, user._id, chatUsers);
 
   const [isProfileVisible, setIsProfileVisible] = useState(true);
-  const [selectedChatId, setSelectedChatId] = useState(chats[0]?._id);
+  const [selectedChatId, setSelectedChatId] = useState<string>();
 
   const selectedChat = chats.find((chat) => chat._id === selectedChatId);
 
@@ -90,6 +100,8 @@ export default function ChatContainer({
                 selectedChat={selectedChat}
                 selectedChatId={selectedChatId}
                 setIsProfileVisible={setIsProfileVisible}
+                user={user}
+                updateMessages={updateMessages}
               />
               <div
                 className={`overflow-hidden transition-all duration-300 ease-in-out ${

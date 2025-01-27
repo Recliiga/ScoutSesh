@@ -5,12 +5,10 @@ export async function fetchMessages(userId: string, role: UserRoleType) {
   try {
     const allMessages: MessageType[] = JSON.parse(
       JSON.stringify(
-        await Message.find()
-          .populate({
-            path: "fromUser toUser",
-            select: "firstName lastName profilePicture role",
-          })
-          .sort({ createdAt: -1 }),
+        await Message.find().populate({
+          path: "fromUser toUser",
+          select: "firstName lastName profilePicture role",
+        }),
       ),
     );
 
@@ -18,9 +16,9 @@ export async function fetchMessages(userId: string, role: UserRoleType) {
       const otherUser =
         message.fromUser._id === userId ? message.toUser : message.fromUser;
 
-      if (role === "Athlete" && otherUser.role !== "Athlete") return false;
+      if (role === "Athlete" && otherUser.role === "Athlete") return false;
 
-      if (!(message.fromUser._id === userId || message.toUser._id === userId))
+      if (message.fromUser._id !== userId && message.toUser._id !== userId)
         return false;
 
       return true;
@@ -48,10 +46,10 @@ export async function fetchChatUsers(
       ),
     );
 
-    chatUsers = chatUsers.filter((user) => user._id === userId);
+    chatUsers = chatUsers.filter((user) => user._id !== userId);
 
     if (role === "Athlete") {
-      chatUsers = chatUsers.filter((user) => user.role === "Athlete");
+      chatUsers = chatUsers.filter((user) => user.role !== "Athlete");
     }
 
     return { chatUsers, error: null };
