@@ -15,7 +15,7 @@ const navLinks = [
   { title: "Daily Journal", href: "/dashboard/daily-journal" },
   { title: "Group Classes", href: "/dashboard/group-classes" },
   { title: "Athlete Evaluation", href: "/dashboard/athlete-evaluation" },
-  // { title: "Messages", href: "/dashboard/messages" },
+  { title: "Messages", href: "/dashboard/messages" },
   { title: "My Team Members", href: "/dashboard/team-members" },
 ];
 
@@ -167,6 +167,7 @@ export default function DashboardHeader({
           className="lg:hidden"
         >
           <DashboardMobileNav
+            navLinks={navLinks}
             open={mobileNav}
             closeModal={() => setMobileNav(false)}
           />
