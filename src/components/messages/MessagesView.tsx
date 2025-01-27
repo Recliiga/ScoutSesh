@@ -8,7 +8,6 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { ChevronLeftIcon, ChevronRightIcon, SendIcon } from "lucide-react";
-import { MessageType } from "@/db/models/Message";
 import { UserType } from "@/db/models/User";
 import { Input } from "../ui/input";
 import { format } from "date-fns";
@@ -21,14 +20,12 @@ export default function MessagesView({
   isProfileVisible,
   setIsProfileVisible,
   user,
-  updateMessages,
 }: {
   selectedChatId?: string;
   selectedChat: ChatType;
   isProfileVisible: boolean;
   setIsProfileVisible: React.Dispatch<React.SetStateAction<boolean>>;
   user: UserType;
-  updateMessages(newMessage: MessageType): void;
 }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -44,26 +41,22 @@ export default function MessagesView({
 
   async function handleSendMessage(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (loading) return;
-
-    if (!message.trim()) return;
+    if (loading || !message.trim() || !user.organization) return;
 
     setLoading(true);
 
-    const { newMessage, error } = await sendMessage({
-      fromUserId: user._id,
-      toUserId: selectedChat.user._id,
+    const { error } = await sendMessage(user.organization._id, {
+      fromUser: user,
+      toUser: selectedChat.user,
       message,
     });
 
     if (error) {
       toast.error(error);
-      setLoading(false);
-      return;
+    } else {
+      setMessage("");
     }
 
-    updateMessages(newMessage);
-    setMessage("");
     setLoading(false);
   }
 
@@ -155,6 +148,7 @@ export default function MessagesView({
               name="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              autoComplete="off"
             />
             <div className="ml-2 flex items-center space-x-2">
               {/* <ImageIcon className="h-6 w-6 text-muted-foreground" /> */}

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UserType } from "@/db/models/User";
 import ChatList from "@/components/messages/ChatList";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +7,7 @@ import { MessageType } from "@/db/models/Message";
 import AboutUser from "./AboutUser";
 import MessagesView from "./MessagesView";
 import { format } from "date-fns";
+import { pusherClient } from "@/lib/pusher";
 
 export type ChatType = {
   _id: string;
@@ -33,7 +34,7 @@ function transformMessagesToChats(
     );
 
     return {
-      _id: chatUser._id,
+      _id: [chatUser._id, userId].sort((a, b) => a.localeCompare(b)).join("-"),
       user: {
         _id: chatUser._id,
         name: `${chatUser.firstName} ${chatUser.lastName}`,
@@ -64,16 +65,25 @@ export default function ChatContainer({
 }) {
   const [messages, setMessages] = useState(allMessages);
 
-  function updateMessages(newMessage: MessageType) {
-    setMessages((currentMessages) => [...currentMessages, newMessage]);
-  }
-
   const chats = transformMessagesToChats(messages, user._id, chatUsers);
 
   const [isProfileVisible, setIsProfileVisible] = useState(true);
   const [selectedChatId, setSelectedChatId] = useState<string>();
 
   const selectedChat = chats.find((chat) => chat._id === selectedChatId);
+
+  useEffect(() => {
+    if (!user.organization) return;
+    pusherClient.subscribe(user.organization._id);
+    pusherClient.bind("incoming-message", (newMessage: MessageType) => {
+      setMessages((currentMessages) => [...currentMessages, newMessage]);
+    });
+
+    return () => {
+      if (!user.organization) return;
+      pusherClient.subscribe(user.organization._id);
+    };
+  }, [user.organization]);
 
   const handleChatSelect = (chatId: string) => {
     setSelectedChatId((prevSelectedChatId) => {
@@ -101,7 +111,6 @@ export default function ChatContainer({
                 selectedChatId={selectedChatId}
                 setIsProfileVisible={setIsProfileVisible}
                 user={user}
-                updateMessages={updateMessages}
               />
               <div
                 className={`overflow-hidden transition-all duration-300 ease-in-out ${
