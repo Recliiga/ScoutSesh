@@ -7,12 +7,19 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { ChevronLeftIcon, ChevronRightIcon, SendIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  SendIcon,
+  UserIcon,
+} from "lucide-react";
 import { UserType } from "@/db/models/User";
 import { Input } from "../ui/input";
 import { format } from "date-fns";
 import { sendMessage } from "@/actions/messageActions";
 import toast from "react-hot-toast";
+import { Button } from "../ui/button";
 
 export default function MessagesView({
   selectedChatId,
@@ -20,8 +27,10 @@ export default function MessagesView({
   isProfileVisible,
   setIsProfileVisible,
   user,
+  setSelectedChatId,
 }: {
   selectedChatId?: string;
+  setSelectedChatId: React.Dispatch<React.SetStateAction<string | undefined>>;
   selectedChat: ChatType;
   isProfileVisible: boolean;
   setIsProfileVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -62,14 +71,22 @@ export default function MessagesView({
 
   return (
     <section
-      className={`flex h-[calc(100vh-10.5rem)] flex-1 flex-col gap-4 rounded-lg border border-muted`}
+      key={selectedChatId}
+      className={`h-[calc(100vh-10rem)] flex-1 flex-col gap-4 rounded-lg border border-muted sm:h-[calc(100vh-10.5rem)] ${isProfileVisible ? "hidden lg:flex" : "flex"} `}
     >
       {selectedChatId && (
         <>
-          <div className="flex items-center justify-between rounded-md bg-green-50 p-4 shadow">
-            <div>
-              <h3 className="text-lg font-bold">{selectedChat.user.name}</h3>
-              <p>{selectedChat.user.role}</p>
+          <div className="flex items-center gap-2 rounded-md bg-green-50 p-4 shadow">
+            <Button
+              variant={"ghost"}
+              className="px-2 md:hidden"
+              onClick={() => setSelectedChatId(undefined)}
+            >
+              <ArrowLeftIcon className="h-6 w-6" />
+            </Button>
+            <div className="mr-auto">
+              <h3 className="font-bold sm:text-lg">{selectedChat.user.name}</h3>
+              <p className="text-sm sm:text-base">{selectedChat.user.role}</p>
             </div>
             <TooltipProvider>
               <div className="flex items-center space-x-4">
@@ -96,9 +113,15 @@ export default function MessagesView({
                       className="rounded-full p-1 transition-colors duration-200 hover:bg-gray-100"
                     >
                       {isProfileVisible ? (
-                        <ChevronRightIcon className="h-6 w-6 text-gray-600" />
+                        <>
+                          <ChevronRightIcon className="hidden h-6 w-6 text-gray-600 lg:block" />
+                          <UserIcon className="h-6 w-6 text-gray-600 lg:hidden" />
+                        </>
                       ) : (
-                        <ChevronLeftIcon className="h-6 w-6 text-gray-600" />
+                        <>
+                          <ChevronLeftIcon className="hidden h-6 w-6 text-gray-600 lg:block" />
+                          <UserIcon className="h-6 w-6 text-gray-600 lg:hidden" />
+                        </>
                       )}
                     </button>
                   </TooltipTrigger>
@@ -118,7 +141,7 @@ export default function MessagesView({
                 <Avatar>
                   <AvatarImage
                     src={message.fromUser.profilePicture}
-                    alt={`${message.fromUser.firstName}'s Profile Picture`}
+                    alt={`${message.fromUser.firstName} 's Profile Picture`}
                   />
                   <AvatarFallback>
                     {message.fromUser.firstName[0]}

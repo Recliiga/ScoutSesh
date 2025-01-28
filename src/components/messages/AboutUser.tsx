@@ -11,7 +11,7 @@ export default function AboutUser({
 }) {
   return (
     <aside className="flex flex-col gap-4">
-      <div className="mt-4 flex flex-col items-center rounded-md bg-white p-4 shadow">
+      <div className="mt-4 flex flex-col items-center  p-4 ">
         <Avatar className="mb-4 h-24 w-24">
           <AvatarFallback className="text-2xl">
             {selectedChat.user.initials}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { SearchIcon } from "lucide-react";
 import { Input } from "../ui/input";
@@ -13,8 +13,16 @@ export default function ChatList({
   selectedChat?: ChatType;
   chats: ChatType[];
 }) {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredChats = chats.filter((chat) =>
+    chat.user.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   return (
-    <aside className="w-1/4 space-y-4">
+    <aside
+      className={`flex-1 space-y-4 ${selectedChat ? "hidden md:block" : ""}`}
+    >
       <h2 className="text-xl font-bold">Messages</h2>
       <div className="relative w-full">
         <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
@@ -22,10 +30,12 @@ export default function ChatList({
           type="search"
           placeholder="Search"
           className="w-full pl-10 pr-4"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
-      <div className="space-y-2" key={selectedChat?._id || "1"}>
-        {chats.map((chat, index) => (
+      <div className="space-y-2">
+        {filteredChats.map((chat, index) => (
           <div
             key={index}
             className={`flex cursor-pointer items-start space-x-2 rounded-md p-2 shadow ${
@@ -44,7 +54,7 @@ export default function ChatList({
             </Avatar>
             <div className="flex-1">
               <p
-                className={chat._id === selectedChat?._id ? "font-medium" : ""}
+                className={` ${chat._id === selectedChat?._id ? "font-medium" : ""}`}
               >
                 {chat.user.name}
               </p>

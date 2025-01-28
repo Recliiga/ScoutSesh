@@ -8,6 +8,8 @@ import AboutUser from "./AboutUser";
 import MessagesView from "./MessagesView";
 import { format } from "date-fns";
 import { pusherClient } from "@/lib/pusher";
+import { ArrowLeftIcon } from "lucide-react";
+import { Button } from "../ui/button";
 
 export type ChatType = {
   _id: string;
@@ -67,14 +69,16 @@ export default function ChatContainer({
 
   const chats = transformMessagesToChats(messages, user._id, chatUsers);
 
-  const [isProfileVisible, setIsProfileVisible] = useState(true);
+  const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState<string>();
 
   const selectedChat = chats.find((chat) => chat._id === selectedChatId);
 
   useEffect(() => {
     if (!user.organization) return;
+
     pusherClient.subscribe(user.organization._id);
+
     pusherClient.bind("incoming-message", (newMessage: MessageType) => {
       setMessages((currentMessages) => [...currentMessages, newMessage]);
     });
@@ -86,12 +90,7 @@ export default function ChatContainer({
   }, [user.organization]);
 
   const handleChatSelect = (chatId: string) => {
-    setSelectedChatId((prevSelectedChatId) => {
-      if (prevSelectedChatId !== chatId) {
-        setIsProfileVisible(true);
-      }
-      return chatId;
-    });
+    setSelectedChatId(chatId);
   };
 
   return (
@@ -104,24 +103,34 @@ export default function ChatContainer({
             selectedChat={selectedChat}
           />
           {selectedChat ? (
-            <div className="flex flex-1 gap-4">
+            <div className="flex flex-[2.5] lg:flex-[3]">
               <MessagesView
                 isProfileVisible={isProfileVisible}
                 selectedChat={selectedChat}
                 selectedChatId={selectedChatId}
                 setIsProfileVisible={setIsProfileVisible}
                 user={user}
+                setSelectedChatId={setSelectedChatId}
               />
               <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                  isProfileVisible ? "w-1/3" : "w-0"
+                className={`relative overflow-hidden rounded-md border border-muted bg-white shadow transition-all duration-300 ease-in-out ${
+                  isProfileVisible
+                    ? "w-full lg:ml-4 lg:w-1/3"
+                    : "ml-0 hidden w-full border-0 lg:block lg:w-0"
                 }`}
               >
                 <AboutUser selectedChat={selectedChat} />
+                <Button
+                  variant={"ghost"}
+                  className="absolute left-2 top-2 lg:hidden"
+                  onClick={() => setIsProfileVisible(false)}
+                >
+                  <ArrowLeftIcon className="h-6 w-6" />
+                </Button>
               </div>
             </div>
           ) : (
-            <div className="flex-center flex-1 rounded-lg border text-muted-foreground">
+            <div className="hidden flex-[3] items-center justify-center rounded-lg border text-muted-foreground md:flex">
               Click on a chat to start messaging
             </div>
           )}
