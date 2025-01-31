@@ -68,6 +68,9 @@ export default function Select({
               e.preventDefault();
               toggleShowOptions();
             }
+            if (e.code === "Escape") {
+              closeDropdown();
+            }
           }}
         >
           {childComponent || value || placeholder || "Select"}

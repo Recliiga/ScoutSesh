@@ -48,8 +48,6 @@ export default function UserProfilePage({
   const [selectedYear, setSelectedYear] = useState(
     new Date(user.DOB).getFullYear(),
   );
-  // const [zoomLoading, setZoomLoading] = useState(false);
-  // const [zoomConnected, setZoomConnected] = useState(!!user.zoomRefreshToken);
 
   const [calendarRef] = useClickOutside(() => setCalendarOpen(false));
 
@@ -229,6 +227,8 @@ export default function UserProfilePage({
                           src={user.organization.logo}
                           alt={user.organization.name}
                           className="object-cover"
+                          width={24}
+                          height={24}
                         />
                         <AvatarFallback>
                           {user.organization.name[0]}
@@ -244,10 +244,14 @@ export default function UserProfilePage({
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <Button className="bg-[#14a800] px-6 py-2 text-base text-white hover:bg-[#14a800]/90 sm:text-lg">
-                  <MessageSquareIcon className="mr-2 h-5 w-5" />
-                  Message
-                </Button>
+                {!isOwnProfile && (
+                  <Link href={`/messages/${user._id}`} className="block">
+                    <Button className="bg-[#14a800] px-6 py-2 text-base text-white hover:bg-[#14a800]/90 sm:text-lg">
+                      <MessageSquareIcon className="mr-2 h-5 w-5" />
+                      Message
+                    </Button>
+                  </Link>
+                )}
                 {isOwnProfile ? (
                   <Button
                     variant="outline"
