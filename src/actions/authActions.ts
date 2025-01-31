@@ -81,6 +81,8 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
   let canRedirect = false;
 
   try {
+    await connectDB();
+
     // Run validation
     Object.entries(userData).forEach(([key, value]) => {
       if (!value) {
@@ -100,7 +102,6 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
     if (userExists) return { error: "User with email already exists" };
 
     // Create new user
-    await connectDB();
     const newUser = await User.create({
       ...userData,
       password: encryptedPassword,
