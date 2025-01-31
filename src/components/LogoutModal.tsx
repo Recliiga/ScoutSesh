@@ -37,7 +37,7 @@ export default function LogoutModal({
           variant="default"
           className="flex-1 bg-green-600 hover:bg-green-700"
         >
-          {loading ? "Logging out..." : "Confirm"}
+          {loading ? "Signing out..." : "Confirm"}
         </Button>
         <Button onClick={closeModal} variant="outline" className="flex-1">
           Cancel

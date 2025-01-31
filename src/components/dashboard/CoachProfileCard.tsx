@@ -50,9 +50,11 @@ export default function CoachProfileCard({
               </Link>
             </Button>
             {user._id !== coach._id ? (
-              <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                <MessageCircle className="h-4 w-4" />
-              </Button>
+              <Link href={`/dashboard/messages/`}>
+                <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                  <MessageCircle className="h-4 w-4" />
+                </Button>
+              </Link>
             ) : null}
           </div>
         </div>
