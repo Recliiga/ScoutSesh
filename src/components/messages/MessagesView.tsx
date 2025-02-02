@@ -172,6 +172,7 @@ export default function MessagesView({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               autoComplete="off"
+              disabled={loading}
             />
             <div className="ml-2 flex items-center space-x-2">
               {/* <ImageIcon className="h-6 w-6 text-muted-foreground" /> */}

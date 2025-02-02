@@ -11,6 +11,7 @@ import { DailyJournalType } from "@/db/models/DailyJournal";
 import ModalContainer from "../ModalContainer";
 import AddTeamMemberModal from "../AddTeamMemberModal";
 import { InvitationCodeType } from "@/db/models/InvitationCode";
+import Link from "next/link";
 
 export default function CoachTeamMembersPage({
   teamJournalEntries,
@@ -63,14 +64,16 @@ export default function CoachTeamMembersPage({
                   className="w-full pl-8"
                 />
               </div>
-              <Button
-                onClick={handleMessageAll}
-                variant="outline"
-                className="w-full whitespace-nowrap transition-colors hover:bg-green-700 hover:text-white lg:w-48"
-              >
-                <Send className="mr-2 h-4 w-4" />
-                Message All Members
-              </Button>
+              <Link href="/dashboard/messages" className="w-full">
+                <Button
+                  onClick={handleMessageAll}
+                  variant="outline"
+                  className="w-full whitespace-nowrap transition-colors hover:bg-green-700 hover:text-white lg:w-48"
+                >
+                  <Send className="mr-2 h-4 w-4" />
+                  Message All Members
+                </Button>
+              </Link>
               <Button
                 onClick={() => setModalIsOpen(true)}
                 variant="outline"

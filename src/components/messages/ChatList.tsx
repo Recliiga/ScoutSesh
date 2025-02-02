@@ -38,7 +38,7 @@ export default function ChatList({
         {filteredChats.map((chat, index) => (
           <div
             key={index}
-            className={`flex cursor-pointer items-start space-x-2 rounded-md p-2 shadow ${
+            className={`flex cursor-pointer items-start space-x-2 rounded-md p-2 shadow hover:bg-gray-50 ${
               chat._id === selectedChat?._id
                 ? "border-l-4 border-green-600 bg-gray-100"
                 : "bg-white"
@@ -65,6 +65,11 @@ export default function ChatList({
                 {chat.lastMessageTime}
               </p>
             </div>
+            {chat.unreadCount > 0 && (
+              <span className="flex-center h-4 w-4 rounded-full bg-green-500 text-xs font-medium text-white">
+                {chat.unreadCount}
+              </span>
+            )}
           </div>
         ))}
       </div>

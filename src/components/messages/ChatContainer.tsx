@@ -23,37 +23,53 @@ export type ChatType = {
   lastMessageTime: string | null;
   lastMessage: MessageType;
   messages: MessageType[];
+  unreadCount: number;
 };
+
+function createChatId(userId: string, chatUserId: string) {
+  return [chatUserId, userId].sort((a, b) => a.localeCompare(b)).join("-");
+}
 
 function transformMessagesToChats(
   messages: MessageType[],
   userId: string,
   chatUsers: UserType[],
 ): ChatType[] {
-  return chatUsers.map((chatUser) => {
-    const chatMessages = messages.filter(
-      (m) => m.fromUser._id === chatUser._id || m.toUser._id === chatUser._id,
-    );
+  return chatUsers
+    .map((chatUser) => {
+      const chatMessages = messages.filter(
+        (m) => m.fromUser._id === chatUser._id || m.toUser._id === chatUser._id,
+      );
 
-    return {
-      _id: [chatUser._id, userId].sort((a, b) => a.localeCompare(b)).join("-"),
-      user: {
-        _id: chatUser._id,
-        name: `${chatUser.firstName} ${chatUser.lastName}`,
-        role: chatUser.role,
-        profilePicture: chatUser.profilePicture,
-        initials: `${chatUser.firstName[0]}${chatUser.lastName[0]}`,
-      },
-      lastMessageTime: chatMessages.length
-        ? format(
-            new Date(chatMessages[chatMessages.length - 1].createdAt),
-            "h:mm a",
-          )
-        : null,
-      lastMessage: chatMessages[chatMessages.length - 1],
-      messages: chatMessages,
-    };
-  });
+      const unreadCount = chatMessages.filter(
+        (m) => !m.isRead && m.toUser._id === userId,
+      ).length;
+
+      return {
+        _id: createChatId(userId, chatUser._id),
+        user: {
+          _id: chatUser._id,
+          name: `${chatUser.firstName} ${chatUser.lastName}`,
+          role: chatUser.role,
+          profilePicture: chatUser.profilePicture,
+          initials: `${chatUser.firstName[0]}${chatUser.lastName[0]}`,
+        },
+        lastMessageTime: chatMessages.length
+          ? format(
+              new Date(chatMessages[chatMessages.length - 1].createdAt),
+              "h:mm a",
+            )
+          : null,
+        lastMessage: chatMessages[chatMessages.length - 1],
+        messages: chatMessages,
+        unreadCount,
+      };
+    })
+    .sort(
+      (a, b) =>
+        new Date(b.lastMessage.createdAt).getTime() -
+        new Date(a.lastMessage.createdAt).getTime(),
+    );
 }
 
 export default function ChatContainer({
@@ -89,8 +105,49 @@ export default function ChatContainer({
     };
   }, [user.organization]);
 
+  useEffect(() => {
+    console.log("listening...");
+    if (!selectedChatId) return;
+
+    const selectedChatMessages = messages.filter(
+      (m) =>
+        m.fromUser._id === selectedChat?.user._id ||
+        m.toUser._id === selectedChat?.user._id,
+    );
+
+    const unreadMessages = selectedChatMessages.filter(
+      (m) => !m.isRead && m.toUser._id === user._id,
+    );
+
+    if (unreadMessages.length > 0) {
+      markMessagesAsRead(unreadMessages);
+    }
+  }, [messages, selectedChatId, selectedChat, user._id]);
+
+  function markMessagesAsRead(unreadMessages: MessageType[]) {
+    setMessages((currentMessages) =>
+      currentMessages.map((m) =>
+        unreadMessages.some((um) => um._id === m._id)
+          ? ({ ...m, isRead: true } as MessageType)
+          : m,
+      ),
+    );
+  }
+
   const handleChatSelect = (chatId: string) => {
     setSelectedChatId(chatId);
+
+    const selectedChat = chats.find((chat) => chat._id === chatId);
+
+    if (!selectedChat) return;
+
+    const unreadMessages = selectedChat.messages.filter(
+      (m) => !m.isRead && m.toUser._id === user._id,
+    );
+
+    if (unreadMessages.length > 0) {
+      markMessagesAsRead(unreadMessages);
+    }
   };
 
   return (
