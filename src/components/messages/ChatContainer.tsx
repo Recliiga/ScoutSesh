@@ -35,6 +35,25 @@ function transformMessagesToChats(
   userId: string,
   chatUsers: UserType[],
 ): ChatType[] {
+  function getLastMessageTime(chatMessages: MessageType[]) {
+    const lastMessageDate = new Date(
+      chatMessages[chatMessages.length - 1].createdAt,
+    );
+    const today = new Date();
+    const isToday = lastMessageDate.toDateString() === today.toDateString();
+    const isYesterday =
+      lastMessageDate.toDateString() ===
+      new Date(today.setDate(today.getDate() - 1)).toDateString();
+
+    if (isToday) {
+      return format(lastMessageDate, "h:mm a");
+    } else if (isYesterday) {
+      return `Yesterday at ${format(lastMessageDate, "h:mm a")}`;
+    } else {
+      return format(lastMessageDate, "MMM do 'at' h:mm a");
+    }
+  }
+
   return chatUsers
     .map((chatUser) => {
       const chatMessages = messages.filter(
@@ -55,10 +74,7 @@ function transformMessagesToChats(
           initials: `${chatUser.firstName[0]}${chatUser.lastName[0]}`,
         },
         lastMessageTime: chatMessages.length
-          ? format(
-              new Date(chatMessages[chatMessages.length - 1].createdAt),
-              "h:mm a",
-            )
+          ? getLastMessageTime(chatMessages)
           : null,
         lastMessage: chatMessages[chatMessages.length - 1],
         messages: chatMessages,
@@ -106,7 +122,6 @@ export default function ChatContainer({
   }, [user.organization]);
 
   useEffect(() => {
-    console.log("listening...");
     if (!selectedChatId) return;
 
     const selectedChatMessages = messages.filter(
