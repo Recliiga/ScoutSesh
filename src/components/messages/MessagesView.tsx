@@ -11,6 +11,8 @@ import {
   ArrowLeftIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  CircleXIcon,
+  FileUpIcon,
   SendIcon,
   UserIcon,
 } from "lucide-react";
@@ -38,6 +40,7 @@ export default function MessagesView({
 }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [attachments, setAttachments] = useState<File[]>([]);
 
   const messageViewRef = useRef<HTMLDivElement>(null);
 
@@ -136,52 +139,108 @@ export default function MessagesView({
             className="flex-1 space-y-4 overflow-y-auto px-4"
             ref={messageViewRef}
           >
-            {selectedChat.messages.map((message, index) => (
-              <div key={index} className="flex items-start space-x-2">
-                <Avatar>
-                  <AvatarImage
-                    src={message.fromUser.profilePicture}
-                    alt={`${message.fromUser.firstName} 's Profile Picture`}
-                  />
-                  <AvatarFallback>
-                    {message.fromUser.firstName[0]}
-                    {message.fromUser.lastName[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-base font-medium">
-                    {message.fromUser.firstName} {message.fromUser.lastName}{" "}
-                    <span className="text-xs font-normal text-muted-foreground">
-                      {format(new Date(message.createdAt), "h:mm a")}
-                    </span>
-                  </p>
-                  <p className="text-sm">{message.message}</p>
+            {selectedChat.messages.map((message, index) => {
+              const isMessageTrain =
+                index > 1 &&
+                selectedChat.messages[index - 1].fromUser._id ===
+                  message.fromUser._id;
+
+              return (
+                <div
+                  key={message._id}
+                  className={`flex items-start space-x-2`}
+                  style={{ marginTop: isMessageTrain ? 6 : undefined }}
+                >
+                  {isMessageTrain ? (
+                    <div className="w-10"></div>
+                  ) : (
+                    <Avatar>
+                      <AvatarImage
+                        src={message.fromUser.profilePicture}
+                        alt={`${message.fromUser.firstName} 's Profile Picture`}
+                      />
+                      <AvatarFallback>
+                        {message.fromUser.firstName[0]}
+                        {message.fromUser.lastName[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  <div>
+                    <p
+                      className={`text-sm font-medium ${isMessageTrain ? "hidden" : ""}`}
+                    >
+                      {message.fromUser.firstName} {message.fromUser.lastName}{" "}
+                      <span className="text-xs font-normal text-muted-foreground">
+                        {format(new Date(message.createdAt), "h:mm a")}
+                      </span>
+                    </p>
+                    <p className="text-sm">{message.message}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <form
-            className="flex items-center rounded-md bg-white p-4 shadow"
+            className="relative rounded-md bg-white p-4 shadow"
             onSubmit={handleSendMessage}
           >
-            <Input
-              type="text"
-              placeholder="Send a message..."
-              className="max-h-10 flex-1 resize-none"
-              name="message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              autoComplete="off"
-              disabled={loading}
-            />
-            <div className="ml-2 flex items-center space-x-2">
-              {/* <ImageIcon className="h-6 w-6 text-muted-foreground" /> */}
+            {attachments.length > 0 && (
+              <div className="relative m-2 mt-0 h-14 bg-white">
+                <div className="no-scrollbar absolute grid w-full grid-flow-col items-stretch gap-4 overflow-x-auto">
+                  {attachments.map((file, i) => (
+                    <div
+                      key={i}
+                      className="flex w-40 items-center gap-2 rounded-lg bg-zinc-100 p-2"
+                    >
+                      <div className="aspect-square w-10 rounded-md bg-zinc-200"></div>
+                      <p className="flex-1 truncate text-sm">{file.name}</p>
+                      <button className="group">
+                        <CircleXIcon className="h-4 w-4 group-hover:text-red-500" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="flex items-center">
+              <label
+                htmlFor="attachment"
+                className={`rounded-md p-2 duration-300 ${loading ? "cursor-not-allowed" : "cursor-pointer hover:bg-muted"}`}
+              >
+                <FileUpIcon
+                  className={`h-6 w-6 duration-300 hover:text-accent-black ${loading ? "text-muted-foreground hover:text-muted-foreground" : "text-zinc-700"}`}
+                />
+                <input
+                  disabled={loading}
+                  type="file"
+                  name="attachment"
+                  id="attachment"
+                  multiple
+                  onChange={(e) => {
+                    const fileList = e.target.files;
+                    if (fileList)
+                      setAttachments((curr) => [...curr, ...fileList]);
+                  }}
+                  hidden
+                />
+              </label>
+              <Input
+                type="text"
+                placeholder="Send a message..."
+                className="max-h-10 flex-1 resize-none"
+                name="message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                autoComplete="off"
+                disabled={loading}
+              />
               <button
+                type="submit"
                 disabled={loading}
                 className={`rounded-md p-2 duration-300 ${loading ? "cursor-not-allowed" : "cursor-pointer hover:bg-muted"}`}
               >
                 <SendIcon
-                  className={`h-6 w-6 ${loading ? "text-muted-foreground" : "text-accent-black"}`}
+                  className={`h-6 w-6 duration-300 hover:text-accent-black ${loading ? "text-muted-foreground hover:text-muted-foreground" : "text-zinc-700"}`}
                 />
               </button>
             </div>
