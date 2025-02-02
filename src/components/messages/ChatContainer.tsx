@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import { pusherClient } from "@/lib/pusher";
 import { ArrowLeftIcon } from "lucide-react";
 import { Button } from "../ui/button";
+import { markMessagesAsRead } from "@/actions/messageActions";
 
 export type ChatType = {
   _id: string;
@@ -122,24 +123,26 @@ export default function ChatContainer({
   }, [user.organization]);
 
   useEffect(() => {
-    if (!selectedChatId) return;
+    (async () => {
+      if (!selectedChatId) return;
 
-    const selectedChatMessages = messages.filter(
-      (m) =>
-        m.fromUser._id === selectedChat?.user._id ||
-        m.toUser._id === selectedChat?.user._id,
-    );
+      const selectedChatMessages = messages.filter(
+        (m) =>
+          m.fromUser._id === selectedChat?.user._id ||
+          m.toUser._id === selectedChat?.user._id,
+      );
 
-    const unreadMessages = selectedChatMessages.filter(
-      (m) => !m.isRead && m.toUser._id === user._id,
-    );
+      const unreadMessages = selectedChatMessages.filter(
+        (m) => !m.isRead && m.toUser._id === user._id,
+      );
 
-    if (unreadMessages.length > 0) {
-      markMessagesAsRead(unreadMessages);
-    }
+      if (unreadMessages.length > 0) {
+        await handleMarkMessagesAsRead(unreadMessages);
+      }
+    })();
   }, [messages, selectedChatId, selectedChat, user._id]);
 
-  function markMessagesAsRead(unreadMessages: MessageType[]) {
+  async function handleMarkMessagesAsRead(unreadMessages: MessageType[]) {
     setMessages((currentMessages) =>
       currentMessages.map((m) =>
         unreadMessages.some((um) => um._id === m._id)
@@ -147,9 +150,11 @@ export default function ChatContainer({
           : m,
       ),
     );
+
+    await markMessagesAsRead(unreadMessages.map((msg) => msg._id));
   }
 
-  const handleChatSelect = (chatId: string) => {
+  async function handleChatSelect(chatId: string) {
     setSelectedChatId(chatId);
 
     const selectedChat = chats.find((chat) => chat._id === chatId);
@@ -161,9 +166,9 @@ export default function ChatContainer({
     );
 
     if (unreadMessages.length > 0) {
-      markMessagesAsRead(unreadMessages);
+      await handleMarkMessagesAsRead(unreadMessages);
     }
-  };
+  }
 
   return (
     <main className="mx-auto flex w-[90%] max-w-6xl flex-1">

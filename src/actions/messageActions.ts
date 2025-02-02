@@ -52,3 +52,13 @@ export async function sendMessage(
     return { error: "An error occured sending message" };
   }
 }
+
+export async function markMessagesAsRead(messageIds: string[]) {
+  try {
+    await Message.updateMany({ _id: { $in: messageIds } }, { isRead: true });
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error marking message as read: ", error.message);
+    return { error: "An error occured marking message as read" };
+  }
+}
