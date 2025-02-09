@@ -52,7 +52,11 @@ export default function Header({
 
   const isVerifyEmailRoute = pathname.startsWith("/verify-email");
 
-  if (pathname.startsWith("/admin")) return null;
+  if (
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/dashboard/messages")
+  )
+    return null;
 
   if (user && pathname.startsWith("/dashboard"))
     return (

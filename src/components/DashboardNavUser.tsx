@@ -21,7 +21,7 @@ export default function DashboardNavUser({
   profileCompleted = true,
   invitationCode,
 }: {
-  user: UserType;
+  user?: UserType;
   profileCompleted?: boolean;
   invitationCode: InvitationCodeType | null;
 }) {
@@ -35,8 +35,6 @@ export default function DashboardNavUser({
   function closeModal() {
     setOpenModal(null);
   }
-
-  const userName = getFullname(user);
 
   function handleClickOutside(e: MouseEvent) {
     if (
@@ -55,6 +53,19 @@ export default function DashboardNavUser({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  if (!user)
+    return (
+      <UserIcon
+        className="h-6 w-6 cursor-pointer text-muted-foreground hover:text-green-600"
+        onClick={(e) => {
+          e.stopPropagation();
+          setUserMenu(!userMenu);
+        }}
+      />
+    );
+
+  const userName = getFullname(user);
 
   return (
     <>
