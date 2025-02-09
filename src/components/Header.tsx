@@ -6,10 +6,8 @@ import ModalContainer from "./ModalContainer";
 import MobileNav from "./MobileNav";
 import { usePathname } from "next/navigation";
 import Button from "./LinkButton";
-import DashboardHeader from "./dashboard/DashboardHeader";
 import DashboardNavUser from "./DashboardNavUser";
 import { InvitationCodeType } from "@/db/models/InvitationCode";
-import { NotificationEntryType } from "@/db/models/NotificationEntry";
 
 const navLinks = [
   { title: "Features", href: "/features" },
@@ -23,11 +21,9 @@ const navLinks = [
 export default function Header({
   user,
   invitationCode,
-  notifications,
 }: {
   user: UserType | null;
   invitationCode: InvitationCodeType | null;
-  notifications: NotificationEntryType[];
 }) {
   const [mobileNav, setMobileNav] = useState(false);
   const [docWidth, setDocWidth] = useState(0);
@@ -52,20 +48,17 @@ export default function Header({
 
   const isVerifyEmailRoute = pathname.startsWith("/verify-email");
 
-  if (
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/dashboard/messages")
-  )
+  if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard"))
     return null;
 
-  if (user && pathname.startsWith("/dashboard"))
-    return (
-      <DashboardHeader
-        user={user}
-        invitationCode={invitationCode}
-        notifications={notifications}
-      />
-    );
+  // if (user && pathname.startsWith("/dashboard"))
+  //   return (
+  //     <DashboardHeader
+  //       user={user}
+  //       invitationCode={invitationCode}
+  //       notifications={notifications}
+  //     />
+  //   );
 
   return (
     <>
