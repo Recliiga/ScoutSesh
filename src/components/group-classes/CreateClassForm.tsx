@@ -143,12 +143,6 @@ export default function CreateClassForm({
       return;
     }
     const imageFile = e.target.files[0];
-    if (imageFile.size > 4194304) {
-      setThumbnailError(
-        "File too large: Please select an image less than 4mb in size",
-      );
-      return;
-    }
     try {
       const resizedImage = await resizeImage(imageFile, 800);
       if (!resizedImage) return;
@@ -167,12 +161,6 @@ export default function CreateClassForm({
       return;
     }
     const videoFile = e.target.files[0];
-    if (videoFile.size > 4194304) {
-      setVideoError(
-        "File too large: Please select a video less than 4mb in size",
-      );
-      return;
-    }
     const fileReader = new FileReader();
     fileReader.readAsDataURL(videoFile);
     fileReader.onload = async (e) => {
