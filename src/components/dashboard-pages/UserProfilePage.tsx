@@ -245,7 +245,8 @@ export default function UserProfilePage({
               </div>
               <div className="flex items-center space-x-2">
                 {!isOwnProfile && (
-                  <Link href={`/messages/${user._id}`} className="block">
+                  // <Link href={`/messages/${user._id}`} className="block">
+                  <Link href={"/messages"} className="block">
                     <Button className="bg-[#14a800] px-6 py-2 text-base text-white hover:bg-[#14a800]/90 sm:text-lg">
                       <MessageSquareIcon className="mr-2 h-5 w-5" />
                       Message
