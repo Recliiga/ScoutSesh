@@ -51,15 +51,6 @@ export default function Header({
   if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard"))
     return null;
 
-  // if (user && pathname.startsWith("/dashboard"))
-  //   return (
-  //     <DashboardHeader
-  //       user={user}
-  //       invitationCode={invitationCode}
-  //       notifications={notifications}
-  //     />
-  //   );
-
   return (
     <>
       <header className="flex items-center gap-4 border-b px-4 py-3 sm:gap-6 sm:py-4">
