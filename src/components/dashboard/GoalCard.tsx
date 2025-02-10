@@ -25,7 +25,7 @@ export default function GoalCard({
   disabled?: boolean;
 }) {
   return (
-    <Card className="flex flex-col w-full h-full">
+    <Card className="flex h-full w-full flex-col">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           {icon}
@@ -36,8 +36,11 @@ export default function GoalCard({
         <CardDescription>{description}</CardDescription>
       </CardContent>
       <CardFooter className="mt-auto">
-        <Button className="px-0 py-0 w-full" disabled={disabled}>
-          <Link href={href} className="flex-center w-full h-full">
+        <Button
+          className="w-full px-0 py-0 disabled:cursor-not-allowed"
+          disabled={disabled}
+        >
+          <Link href={href} className="flex-center h-full w-full">
             {actionText}
           </Link>
         </Button>
