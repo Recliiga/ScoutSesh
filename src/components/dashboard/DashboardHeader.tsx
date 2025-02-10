@@ -25,7 +25,7 @@ export default function DashboardHeader({
   invitationCode,
   notifications,
 }: {
-  user: UserType;
+  user?: UserType;
   invitationCode: InvitationCodeType | null;
   notifications: NotificationEntryType[];
 }) {
@@ -164,7 +164,7 @@ export default function DashboardHeader({
         <div className="flex items-center space-x-4">
           <DashboardNotificationIcon
             notifications={notifications}
-            userId={user._id}
+            userId={user?._id || ""}
           />
           <DashboardNavUser user={user} invitationCode={invitationCode} />
         </div>

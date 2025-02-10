@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { GeistSans } from "geist/font/sans";
 import Header from "@/components/Header";
-import { getSessionFromHeaders } from "@/services/authServices";
+import { getSession } from "@/services/authServices";
 import Footer from "@/components/Footer";
 import { fetchLatestInvitationCode } from "@/services/invitationServices";
-import { UserType } from "@/db/models/User";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
@@ -19,7 +18,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user: UserType | null = await getSessionFromHeaders();
+  const { user } = await getSession();
   const { invitationCode } = await fetchLatestInvitationCode();
 
   return (
