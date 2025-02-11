@@ -170,6 +170,31 @@ export function getFullname(user: UserType) {
   return `${user.firstName} ${user.lastName}`;
 }
 
+export async function uploadFile(
+  image: File,
+): Promise<{ url: string; error: null } | { url: null; error: string }> {
+  try {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", "scoutsesh");
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_COUDINARY_CLOUD_NAME}/upload`,
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
+    const { secure_url } = await res.json();
+
+    if (!res.ok) throw new Error("An error occured uploading image");
+
+    return { url: secure_url, error: null };
+  } catch (error) {
+    console.log((error as Error).message);
+    return { url: null, error: (error as Error).message };
+  }
+}
+
 export async function uploadImage(
   image: string,
 ): Promise<{ url: string; error: null } | { url: null; error: string }> {

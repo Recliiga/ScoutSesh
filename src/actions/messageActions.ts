@@ -1,6 +1,6 @@
 "use server";
 
-import Message, { MessageType } from "@/db/models/Message";
+import Message, { AttachmentType, MessageType } from "@/db/models/Message";
 import { UserType } from "@/db/models/User";
 import { pusherServer } from "@/lib/pusher";
 import { getSession } from "@/services/authServices";
@@ -11,6 +11,7 @@ export async function sendMessage(
     fromUser,
     toUser,
     message,
+    attachments,
   }: {
     fromUser: UserType;
     toUser: {
@@ -21,6 +22,7 @@ export async function sendMessage(
       initials: string;
     };
     message: string;
+    attachments: AttachmentType[];
   },
 ) {
   try {
@@ -33,6 +35,7 @@ export async function sendMessage(
       fromUser: fromUser._id,
       toUser: toUser._id,
       message,
+      attachments,
     });
 
     await pusherServer.trigger(organizationId, "incoming-message", {
@@ -40,6 +43,7 @@ export async function sendMessage(
       fromUser,
       toUser,
       message,
+      attachments,
       createdAt: new Date(),
     });
 

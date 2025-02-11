@@ -11,6 +11,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   CircleXIcon,
+  DownloadIcon,
   FileUpIcon,
   SendIcon,
   UserIcon,
@@ -21,6 +22,30 @@ import { sendMessage } from "@/actions/messageActions";
 import toast from "react-hot-toast";
 import { Button } from "../ui/button";
 import { ChatType } from "@/context/chatContext";
+import LoadingIndicator from "../LoadingIndicator";
+import { uploadFile } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
+
+type AttachmentDataType = {
+  file: File;
+  url: string;
+  loading: boolean;
+  isImage: boolean;
+};
+
+function formatSize(fileSize: number) {
+  if (fileSize < 1024) return `${fileSize} B`;
+  if (fileSize < 1024 * 1024) return `${(fileSize / 1024).toFixed(2)} KB`;
+  if (fileSize < 1024 * 1024 * 1024)
+    return `${(fileSize / (1024 * 1024)).toFixed(2)} MB`;
+  return `${(fileSize / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+
+function fileIsImage(file: File) {
+  const imageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+  return imageTypes.includes(file.type);
+}
 
 export default function MessagesView({
   selectedChatId,
@@ -39,8 +64,9 @@ export default function MessagesView({
 }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [attachments, setAttachments] = useState<File[]>([]);
+  const [attachments, setAttachments] = useState<AttachmentDataType[]>([]);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const messageViewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,13 +76,59 @@ export default function MessagesView({
     });
   }, [selectedChat.messages]);
 
+  useEffect(() => {
+    messageViewRef.current?.scroll({
+      top: messageViewRef.current.scrollHeight,
+      behavior: "auto",
+    });
+  }, [selectedChatId]);
+
+  function handleAddAttachment(e: React.ChangeEvent<HTMLInputElement>) {
+    const fileList = e.target.files;
+    if (!fileList) return;
+
+    const newAttachments = Array.from(fileList).map((file) => ({
+      file,
+      url: "",
+      loading: true,
+      isImage: fileIsImage(file),
+    }));
+
+    setAttachments((curr) => [...curr, ...newAttachments]);
+
+    newAttachments.forEach(async (attachment, index) => {
+      const { url } = await uploadFile(attachment.file);
+      if (!url) return;
+
+      setAttachments((curr) => {
+        const updated = [...curr];
+        updated[curr.length - newAttachments.length + index] = {
+          ...attachment,
+          url: url,
+          loading: false,
+        };
+        return updated;
+      });
+    });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
   function handleRemoveAttachment(index: number) {
     setAttachments((prev) => prev.filter((_, i) => i !== index));
   }
 
   async function handleSendMessage(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (loading || !message.trim() || !user.organization) return;
+    if (
+      loading ||
+      (!message.trim() && !attachments.length) ||
+      attachments.some((att) => att.loading) ||
+      !user.organization
+    )
+      return;
 
     setLoading(true);
 
@@ -64,12 +136,21 @@ export default function MessagesView({
       fromUser: user,
       toUser: selectedChat.user,
       message,
+      attachments: attachments.map((attachment) => ({
+        file: {
+          name: attachment.file.name,
+          size: attachment.file.size,
+          isImage: attachment.isImage,
+        },
+        url: attachment.url,
+      })),
     });
 
     if (error) {
       toast.error(error);
     } else {
       setMessage("");
+      setAttachments([]);
     }
 
     setLoading(false);
@@ -156,9 +237,9 @@ export default function MessagesView({
                   style={{ marginTop: isMessageTrain ? 6 : undefined }}
                 >
                   {isMessageTrain ? (
-                    <div className="w-10"></div>
+                    <div className="w-8"></div>
                   ) : (
-                    <Avatar>
+                    <Avatar className="h-8 w-8">
                       <AvatarImage
                         src={message.fromUser.profilePicture}
                         alt={`${message.fromUser.firstName} 's Profile Picture`}
@@ -169,7 +250,7 @@ export default function MessagesView({
                       </AvatarFallback>
                     </Avatar>
                   )}
-                  <div>
+                  <div className="flex-1">
                     <p
                       className={`text-sm font-medium ${isMessageTrain ? "hidden" : ""}`}
                     >
@@ -179,6 +260,41 @@ export default function MessagesView({
                       </span>
                     </p>
                     <p className="text-sm">{message.message}</p>
+                    {message.attachments?.length > 0 && (
+                      <div className="grid grid-cols-[repeat(auto-fill,_minmax(7rem,_1fr))] gap-2 p-1.5">
+                        {message.attachments.map((attachment, i) => (
+                          <div
+                            className="relative aspect-[0.9] w-full rounded-md border p-2"
+                            key={i}
+                          >
+                            {attachment.file.isImage ? (
+                              <Image
+                                src={attachment.url}
+                                alt={attachment.file.name}
+                                fill
+                                sizes="128px"
+                                className="object-contain p-2"
+                              />
+                            ) : (
+                              <p className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-zinc-100 font-medium uppercase text-zinc-600">
+                                {attachment.file.name.split(".").at(-1)}
+                              </p>
+                            )}
+                            <Link
+                              href={attachment.url}
+                              download={attachment.file.name}
+                              target="_blank"
+                              className="group absolute left-0 top-0 flex h-full w-full items-end gap-1 bg-gradient-to-t from-black/50 via-black/10 to-transparent p-2 text-sm text-white"
+                            >
+                              <p className="flex-1 truncate duration-200 group-hover:text-green-400">
+                                {attachment.file.name}
+                              </p>
+                              <DownloadIcon className="h-4 w-4 duration-200 group-hover:text-green-400" />
+                            </Link>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -186,24 +302,48 @@ export default function MessagesView({
           </div>
 
           <form
-            className="relative rounded-md bg-white p-4 shadow"
+            className="relative flex flex-col gap-2 rounded-md bg-white p-4 shadow"
             onSubmit={handleSendMessage}
           >
             {attachments.length > 0 && (
-              <div className="relative m-2 mt-0 h-14 bg-white">
+              <div className="relative h-14 bg-white">
                 <div className="no-scrollbar absolute grid w-full grid-flow-col items-stretch justify-start gap-4 overflow-x-auto">
-                  {attachments.map((file, i) => (
+                  {attachments.map((attachment, i) => (
                     <div
                       key={i}
-                      className="flex w-40 items-center gap-2 rounded-lg bg-zinc-100 p-1.5"
+                      className={`flex w-40 items-center gap-2 rounded-lg bg-zinc-100 p-1.5 ${loading ? "opacity-50" : ""}`}
                     >
-                      <div className="aspect-square w-9 rounded-md bg-zinc-200"></div>
-                      <p className="flex-1 truncate text-xs">{file.name}</p>
+                      <div className="relative flex aspect-square max-w-10 flex-1 items-center justify-center overflow-hidden rounded-md bg-zinc-200">
+                        {attachment.loading ? (
+                          <LoadingIndicator color="#333" size={16} />
+                        ) : attachment.isImage ? (
+                          <Image
+                            src={attachment.url}
+                            alt={attachment.file.name}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <p className="text-sm text-zinc-700">
+                            {attachment.file.name.split(".").at(-1)}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex flex-1 flex-col truncate">
+                        <p className="w-full truncate text-sm">
+                          {attachment.file.name}
+                        </p>
+                        <p className="truncate text-xs text-zinc-500">
+                          {formatSize(attachment.file.size)}
+                        </p>
+                      </div>
                       <button
                         className="group"
+                        type="button"
+                        disabled={loading}
                         onClick={() => handleRemoveAttachment(i)}
                       >
-                        <CircleXIcon className="h-4 w-4 duration-200 group-hover:text-red-500" />
+                        <CircleXIcon className="h-4 w-4 text-zinc-500 duration-200 group-hover:text-red-500 group-disabled:cursor-not-allowed group-disabled:group-hover:text-zinc-500" />
                       </button>
                     </div>
                   ))}
@@ -216,18 +356,15 @@ export default function MessagesView({
                 className="group cursor-pointer rounded-md border p-2 duration-200 hover:bg-zinc-100 aria-disabled:cursor-not-allowed aria-disabled:bg-zinc-100"
                 aria-disabled={loading}
               >
-                <FileUpIcon className="h-[18px] w-[18px] text-zinc-700 duration-200 group-hover:text-accent-black group-hover:text-muted-foreground group-aria-disabled:text-muted-foreground" />
+                <FileUpIcon className="h-[18px] w-[18px] text-zinc-700 duration-200 group-hover:text-accent-black group-aria-disabled:text-muted-foreground" />
                 <input
                   disabled={loading}
                   type="file"
                   name="attachment"
                   id="attachment"
+                  ref={fileInputRef}
                   multiple
-                  onChange={(e) => {
-                    const fileList = e.target.files;
-                    if (fileList)
-                      setAttachments((curr) => [...curr, ...fileList]);
-                  }}
+                  onChange={handleAddAttachment}
                   hidden
                 />
               </label>
@@ -246,7 +383,7 @@ export default function MessagesView({
                 disabled={loading}
                 className="group rounded-md border p-2 duration-200 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-100"
               >
-                <SendIcon className="h-[18px] w-[18px] text-zinc-700 duration-200 group-hover:text-accent-black group-hover:text-muted-foreground group-disabled:text-muted-foreground" />
+                <SendIcon className="h-[18px] w-[18px] text-zinc-700 duration-200 group-hover:text-accent-black group-disabled:text-muted-foreground" />
               </button>
             </div>
           </form>
