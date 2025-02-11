@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { SearchIcon } from "lucide-react";
 import { Input } from "../ui/input";
-import { ChatType } from "./ChatContainer";
+import { ChatType } from "@/context/chatContext";
 
 export default function ChatList({
   handleChatSelect,
