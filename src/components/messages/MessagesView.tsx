@@ -120,12 +120,14 @@ export default function MessagesView({
     setAttachments((prev) => prev.filter((_, i) => i !== index));
   }
 
+  const uploadingFiles = attachments.some((att) => att.loading);
+
   async function handleSendMessage(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (
       loading ||
       (!message.trim() && !attachments.length) ||
-      attachments.some((att) => att.loading) ||
+      uploadingFiles ||
       !user.organization
     )
       return;
@@ -380,7 +382,7 @@ export default function MessagesView({
               />
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || uploadingFiles}
                 className="group rounded-md border p-2 duration-200 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-100"
               >
                 <SendIcon className="h-[18px] w-[18px] text-zinc-700 duration-200 group-hover:text-accent-black group-disabled:text-muted-foreground" />
