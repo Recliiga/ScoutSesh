@@ -16,7 +16,6 @@ import {
   UserIcon,
 } from "lucide-react";
 import { UserType } from "@/db/models/User";
-import { Input } from "../ui/input";
 import { format } from "date-fns";
 import { sendMessage } from "@/actions/messageActions";
 import toast from "react-hot-toast";
@@ -51,6 +50,10 @@ export default function MessagesView({
     });
   }, [selectedChat.messages]);
 
+  function handleRemoveAttachment(index: number) {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  }
+
   async function handleSendMessage(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (loading || !message.trim() || !user.organization) return;
@@ -75,7 +78,7 @@ export default function MessagesView({
   return (
     <section
       key={selectedChatId}
-      className={`h-[calc(100vh-10rem)] flex-1 flex-col gap-4 rounded-lg border border-muted sm:h-[calc(100vh-10.5rem)] ${isProfileVisible ? "hidden lg:flex" : "flex"} `}
+      className={`h-[calc(100vh-10rem)] flex-1 flex-col rounded-lg border border-muted sm:h-[calc(100vh-10.5rem)] ${isProfileVisible ? "hidden lg:flex" : "flex"} `}
     >
       {selectedChatId && (
         <>
@@ -135,8 +138,9 @@ export default function MessagesView({
               </div>
             </TooltipProvider>
           </div>
+
           <div
-            className="flex-1 space-y-4 overflow-y-auto px-4"
+            className="mt-4 flex-1 space-y-4 overflow-y-auto px-4"
             ref={messageViewRef}
           >
             {selectedChat.messages.map((message, index) => {
@@ -180,36 +184,39 @@ export default function MessagesView({
               );
             })}
           </div>
+
           <form
             className="relative rounded-md bg-white p-4 shadow"
             onSubmit={handleSendMessage}
           >
             {attachments.length > 0 && (
               <div className="relative m-2 mt-0 h-14 bg-white">
-                <div className="no-scrollbar absolute grid w-full grid-flow-col items-stretch gap-4 overflow-x-auto">
+                <div className="no-scrollbar absolute grid w-full grid-flow-col items-stretch justify-start gap-4 overflow-x-auto">
                   {attachments.map((file, i) => (
                     <div
                       key={i}
-                      className="flex w-40 items-center gap-2 rounded-lg bg-zinc-100 p-2"
+                      className="flex w-40 items-center gap-2 rounded-lg bg-zinc-100 p-1.5"
                     >
-                      <div className="aspect-square w-10 rounded-md bg-zinc-200"></div>
-                      <p className="flex-1 truncate text-sm">{file.name}</p>
-                      <button className="group">
-                        <CircleXIcon className="h-4 w-4 group-hover:text-red-500" />
+                      <div className="aspect-square w-9 rounded-md bg-zinc-200"></div>
+                      <p className="flex-1 truncate text-xs">{file.name}</p>
+                      <button
+                        className="group"
+                        onClick={() => handleRemoveAttachment(i)}
+                      >
+                        <CircleXIcon className="h-4 w-4 duration-200 group-hover:text-red-500" />
                       </button>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <label
                 htmlFor="attachment"
-                className={`rounded-md p-2 duration-300 ${loading ? "cursor-not-allowed" : "cursor-pointer hover:bg-muted"}`}
+                className="group cursor-pointer rounded-md border p-2 duration-200 hover:bg-zinc-100 aria-disabled:cursor-not-allowed aria-disabled:bg-zinc-100"
+                aria-disabled={loading}
               >
-                <FileUpIcon
-                  className={`h-6 w-6 duration-300 hover:text-accent-black ${loading ? "text-muted-foreground hover:text-muted-foreground" : "text-zinc-700"}`}
-                />
+                <FileUpIcon className="h-[18px] w-[18px] text-zinc-700 duration-200 group-hover:text-accent-black group-hover:text-muted-foreground group-aria-disabled:text-muted-foreground" />
                 <input
                   disabled={loading}
                   type="file"
@@ -224,10 +231,10 @@ export default function MessagesView({
                   hidden
                 />
               </label>
-              <Input
+              <input
                 type="text"
                 placeholder="Send a message..."
-                className="max-h-10 flex-1 resize-none"
+                className="max-h-10 flex-1 resize-none rounded-md border p-2 text-sm text-zinc-800 disabled:bg-zinc-100"
                 name="message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
@@ -237,11 +244,9 @@ export default function MessagesView({
               <button
                 type="submit"
                 disabled={loading}
-                className={`rounded-md p-2 duration-300 ${loading ? "cursor-not-allowed" : "cursor-pointer hover:bg-muted"}`}
+                className="group rounded-md border p-2 duration-200 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-100"
               >
-                <SendIcon
-                  className={`h-6 w-6 duration-300 hover:text-accent-black ${loading ? "text-muted-foreground hover:text-muted-foreground" : "text-zinc-700"}`}
-                />
+                <SendIcon className="h-[18px] w-[18px] text-zinc-700 duration-200 group-hover:text-accent-black group-hover:text-muted-foreground group-disabled:text-muted-foreground" />
               </button>
             </div>
           </form>
