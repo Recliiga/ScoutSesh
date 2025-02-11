@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { ChatType } from "./ChatContainer";
 import {
   Tooltip,
   TooltipContent,
@@ -22,6 +21,7 @@ import { format } from "date-fns";
 import { sendMessage } from "@/actions/messageActions";
 import toast from "react-hot-toast";
 import { Button } from "../ui/button";
+import { ChatType } from "@/context/chatContext";
 
 export default function MessagesView({
   selectedChatId,

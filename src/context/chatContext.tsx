@@ -1,6 +1,5 @@
 "use client";
 
-import { ChatType } from "@/components/messages/ChatContainer";
 import { MessageType } from "@/db/models/Message";
 import { UserType } from "@/db/models/User";
 import { pusherClient } from "@/lib/pusher";
@@ -10,6 +9,26 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 function createChatId(userId: string, chatUserId: string) {
   return [chatUserId, userId].sort((a, b) => a.localeCompare(b)).join("-");
 }
+
+export type ChatType = {
+  _id: string;
+  user: {
+    _id: string;
+    name: string;
+    role: string;
+    profilePicture: string;
+    country: {
+      name: string;
+      iso2: string;
+    };
+    city: string;
+    initials: string;
+  };
+  lastMessageTime: string | null;
+  lastMessage: MessageType;
+  messages: MessageType[];
+  unreadCount: number;
+};
 
 function transformMessagesToChats(
   messages: MessageType[],
@@ -52,6 +71,8 @@ function transformMessagesToChats(
           name: `${chatUser.firstName} ${chatUser.lastName}`,
           role: chatUser.role,
           profilePicture: chatUser.profilePicture,
+          country: chatUser.country,
+          city: chatUser.city,
           initials: `${chatUser.firstName[0]}${chatUser.lastName[0]}`,
         },
         lastMessageTime: chatMessages.length

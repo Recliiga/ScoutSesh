@@ -7,7 +7,7 @@ export async function fetchMessages(userId: string, role: UserRoleType) {
       JSON.stringify(
         await Message.find().populate({
           path: "fromUser toUser",
-          select: "firstName lastName profilePicture role",
+          select: "firstName lastName profilePicture role country city",
         }),
       ),
     );

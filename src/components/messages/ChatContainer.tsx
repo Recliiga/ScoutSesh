@@ -11,21 +11,6 @@ import { Button } from "../ui/button";
 import { markMessagesAsRead } from "@/actions/messageActions";
 import { useChatContext } from "@/context/chatContext";
 
-export type ChatType = {
-  _id: string;
-  user: {
-    _id: string;
-    name: string;
-    role: string;
-    profilePicture: string;
-    initials: string;
-  };
-  lastMessageTime: string | null;
-  lastMessage: MessageType;
-  messages: MessageType[];
-  unreadCount: number;
-};
-
 export default function ChatContainer({ user }: { user: UserType }) {
   const { messages, setMessages, chats } = useChatContext();
 
@@ -117,7 +102,7 @@ export default function ChatContainer({ user }: { user: UserType }) {
                     : "ml-0 hidden w-full border-0 lg:block lg:w-0"
                 }`}
               >
-                <AboutUser selectedChat={selectedChat} />
+                <AboutUser user={selectedChat.user} />
                 <Button
                   variant={"ghost"}
                   className="absolute left-2 top-2 lg:hidden"
