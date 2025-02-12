@@ -238,10 +238,12 @@ export default function UserProfilePage({
                     </Link>
                   </div>
                 ) : null}
-                <div className="mt-3 flex flex-wrap items-center gap-4">
-                  {isOwnProfile && <ConnectStripeButton user={user} />}
-                  {isOwnProfile && <ConnectGoogleButton user={user} />}
-                </div>
+                {isOwnProfile && user.role === "Head Coach" && (
+                  <div className="mt-3 flex flex-wrap items-center gap-4">
+                    <ConnectStripeButton user={user} />
+                    <ConnectGoogleButton user={user} />
+                  </div>
+                )}
               </div>
               <div className="flex items-center space-x-2">
                 {!isOwnProfile && (
