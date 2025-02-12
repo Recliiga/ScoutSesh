@@ -33,9 +33,11 @@ import ConnectGoogleButton from "../ConnectGoogleButton";
 export default function UserProfilePage({
   user,
   isOwnProfile,
+  canMessageUser = false,
 }: {
   user: UserType;
   isOwnProfile: boolean;
+  canMessageUser?: boolean;
 }) {
   const [userData, setUserData] = useState<UserType>(user);
   const [loading, setLoading] = useState(false);
@@ -246,7 +248,7 @@ export default function UserProfilePage({
                 )}
               </div>
               <div className="flex items-center space-x-2">
-                {!isOwnProfile && (
+                {!isOwnProfile && canMessageUser && (
                   <Link href={"/dashboard/messages"} className="block">
                     <Button className="bg-[#14a800] px-6 py-2 text-base text-white hover:bg-[#14a800]/90 sm:text-lg">
                       <MessageSquareIcon className="mr-2 h-5 w-5" />
