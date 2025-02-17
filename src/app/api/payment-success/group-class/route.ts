@@ -1,8 +1,11 @@
 import connectDB from "@/db/connectDB";
+import GroupClass, { GroupClassType } from "@/db/models/GroupClass";
 import GroupClassOrder from "@/db/models/GroupClassOrder";
 import NotificationEntry from "@/db/models/NotificationEntry";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import User, { UserType } from "@/db/models/User";
+import { getCalendarAPI } from "@/lib/getCalendarAPI";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2024-12-18.acacia",
@@ -39,6 +42,7 @@ export async function GET(req: NextRequest) {
       const hasOrder = await GroupClassOrder.findOne({
         stripeSessionId: sessionId,
       });
+
       if (!hasOrder) {
         await GroupClassOrder.create({
           course: groupClassId,
@@ -56,6 +60,43 @@ export async function GET(req: NextRequest) {
             ? `/dashboard/group-classes/live-classes/${groupClassId}`
             : "/dashboard/group-classes/courses",
         });
+
+        // Update meeting with new participant
+        const course: GroupClassType | null =
+          await GroupClass.findById(groupClassId);
+        const athlete: UserType | null = await User.findById(userId);
+
+        if (course && athlete && coachId) {
+          try {
+            const { calendar, error } = await getCalendarAPI(coachId);
+            if (error !== null) throw new Error(error);
+
+            const eventId = course.meetingData?.id;
+            if (eventId) {
+              const event = await calendar.events.get({
+                calendarId: "primary",
+                eventId: eventId,
+              });
+              const newAttendee = { email: athlete.email };
+              event.data.attendees = event.data.attendees || [];
+              event.data.attendees.push(newAttendee);
+
+              const updatedEvent = await calendar.events.update({
+                calendarId: "primary",
+                eventId: eventId,
+                requestBody: event.data,
+              });
+
+              course.meetingData = updatedEvent.data;
+            }
+          } catch (meetingErr) {
+            const error = meetingErr as Error;
+            console.log(
+              "Error updating meeting with new participant:",
+              error.message,
+            );
+          }
+        }
       }
 
       const redirectUrl = isLiveClass

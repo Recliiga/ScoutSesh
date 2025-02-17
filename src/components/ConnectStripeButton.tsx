@@ -6,6 +6,8 @@ import {
 } from "@/actions/stripeActions";
 import toast from "react-hot-toast";
 import { UserType } from "@/db/models/User";
+import Image from "next/image";
+import stripeLogo from "@/../public/stripe-logo.jpg";
 
 export default function ConnectStripeButton({ user }: { user: UserType }) {
   const [loading, setLoading] = useState(false);
@@ -45,15 +47,21 @@ export default function ConnectStripeButton({ user }: { user: UserType }) {
       }
       variant={"outline"}
       disabled={loading}
-      className="border-accent-green-100 text-accent-green-100 hover:bg-accent-green-100/10 hover:text-accent-green-100 focus-visible:ring focus-visible:ring-accent-green-100/50"
+      className="flex items-center gap-2 rounded-full border text-zinc-700 transition-colors duration-200 hover:bg-neutral-100"
     >
+      <Image
+        src={stripeLogo}
+        alt="Stripe logo"
+        width={16}
+        className="rounded-sm"
+      />
       {user.stripeAccountId
         ? loading
           ? "Redirecting..."
           : "Manage stripe account"
         : loading
-          ? "Onboarding..."
-          : "Onboard with stripe"}
+          ? "Connecting..."
+          : "Connect with stripe"}
     </Button>
   );
 }

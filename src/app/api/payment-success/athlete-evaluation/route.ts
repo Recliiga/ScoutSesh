@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(url);
     } else {
       const url = new URL(
-        "/dashboard/athlete-evaluation/request-evaluation",
+        "/dashboard/athlete-evaluation",
         process.env.BASE_URL,
       );
       return NextResponse.redirect(url);

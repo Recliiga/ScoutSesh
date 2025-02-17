@@ -7,16 +7,14 @@ import { Label } from "@/components/ui/label";
 import Error from "@/components/AuthError";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { updatePassword } from "@/actions/userActions";
+import toast from "react-hot-toast";
 
 export default function ChangePasswordForm() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{
-    type: "error" | "success";
-    message: string;
-  } | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const newPasswordError = newPassword.trim() && newPassword.trim().length < 8;
 
@@ -32,20 +30,17 @@ export default function ChangePasswordForm() {
   }
 
   async function handlePasswordChange(e: React.FormEvent) {
-    setMessage(null);
+    setErrorMessage("");
     setLoading(true);
     e.preventDefault();
 
     const { error } = await updatePassword(currentPassword, newPassword);
 
     if (error !== null) {
-      setMessage({ type: "error", message: error });
+      setErrorMessage(error);
     } else {
       clearInputFields();
-      setMessage({
-        type: "success",
-        message: "Password updated successfully",
-      });
+      toast.success("Password updated successfully");
     }
 
     setLoading(false);
@@ -95,10 +90,7 @@ export default function ChangePasswordForm() {
         {confirmPasswordError ? (
           <Error error={"Passwords do not match"} />
         ) : null}
-        {message?.type === "error" ? <Error error={message.message} /> : null}
-        {message?.type === "success" ? (
-          <p className="text-sm text-accent-green-100">{message.message}</p>
-        ) : null}
+        {errorMessage && <Error error={errorMessage} />}
       </div>
       <Button
         type="submit"

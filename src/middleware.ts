@@ -38,7 +38,10 @@ export async function middleware(request: NextRequest) {
 
   // Add user session to headers if the user exists
   if (isAuthenticated) {
-    response.headers.set("x-user-session", JSON.stringify(user));
+    response.headers.set(
+      "x-user-session",
+      JSON.stringify(user).replace(/[^\x20-\x7E]/g, ""),
+    );
   } else {
     response.headers.delete("x-user-session");
   }

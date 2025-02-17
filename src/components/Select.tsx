@@ -68,6 +68,9 @@ export default function Select({
               e.preventDefault();
               toggleShowOptions();
             }
+            if (e.code === "Escape") {
+              closeDropdown();
+            }
           }}
         >
           {childComponent || value || placeholder || "Select"}
@@ -94,7 +97,7 @@ function Content({
 
   return (
     <div
-      className={`scroll custom-scrollbar absolute left-0 top-[calc(100%_+_4px)] z-10 max-h-60 w-fit min-w-full overflow-y-scroll rounded-md border bg-white p-1 shadow duration-200 ${showOptions ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0"} ${className}`}
+      className={`scroll custom-scrollbar absolute left-0 top-[calc(100%_+_4px)] z-10 max-h-60 w-fit min-w-full overflow-y-auto rounded-md border bg-white p-1 shadow duration-200 ${showOptions ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0"} ${className}`}
     >
       {children}
     </div>

@@ -1,44 +1,24 @@
 "use server";
 
+import { v4 as uuidv4 } from "uuid";
 import connectDB from "@/db/connectDB";
 import GroupClass, {
   GroupClassType,
-  MeetingType,
   RepeatFrequencyType,
 } from "@/db/models/GroupClass";
-import User from "@/db/models/User";
-import { getUserIdFromCookies } from "@/lib/utils";
+import {
+  generateRecurrenceRule,
+  getTimeZone,
+  getUserIdFromCookies,
+} from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
+import { getCalendarAPI } from "@/lib/getCalendarAPI";
 
-type ClassDataVideoType = {
-  title: string;
-  duration: number;
-  url: string;
-};
-
-type ClassDataType = {
-  title: string;
-  description: string;
-  thumbnail: string;
-  coaches: string[];
-  courseType?: "live" | "video";
-  startDate?: Date;
-  endDate?: Date;
-  startTime: { hours: string; mins: string };
-  duration: number;
-  customDuration: number;
-  isRecurring: boolean;
-  repeatFrequency?: RepeatFrequencyType;
-  totalSpots: number;
-  skillLevels: string[];
-  videos: ClassDataVideoType[];
-  price: number;
-  meetings?: MeetingType[];
-};
-
-export async function createClass(classData: ClassDataType) {
+export async function createClass(
+  classData: Partial<Omit<GroupClassType, "coaches"> & { coaches: string[] }>,
+) {
   let redirectUrl;
   try {
     const cookieStore = await cookies();
@@ -57,7 +37,10 @@ export async function createClass(classData: ClassDataType) {
 
 export async function updateClass(
   groupClassId: string,
-  classData: ClassDataType & { user: { _id: string } },
+  classData: Partial<Omit<GroupClassType, "coaches">> & {
+    coaches: string[];
+    userId: string;
+  },
 ) {
   let redirectUrl;
   try {
@@ -65,13 +48,13 @@ export async function updateClass(
     const { userId, error } = getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
 
-    if (classData.user._id !== userId) throw new Error("Unauthorized!");
+    if (classData.userId !== userId) throw new Error("Unauthorized!");
 
     await connectDB();
-    const updatedGroupClass = await GroupClass.findByIdAndUpdate(groupClassId, {
-      ...classData,
-      user: userId,
-    });
+    const updatedGroupClass = await GroupClass.findByIdAndUpdate(
+      groupClassId,
+      classData,
+    );
     if (!updatedGroupClass) throw new Error("An error occured updating course");
     redirectUrl = "/dashboard/group-classes/courses";
   } catch (error) {
@@ -83,6 +66,18 @@ export async function updateClass(
 
 export async function deleteClass(groupClass: GroupClassType) {
   try {
+    if (groupClass.meetingData?.id) {
+      const { calendar, error } = await getCalendarAPI(
+        groupClass.coaches[0]._id,
+      );
+      if (error !== null) throw new Error(error);
+
+      await calendar.events.delete({
+        eventId: groupClass.meetingData.id,
+        calendarId: "primary",
+      });
+    }
+
     const cookieStore = await cookies();
     const { userId, error } = getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
@@ -96,84 +91,125 @@ export async function deleteClass(groupClass: GroupClassType) {
     if (!deletedGroupClass) throw new Error("An error occured deleting course");
     revalidatePath("/dashboard/group-classes/courses");
     return { error: null };
-  } catch (error) {
-    return { error: (error as Error).message };
-  } finally {
+  } catch (err) {
+    const error = err as Error;
+    console.log("Error deleting group class: ", error.message);
+    return { error: "An error occured deleting group class" };
   }
 }
 
-export async function scheduleMeeting(
-  title: string,
-  startTime: { hours: string; mins: string },
-  durationInMinutes: number,
-  dates: Date[],
-  refreshToken: string,
-  userId: string,
-): Promise<
-  { data: MeetingType[]; error: null } | { data: null; error: string }
-> {
+type MeetingDetailsType = {
+  userId: string;
+  title: string;
+  description: string;
+  startTime: Date;
+  endTime: Date;
+  repeatFrequency?: RepeatFrequencyType;
+  repeatCount?: number;
+};
+
+export async function scheduleMeeting(meetingDetails: MeetingDetailsType) {
   try {
-    const clientId = process.env.ZOOM_CLIENT_ID;
-    const clientSecret = process.env.ZOOM_CLIENT_SECRET;
+    const {
+      userId,
+      title,
+      description,
+      startTime,
+      endTime,
+      repeatCount,
+      repeatFrequency,
+    } = meetingDetails;
 
-    // Get access token
-    const tokenUrl = "https://zoom.us/oauth/token";
+    const { calendar, error } = await getCalendarAPI(userId);
+    if (error !== null) throw new Error(error);
 
-    const tokenHeaders = new Headers({
-      Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
-      "Content-Type": "application/x-www-form-urlencoded",
+    // Add the event to the calendar
+    const newEvent = await calendar.events.insert({
+      calendarId: "primary",
+      requestBody: {
+        summary: title || "Live Class",
+        description: description || "Scoutsesh Live Class",
+        start: {
+          dateTime: startTime.toISOString(),
+          timeZone: getTimeZone(startTime),
+        },
+        end: {
+          dateTime: endTime.toISOString(),
+          timeZone: getTimeZone(endTime),
+        },
+        recurrence:
+          repeatCount && repeatFrequency
+            ? generateRecurrenceRule(repeatCount, repeatFrequency)
+            : undefined,
+        conferenceData: {
+          createRequest: {
+            requestId: uuidv4(),
+            conferenceSolutionKey: { type: "hangoutsMeet" },
+          },
+        },
+      },
+      conferenceDataVersion: 1,
     });
 
-    const tokenBody = new URLSearchParams({
-      refresh_token: refreshToken,
-      grant_type: "refresh_token",
+    return { event: newEvent.data, error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.error("Error scheduling meeting:", error.message);
+    return { event: null, error: "Error scheduling meeting" };
+  }
+}
+
+export async function updateMeeting(
+  eventId: string,
+  meetingDetails: MeetingDetailsType,
+) {
+  try {
+    const {
+      userId,
+      title,
+      description,
+      startTime,
+      endTime,
+      repeatCount,
+      repeatFrequency,
+    } = meetingDetails;
+
+    const { calendar, error } = await getCalendarAPI(userId);
+    if (error !== null) throw new Error(error);
+
+    // Update the calendar event
+    const updatedEvent = await calendar.events.update({
+      calendarId: "primary",
+      eventId: eventId,
+      requestBody: {
+        summary: title || "Live Class",
+        description: description || "Scoutsesh Live Class",
+        start: {
+          dateTime: startTime.toISOString(),
+          timeZone: getTimeZone(startTime),
+        },
+        end: {
+          dateTime: endTime.toISOString(),
+          timeZone: getTimeZone(endTime),
+        },
+        recurrence:
+          repeatCount && repeatFrequency
+            ? generateRecurrenceRule(repeatCount, repeatFrequency)
+            : undefined,
+        conferenceData: {
+          createRequest: {
+            requestId: uuidv4(),
+            conferenceSolutionKey: { type: "hangoutsMeet" },
+          },
+        },
+      },
+      conferenceDataVersion: 1,
     });
 
-    const tokenResponse = await fetch(tokenUrl, {
-      method: "POST",
-      headers: tokenHeaders,
-      body: tokenBody,
-    });
-    const tokenData = await tokenResponse.json();
-
-    //Save refresh token to user database
-    const updatedUser = await User.findByIdAndUpdate(userId, {
-      zoomRefreshToken: tokenData.refresh_token,
-    });
-    if (!updatedUser)
-      throw new Error("An error occured saving new refresh token to database");
-
-    // Schedule meeting
-    const url = "https://api.zoom.us/v2/users/me/meetings";
-
-    const headers = new Headers({
-      Authorization: `Bearer ${tokenData.access_token}`,
-      "Content-Type": "application/json",
-    });
-
-    const meetings = await Promise.all(
-      dates.map(async (date) => {
-        const classStartTime = new Date(date);
-        classStartTime.setHours(Number(startTime.hours));
-        classStartTime.setMinutes(Number(startTime.mins));
-        const body = JSON.stringify({
-          topic: title,
-          start_time: classStartTime,
-          duration: durationInMinutes,
-        });
-        const response = await fetch(url, {
-          method: "POST",
-          headers: headers,
-          body: body,
-        });
-        const data: MeetingType = await response.json();
-        return data;
-      }),
-    );
-
-    return { data: meetings, error: null };
-  } catch (error) {
-    console.log("Error scheduling meeting: ", (error as Error).message);
-    return { data: null, error: "Error scheduling meeting" };
+    return { event: updatedEvent.data, error: null };
+  } catch (err) {
+    const error = err as Error;
+    console.error("Error updating meeting:", error.message);
+    return { event: null, error: "Error updating meeting" };
   }
 }

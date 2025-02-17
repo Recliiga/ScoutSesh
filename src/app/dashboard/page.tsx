@@ -8,9 +8,6 @@ import { fetchCoachEvaluationOrders } from "@/services/AthleteEvaluationServices
 
 export default async function DashboardPage() {
   const user = await getSessionFromHeaders();
-  const { journalEntries, error: journalError } = await fetchAllUserJournals();
-
-  if (journalError !== null) throw new Error(journalError);
 
   if (user.role === "Head Coach") {
     const { orders, error } = await fetchCoachEvaluationOrders(user._id);
@@ -18,6 +15,9 @@ export default async function DashboardPage() {
 
     return <CoachDashboard user={user} orders={orders} />;
   }
+
+  const { journalEntries, error: journalError } = await fetchAllUserJournals();
+  if (journalError !== null) throw new Error(journalError);
 
   const { organization, error } = await fetchOrganization(
     user.organization?._id,

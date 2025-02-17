@@ -2,21 +2,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { XIcon } from "lucide-react";
 
-const navLinks = [
-  { title: "Goal Setting", href: "/dashboard/goal-setting" },
-  { title: "Daily Journal", href: "/dashboard/daily-journal" },
-  { title: "Group Classes", href: "/dashboard/group-classes" },
-  { title: "Athlete Evaluation", href: "/dashboard/athlete-evaluation" },
-  // { title: "Messages", href: "/dashboard/messages" },
-  { title: "My Team Members", href: "/dashboard/team-members" },
-];
-
 export default function DashboardMobileNav({
   open,
   closeModal,
+  navLinks,
 }: {
   open: boolean;
   closeModal: () => void;
+  navLinks: { title: string; href: string }[];
 }) {
   const pathname = usePathname();
   return (

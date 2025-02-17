@@ -8,7 +8,7 @@ import { ArrowRight, Loader2, SearchIcon } from "lucide-react";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { cn, resizeImage, uploadImageClient } from "@/lib/utils";
+import { resizeImage, uploadImageClient } from "@/lib/utils";
 import Image from "next/image";
 import { completeProfile } from "@/actions/userActions";
 import { useSearchParams } from "next/navigation";
@@ -97,7 +97,6 @@ export default function CompleteAthleteProfileForm({
       name: selectedCountry.name || "",
       iso2: countryISO2,
     });
-    updateField("city", "");
   }
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -139,6 +138,7 @@ export default function CompleteAthleteProfileForm({
       DOB: formEntries.DOB,
       profilePicture: formEntries.profilePicture,
       city: formEntries.city,
+      country: formEntries.country,
       primarySport: formEntries.primarySport,
       experience: formEntries.experience,
       bio: formEntries.bio,
@@ -275,10 +275,7 @@ export default function CompleteAthleteProfileForm({
               onClick={() => setCalendarOpen((prev) => !prev)}
               type="button"
               variant={"outline"}
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !formEntries.DOB && "text-muted-foreground",
-              )}
+              className="w-full justify-start text-left font-normal"
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               {formEntries.DOB ? (

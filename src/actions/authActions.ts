@@ -55,6 +55,7 @@ export async function login(formData: FormData, redirectUrl: string) {
 
     cookieStore.set("token", token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7,
     });
 
@@ -80,6 +81,8 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
   let canRedirect = false;
 
   try {
+    await connectDB();
+
     // Run validation
     Object.entries(userData).forEach(([key, value]) => {
       if (!value) {
@@ -99,7 +102,6 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
     if (userExists) return { error: "User with email already exists" };
 
     // Create new user
-    await connectDB();
     const newUser = await User.create({
       ...userData,
       password: encryptedPassword,
@@ -111,6 +113,7 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
 
     cookieStore.set("token", token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7,
     });
 

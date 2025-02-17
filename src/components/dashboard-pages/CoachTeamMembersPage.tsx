@@ -11,6 +11,7 @@ import { DailyJournalType } from "@/db/models/DailyJournal";
 import ModalContainer from "../ModalContainer";
 import AddTeamMemberModal from "../AddTeamMemberModal";
 import { InvitationCodeType } from "@/db/models/InvitationCode";
+import Link from "next/link";
 
 export default function CoachTeamMembersPage({
   teamJournalEntries,
@@ -53,7 +54,7 @@ export default function CoachTeamMembersPage({
           <div className="flex flex-col items-start gap-4 lg:flex-row">
             <div className="flex w-full flex-1 flex-col items-start gap-4">
               <h2 className="text-2xl font-bold">All Team Members</h2>
-              <div className="relative w-full md:w-48">
+              <div className="relative w-full lg:w-48">
                 <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                 <Input
                   type="search"
@@ -63,18 +64,20 @@ export default function CoachTeamMembersPage({
                   className="w-full pl-8"
                 />
               </div>
-              <Button
-                onClick={handleMessageAll}
-                variant="outline"
-                className="w-full whitespace-nowrap transition-colors hover:bg-green-700 hover:text-white md:w-48"
-              >
-                <Send className="mr-2 h-4 w-4" />
-                Message All Members
-              </Button>
+              <Link href="/dashboard/messages" className="w-full">
+                <Button
+                  onClick={handleMessageAll}
+                  variant="outline"
+                  className="w-full whitespace-nowrap transition-colors hover:bg-green-700 hover:text-white lg:w-48"
+                >
+                  <Send className="mr-2 h-4 w-4" />
+                  Message All Members
+                </Button>
+              </Link>
               <Button
                 onClick={() => setModalIsOpen(true)}
                 variant="outline"
-                className="w-full whitespace-nowrap transition-colors hover:bg-green-700 hover:text-white md:w-48"
+                className="w-full whitespace-nowrap transition-colors hover:bg-green-700 hover:text-white lg:w-48"
               >
                 <UserPlus className="mr-2 h-4 w-4" />
                 Add Team Members
@@ -92,7 +95,7 @@ export default function CoachTeamMembersPage({
                   {organizationMembers.length} Team Member
                   {organizationMembers.length > 1 ? "s" : ""} 🏅
                 </div>
-                <div className="mt-8 grid grid-cols-[repeat(auto-fill,_minmax(150px,_1fr))] gap-4 sm:grid-cols-[repeat(auto-fill,_minmax(240px,_1fr))]">
+                <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,_minmax(280px,_1fr))]">
                   {coaches.map((coach) => (
                     <CoachProfileCard
                       key={coach._id}

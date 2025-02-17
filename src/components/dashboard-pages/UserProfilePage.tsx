@@ -11,9 +11,9 @@ import {
   BookOpenIcon,
   TrophyIcon,
   MessageSquareIcon,
-  CheckCircle,
   CalendarIcon,
   CameraIcon,
+  XIcon,
 } from "lucide-react";
 import { PrimarySportType, UserType } from "@/db/models/User";
 import { cn, getFullname, uploadImageClient } from "@/lib/utils";
@@ -28,13 +28,16 @@ import useClickOutside from "@/hooks/useClickOutside";
 import ConnectStripeButton from "../ConnectStripeButton";
 import Select from "../Select";
 import stripeCountries from "@/data/stripe-countries.json";
+import ConnectGoogleButton from "../ConnectGoogleButton";
 
 export default function UserProfilePage({
   user,
   isOwnProfile,
+  canMessageUser = false,
 }: {
   user: UserType;
   isOwnProfile: boolean;
+  canMessageUser?: boolean;
 }) {
   const [userData, setUserData] = useState<UserType>(user);
   const [loading, setLoading] = useState(false);
@@ -47,8 +50,6 @@ export default function UserProfilePage({
   const [selectedYear, setSelectedYear] = useState(
     new Date(user.DOB).getFullYear(),
   );
-  // const [zoomLoading, setZoomLoading] = useState(false);
-  // const [zoomConnected, setZoomConnected] = useState(!!user.zoomRefreshToken);
 
   const [calendarRef] = useClickOutside(() => setCalendarOpen(false));
 
@@ -181,7 +182,7 @@ export default function UserProfilePage({
             </div>
           </div>
           <CardHeader className="px-4 pb-0 pt-20 sm:px-6">
-            <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
               <div className="flex-1">
                 {isEditing ? (
                   <div className="flex w-full gap-2">
@@ -217,7 +218,6 @@ export default function UserProfilePage({
                 <p className="text-sm font-semibold text-[#14a800]">
                   {userData.role}
                 </p>
-                {isOwnProfile && <ConnectStripeButton user={user} />}
                 {user.organization && user.organization._id ? (
                   <div className="mt-2 w-fit">
                     <Link
@@ -229,6 +229,8 @@ export default function UserProfilePage({
                           src={user.organization.logo}
                           alt={user.organization.name}
                           className="object-cover"
+                          width={24}
+                          height={24}
                         />
                         <AvatarFallback>
                           {user.organization.name[0]}
@@ -238,27 +240,37 @@ export default function UserProfilePage({
                     </Link>
                   </div>
                 ) : null}
+                {isOwnProfile && user.role === "Head Coach" && (
+                  <div className="mt-3 flex flex-wrap items-center gap-4">
+                    <ConnectStripeButton user={user} />
+                    <ConnectGoogleButton user={user} />
+                  </div>
+                )}
               </div>
               <div className="flex items-center space-x-2">
-                <Button className="bg-[#14a800] px-6 py-2 text-base text-white hover:bg-[#14a800]/90 sm:text-lg">
-                  <MessageSquareIcon className="mr-2 h-5 w-5" />
-                  Message
-                </Button>
+                {!isOwnProfile && canMessageUser && (
+                  <Link href={"/dashboard/messages"} className="block">
+                    <Button className="bg-[#14a800] px-6 py-2 text-base text-white hover:bg-[#14a800]/90 sm:text-lg">
+                      <MessageSquareIcon className="mr-2 h-5 w-5" />
+                      Message
+                    </Button>
+                  </Link>
+                )}
                 {isOwnProfile ? (
                   <Button
                     variant="outline"
                     size="icon"
                     disabled={isEditing && loading}
                     onClick={() =>
-                      isEditing ? handleUpdateUser() : setIsEditing(true)
+                      isEditing ? cancelEditing() : setIsEditing(true)
                     }
-                    className={`order-[#14a800] text-[#14a800] hover:text-white ${isEditing ? "bg-[#14a800] hover:bg-[#14a800]/90" : "bg-white hover:bg-[#14a800]"}`}
+                    className="order-[#14a800] bg-white text-[#14a800] hover:bg-[#14a800] hover:text-white"
                   >
                     {isEditing ? (
                       loading ? (
                         <LoadingIndicator />
                       ) : (
-                        <CheckCircle className="h-4 w-4 text-white" />
+                        <XIcon className="h-4 w-4" />
                       )
                     ) : (
                       <PenIcon className="h-4 w-4" />

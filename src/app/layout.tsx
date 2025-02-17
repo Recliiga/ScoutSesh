@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { GeistSans } from "geist/font/sans";
 import Header from "@/components/Header";
-import { getSessionFromHeaders } from "@/services/authServices";
+import { getSession } from "@/services/authServices";
 import Footer from "@/components/Footer";
 import { fetchLatestInvitationCode } from "@/services/invitationServices";
-import { fetchNotifications } from "@/services/notificationEntryServices";
-import { UserType } from "@/db/models/User";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
@@ -20,11 +18,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user: UserType | null = await getSessionFromHeaders();
+  const { user } = await getSession();
   const { invitationCode } = await fetchLatestInvitationCode();
-
-  const { notifications, error } = await fetchNotifications(user?._id);
-  if (error !== null) throw new Error(error);
 
   return (
     <html lang="en">
@@ -32,11 +27,7 @@ export default async function RootLayout({
         className={`${GeistSans.className} flex min-h-dvh flex-col text-accent-black antialiased`}
       >
         <Toaster position="top-right" reverseOrder={false} />
-        <Header
-          user={user}
-          invitationCode={invitationCode}
-          notifications={notifications}
-        />
+        <Header user={user} invitationCode={invitationCode} />
         {children}
         <Footer />
       </body>

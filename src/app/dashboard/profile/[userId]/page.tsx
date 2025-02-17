@@ -20,6 +20,7 @@ export default async function ProfilePage({
     <UserProfilePage
       user={profileUser}
       isOwnProfile={profileUser._id === user._id}
+      canMessageUser={user.role !== "Athlete"}
     />
   );
 }

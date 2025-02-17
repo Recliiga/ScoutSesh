@@ -9,13 +9,14 @@ import DashboardNavUser from "../DashboardNavUser";
 import { InvitationCodeType } from "@/db/models/InvitationCode";
 import DashboardNotificationIcon from "../DashboardNotificationIcon";
 import { NotificationEntryType } from "@/db/models/NotificationEntry";
+import { useChatContext } from "@/context/chatContext";
 
 const navLinks = [
   { title: "Goal Setting", href: "/dashboard/goal-setting" },
   { title: "Daily Journal", href: "/dashboard/daily-journal" },
   { title: "Group Classes", href: "/dashboard/group-classes" },
   { title: "Athlete Evaluation", href: "/dashboard/athlete-evaluation" },
-  // { title: "Messages", href: "/dashboard/messages" },
+  { title: "Messages", href: "/dashboard/messages" },
   { title: "My Team Members", href: "/dashboard/team-members" },
 ];
 
@@ -24,12 +25,14 @@ export default function DashboardHeader({
   invitationCode,
   notifications,
 }: {
-  user: UserType;
+  user?: UserType;
   invitationCode: InvitationCodeType | null;
   notifications: NotificationEntryType[];
 }) {
   const [mobileNav, setMobileNav] = useState(false);
   const [docWidth, setDocWidth] = useState(900);
+
+  const { totalUnReadMessages } = useChatContext();
 
   useEffect(() => {
     function handleResize() {
@@ -148,6 +151,12 @@ export default function DashboardHeader({
                 }`}
               >
                 {navLink.title}
+                {navLink.title === "Messages" && totalUnReadMessages > 0 && (
+                  <span className="text-green-600">
+                    {" "}
+                    ({totalUnReadMessages})
+                  </span>
+                )}
               </Link>
             ))}
           </nav>
@@ -155,7 +164,7 @@ export default function DashboardHeader({
         <div className="flex items-center space-x-4">
           <DashboardNotificationIcon
             notifications={notifications}
-            userId={user._id}
+            userId={user?._id || ""}
           />
           <DashboardNavUser user={user} invitationCode={invitationCode} />
         </div>
@@ -167,6 +176,7 @@ export default function DashboardHeader({
           className="lg:hidden"
         >
           <DashboardMobileNav
+            navLinks={navLinks}
             open={mobileNav}
             closeModal={() => setMobileNav(false)}
           />
