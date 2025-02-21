@@ -2,6 +2,12 @@ import OrganizationRegistrationForm from "@/components/OrganizationRegistrationF
 import { getSessionFromHeaders } from "@/services/authServices";
 import { fetchCountries } from "@/services/userServices";
 
+export const metadata = {
+  title: "Create Organization",
+  description:
+    "Complete your organization profile to get started with ScoutSesh. Create your organization now.",
+};
+
 export default async function CreateOrganizationPage() {
   const user = await getSessionFromHeaders();
 

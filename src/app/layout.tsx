@@ -8,7 +8,7 @@ import { fetchLatestInvitationCode } from "@/services/invitationServices";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  title: "ScoutSesh",
+  title: { absolute: "ScoutSesh", template: "%s - ScoutSesh" },
   description:
     "ScoutSesh is a comprehensive athlete development platform designed to elevate your game to the next level. Whether you're an aspiring youth athlete or a seasoned pro in any sport, our tools and resources are tailored to help you reach your full potential.",
 };

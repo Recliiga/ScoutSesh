@@ -5,6 +5,11 @@ import { getSessionFromHeaders } from "@/services/authServices";
 import { notFound } from "next/navigation";
 import { fetchCoachPricingPlan } from "@/services/AEPricingPlanServices";
 
+export const metadata = {
+  title: "Athlete Evaluation Pricing",
+  description: "Set up and manage your athlete evaluation pricing plans",
+};
+
 export default async function CreateAthleteEvaluationPricingPage() {
   const user = await getSessionFromHeaders();
   if (user.role !== "Head Coach") notFound();

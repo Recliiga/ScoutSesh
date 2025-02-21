@@ -8,11 +8,17 @@ import {
 } from "@/components/ui/card";
 import ContactForm from "@/components/ContactForm";
 
+export const metadata = {
+  title: "Contact Us",
+  description:
+    "Get in touch with the ScoutSesh team for any questions or assistance. Fill out the contact form and we'll respond promptly.",
+};
+
 export default function ContactPage() {
   return (
-    <main className="flex flex-col flex-1">
-      <div className="mx-auto py-8 w-[90%] max-w-6xl">
-        <h1 className="mb-6 font-bold text-3xl text-black sm:text-4xl">
+    <main className="flex flex-1 flex-col">
+      <div className="mx-auto w-[90%] max-w-6xl py-8">
+        <h1 className="mb-6 text-3xl font-bold text-black sm:text-4xl">
           Contact Us
         </h1>
         <p className="mb-6 text-base text-gray-600 sm:text-lg">

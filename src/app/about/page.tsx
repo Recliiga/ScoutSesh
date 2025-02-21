@@ -3,14 +3,20 @@ import Image from "next/image";
 import ExpertiseCard from "@/components/ExpertiseCard";
 import LinkButton from "@/components/LinkButton";
 
+export const metadata = {
+  title: "About Us",
+  description:
+    "Learn more about ScoutSesh, our mission, and our expertise in athlete development. Join us on our journey to revolutionize athlete development.",
+};
+
 export default function AboutUs() {
   return (
-    <main className="flex flex-col flex-1">
-      <div className="mx-auto py-8 w-[90%] max-w-6xl">
-        <h1 className="mb-6 font-bold text-4xl text-accent-black">
+    <main className="flex flex-1 flex-col">
+      <div className="mx-auto w-[90%] max-w-6xl py-8">
+        <h1 className="mb-6 text-4xl font-bold text-accent-black">
           About ScoutSesh
         </h1>
-        <div className="gap-8 grid grid-cols-1 lg:grid-cols-2 mb-12 text-base sm:text-lg">
+        <div className="mb-12 grid grid-cols-1 gap-8 text-base sm:text-lg lg:grid-cols-2">
           <div>
             <p className="mb-4">
               At ScoutSesh, we&apos;re more than just a company - we&apos;re a
@@ -30,19 +36,19 @@ export default function AboutUs() {
               versions of themselves, both on and off the field, court, or ice.
             </p>
           </div>
-          <div className="relative w-full h-full max-h-[26rem] aspect-[1.5]">
+          <div className="relative aspect-[1.5] h-full max-h-[26rem] w-full">
             <Image
-              src="/placeholder.svg"
+              src="/about.png"
               alt="ScoutSesh Team"
               fill
-              className="shadow-lg rounded-lg w-full h-full object-cover"
+              className="h-full w-full rounded-lg object-cover shadow-lg"
             />
           </div>
         </div>
-        <h2 className="mb-4 font-bold text-[1.75rem] text-accent-black sm:text-3xl">
+        <h2 className="mb-4 text-[1.75rem] font-bold text-accent-black sm:text-3xl">
           Our Expertise
         </h2>
-        <div className="gap-6 grid grid-cols-1 md:grid-cols-3 mb-12">
+        <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-3">
           <ExpertiseCard
             title="Athlete Experience"
             description="Our team comprises former and current athletes who understand the physical and mental demands of competitive sports."
@@ -56,8 +62,8 @@ export default function AboutUs() {
             description="We harness technology as a powerful tool, enabling athletes to enhance their skills and empowering coaches to provide more effective, personalized guidance to their players."
           />
         </div>
-        <div className="bg-green-50 shadow-md p-4 sm:p-8 rounded-lg">
-          <h2 className="mb-4 font-bold text-[1.75rem] text-green-600 sm:text-3xl">
+        <div className="rounded-lg bg-green-50 p-4 shadow-md sm:p-8">
+          <h2 className="mb-4 text-[1.75rem] font-bold text-green-600 sm:text-3xl">
             Our Commitment
           </h2>
           <p className="mb-4 text-base sm:text-lg">
@@ -74,7 +80,7 @@ export default function AboutUs() {
           <LinkButton
             href="/signup"
             size="lg"
-            className="px-[1.25rem] sm:px-6 text-[1rem] text-center text-wrap sm:text-lg"
+            className="text-wrap px-[1.25rem] text-center text-[1rem] sm:px-6 sm:text-lg"
             margin="none"
           >
             Start Your ScoutSesh Journey

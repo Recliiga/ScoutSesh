@@ -44,14 +44,20 @@ const questions = [
   },
 ];
 
+export const metadata = {
+  title: "FAQ",
+  description:
+    "Find answers to common questions about ScoutSesh. Learn more about our features, security, and how to get the most out of our platform.",
+};
+
 export default function FAQPage() {
   return (
-    <main className="flex flex-col flex-1">
-      <div className="mx-auto py-16 w-[90%] max-w-6xl">
-        <h1 className="mb-8 font-bold text-3xl text-center sm:text-4xl">
+    <main className="flex flex-1 flex-col">
+      <div className="mx-auto w-[90%] max-w-6xl py-16">
+        <h1 className="mb-8 text-center text-3xl font-bold sm:text-4xl">
           Frequently Asked Questions
         </h1>
-        <div className="space-y-6 mx-auto max-w-3xl">
+        <div className="mx-auto max-w-3xl space-y-6">
           {questions.map((question, index) => (
             <FAQItem
               key={index}

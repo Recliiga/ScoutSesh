@@ -2,6 +2,12 @@ import CompleteAthleteProfileForm from "@/components/CompleteAthleteProfileForm"
 import { getSessionFromHeaders } from "@/services/authServices";
 import { fetchCountries } from "@/services/userServices";
 
+export const metadata = {
+  title: "Complete Your Profile",
+  description:
+    "Add more details to your ScoutSesh profile to enhance your athlete development journey.",
+};
+
 export default async function CompleteYourProfilePage() {
   const user = await getSessionFromHeaders();
 

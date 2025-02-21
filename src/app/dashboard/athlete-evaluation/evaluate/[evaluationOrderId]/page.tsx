@@ -6,6 +6,11 @@ import { getSessionFromHeaders } from "@/services/authServices";
 import { notFound } from "next/navigation";
 import React from "react";
 
+export const metadata = {
+  title: "Athlete Evaluation",
+  description: "Evaluate athlete performance and progress",
+};
+
 export default async function SelfEvaluationPage({
   params,
 }: {

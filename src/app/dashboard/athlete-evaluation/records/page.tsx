@@ -9,6 +9,11 @@ import { getSessionFromHeaders } from "@/services/authServices";
 import { notFound } from "next/navigation";
 import CoachAllEvaluationsPage from "@/components/athlete-evaluation/CoachAllEvaluationsPage";
 
+export const metadata = {
+  title: "Athlete Evaluation Records",
+  description: "View and manage athlete evaluation records",
+};
+
 export default async function EvaluationRecordsPage() {
   const user = await getSessionFromHeaders();
 

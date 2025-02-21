@@ -18,25 +18,25 @@ const cards = [
     title: "Performance Tracking",
     description:
       "Monitor your progress with detailed analytics and visualizations of your key metrics.",
-    icon: <BarChart className="w-10 h-10 text-green-600" />,
+    icon: <BarChart className="h-10 w-10 text-green-600" />,
   },
   {
     title: "Goal Setting",
     description:
       "Set ambitious yet achievable goals and track your journey towards success.",
-    icon: <Target className="w-10 h-10 text-green-600" />,
+    icon: <Target className="h-10 w-10 text-green-600" />,
   },
   {
     title: "Virtual Training",
     description:
       "Access expert-led virtual sessions to improve your skills and techniques.",
-    icon: <Video className="w-10 h-10 text-green-600" />,
+    icon: <Video className="h-10 w-10 text-green-600" />,
   },
   {
     title: "Daily Journaling",
     description:
       "Reflect on your progress and mindset with guided daily journal entries.",
-    icon: <BookOpen className="w-10 h-10 text-green-600" />,
+    icon: <BookOpen className="h-10 w-10 text-green-600" />,
   },
 ];
 
@@ -45,32 +45,38 @@ const cards2 = [
     title: "Accelerated Growth",
     description:
       "Track your progress, identify areas for improvement, and witness your skills develop faster than ever before.",
-    icon: <TrendingUp className="w-10 h-10 text-green-600" />,
+    icon: <TrendingUp className="h-10 w-10 text-green-600" />,
   },
   {
     title: "Expert Guidance",
     description:
       "Gain insights and personalized advice from experienced coaches to refine your technique and strategy.",
-    icon: <Award className="w-10 h-10 text-green-600" />,
+    icon: <Award className="h-10 w-10 text-green-600" />,
   },
   {
     title: "Structured Development",
     description:
       "Follow a well-organized training regimen that ensures consistent improvement and helps you reach your full potential.",
-    icon: <Calendar className="w-10 h-10 text-green-600" />,
+    icon: <Calendar className="h-10 w-10 text-green-600" />,
   },
 ];
+
+export const metadata = {
+  title: "For Athletes",
+  description:
+    "Discover the tools and features ScoutSesh offers to help athletes track their progress, set goals, and connect with top coaches.",
+};
 
 export default function ForAthletesPage() {
   return (
     <main className="flex-1">
       <section className="bg-green-50 py-10 md:py-16">
-        <div className="mx-auto px-4 w-[90%] max-w-6xl">
+        <div className="mx-auto w-[90%] max-w-6xl px-4">
           <div className="mx-auto max-w-3xl text-center">
-            <h1 className="mb-6 font-bold text-3xl text-green-800 sm:text-4xl md:text-5xl">
+            <h1 className="mb-6 text-3xl font-bold text-green-800 sm:text-4xl md:text-5xl">
               Athletes, Unlock Your Full Potential with ScoutSesh
             </h1>
-            <p className="mb-8 text-gray-700 text-lg sm:text-xl">
+            <p className="mb-8 text-lg text-gray-700 sm:text-xl">
               Take control of your athletic journey, track your progress, and
               connect with top coaches to elevate your game to new heights.
             </p>
@@ -82,21 +88,21 @@ export default function ForAthletesPage() {
       </section>
 
       <section className="py-8 md:py-16">
-        <div className="mx-auto px-4 w-[90%] max-w-6xl">
-          <h2 className="mb-8 font-bold text-[1.75rem] text-center sm:text-3xl">
+        <div className="mx-auto w-[90%] max-w-6xl px-4">
+          <h2 className="mb-8 text-center text-[1.75rem] font-bold sm:text-3xl">
             Key Features for Athletes
           </h2>
-          <div className="gap-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
             {cards.map((feature, index) => (
               <Card
                 key={index}
                 className="flex flex-col items-center p-6 text-center"
               >
                 <CardHeader className="pb-2">
-                  <div className="flex justify-center items-center mb-4">
+                  <div className="mb-4 flex items-center justify-center">
                     {feature.icon}
                   </div>
-                  <CardTitle className="font-semibold text-xl">
+                  <CardTitle className="text-xl font-semibold">
                     {feature.title}
                   </CardTitle>
                 </CardHeader>
@@ -112,7 +118,7 @@ export default function ForAthletesPage() {
       <section className="bg-gray-50 py-8 md:py-16">
         <div className="mx-auto w-[90%] max-w-6xl">
           <div className="mx-auto mb-8 max-w-3xl text-center">
-            <h2 className="mb-4 font-bold text-[1.75rem] sm:text-3xl">
+            <h2 className="mb-4 text-[1.75rem] font-bold sm:text-3xl">
               Comprehensive Athlete Development Tools
             </h2>
             <p className="text-base text-gray-600 sm:text-lg">
@@ -120,16 +126,16 @@ export default function ForAthletesPage() {
               the next level.
             </p>
           </div>
-          <div className="items-center gap-12 grid grid-cols-1 lg:grid-cols-2">
-            <div className="relative w-full h-full min-h-40 aspect-video">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+            <div className="relative aspect-video h-full min-h-40 w-full">
               <Image
-                src="/placeholder.svg"
+                src="/for-athletes2.png"
                 alt="Coach using ScoutSesh platform"
                 fill
-                className="shadow-lg rounded-lg w-full h-full object-cover"
+                className="h-full w-full rounded-lg object-cover object-top shadow-lg"
               />
             </div>
-            <div className="gap-6 grid sm:grid-cols-2 lg:grid-cols-1">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
               <FeatureItem
                 title="Personalized Dashboard"
                 description="Access your performance metrics, goals, and upcoming sessions all in one place."
@@ -153,20 +159,20 @@ export default function ForAthletesPage() {
 
       <section className="py-8 md:py-16">
         <div className="mx-auto w-[90%] max-w-6xl">
-          <h2 className="mb-8 font-bold text-[1.75rem] text-center sm:text-3xl">
+          <h2 className="mb-8 text-center text-[1.75rem] font-bold sm:text-3xl">
             How ScoutSesh Empowers Athletes
           </h2>
-          <div className="gap-8 grid grid-cols-1 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {cards2.map((feature, index) => (
               <Card
                 key={index}
                 className="flex flex-col items-center p-6 text-center"
               >
                 <CardHeader className="pb-2">
-                  <div className="flex justify-center items-center mb-4">
+                  <div className="mb-4 flex items-center justify-center">
                     {feature.icon}
                   </div>
-                  <CardTitle className="font-semibold text-xl">
+                  <CardTitle className="text-xl font-semibold">
                     {feature.title}
                   </CardTitle>
                 </CardHeader>
@@ -182,10 +188,10 @@ export default function ForAthletesPage() {
       <section className="bg-green-50 py-8 md:py-16">
         <div className="mx-auto w-[90%] max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="mb-6 font-bold text-[1.75rem] sm:text-3xl">
+            <h2 className="mb-6 text-[1.75rem] font-bold sm:text-3xl">
               Start Your Journey to Excellence
             </h2>
-            <p className="mb-8 text-gray-600 text-xl">
+            <p className="mb-8 text-xl text-gray-600">
               Join ScoutSesh today and take the first step towards becoming the
               athlete you&apos;ve always dreamed of being. Our platform is
               designed to support your growth every step of the way.
