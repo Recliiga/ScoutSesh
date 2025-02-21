@@ -10,6 +10,11 @@ import {
 } from "@/services/AthleteEvaluationServices";
 import { fetchCoachPricingPlan } from "@/services/AEPricingPlanServices";
 
+export const metadata = {
+  title: "Athlete Evaluation",
+  description: "Evaluate athletes and manage evaluations as a coach or user.",
+};
+
 export default async function AthleteEvaluationPage() {
   const user = await getSessionFromHeaders();
 

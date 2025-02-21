@@ -68,6 +68,12 @@ const definitions = [
   },
 ];
 
+export const metadata = {
+  title: "Privacy Policy",
+  description:
+    "Read the privacy policy for ScoutSesh to understand how we collect, use, and protect your personal data.",
+};
+
 export default function page() {
   return (
     <main className="mx-auto flex w-[90%] max-w-6xl flex-col gap-6 py-6 text-sm sm:py-8 sm:text-base">

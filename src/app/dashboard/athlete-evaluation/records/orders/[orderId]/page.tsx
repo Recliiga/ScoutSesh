@@ -4,6 +4,12 @@ import { getSessionFromHeaders } from "@/services/authServices";
 import { notFound } from "next/navigation";
 import AthleteEvaluationRecordsPage from "@/components/athlete-evaluation/AthleteEvaluationRecordsPage";
 
+export const metadata = {
+  title: "Athlete Evaluation Records",
+  description:
+    "View and manage athlete evaluation records for a specific order.",
+};
+
 export default async function EvaluationRecordsPage({
   params,
 }: {

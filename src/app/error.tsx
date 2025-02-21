@@ -5,6 +5,12 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 
+export const metadata = {
+  title: "Error",
+  description:
+    "An unexpected error occurred. Please try refreshing the page or go back to the homepage.",
+};
+
 export default function ErrorPage({
   error,
   reset,
@@ -16,24 +22,24 @@ export default function ErrorPage({
   const showError = searchParams.get("showError");
 
   return (
-    <main className="flex-1 flex-center text-accent-black">
-      <div className="flex-col flex-center gap-4 mx-auto w-[90%] max-w-lg text-center">
+    <main className="flex-center flex-1 text-accent-black">
+      <div className="flex-center mx-auto w-[90%] max-w-lg flex-col gap-4 text-center">
         <div className="flex flex-col gap-2">
-          <h2 className="font-bold text-2xl text-green-600 sm:text-3xl">
+          <h2 className="text-2xl font-bold text-green-600 sm:text-3xl">
             Oops! Something Went Wrong
           </h2>
-          <p className="text-accent-gray-300 text-sm">
+          <p className="text-sm text-accent-gray-300">
             We couldn&apos;t find the page you were looking for or something
             unexpected happened.
           </p>
           {showError === "true" && (
-            <p className="text-red-500 text-sm">Error: {error.message}</p>
+            <p className="text-sm text-red-500">Error: {error.message}</p>
           )}
         </div>
         <div className="flex flex-col">
           <h3 className="font-semibold">💡 What can you do?</h3>
           <ul>
-            <li className="list-disc list-inside">
+            <li className="list-inside list-disc">
               Go back to the{" "}
               <Link
                 href={"/"}
@@ -43,7 +49,7 @@ export default function ErrorPage({
               </Link>
               .
             </li>
-            <li className="list-disc list-inside">
+            <li className="list-inside list-disc">
               Contact support if the problem persists.
             </li>
           </ul>
@@ -56,7 +62,7 @@ export default function ErrorPage({
         </Link> */}
         <Button
           onClick={reset}
-          className="bg-green-600 hover:bg-green-600/90 rounded-full font-semibold text-white"
+          className="rounded-full bg-green-600 font-semibold text-white hover:bg-green-600/90"
         >
           <RefreshCcw />
           Refresh

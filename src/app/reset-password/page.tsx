@@ -1,6 +1,12 @@
 import ResetPasswordForm from "@/components/password-and-security/ResetPasswordForm";
 import { verifyToken } from "@/lib/utils";
 
+export const metadata = {
+  title: "Reset Password",
+  description:
+    "Reset your ScoutSesh account password to regain access to your athlete development journey. Enter your new password to get started.",
+};
+
 export default async function NewPassword({
   searchParams,
 }: {

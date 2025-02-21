@@ -6,6 +6,12 @@ import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import Image from "next/image";
 import React from "react";
 
+export const metadata = {
+  title: "Team Invitation",
+  description:
+    "Join your team on ScoutSesh and start managing your athlete development journey. Accept the invitation to get started.",
+};
+
 export default async function InvitationPage({
   params,
 }: {

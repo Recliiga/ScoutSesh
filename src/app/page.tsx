@@ -6,11 +6,11 @@ import LinkButton from "@/components/LinkButton";
 export default function HomePage() {
   return (
     <main className="flex-1">
-      <div className="mx-auto py-6 sm:py-8 w-[90%] max-w-6xl">
-        <h1 className="mb-4 sm:mb-6 font-bold text-3xl sm:text-4xl">
+      <div className="mx-auto w-[90%] max-w-6xl py-6 sm:py-8">
+        <h1 className="mb-4 text-3xl font-bold sm:mb-6 sm:text-4xl">
           Welcome to ScoutSesh
         </h1>
-        <p className="mb-4 sm:mb-8 text-base sm:text-lg">
+        <p className="mb-4 text-base sm:mb-8 sm:text-lg">
           ScoutSesh is a comprehensive athlete development platform designed to
           elevate your game to the next level. Whether you&apos;re an aspiring
           youth athlete or a seasoned pro in any sport, our tools and resources
@@ -18,14 +18,14 @@ export default function HomePage() {
         </p>
         <div className="mb-6 sm:mb-12">
           <Image
-            src="/placeholder.svg"
+            src="/homepage.png"
             alt="Athlete in action"
             width={800}
             height={400}
-            className="shadow-lg rounded-lg w-full min-h-60 aspect-[2] object-cover"
+            className="aspect-[2] min-h-60 w-full rounded-lg object-cover shadow-lg"
           />
         </div>
-        <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <FeatureCard
             title="Athlete Evaluation"
             description="Get personalized feedback from experienced coaches and scouts to improve your skills in your sport."
@@ -40,7 +40,7 @@ export default function HomePage() {
           />
         </div>
         <div className="mt-12 text-center">
-          <h2 className="mb-4 font-bold text-2xl sm:text-3xl">
+          <h2 className="mb-4 text-2xl font-bold sm:text-3xl">
             Ready to Take Your Athletic Performance to the Next Level?
           </h2>
           <p className="mb-6 text-xl">

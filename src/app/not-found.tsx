@@ -2,6 +2,12 @@ import { getSessionFromHeaders } from "@/services/authServices";
 import Link from "next/link";
 import React from "react";
 
+export const metadata = {
+  title: "404 - Page Not Found",
+  description:
+    "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+};
+
 export default async function NotFoundPage() {
   const user = await getSessionFromHeaders();
 

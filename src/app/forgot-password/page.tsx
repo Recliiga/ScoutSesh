@@ -17,6 +17,12 @@ import Link from "next/link";
 import { sendPasswordResetEmail } from "@/actions/passwordResetActions";
 import Error from "@/components/AuthError";
 
+export const metadata = {
+  title: "Password Recovery",
+  description:
+    "Reset your ScoutSesh account password. Enter your email to receive a password reset link.",
+};
+
 export default function PasswordRecovery() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);

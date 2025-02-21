@@ -6,6 +6,12 @@ import { fetchOrganization } from "@/actions/organizationActions";
 import { fetchAllUserJournals } from "@/services/journalServices";
 import { fetchCoachEvaluationOrders } from "@/services/AthleteEvaluationServices";
 
+export const metadata = {
+  title: "Dashboard",
+  description:
+    "Access your ScoutSesh account to manage your athlete development journey. Log in to get started.",
+};
+
 export default async function DashboardPage() {
   const user = await getSessionFromHeaders();
 

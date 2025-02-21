@@ -3,6 +3,11 @@ import { fetchEvaluationResults } from "@/services/AthleteEvaluationServices";
 import { notFound } from "next/navigation";
 import React from "react";
 
+export const metadata = {
+  title: "Athlete Evaluation Results",
+  description: "View the results of the athlete evaluation.",
+};
+
 export default async function EvaluationResultsPage({
   params,
 }: {
