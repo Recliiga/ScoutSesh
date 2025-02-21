@@ -22,7 +22,7 @@ export default function HomePage() {
             alt="Athlete in action"
             width={800}
             height={400}
-            className="aspect-[2] min-h-60 w-full rounded-lg object-cover shadow-lg"
+            className="aspect-[2] w-full rounded-lg object-cover shadow-lg"
           />
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
