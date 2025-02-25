@@ -2,7 +2,7 @@
 
 import connectDB from "@/db/connectDB";
 import User, { UserType } from "@/db/models/User";
-import { signToken } from "@/lib/utils";
+import { signJWT } from "@/lib/utils";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
@@ -50,8 +50,8 @@ export async function login(formData: FormData, redirectUrl: string) {
       return { error: "Invalid email and password combination" };
 
     // Create access token and store in cookie
-    const { token, error } = signToken({ userId: user._id });
-    if (error !== null) throw new Error(error);
+    const token = await signJWT({ userId: user._id });
+    if (!token) throw new Error("Error creating token");
 
     cookieStore.set("token", token, {
       httpOnly: true,
@@ -108,8 +108,8 @@ export async function signup(userData: UserDataType, redirectUrl: string) {
     });
 
     // Create access token and store in cookie
-    const { token, error } = signToken({ userId: newUser._id });
-    if (error !== null) throw new Error(error);
+    const token = await signJWT({ userId: newUser._id });
+    if (!token) throw new Error("Error creating token");
 
     cookieStore.set("token", token, {
       httpOnly: true,

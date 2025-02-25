@@ -6,19 +6,19 @@ import { cookies } from "next/headers";
 export async function fetchLatestInvitationCode() {
   try {
     const cookieStore = await cookies();
-    const { userId } = getUserIdFromCookies(cookieStore);
+    const { userId } = await getUserIdFromCookies(cookieStore);
 
     if (!userId)
       return { invitationCode: null, error: "User not authenticated" };
 
     await connectDB();
     const invitationCodes: InvitationCodeType[] | null = JSON.parse(
-      JSON.stringify(await InvitationCode.find({ user: userId }))
+      JSON.stringify(await InvitationCode.find({ user: userId })),
     );
 
     const invitationCode =
       invitationCodes?.find(
-        (code) => new Date(code.exp).getTime() > new Date().getTime()
+        (code) => new Date(code.exp).getTime() > new Date().getTime(),
       ) || null;
 
     return { invitationCode, error: null };
@@ -30,7 +30,7 @@ export async function fetchLatestInvitationCode() {
 export async function fetchInvitationCode(code: string) {
   try {
     const cookieStore = await cookies();
-    const { userId } = getUserIdFromCookies(cookieStore);
+    const { userId } = await getUserIdFromCookies(cookieStore);
 
     if (!userId)
       return { invitationCodeData: null, error: "User not authenticated" };
@@ -46,8 +46,8 @@ export async function fetchInvitationCode(code: string) {
           .populate({
             path: "organization",
             select: "name logo",
-          })
-      )
+          }),
+      ),
     );
 
     if (!invitationData) throw new Error("Invalid code");

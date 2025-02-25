@@ -7,14 +7,14 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const cookieStore = await cookies();
-    const { userId, error } = getUserIdFromCookies(cookieStore);
+    const { userId, error } = await getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
 
     await connectDB();
     const journalEntries: DailyJournalType[] = JSON.parse(
       JSON.stringify(
-        await DailyJournal.find({ user: userId }).sort({ createdAt: -1 })
-      )
+        await DailyJournal.find({ user: userId }).sort({ createdAt: -1 }),
+      ),
     );
     return NextResponse.json({ journalEntries, error: null });
   } catch (error) {

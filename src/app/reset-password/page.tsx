@@ -1,5 +1,5 @@
 import ResetPasswordForm from "@/components/password-and-security/ResetPasswordForm";
-import { verifyToken } from "@/lib/utils";
+import { verifyJWT } from "@/lib/utils";
 
 export const metadata = {
   title: "Reset Password",
@@ -14,17 +14,17 @@ export default async function NewPassword({
 }) {
   const { tk } = await searchParams;
 
-  function getUserIdFromToken(token: string) {
+  async function getUserIdFromToken(token: string) {
     const JWT_SECRET = process.env.JWT_SECRET;
     if (!JWT_SECRET) return { userId: null };
 
-    const { payload, error } = verifyToken(token);
-    if (error !== null) throw new Error(error);
+    const payload = await verifyJWT(token);
+    if (!payload) return { userId: null };
 
-    return { userId: payload.userId };
+    return { userId: payload.userId as string };
   }
 
-  const { userId } = getUserIdFromToken(tk);
+  const { userId } = await getUserIdFromToken(tk);
 
   return (
     <div className="flex flex-1 items-center justify-center bg-gray-100 p-4">

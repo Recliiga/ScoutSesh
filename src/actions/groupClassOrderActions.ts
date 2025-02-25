@@ -14,7 +14,7 @@ export async function addVideoToCompletedLessons(
 ) {
   try {
     const cookieStore = await cookies();
-    const { userId, error } = getUserIdFromCookies(cookieStore);
+    const { userId, error } = await getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error("Unauthenticated");
 
     await connectDB();

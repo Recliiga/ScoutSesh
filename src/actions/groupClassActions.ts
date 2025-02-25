@@ -22,7 +22,7 @@ export async function createClass(
   let redirectUrl;
   try {
     const cookieStore = await cookies();
-    const { userId, error } = getUserIdFromCookies(cookieStore);
+    const { userId, error } = await getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
 
     await connectDB();
@@ -45,7 +45,7 @@ export async function updateClass(
   let redirectUrl;
   try {
     const cookieStore = await cookies();
-    const { userId, error } = getUserIdFromCookies(cookieStore);
+    const { userId, error } = await getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
 
     if (classData.userId !== userId) throw new Error("Unauthorized!");
@@ -79,7 +79,7 @@ export async function deleteClass(groupClass: GroupClassType) {
     }
 
     const cookieStore = await cookies();
-    const { userId, error } = getUserIdFromCookies(cookieStore);
+    const { userId, error } = await getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error(error);
 
     if (groupClass.user._id !== userId) throw new Error("Unauthorized!");

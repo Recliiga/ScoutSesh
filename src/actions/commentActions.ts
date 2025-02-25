@@ -11,12 +11,13 @@ import { getUserIdFromCookies } from "@/lib/utils";
 export async function postGoalComment(
   text: string,
   goalId: string,
-  sectionKey: string
+  sectionKey: string,
 ) {
   const cookieStore = await cookies();
 
   try {
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) throw new Error(authError);
 
     // connect to MongoDB and create new Comment
@@ -30,11 +31,13 @@ export async function postGoalComment(
 
     // Fetch the new Comment posted and populate the author field
     const newComment: GoalCommentType = JSON.parse(
-      JSON.stringify(await GoalComment.findById(comment._id).populate("author"))
+      JSON.stringify(
+        await GoalComment.findById(comment._id).populate("author"),
+      ),
     );
     revalidatePath(
       "/dashboard/goal-setting/weekly-reflection/[goalSubmissionId]",
-      "page"
+      "page",
     );
     return { newComment, error: null };
   } catch (error) {
@@ -45,12 +48,13 @@ export async function postGoalComment(
 export async function postDailyJournalComment(
   text: string,
   dailyJournalId: string,
-  sectionKey: string
+  sectionKey: string,
 ) {
   const cookieStore = await cookies();
 
   try {
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) throw new Error(authError);
 
     // connect to MongoDB and create new Comment
@@ -65,12 +69,12 @@ export async function postDailyJournalComment(
     // Fetch the new Comment posted and populate the author field
     const newComment: DailyJournalCommentType = JSON.parse(
       JSON.stringify(
-        await DailyJournalComment.findById(comment._id).populate("author")
-      )
+        await DailyJournalComment.findById(comment._id).populate("author"),
+      ),
     );
     revalidatePath(
       "/dashboard/goal-setting/weekly-reflection/[goalSubmissionId]",
-      "page"
+      "page",
     );
     return { newComment, error: null };
   } catch (error) {
