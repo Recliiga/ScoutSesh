@@ -12,6 +12,11 @@ import {
 } from "@/services/userServices";
 import { notFound } from "next/navigation";
 
+export const metadata = {
+  title: "Billing & Payments",
+  description: "View and manage your earnings and payments.",
+};
+
 export type TransactionType = {
   _id: string;
   price: number;

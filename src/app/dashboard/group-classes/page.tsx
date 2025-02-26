@@ -9,6 +9,11 @@ import {
 import { getDatesBetween } from "@/lib/utils";
 import AthleteGroupClassesPage from "@/components/dashboard-pages/AthleteGroupClassesPage";
 
+export const metadata = {
+  title: "Group Classes",
+  description: "View and manage group classes.",
+};
+
 export default async function GroupClassesPage() {
   const user = await getSessionFromHeaders();
 

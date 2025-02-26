@@ -6,6 +6,11 @@ import AthleteGoalSettingPage from "@/components/dashboard-pages/AthleteGoalSett
 import { fetchTeamGoalData } from "@/services/goalServices";
 import { notFound } from "next/navigation";
 
+export const metadata = {
+  title: "Goal Setting",
+  description: "View and manage set goals.",
+};
+
 export default async function GoalSettingPage() {
   const user = await getSessionFromHeaders();
 

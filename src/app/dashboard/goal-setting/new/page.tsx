@@ -5,6 +5,11 @@ import { fetchAthleteLatestGoalData } from "@/services/goalServices";
 import { notFound } from "next/navigation";
 import React from "react";
 
+export const metadata = {
+  title: "Create Goal",
+  description: "Create a new goal for yourself.",
+};
+
 export default async function CreateGoalPage() {
   const { goalData, error } = await fetchAthleteLatestGoalData();
   if (error !== null) notFound();

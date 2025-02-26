@@ -5,6 +5,11 @@ import { fetchUserOrders } from "@/services/groupClassOrderServices";
 import { notFound } from "next/navigation";
 import React from "react";
 
+export const metadata = {
+  title: "Live Class Details",
+  description: "View and manage your live classes.",
+};
+
 export default async function LiveClassDetailsPage({
   params,
 }: {

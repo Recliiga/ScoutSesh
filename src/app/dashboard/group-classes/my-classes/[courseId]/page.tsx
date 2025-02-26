@@ -4,6 +4,11 @@ import { fetchUserOrderCourse } from "@/services/groupClassOrderServices";
 import { notFound } from "next/navigation";
 import React from "react";
 
+export const metadata = {
+  title: "Course View",
+  description: "View your course.",
+};
+
 export default async function CourseViewPage({
   params,
 }: {

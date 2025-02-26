@@ -2,6 +2,11 @@ import AthleteDailyJournalPage from "@/components/dashboard-pages/AthleteDailyJo
 import { fetchJournalEntriesByUser } from "@/services/journalServices";
 import React from "react";
 
+export const metadata = {
+  title: "Daily Journal Entries",
+  description: "View daily journal entries.",
+};
+
 export default async function UserDailyJournalEntriesPage({
   params,
 }: {

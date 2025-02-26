@@ -4,6 +4,11 @@ import { fetchOrganization } from "@/services/organizationServices";
 import { notFound } from "next/navigation";
 import React from "react";
 
+export const metadata = {
+  title: "Organization Profile",
+  description: "View organization profile.",
+};
+
 export default async function OrganizationProfilePage({
   params,
 }: {

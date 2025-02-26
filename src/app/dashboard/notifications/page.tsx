@@ -4,6 +4,11 @@ import NotificationList from "@/components/NotificationList";
 import { getSessionFromHeaders } from "@/services/authServices";
 import { fetchNotifications } from "@/services/notificationEntryServices";
 
+export const metadata = {
+  title: "Notifications",
+  description: "View all notifications.",
+};
+
 export default async function NotificationsPage() {
   const user = await getSessionFromHeaders();
 

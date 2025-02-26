@@ -3,6 +3,11 @@ import { getSessionFromHeaders } from "@/services/authServices";
 import { fetchChatUsers, fetchMessages } from "@/services/messageServices";
 import React from "react";
 
+export const metadata = {
+  title: "Messages",
+  description: "Chat with your team and manage your messages.",
+};
+
 export default async function MessagesPage() {
   const user = await getSessionFromHeaders();
 

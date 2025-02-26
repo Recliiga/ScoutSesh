@@ -6,6 +6,11 @@ import { notFound } from "next/navigation";
 import { getGoalDueDate, getWeeklyReflectionStatus } from "@/lib/utils";
 import { getSessionFromHeaders } from "@/services/authServices";
 
+export const metadata = {
+  title: "Weekly Reflection",
+  description: "Reflect on your weekly progress.",
+};
+
 export default async function WeeklyReflectionPage() {
   const user = await getSessionFromHeaders();
 

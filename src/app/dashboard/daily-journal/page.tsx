@@ -8,6 +8,11 @@ import {
   fetchTeamJournalEntries,
 } from "@/services/journalServices";
 
+export const metadata = {
+  title: "Daily Journal",
+  description: "View and manage daily journal entries.",
+};
+
 export default async function DailyJournalPage() {
   const user = await getSessionFromHeaders();
   const { journalEntries, error } = await fetchAllUserJournals();

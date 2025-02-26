@@ -5,6 +5,11 @@ import CoachGoalSettingSubmissionsPage from "@/components/dashboard-pages/CoachG
 import { notFound } from "next/navigation";
 import { fetchTeamGoalData } from "@/services/goalServices";
 
+export const metadata = {
+  title: "Goal Setting Submissions",
+  description: "View and manage goal setting submissions for your team.",
+};
+
 export default async function GoalSettingSubmissionsPage() {
   const user = await getSessionFromHeaders();
 

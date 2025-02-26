@@ -9,6 +9,11 @@ import {
   fetchUserOrders,
 } from "@/services/groupClassOrderServices";
 
+export const metadata = {
+  title: "Courses",
+  description: "View and manage your courses.",
+};
+
 export default async function CourseViewPage() {
   const user = await getSessionFromHeaders();
 
