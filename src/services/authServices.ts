@@ -1,6 +1,6 @@
 import { UserType } from "@/db/models/User";
 import { cookies, headers } from "next/headers";
-import { verifyToken } from "@/lib/utils";
+import { verifyJWT } from "@/lib/utils";
 
 export async function getSession(): Promise<
   | {
@@ -47,10 +47,10 @@ export async function getAdminSession() {
     const token = cookieStore.get("adminToken")?.value;
     if (!token) throw new Error("Invalid token");
 
-    const { payload, error } = verifyToken(token);
-    if (error !== null) throw new Error(error);
+    const payload = await verifyJWT(token);
+    if (!payload) throw new Error("Invalid payload");
 
-    const isAuthenticated: true | undefined = payload.isAuthenticated;
+    const isAuthenticated = payload.isAuthenticated as boolean;
 
     return { isAuthenticated: isAuthenticated || false, error: null };
   } catch (error) {

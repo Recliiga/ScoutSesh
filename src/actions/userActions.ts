@@ -33,7 +33,8 @@ export async function completeProfile(
   let canRedirect = false;
   try {
     const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) throw new Error(authError);
 
     // Update user's profile
@@ -55,7 +56,7 @@ export async function joinTeam(organizationId: string, coachId: string) {
   let redirectUrl;
   try {
     const cookieStore = await cookies();
-    const { userId, error } = getUserIdFromCookies(cookieStore);
+    const { userId, error } = await getUserIdFromCookies(cookieStore);
     if (error !== null) throw new Error("User is unauthenticated");
 
     await connectDB();
@@ -94,7 +95,7 @@ export async function updateUser(
 ) {
   try {
     const cookieStore = await cookies();
-    const { userId, error } = getUserIdFromCookies(cookieStore);
+    const { userId, error } = await getUserIdFromCookies(cookieStore);
     if (error !== null) return { error: "User is unauthenticated" };
 
     if (userId !== userDataId)
@@ -122,7 +123,7 @@ export async function updatePassword(
 ) {
   try {
     const cookieStore = await cookies();
-    const { userId, error } = getUserIdFromCookies(cookieStore);
+    const { userId, error } = await getUserIdFromCookies(cookieStore);
     if (error !== null) return { error: "Unauthenticated" };
 
     await connectDB();

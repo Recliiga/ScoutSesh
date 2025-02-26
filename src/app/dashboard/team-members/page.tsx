@@ -7,6 +7,11 @@ import { fetchTeamMembers } from "@/services/userServices";
 import { fetchTeamJournalEntries } from "@/services/journalServices";
 import { fetchLatestInvitationCode } from "@/services/invitationServices";
 
+export const metadata = {
+  title: "Team Members",
+  description: "Manage your team members.",
+};
+
 export default async function TeamMembersPage() {
   const user = await getSessionFromHeaders();
   const { invitationCode } = await fetchLatestInvitationCode();

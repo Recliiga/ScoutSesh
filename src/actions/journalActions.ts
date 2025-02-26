@@ -8,7 +8,8 @@ export async function createJournal(dailyJournalData: DailyJournalType) {
   const cookieStore = await cookies();
 
   try {
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) throw new Error(authError);
 
     // connect to MongoDB and create new Goal

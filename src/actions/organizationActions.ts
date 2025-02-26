@@ -24,7 +24,8 @@ export async function createOrganization(
   try {
     const cookieStore = await cookies();
 
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) throw new Error(authError);
 
     // Create new organization and bind to user's profile
@@ -78,7 +79,7 @@ export async function updateOrganization(
 ) {
   try {
     const cookieStore = await cookies();
-    const { userId, error } = getUserIdFromCookies(cookieStore);
+    const { userId, error } = await getUserIdFromCookies(cookieStore);
     if (error !== null) return { error: "User is unauthenticated" };
 
     if (userId !== organizationHeadCoachId)

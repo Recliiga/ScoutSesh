@@ -3,6 +3,11 @@ import { getSessionFromHeaders } from "@/services/authServices";
 import { fetchTeamJournalEntries } from "@/services/journalServices";
 import React from "react";
 
+export const metadata = {
+  title: "Daily Journal Submissions",
+  description: "View and manage daily journal entries.",
+};
+
 export default async function DailyJournalSubmissionsPage() {
   const user = await getSessionFromHeaders();
   const { teamJournalEntries, error: teamJournalError } =

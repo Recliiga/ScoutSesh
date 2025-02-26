@@ -9,6 +9,11 @@ import {
 import ChangePasswordForm from "@/components/password-and-security/ChangePasswordForm";
 import BackButton from "@/components/dashboard/BackButton";
 
+export const metadata = {
+  title: "Password & Security",
+  description: "Change your password and manage your account security.",
+};
+
 export default function PasswordSecurityPage() {
   return (
     <main className="flex-1 bg-gray-100 py-6">

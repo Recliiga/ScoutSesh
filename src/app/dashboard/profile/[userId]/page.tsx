@@ -4,6 +4,11 @@ import { notFound } from "next/navigation";
 import React from "react";
 import UserProfilePage from "@/components/dashboard-pages/UserProfilePage";
 
+export const metadata = {
+  title: "Profile",
+  description: "View a user's profile.",
+};
+
 export default async function ProfilePage({
   params,
 }: {

@@ -13,7 +13,8 @@ import NotificationEntry from "@/db/models/NotificationEntry";
 export async function createGoal(goalData: GoalSubmissionType) {
   try {
     const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) throw new Error(authError);
 
     // connect to MongoDB and create new Goal
@@ -28,7 +29,8 @@ export async function createGoal(goalData: GoalSubmissionType) {
 export async function updateGoal(goalId: string, goalData: GoalSubmissionType) {
   try {
     const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) throw new Error(authError);
 
     // connect to MongoDB and create new Goal
@@ -64,7 +66,8 @@ export async function performWeeklyReflection(
 ) {
   try {
     const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) throw new Error(authError);
 
     // connect to MongoDB and update Goal

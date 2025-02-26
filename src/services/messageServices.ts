@@ -1,8 +1,11 @@
 import Message, { MessageType } from "@/db/models/Message";
 import User, { UserRoleType, UserType } from "@/db/models/User";
+import connectDB from "@/db/connectDB";
 
 export async function fetchMessages(userId: string, role: UserRoleType) {
   try {
+    await connectDB();
+
     const allMessages: MessageType[] = JSON.parse(
       JSON.stringify(
         await Message.find().populate({
@@ -38,6 +41,8 @@ export async function fetchChatUsers(
   role: UserRoleType,
 ) {
   try {
+    await connectDB();
+
     let chatUsers: UserType[] = JSON.parse(
       JSON.stringify(
         await User.find({

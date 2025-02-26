@@ -2,15 +2,15 @@ import connectDB from "@/db/connectDB";
 import User, { UserType } from "@/db/models/User";
 import { NextRequest, NextResponse } from "next/server";
 import "@/db/models/Organization";
-import { verifyToken } from "@/lib/utils";
+import { verifyJWT } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   try {
     const token = request.headers.get("Authorization")?.split(" ")[1];
     if (!token) throw new Error("Invalid token");
 
-    const { payload, error } = verifyToken(token);
-    if (error !== null) throw new Error(error);
+    const payload = await verifyJWT(token);
+    if (!payload) throw new Error("Invalid payload");
 
     const userId = payload.userId;
 

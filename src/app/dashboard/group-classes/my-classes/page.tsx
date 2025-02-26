@@ -6,6 +6,11 @@ import VideoLibraryCourseCard from "@/components/group-classes/VideoLibraryCours
 import BackButton from "@/components/dashboard/BackButton";
 import Link from "next/link";
 
+export const metadata = {
+  title: "My Courses",
+  description: "View and manage your courses.",
+};
+
 export default async function MyClassesPage() {
   const user = await getSessionFromHeaders();
   if (user.role !== "Athlete") notFound();

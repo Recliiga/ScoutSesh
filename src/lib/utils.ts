@@ -4,7 +4,7 @@ import { UserType } from "@/db/models/User";
 import { clsx, type ClassValue } from "clsx";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { twMerge } from "tailwind-merge";
-import jwt from "jsonwebtoken";
+import { SignJWT, jwtVerify, JWTPayload } from "jose";
 import { DailyJournalType } from "@/db/models/DailyJournal";
 import { RepeatFrequencyType } from "@/db/models/GroupClass";
 import { AthleteEvaluationOrderType } from "@/db/models/AthleteEvaluationOrder";
@@ -267,17 +267,19 @@ export async function uploadVideosClient(
   }
 }
 
-export function getUserIdFromCookies(cookieStore: ReadonlyRequestCookies) {
+export async function getUserIdFromCookies(
+  cookieStore: ReadonlyRequestCookies,
+) {
   try {
     // Get token from cookies
     const token = cookieStore.get("token")?.value;
     if (!token) throw new Error("User is unauthorized");
 
     // Get userId from token
-    const { payload, error } = verifyToken(token);
-    if (error !== null) throw new Error(error);
+    const payload = await verifyJWT(token);
+    if (!payload) throw new Error("Invalid token");
 
-    const userId: string = payload.userId;
+    const userId = payload.userId as string;
     return { userId, error: null };
   } catch (error) {
     return { userId: null, error: (error as Error).message };
@@ -491,24 +493,42 @@ export function calculateMonthlyPlatformFees(
     );
 }
 
-export function signToken(payload: object, options?: jwt.SignOptions) {
-  try {
-    const token = jwt.sign(payload, process.env.JWT_SECRET!, options);
-    return { token, error: null };
-  } catch (err) {
-    const error = err as Error;
-    return { token: null, error: error.message };
-  }
+export async function signJWT(payload: JWTPayload, expiresIn: string = "1d") {
+  const secret = process.env.JWT_SECRET;
+  if (!secret)
+    throw new Error("Please specify a JWT_SECRET in the environment variables");
+
+  const encoder = new TextEncoder();
+  const secretKey = encoder.encode(secret);
+
+  const jwt = await new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime(expiresIn)
+    .sign(secretKey);
+
+  return jwt;
 }
 
-export function verifyToken(token: string) {
+export async function verifyJWT(token: string) {
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof payload === "string") throw new Error("Invalid token");
-    return { payload, error: null };
-  } catch (err) {
-    const error = err as Error;
-    return { payload: null, error: error.message };
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.log("Please specify a JWT_SECRET in the environment variables");
+      return null;
+    }
+
+    if (!token || token === "undefined") {
+      return null;
+    }
+
+    const encoder = new TextEncoder();
+    const secretKey = encoder.encode(secret);
+
+    const { payload } = await jwtVerify(token, secretKey);
+    return payload;
+  } catch (error) {
+    console.error("JWT verification failed:", error);
+    return null;
   }
 }
 

@@ -3,6 +3,11 @@ import { fetchAthleteGoalData } from "@/services/goalServices";
 import { notFound } from "next/navigation";
 import React from "react";
 
+export const metadata = {
+  title: "Edit Goal",
+  description: "Edit your goal submission.",
+};
+
 export default async function GoalSettingEditPage({
   params,
 }: {

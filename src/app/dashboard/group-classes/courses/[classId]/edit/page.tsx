@@ -4,6 +4,11 @@ import { fetchGroupClass } from "@/services/groupClassServices";
 import { fetchTeamMembers } from "@/services/userServices";
 import { notFound } from "next/navigation";
 
+export const metadata = {
+  title: "Edit Class",
+  description: "Edit a class.",
+};
+
 export default async function EditClassPage({
   params,
 }: {

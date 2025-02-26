@@ -3,6 +3,11 @@ import { getSessionFromHeaders } from "@/services/authServices";
 import { fetchTeamMembers } from "@/services/userServices";
 import { notFound } from "next/navigation";
 
+export const metadata = {
+  title: "Create Class",
+  description: "Create a class.",
+};
+
 export default async function CreateClassPage() {
   const user = await getSessionFromHeaders();
 

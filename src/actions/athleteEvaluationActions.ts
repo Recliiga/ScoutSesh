@@ -23,7 +23,8 @@ export async function createCoachAthleteEvaluation(
 ) {
   try {
     const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) return { error: "User unauthenticated" };
 
     if (String(order.coach) !== userId) throw new Error("Unauthorized");
@@ -74,7 +75,8 @@ export async function createSelfEvaluation(
 ) {
   try {
     const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) return { error: "User unauthenticated" };
 
     if (order.athlete._id !== userId) throw new Error("Unauthorized");
@@ -118,7 +120,8 @@ export async function createTemplate(
 ) {
   try {
     const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) return { error: "User unauthenticated" };
 
     await connectDB();
@@ -139,7 +142,8 @@ export async function updateTemplate(
 ) {
   try {
     const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) return { error: "User unauthenticated" };
 
     await connectDB();
@@ -168,7 +172,8 @@ export async function updateTemplate(
 export async function deleteTemplate(templateId: string) {
   try {
     const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) return { error: "User unauthenticated" };
 
     await connectDB();
@@ -196,7 +201,8 @@ export async function createPricingPlan(pricingPlanData: AEPricingPlanType) {
   let redirectUrl;
   try {
     const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) return { error: "User unauthenticated" };
 
     await connectDB();
@@ -231,7 +237,8 @@ export async function updatePricingPlan(
   let redirectUrl;
   try {
     const cookieStore = await cookies();
-    const { userId, error: authError } = getUserIdFromCookies(cookieStore);
+    const { userId, error: authError } =
+      await getUserIdFromCookies(cookieStore);
     if (authError !== null) return { error: "User unauthenticated" };
 
     if (pricingPlanData.user._id !== userId)
