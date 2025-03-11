@@ -16,7 +16,7 @@ export default function ChatContainer({ user }: { user: UserType }) {
 
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState<string | undefined>(
-    chats[0]._id,
+    chats[0]?._id,
   );
 
   const selectedChat = chats.find((chat) => chat._id === selectedChatId);
