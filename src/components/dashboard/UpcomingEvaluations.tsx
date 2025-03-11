@@ -83,6 +83,7 @@ export default function UpcomingEvaluations({
                           </Link>
                           <AssignToButton
                             orderId={order._id}
+                            disabled
                             className="border-accent-gray-200 text-xs text-accent-black hover:bg-green-800 hover:text-white"
                           />
                         </div>

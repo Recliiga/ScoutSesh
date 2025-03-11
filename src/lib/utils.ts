@@ -526,8 +526,7 @@ export async function verifyJWT(token: string) {
 
     const { payload } = await jwtVerify(token, secretKey);
     return payload;
-  } catch (error) {
-    console.error("JWT verification failed:", error);
+  } catch {
     return null;
   }
 }

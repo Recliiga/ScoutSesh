@@ -24,7 +24,9 @@ export type PrimarySportType =
   | "track_and_field"
   | "gymnastics"
   | "boxing"
-  | "martial_arts";
+  | "martial_arts"
+  | "lacrosse"
+  | "other";
 
 export type UserRoleType = "Athlete" | "Assistant Coach" | "Head Coach";
 export type UserStatusType = "Active" | "Suspended" | "Banned";

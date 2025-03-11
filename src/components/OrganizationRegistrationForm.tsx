@@ -13,24 +13,7 @@ import Error from "./AuthError";
 import useFormEntries from "@/hooks/useFormEntries";
 import Select from "./Select";
 import { CountryDataType } from "@/services/userServices";
-
-const sportList = [
-  "volleyball",
-  "basketball",
-  "soccer",
-  "tennis",
-  "swimming",
-  "golf",
-  "baseball",
-  "football",
-  "hockey",
-  "rugby",
-  "cricket",
-  "track_and_field",
-  "gymnastics",
-  "boxing",
-  "martial_arts",
-];
+import { sportList } from "@/lib/constants";
 
 export default function OrganizationRegistrationForm({
   userId,

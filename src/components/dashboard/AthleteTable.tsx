@@ -111,9 +111,11 @@ export default function AthleteTable({
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white"
+                      className="border-green-600 bg-white px-0 py-0 text-green-600 hover:bg-green-600 hover:text-white"
                     >
-                      Message
+                      <Link href={`/dashboard/messages`} className="px-4 py-2">
+                        Message
+                      </Link>
                     </Button>
                   </div>
                 </td>
