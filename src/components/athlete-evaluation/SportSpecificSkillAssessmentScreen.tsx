@@ -21,6 +21,8 @@ const sportOptions = [
   { value: "gymnastics", label: "Gymnastics" },
   { value: "boxing", label: "Boxing" },
   { value: "martial_arts", label: "Martial Arts" },
+  { value: "lacrosse", label: "Lacrosse" },
+  { value: "other", label: "Other" },
 ];
 
 export default function SportSpecificSkillAssessmentScreen({

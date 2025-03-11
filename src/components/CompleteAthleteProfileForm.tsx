@@ -18,24 +18,7 @@ import Select from "./Select";
 import useClickOutside from "@/hooks/useClickOutside";
 import { PrimarySportType, UserRoleType, UserType } from "@/db/models/User";
 import { CountryDataType } from "@/services/userServices";
-
-const sportList = [
-  "volleyball",
-  "basketball",
-  "soccer",
-  "tennis",
-  "swimming",
-  "golf",
-  "baseball",
-  "football",
-  "hockey",
-  "rugby",
-  "cricket",
-  "track_and_field",
-  "gymnastics",
-  "boxing",
-  "martial_arts",
-];
+import { sportList } from "@/lib/constants";
 
 export default function CompleteAthleteProfileForm({
   user,

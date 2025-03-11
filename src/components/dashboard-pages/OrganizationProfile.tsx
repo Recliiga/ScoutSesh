@@ -29,24 +29,7 @@ import { uploadImageClient } from "@/lib/utils";
 import { updateOrganization } from "@/actions/organizationActions";
 import Select from "../Select";
 import stripeCountries from "@/data/stripe-countries.json";
-
-const sportList = [
-  "volleyball",
-  "basketball",
-  "soccer",
-  "tennis",
-  "swimming",
-  "golf",
-  "baseball",
-  "football",
-  "hockey",
-  "rugby",
-  "cricket",
-  "track_and_field",
-  "gymnastics",
-  "boxing",
-  "martial_arts",
-];
+import { sportList } from "@/lib/constants";
 
 function getMembershipEmoji(memberCount: string): string {
   const [, max] = memberCount.split("-").map((num) => parseInt(num));
