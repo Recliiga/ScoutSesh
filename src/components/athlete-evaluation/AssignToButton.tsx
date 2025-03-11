@@ -8,9 +8,11 @@ import AssignEvaluationModal from "./AssignEvaluationModal";
 export default function AssignToButton({
   className,
   orderId,
+  disabled,
 }: {
   className?: string;
   orderId: string;
+  disabled?: boolean;
 }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
@@ -20,7 +22,8 @@ export default function AssignToButton({
         onClick={() => setModalIsOpen(true)}
         variant="outline"
         size="sm"
-        className={`border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white ${className || ""}`}
+        disabled={disabled}
+        className={`border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white disabled:cursor-not-allowed ${className || ""}`}
       >
         <UserPlusIcon className="mr-2 h-4 w-4" />
         Assign to

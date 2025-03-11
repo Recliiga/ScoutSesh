@@ -4,7 +4,7 @@ import {
   getLastEvaluationDate,
   getNextEvaluationDueDate,
 } from "@/lib/utils";
-import { ClipboardIcon, UserPlusIcon } from "lucide-react";
+import { ClipboardIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import AssignToButton from "./AssignToButton";
@@ -96,7 +96,7 @@ export default function UpcomingEvaluationsTable({
                       <ClipboardIcon className="mr-2 h-4 w-4" />
                       Evaluate
                     </Link>
-                    <AssignToButton orderId={order._id} />
+                    <AssignToButton disabled orderId={order._id} />
                   </>
                 ) : (
                   <>
@@ -109,15 +109,7 @@ export default function UpcomingEvaluationsTable({
                       <ClipboardIcon className="mr-2 h-4 w-4" />
                       Evaluate
                     </Button>
-                    <Button
-                      disabled
-                      variant="outline"
-                      size="sm"
-                      className="border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white"
-                    >
-                      <UserPlusIcon className="mr-2 h-4 w-4" />
-                      Assign to
-                    </Button>
+                    <AssignToButton disabled orderId={order._id} />
                   </>
                 )}
               </div>
