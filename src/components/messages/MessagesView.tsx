@@ -245,6 +245,7 @@ export default function MessagesView({
                       <AvatarImage
                         src={message.fromUser.profilePicture}
                         alt={`${message.fromUser.firstName} 's Profile Picture`}
+                        className="object-cover"
                       />
                       <AvatarFallback>
                         {message.fromUser.firstName[0]}
