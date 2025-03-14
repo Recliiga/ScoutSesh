@@ -22,7 +22,7 @@ export default function AthleteTable({
     <div className="overflow-x-auto">
       <div className="max-h-96 overflow-y-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="sticky top-0 bg-gray-50">
+          <thead className="sticky top-0 z-[2] bg-gray-50">
             <tr>
               <th className="w-1/5 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Athlete
