@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export type AthleteType = {
   _id: string;
@@ -49,14 +49,17 @@ export default function AthleteTable({
               <tr key={athlete._id}>
                 <td className="whitespace-nowrap px-6 py-4">
                   <div className="flex items-center">
-                    <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
-                      <Image
-                        className="object-cover"
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback>
+                        {athlete.name[0]}
+                        {athlete.name.split(" ")[1][0]}
+                      </AvatarFallback>
+                      <AvatarImage
                         src={athlete.profilePicture}
-                        alt={athlete.name}
-                        fill
+                        alt={`${athlete.name}'s profile picture`}
+                        className="h-full w-full rounded-full object-cover"
                       />
-                    </div>
+                    </Avatar>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">
                         {athlete.name}
