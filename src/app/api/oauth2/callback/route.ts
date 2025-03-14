@@ -25,7 +25,6 @@ export async function GET(req: NextRequest) {
     if (!code) throw new Error("Invalid code");
 
     const { tokens } = await oauth2Client.getToken(code);
-    console.log({ tokens });
     user.googleTokens = tokens;
     await user.save();
 

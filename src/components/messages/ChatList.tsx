@@ -21,7 +21,7 @@ export default function ChatList({
 
   return (
     <aside
-      className={`flex-1 space-y-4 ${selectedChat ? "hidden md:block" : ""}`}
+      className={`h-[calc(100vh-10rem)] flex-1 space-y-4 overflow-y-auto px-1 sm:h-[calc(100vh-10.5rem)] ${selectedChat ? "hidden md:block" : ""}`}
     >
       <h2 className="text-xl font-bold">Messages</h2>
       <div className="relative w-full">
