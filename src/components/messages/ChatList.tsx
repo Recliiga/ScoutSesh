@@ -49,6 +49,7 @@ export default function ChatList({
               <AvatarImage
                 src={chat.user.profilePicture}
                 alt={chat.user.name}
+                className="object-cover"
               />
               <AvatarFallback>{chat.user.initials}</AvatarFallback>
             </Avatar>
