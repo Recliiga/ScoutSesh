@@ -83,11 +83,15 @@ function transformMessagesToChats(
         unreadCount,
       };
     })
-    .sort(
-      (a, b) =>
-        new Date(b.lastMessage.createdAt).getTime() -
-        new Date(a.lastMessage.createdAt).getTime(),
-    );
+    .sort((a, b) => {
+      const dateA = a.lastMessage
+        ? new Date(a.lastMessage.createdAt).getTime()
+        : 0;
+      const dateB = b.lastMessage
+        ? new Date(b.lastMessage.createdAt).getTime()
+        : 0;
+      return dateB - dateA;
+    });
 }
 
 const chatContext = createContext<{
