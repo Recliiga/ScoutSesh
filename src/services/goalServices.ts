@@ -67,7 +67,9 @@ export async function fetchTeamGoalData(organizationId: string) {
       ),
     );
     const teamGoalData = allGoalData.filter(
-      (goalData) => String(goalData.user.organization) === organizationId,
+      (goalData) =>
+        goalData.user.organization &&
+        String(goalData.user.organization) === organizationId,
     );
     return { teamGoalData, error: null };
   } catch (error) {
